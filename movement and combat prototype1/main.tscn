@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://brb6j8qam8dnq"]
+
+[ext_resource type="PackedScene" uid="uid://cc280wqoegnrq" path="res://char_1.tscn" id="1_niae5"]
+[ext_resource type="PackedScene" uid="uid://dy7652grafsry" path="res://dummy.tscn" id="2_dil4i"]
+[ext_resource type="PackedScene" uid="uid://klg2syiurqoe" path="res://red_drone.tscn" id="3_ykcxu"]
+
+[node name="main" type="Node2D"]
+
+[node name="Char1" parent="." instance=ExtResource("1_niae5")]
+position = Vector2(442, 55)
+
+[node name="Dummy" parent="." instance=ExtResource("2_dil4i")]
+position = Vector2(312, 282)
+
+[node name="red_drone" parent="." instance=ExtResource("3_ykcxu")]
+position = Vector2(122, 414)

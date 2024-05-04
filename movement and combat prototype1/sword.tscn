@@ -1,0 +1,63 @@
+[gd_scene load_steps=8 format=3 uid="uid://c5150gy7xxr8g"]
+
+[ext_resource type="Script" path="res://Area2D.gd" id="1_n563q"]
+[ext_resource type="Texture2D" uid="uid://c10w86o8myjc" path="res://Asset de Kyun/Char1/sword_down1.png" id="2_t4xij"]
+[ext_resource type="Texture2D" uid="uid://bvt6qwypoc5y8" path="res://Asset de Kyun/Char1/sword_left1.png" id="3_pvyds"]
+[ext_resource type="Texture2D" uid="uid://cu0qocjdlir20" path="res://Asset de Kyun/Char1/sword_right1.png" id="4_mppyv"]
+[ext_resource type="Texture2D" uid="uid://go208hgok8p4" path="res://Asset de Kyun/Char1/sword_up1.png" id="5_3ln7w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2rlme"]
+size = Vector2(12, 63)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_s1vyd"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_t4xij")
+}],
+"loop": true,
+"name": &"down_attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_pvyds")
+}],
+"loop": true,
+"name": &"left_attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_mppyv")
+}],
+"loop": true,
+"name": &"right_attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_3ln7w")
+}],
+"loop": true,
+"name": &"up_attack",
+"speed": 5.0
+}]
+
+[node name="Sword" type="Node2D"]
+
+[node name="SwordDown" type="Area2D" parent="."]
+script = ExtResource("1_n563q")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SwordDown"]
+shape = SubResource("RectangleShape2D_2rlme")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="SwordDown"]
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_s1vyd")
+animation = &"down_attack"
+
+[node name="Timer" type="Timer" parent="SwordDown"]
+wait_time = 0.4
+
+[connection signal="timeout" from="SwordDown/Timer" to="SwordDown" method="_on_timer_timeout"]
