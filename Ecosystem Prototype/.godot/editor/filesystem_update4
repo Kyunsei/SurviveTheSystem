@@ -1,5 +1,4 @@
 res://Scene/main.tscn
-res://Script/Life_generator.gd
 res://Scene/Player.tscn
 res://Scene/life_entity_oldscene.tscn
 res://Scene/tool.tscn
