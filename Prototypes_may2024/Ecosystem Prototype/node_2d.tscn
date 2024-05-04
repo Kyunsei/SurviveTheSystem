@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://bqlas6ghiaunx"]
+
+[ext_resource type="Texture2D" uid="uid://bhh4u8vv0vtob" path="res://art/berry.png" id="1_visof"]
+[ext_resource type="Script" path="res://test.gd" id="2_afprp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u2cho"]
+size = Vector2(493, 434)
+
+[node name="Node2D" type="Sprite2D"]
+texture = ExtResource("1_visof")
+offset = Vector2(0, -200)
+script = ExtResource("2_afprp")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+gravity_scale = 0.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+position = Vector2(-9.5, -219)
+shape = SubResource("RectangleShape2D_u2cho")

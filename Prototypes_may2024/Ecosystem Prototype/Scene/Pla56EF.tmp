@@ -1,0 +1,35 @@
+[gd_scene load_steps=4 format=3 uid="uid://tddglyi5vwbs"]
+
+[ext_resource type="Texture2D" uid="uid://baqx3jtap0yk" path="res://icon.svg" id="1_ris5i"]
+[ext_resource type="Script" path="res://Script/Player.gd" id="2_r322b"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fryhm"]
+size = Vector2(63, 61)
+
+[node name="Player" type="Node2D"]
+
+[node name="Player" type="CharacterBody2D" parent="."]
+script = ExtResource("2_r322b")
+
+[node name="Player_energy" type="Label" parent="Player"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = -60.0
+offset_right = 20.0
+offset_bottom = -37.0
+grow_horizontal = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_fryhm")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player"]
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_ris5i")
+
+[node name="Timer" type="Timer" parent="Player"]
+wait_time = 5.0
+autostart = true
+
+[connection signal="timeout" from="Player/Timer" to="Player" method="_on_timer_timeout"]

@@ -1,0 +1,61 @@
+[gd_scene load_steps=4 format=3 uid="uid://bb5uav2i86xlj"]
+
+[ext_resource type="Script" path="res://Script/life_entity_oldscript.gd" id="1_558md"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_a03o5"]
+resource_local_to_scene = true
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ygpko"]
+resource_local_to_scene = true
+size = Vector2(32, 32)
+
+[node name="Life" type="RigidBody2D" groups=["Life"]]
+collision_layer = 4
+collision_mask = 7
+input_pickable = true
+gravity_scale = 0.0
+max_contacts_reported = 2
+contact_monitor = true
+script = ExtResource("1_558md")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+shape = SubResource("RectangleShape2D_a03o5")
+
+[node name="Area2D" type="Area2D" parent="."]
+visible = false
+collision_layer = 7
+collision_mask = 7
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+visible = false
+shape = SubResource("RectangleShape2D_ygpko")
+
+[node name="Label" type="Label" parent="."]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = -42.0
+offset_right = 20.0
+offset_bottom = -19.0
+grow_horizontal = 2
+size_flags_vertical = 0
+
+[node name="BehaviourTimer" type="Timer" parent="."]
+autostart = true
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_shape_entered" from="." to="." method="_on_body_shape_entered"]
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="timeout" from="BehaviourTimer" to="." method="_on_behaviour_timer_timeout"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

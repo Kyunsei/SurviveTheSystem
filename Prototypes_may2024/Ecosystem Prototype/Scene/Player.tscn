@@ -1,0 +1,66 @@
+[gd_scene load_steps=5 format=3 uid="uid://tddglyi5vwbs"]
+
+[ext_resource type="Texture2D" uid="uid://dom5ltgy2ryuq" path="res://art/player1.png" id="2_lxv85"]
+[ext_resource type="Script" path="res://Script/Player.gd" id="2_r322b"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_pcjja"]
+radius = 25.9811
+height = 51.9622
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8xv4j"]
+radius = 33.9958
+height = 102.019
+
+[node name="Player" type="CharacterBody2D"]
+position = Vector2(1, -4)
+collision_layer = 4
+script = ExtResource("2_r322b")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_lxv85")
+centered = false
+offset = Vector2(0, -64)
+
+[node name="Player_energy" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -25.0
+offset_top = 8.0
+offset_right = 15.0
+offset_bottom = 31.0
+grow_horizontal = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(34, -32)
+rotation = 1.55509
+shape = SubResource("CapsuleShape2D_pcjja")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 7
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(32, -31)
+rotation = 1.55509
+shape = SubResource("CapsuleShape2D_8xv4j")
+
+[node name="RespawnButton" type="Button" parent="."]
+visible = false
+offset_left = -44.0
+offset_top = 20.0
+offset_right = 41.0
+offset_bottom = 51.0
+text = "Respawn?"
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="pressed" from="RespawnButton" to="." method="_on_respawn_button_pressed"]

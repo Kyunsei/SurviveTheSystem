@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://cleg0ufd01rn3"
+path="res://.godot/imported/compute_spheretoblock.glsl-516cba1291109215a440e290320b898a.res"
+
+[deps]
+
+source_file="res://Script/compute_spheretoblock.glsl"
+dest_files=["res://.godot/imported/compute_spheretoblock.glsl-516cba1291109215a440e290320b898a.res"]
+
+[params]
+
