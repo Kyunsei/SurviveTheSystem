@@ -1,0 +1,111 @@
+[gd_scene load_steps=7 format=3 uid="uid://bp0wqlghelrb"]
+
+[ext_resource type="Script" path="res://Script/main.gd" id="1_sdqb5"]
+[ext_resource type="PackedScene" uid="uid://tddglyi5vwbs" path="res://Scene/Player.tscn" id="2_1x0yn"]
+[ext_resource type="Script" path="res://Script/World_generator.gd" id="2_vbdjq"]
+[ext_resource type="PackedScene" uid="uid://c324kpnjr1tg6" path="res://Scene/daynight.tscn" id="3_plrat"]
+[ext_resource type="Script" path="res://Script/Life_generator.gd" id="4_aw8ih"]
+[ext_resource type="PackedScene" uid="uid://bcnygl176lg14" path="res://Scene/debug_menu.tscn" id="6_fvjwm"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_sdqb5")
+
+[node name="World_elements" type="Node2D" parent="."]
+script = ExtResource("2_vbdjq")
+
+[node name="Timer" type="Timer" parent="World_elements"]
+autostart = true
+
+[node name="Life_entities" type="Node2D" parent="."]
+y_sort_enabled = true
+script = ExtResource("4_aw8ih")
+
+[node name="Player" parent="Life_entities" instance=ExtResource("2_1x0yn")]
+position = Vector2(575, 321)
+
+[node name="Timer" type="Timer" parent="Life_entities"]
+autostart = true
+
+[node name="Panel" type="CanvasLayer" parent="."]
+
+[node name="WorldInfo" type="Label" parent="Panel"]
+visible = false
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="SpeedScroll" type="HScrollBar" parent="Panel"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -100.0
+offset_top = -24.0
+offset_right = 100.0
+grow_horizontal = 2
+grow_vertical = 0
+min_value = 1.0
+step = 10.0
+value = 1.0
+
+[node name="Label" type="Label" parent="Panel/SpeedScroll"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -24.0
+offset_top = -30.0
+offset_right = 24.0
+offset_bottom = -7.0
+grow_horizontal = 2
+text = "Speed"
+
+[node name="Tuto" type="Label" parent="Panel"]
+offset_right = 127.0
+offset_bottom = 127.0
+text = " W,A,S,D = move
+SPACE = Take Block Element
+F = Drop all Element
+X = Create Element (see Debug)"
+
+[node name="DebugMenu" parent="Panel" instance=ExtResource("6_fvjwm")]
+visible = false
+offset_left = 843.0
+offset_top = -4.0
+offset_right = -1.0
+offset_bottom = -4.0
+
+[node name="DebugWindowButton" type="Button" parent="Panel"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -130.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = 36.0
+grow_horizontal = 0
+text = "Debug Menu"
+
+[node name="FPS" type="Label" parent="Panel"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -23.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="daynight" parent="." instance=ExtResource("3_plrat")]
+visible = false
+position = Vector2(0, 1)
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
+[connection signal="timeout" from="World_elements/Timer" to="World_elements" method="_on_timer_timeout"]
+[connection signal="timeout" from="Life_entities/Timer" to="Life_entities" method="_on_timer_timeout"]
+[connection signal="value_changed" from="Panel/SpeedScroll" to="." method="_on_h_scroll_bar_value_changed"]
+[connection signal="pressed" from="Panel/DebugWindowButton" to="." method="_on_debug_window_button_pressed"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

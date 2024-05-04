@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://b2derq6awpl56"]
+
+[ext_resource type="Script" path="res://Script/tool.gd" id="1_7wb3r"]
+[ext_resource type="Texture2D" uid="uid://brw5yb5c14oc" path="res://art/hoe.png" id="1_d47p2"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jmpkr"]
+size = Vector2(99, 97)
+
+[node name="Tool" type="RigidBody2D" groups=["Tool"]]
+collision_layer = 2
+collision_mask = 0
+gravity_scale = 0.0
+script = ExtResource("1_7wb3r")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-0.5, -0.5)
+shape = SubResource("RectangleShape2D_jmpkr")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("1_d47p2")

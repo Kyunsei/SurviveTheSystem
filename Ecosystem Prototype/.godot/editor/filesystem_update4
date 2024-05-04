@@ -1,0 +1,11 @@
+res://Scene/main.tscn
+res://Script/Life_generator.gd
+res://Scene/Player.tscn
+res://Scene/life_entity_oldscene.tscn
+res://Scene/tool.tscn
+res://Scene/water.tscn
+res://Scene/life_entity.tscn
+res://Scene/world_block.tscn
+res://Scene/test.tscn
+res://Scene/debug_menu.tscn
+res://Scene/start_screen.tscn
