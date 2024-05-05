@@ -81,4 +81,38 @@ grow_vertical = 0
 theme_override_font_sizes/font_size = 25
 text = "Developped by Kyunsei and Bulbi"
 
+[node name="DebugLabel" type="VBoxContainer" parent="."]
+layout_mode = 2
+offset_left = 39.0
+offset_top = 224.0
+offset_right = 194.0
+offset_bottom = 224.0
+
+[node name="Label" type="Label" parent="DebugLabel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "World_size: "
+
+[node name="Label2" type="Label" parent="DebugLabel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Tile_size: "
+
+[node name="DebugValue" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 164.0
+offset_top = 227.0
+offset_right = 231.0
+offset_bottom = 430.0
+
+[node name="worldsize" type="LineEdit" parent="DebugValue"]
+layout_mode = 2
+placeholder_text = "10"
+
+[node name="tilesize" type="LineEdit" parent="DebugValue"]
+layout_mode = 2
+placeholder_text = "32"
+
 [connection signal="pressed" from="Button_VBox/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="text_changed" from="DebugValue/worldsize" to="." method="_on_worldsize_text_changed"]
+[connection signal="text_changed" from="DebugValue/tilesize" to="." method="_on_tilesize_text_changed"]

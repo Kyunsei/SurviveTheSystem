@@ -1,3 +1,31 @@
-[gd_scene format=3 uid="uid://bvgtrefdtlsul"]
+[gd_scene load_steps=4 format=3 uid="uid://bvgtrefdtlsul"]
+
+[ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_0faxq"]
+[ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
+[ext_resource type="PackedScene" uid="uid://b5k0j0umvgnc7" path="res://Scenes/Player.tscn" id="3_480aq"]
 
 [node name="MainScene" type="Node2D"]
+script = ExtResource("1_0faxq")
+
+[node name="StarBackground" type="Sprite2D" parent="."]
+position = Vector2(543, 354)
+scale = Vector2(0.234333, 0.234333)
+texture = ExtResource("2_03gyf")
+
+[node name="Blocks" type="Node2D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("3_480aq")]
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="FPS" type="Label" parent="UI"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -23.0
+grow_horizontal = 0
+grow_vertical = 0
+text = " FPS"
