@@ -8,13 +8,17 @@
 script = ExtResource("1_0faxq")
 
 [node name="StarBackground" type="Sprite2D" parent="."]
-position = Vector2(543, 354)
-scale = Vector2(0.234333, 0.234333)
+position = Vector2(18, -82)
+scale = Vector2(0.469708, 0.469708)
 texture = ExtResource("2_03gyf")
 
 [node name="Blocks" type="Node2D" parent="."]
 
-[node name="Player" parent="." instance=ExtResource("3_480aq")]
+[node name="Life" type="Node2D" parent="."]
+z_as_relative = false
+y_sort_enabled = true
+
+[node name="Player" parent="Life" instance=ExtResource("3_480aq")]
 
 [node name="UI" type="CanvasLayer" parent="."]
 

@@ -107,7 +107,7 @@ offset_bottom = 430.0
 
 [node name="worldsize" type="LineEdit" parent="DebugValue"]
 layout_mode = 2
-placeholder_text = "10"
+placeholder_text = "20"
 
 [node name="tilesize" type="LineEdit" parent="DebugValue"]
 layout_mode = 2

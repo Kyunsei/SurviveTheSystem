@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://xy6yvood6udx"]
+
+[ext_resource type="Script" path="res://Scenes/life_entity.gd" id="1_7foov"]
+
+[node name="Life" type="Sprite2D"]
+centered = false
+script = ExtResource("1_7foov")
