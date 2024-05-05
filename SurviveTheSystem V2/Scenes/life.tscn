@@ -5,3 +5,7 @@
 [node name="Life" type="Sprite2D"]
 centered = false
 script = ExtResource("1_7foov")
+
+[node name="Debug" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
