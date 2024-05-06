@@ -27,10 +27,12 @@ func setSprite():
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 	var posIndex = Life.world_matrix.find(INDEX)
 	var y = (floor(posIndex/World.world_size))*Life.life_size_unit
+	y= 0
 	$Sprite.texture = Life.Genome[genome_index]["sprite"][current_cycle]
 	$Sprite.offset.y = -1 * Life.Genome[genome_index]["sprite"][current_cycle].get_height()#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
-	global_position.y = y + Life.life_size_unit # Life.Genome[genome_index]["sprite"][current_cycle].get_height() #(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
-
+	#global_position.y += y + Life.life_size_unit # Life.Genome[genome_index]["sprite"][current_cycle].get_height() #(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+	AdjustPhysics()
+	
 func move():
 		var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 		var current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
@@ -56,3 +58,19 @@ func move():
 		apply_impulse(moveVector)
 		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
 		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
+
+func AdjustPhysics():
+	var width = $Sprite.texture.get_width()
+	var height = $Sprite.texture.get_height()	
+	var image_size = $Sprite.texture.get_size()
+	$Area2D/CollisionShape2D.shape.size = image_size
+	$Area2D/CollisionShape2D.position =  Vector2(width/2,-height/2)
+
+
+func _on_area_2d_area_entered(area):
+	if (area.name != "Player"):
+		var contact_index = area.get_parent().INDEX
+		Life.Eat(INDEX, contact_index)
+
+
+		

@@ -32,6 +32,7 @@ func _ready():
 func _process(delta):
 	$StarBackground.position = $Life/Player.position  #background follow player
 	$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
+	
 	var idx = Life.state_array.find(0)
 	if idx >= 0:
 		Life.InstantiateLife(idx,$Life)

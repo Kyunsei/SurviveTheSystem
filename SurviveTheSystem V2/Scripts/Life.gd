@@ -45,13 +45,13 @@ func InstantiateLife(INDEX,folder):
 func LifeLoopCPU2():
 	#this function is the main loop for life entities, will be move to GPU
 	for l in range(parameters_array.size()/ par_number):
-		if parameters_array[l*par_number] != -1:
-			
+		if parameters_array[l*par_number] != -1:			
 			TakeElement(l)
 			if isGrowthing(l):
 				Growth(l)
 			else:
-				Duplicate(l)
+				pass
+				#Duplicate(l)
 
 func LifeLoopCPU():
 	#this function is the main loop for life entities, will be move to GPU
@@ -67,12 +67,33 @@ func LifeLoopCPU():
 				Growth(l)
 			else:
 				Duplicate(l)
+				pass
 
 
 
 func TakeElement(INDEX):
-	parameters_array[INDEX*par_number+2] += min(1,World.element)
-	World.element -= min(1,World.element)
+	var genome_index = parameters_array[INDEX*par_number+0]
+	var current_cycle = parameters_array[INDEX*par_number+3]
+	var value = Genome[genome_index]["take_element"][current_cycle]
+	parameters_array[INDEX*par_number+2] += min(value,World.element)
+	World.element -= min(value,World.element)
+
+func Eat(INDEX,c_INDEX):
+	var c_genome_index = parameters_array[c_INDEX*par_number+0]
+	var genome_index = parameters_array[INDEX*par_number+0]
+	if genome_index != 0 and c_genome_index == 0:
+		#var genome_index = parameters_array[c_INDEX*par_number+0]
+		var current_cycle = parameters_array[c_INDEX*par_number+3]
+		var sum = 0
+		for i in range(current_cycle):
+			sum += Genome[c_genome_index]["lifecycle"][i]
+		parameters_array[INDEX*par_number+2] += parameters_array[c_INDEX*par_number+2]
+		parameters_array[INDEX*par_number+2] += sum
+		
+
+		parameters_array[c_INDEX*par_number+2] -= parameters_array[c_INDEX*par_number+2]
+		state_array[c_INDEX] = -1
+		pass
 
 func isGrowthing(INDEX):
 	var output = false
@@ -169,12 +190,14 @@ func Init_Genome():
 	Genome[0] = {
 		"sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
 		"lifecycle" : [2,4],
-		"movespeed" : [0,0]
+		"movespeed" : [0,0],
+		"take_element" :[1,1]
 	}
 	Genome[1] = {
 	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
 	"lifecycle" : [4,4,8],
-	"movespeed" : [0,1,1]
+	"movespeed" : [0,1,1],
+	"take_element" :[1,0,0]
 	}
 	pass
 	
