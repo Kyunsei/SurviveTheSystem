@@ -2,7 +2,7 @@ extends Node
 
 'This is the global Script for all the variable and function defining the world'
 
-var world_size = 20 #The size in tile of the World
+var world_size = 30 #The size in tile of the World
 var tile_size = 32 # the size in pixel of each tile
 
 var block_matrix_element = [] #1D matrix of the block composing the world

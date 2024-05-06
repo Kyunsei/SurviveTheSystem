@@ -7,12 +7,16 @@ extends Node2D
 func _ready():
 	Life.Init_matrix()
 	Life.Init_Genome()
+	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	for i in World.world_size:
 		for j in World.world_size:
 			World.InstantiateBlock(i,j,$Blocks)
-			if i == int(World.world_size/2) and j == int(World.world_size/2):
-				Life.BuildLife(i,j,0)
-				Life.BuildLife(i+2,j,1)
+			if i == 0 and j == 0:
+				Life.BuildLife(0,0,0)
+				pass
+			if i == int(World.world_size-1) and j == int(World.world_size-1):
+				Life.BuildLife(i,j,1)
+				pass
 			'if i == 1 and j == 5:
 				Life.world_matrix[i*World.world_size + j] = 1
 				Life.Init_Parameter(1,0)
@@ -32,7 +36,7 @@ func _ready():
 func _process(delta):
 	$StarBackground.position = $Life/Player.position  #background follow player
 	$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
-	
+
 	var idx = Life.state_array.find(0)
 	if idx >= 0:
 		Life.InstantiateLife(idx,$Life)
@@ -44,4 +48,5 @@ func _process(delta):
 
 func _on_life_timer_timeout():
 	Life.LifeLoopCPU() 
+	pass
 

@@ -14,10 +14,13 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 2] )
+	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 6] ) + " " + str (Life.parameters_array[INDEX*Life.par_number + 7] )
 	if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3]:
 		current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 		setSprite()
+	if Life.state_array[INDEX] <0 :
+		Life.RemoveLife(INDEX)
+		queue_free()
 	
 func _physics_process(delta):
 	move()
@@ -58,6 +61,8 @@ func move():
 		apply_impulse(moveVector)
 		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
 		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
+		Life.parameters_array[INDEX*Life.par_number+6] = int(position.y/Life.life_size_unit)
+		Life.parameters_array[INDEX*Life.par_number+7] = int(position.x/Life.life_size_unit)
 
 func AdjustPhysics():
 	var width = $Sprite.texture.get_width()
