@@ -92,18 +92,26 @@ offset_bottom = 224.0
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "World_size: "
+horizontal_alignment = 2
 
 [node name="Label2" type="Label" parent="DebugLabel"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "Tile_size: "
+horizontal_alignment = 2
+
+[node name="Label3" type="Label" parent="DebugLabel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Total Element: "
+horizontal_alignment = 2
 
 [node name="DebugValue" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 164.0
-offset_top = 227.0
-offset_right = 231.0
-offset_bottom = 430.0
+offset_left = 198.0
+offset_top = 225.0
+offset_right = 265.0
+offset_bottom = 428.0
 
 [node name="worldsize" type="LineEdit" parent="DebugValue"]
 layout_mode = 2
@@ -113,6 +121,11 @@ placeholder_text = "20"
 layout_mode = 2
 placeholder_text = "32"
 
+[node name="Total_Element" type="LineEdit" parent="DebugValue"]
+layout_mode = 2
+placeholder_text = "1000"
+
 [connection signal="pressed" from="Button_VBox/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="text_changed" from="DebugValue/worldsize" to="." method="_on_worldsize_text_changed"]
 [connection signal="text_changed" from="DebugValue/tilesize" to="." method="_on_tilesize_text_changed"]
+[connection signal="text_changed" from="DebugValue/Total_Element" to="." method="_on_total_element_text_changed"]

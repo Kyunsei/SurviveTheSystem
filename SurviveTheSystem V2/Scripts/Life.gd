@@ -8,7 +8,7 @@ var life_scene = load("res://Scenes/life.tscn") #load scene of block
 var parameters_array = [] 
 var state_array = [] 
 var world_matrix = []
-var par_number = 4 # Genome_ID, PV, Element, LifeCycle
+var par_number = 6 # Genome_ID, PV, Element, LifeCycle, DirectionX, DirectionY
 var Genome = {}
 
 func Init_matrix():
@@ -24,6 +24,8 @@ func Init_Parameter(INDEX,genome_index):
 	parameters_array[INDEX*par_number + 1] = 1 #PV
 	parameters_array[INDEX*par_number + 2] = 0 #ELEMENT
 	parameters_array[INDEX*par_number + 3] = 0 #LIFECYCLE
+	parameters_array[INDEX*par_number + 4] = 0 #DirectionX
+	parameters_array[INDEX*par_number + 5] = 0 #DirectionY
 
 func InstantiateLife(INDEX,folder):
 	var posIndex = world_matrix.find(INDEX)
@@ -44,6 +46,7 @@ func LifeLoopCPU2():
 	#this function is the main loop for life entities, will be move to GPU
 	for l in range(parameters_array.size()/ par_number):
 		if parameters_array[l*par_number] != -1:
+			
 			TakeElement(l)
 			if isGrowthing(l):
 				Growth(l)
@@ -58,6 +61,7 @@ func LifeLoopCPU():
 		l = temp.find(1)
 		if parameters_array[l*par_number] != -1:
 			temp[l] += 1
+			setDirection(l)
 			TakeElement(l)
 			if isGrowthing(l):
 				Growth(l)
@@ -106,8 +110,39 @@ func BuildLife(x,y,genome_index):
 	state_array[newindex] = 0
 
 
-
+func Move(INDEX):
+	var genome_index = parameters_array[INDEX*par_number+0]
+	var current_cycle = parameters_array[INDEX*par_number+3]
+	if Genome[genome_index]["movespeed"][current_cycle] > 0:
+		setDirection(INDEX)
+		var posIndex = world_matrix.find(INDEX)
+		var directionx = parameters_array[INDEX*par_number+4]
+		var directiony = parameters_array[INDEX*par_number+5]
+		var x = posIndex % (World.world_size*life_size_unit) 
+		var y = floor(posIndex/(World.world_size*life_size_unit))				
+		var newPosX =  x + Genome[genome_index]["movespeed"][current_cycle]*directionx
+		var newPosY =  y + Genome[genome_index]["movespeed"][current_cycle]*directiony
+		newPosX = max(0,newPosX)
+		newPosX = min(newPosX, World.world_size*life_size_unit)
+		newPosY = max(0,newPosY)
+		newPosY = min(newPosY, World.world_size*life_size_unit)
+		#world_matrix[posIndex] = -1
+		if y != newPosY or x != newPosX:
+			world_matrix[newPosX + newPosY*World.world_size] = INDEX
+			world_matrix[posIndex] = -1
 	
+
+func setDirection(INDEX):
+	var genome_index = parameters_array[INDEX*par_number+0]
+	var current_cycle = parameters_array[INDEX*par_number+3]
+	if Genome[genome_index]["movespeed"][current_cycle] > 0:
+		var rng = RandomNumberGenerator.new()
+		parameters_array[INDEX*par_number+4] =rng.randi_range(-1,1)
+		parameters_array[INDEX*par_number+5] =rng.randi_range(-1,1)
+	else:
+		parameters_array[INDEX*par_number+4] =0
+		parameters_array[INDEX*par_number+5] =0
+		
 	
 func RemoveInstance(INDEX):
 	pass
@@ -121,17 +156,25 @@ func PickRandomPlace():
 
 func PickRandomPlaceWithRange(centerx,centery,range):
 	var rng = RandomNumberGenerator.new()
-
 	var random_x = rng.randi_range(max(0,centerx-range),min(World.world_size*World.tile_size,centerx+range))
 	var random_y = rng.randi_range(max(0,centery-range),min(World.world_size*World.tile_size,centery+range))
-
 	return [random_x, random_y]
+
+
+
+
 
 func Init_Genome():
 	#This function create different life form
 	Genome[0] = {
 		"sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
-		"lifecycle" : [2,4]
+		"lifecycle" : [2,4],
+		"movespeed" : [0,0]
+	}
+	Genome[1] = {
+	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
+	"lifecycle" : [4,4,8],
+	"movespeed" : [0,1,1]
 	}
 	pass
 	

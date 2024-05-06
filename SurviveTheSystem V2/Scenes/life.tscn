@@ -1,10 +1,20 @@
-[gd_scene load_steps=2 format=3 uid="uid://xy6yvood6udx"]
+[gd_scene load_steps=3 format=3 uid="uid://xy6yvood6udx"]
 
-[ext_resource type="Script" path="res://Scenes/life_entity.gd" id="1_7foov"]
+[ext_resource type="Script" path="res://Scripts/life_entity.gd" id="1_p0lb2"]
 
-[node name="Life" type="Sprite2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3m57s"]
+
+[node name="Life" type="RigidBody2D"]
+collision_layer = 0
+collision_mask = 0
+gravity_scale = 0.0
+script = ExtResource("1_p0lb2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_3m57s")
+
+[node name="Sprite" type="Sprite2D" parent="."]
 centered = false
-script = ExtResource("1_7foov")
 
 [node name="Debug" type="Label" parent="."]
 offset_right = 40.0

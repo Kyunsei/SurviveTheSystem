@@ -12,6 +12,7 @@ func _ready():
 			World.InstantiateBlock(i,j,$Blocks)
 			if i == int(World.world_size/2) and j == int(World.world_size/2):
 				Life.BuildLife(i,j,0)
+				Life.BuildLife(i+2,j,1)
 			'if i == 1 and j == 5:
 				Life.world_matrix[i*World.world_size + j] = 1
 				Life.Init_Parameter(1,0)

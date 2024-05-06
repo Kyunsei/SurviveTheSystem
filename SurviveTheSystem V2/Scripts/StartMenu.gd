@@ -28,3 +28,8 @@ func _on_worldsize_text_changed(new_text):
 func _on_tilesize_text_changed(new_text):
 	if int(new_text) > 0:
 		World.tile_size = int(new_text)
+
+
+func _on_total_element_text_changed(new_text):
+	if int(new_text) > 0:
+		World.element = int(new_text) # Replace with function body.
