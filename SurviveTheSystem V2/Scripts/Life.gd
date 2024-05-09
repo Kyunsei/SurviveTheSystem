@@ -121,9 +121,6 @@ func Duplicate(INDEX):
 	if current_cycle+1 >=  Genome[genome_index]["lifecycle"].size():
 		if parameters_array[INDEX*par_number+2] >= Genome[genome_index]["lifecycle"][0]:
 			var newpos = PickRandomPlaceWithRange(x,y,3)
-			if genome_index == 1:
-				print(newpos)
-				print(x)
 			if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
 				parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0]
 				BuildLife(newpos[0],newpos[1],genome_index)
@@ -204,6 +201,13 @@ func Init_Genome():
 	"lifecycle" : [4,4,8],
 	"movespeed" : [0,1,1],
 	"take_element" :[1,0,0]
+	}
+	
+	Genome[2] = {
+	"sprite" : [load("res://Art/berry_1.png"),load("res://Art/berry_2.png"),load("res://Art/berry_3.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
+	"lifecycle" : [4,4,8,8,8],
+	"movespeed" : [0,0,0,0,0],
+	"take_element" :[1,1,1,1,1]
 	}
 	pass
 	
