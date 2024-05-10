@@ -7,6 +7,8 @@ var current_cycle = 0
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var rng = RandomNumberGenerator.new()
+	#position.x += rng.randi_range(-5,5)
+	#position.y += rng.randi_range(-5,5)
 	current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 	setSprite()
 	pass # Replace with function body.
@@ -14,12 +16,13 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 6] ) + " " + str (Life.parameters_array[INDEX*Life.par_number + 7] )
+	$Debug.text = str(INDEX)#str (Life.parameters_array[INDEX*Life.par_number + 6] ) #+ " " + str (Life.parameters_array[INDEX*Life.par_number + 7] )
 	if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3]:
 		current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 		setSprite()
-	if Life.state_array[INDEX] <0 :
-		Life.RemoveLife(INDEX)
+	if Life.state_array[INDEX] == -1 :
+		#Life.RemoveLife(INDEX)
+		#Life.state_array[INDEX] == -1
 		queue_free()
 	
 func _physics_process(delta):
@@ -32,6 +35,7 @@ func setSprite():
 	var y = (floor(posIndex/World.world_size))*Life.life_size_unit
 	y= 0
 	$Sprite.texture = Life.Genome[genome_index]["sprite"][current_cycle]
+	$Sprite.offset.x = -1 * (Life.Genome[genome_index]["sprite"][current_cycle].get_width()-Life.life_size_unit)/2#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 	$Sprite.offset.y = -1 * Life.Genome[genome_index]["sprite"][current_cycle].get_height()#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 	#global_position.y += y + Life.life_size_unit # Life.Genome[genome_index]["sprite"][current_cycle].get_height() #(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 	AdjustPhysics()
@@ -61,8 +65,9 @@ func move():
 		apply_impulse(moveVector)
 		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
 		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
-		Life.parameters_array[INDEX*Life.par_number+6] = int(position.y/Life.life_size_unit)
-		Life.parameters_array[INDEX*Life.par_number+7] = int(position.x/Life.life_size_unit)
+		
+		Life.parameters_array[INDEX*Life.par_number+6] = position.y #int(position.y/Life.life_size_unit)
+		Life.parameters_array[INDEX*Life.par_number+7] = position.x #int(position.x/Life.life_size_unit)
 
 func AdjustPhysics():
 	var width = $Sprite.texture.get_width()

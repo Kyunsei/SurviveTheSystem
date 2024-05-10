@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 var input_dir = Vector2.ZERO
-var speed = 400
+var speed = 200
 
 func _physics_process(delta):
 	input_dir = Vector2.ZERO
