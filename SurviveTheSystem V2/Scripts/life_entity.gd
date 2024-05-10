@@ -7,8 +7,8 @@ var current_cycle = 0
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var rng = RandomNumberGenerator.new()
-	#position.x += rng.randi_range(-5,5)
-	#position.y += rng.randi_range(-5,5)
+	#position.x += rng.randi_range(0,5)
+	#position.y += rng.randi_range(0,5)
 	current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 	setSprite()
 	pass # Replace with function body.
@@ -16,14 +16,14 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	$Debug.text = str(INDEX)#str (Life.parameters_array[INDEX*Life.par_number + 6] ) #+ " " + str (Life.parameters_array[INDEX*Life.par_number + 7] )
+	$Debug.text =  str (Life.parameters_array[INDEX*Life.par_number + 2] )
 	if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3]:
 		current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 		setSprite()
-	if Life.state_array[INDEX] == -1 :
+	'if Life.state_array[INDEX] == -1 :
 		#Life.RemoveLife(INDEX)
 		#Life.state_array[INDEX] == -1
-		queue_free()
+		queue_free()'
 	
 func _physics_process(delta):
 	move()
@@ -80,7 +80,7 @@ func AdjustPhysics():
 func _on_area_2d_area_entered(area):
 	if (area.name != "Player"):
 		var contact_index = area.get_parent().INDEX
-		Life.Eat(INDEX, contact_index)
+		#Life.Eat(INDEX, contact_index)
 
 
 		

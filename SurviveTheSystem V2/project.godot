@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 World="*res://Scripts/World.gd"
 Life="*res://Scripts/Life.gd"
 
+[display]
+
+window/size/mode=2
+
 [input]
 
 right={

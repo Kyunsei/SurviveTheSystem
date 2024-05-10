@@ -12,13 +12,13 @@ func _ready():
 		for j in World.world_size:
 			World.InstantiateBlock(i,j,$Blocks)
 			if i == 0 and j == 0:
-				Life.BuildLife(0,0,2)
+				Life.BuildLife(0,0,2,$Life)
 				pass
 			if i == int(World.world_size-1) and j == int(World.world_size-1):
-				Life.BuildLife(i,j,0)
+				Life.BuildLife(i,j,0,$Life)
 				pass
 			if i == int(World.world_size-1) and j == 0:
-				Life.BuildLife(i,j,0)
+				#Life.BuildLife(i,j,0,$Life)
 				pass
 			'if i == 1 and j == 5:
 				Life.world_matrix[i*World.world_size + j] = 1
@@ -40,16 +40,17 @@ func _process(delta):
 	$StarBackground.position = $Life/Player.position  #background follow player
 	$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
 
-	var idx = Life.state_array.find(0)
+	'var idx = Life.state_array.find(0)
 	if idx >= 0:
 		Life.InstantiateLife(idx,$Life)
-	pass
+		Life.InstantiateLife(idx)
+		pass'
 	
 	
 
 
 
 func _on_life_timer_timeout():
-	Life.LifeLoopCPU() 
+	Life.LifeLoopCPU($Life) 
 	pass
 

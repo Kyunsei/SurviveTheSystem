@@ -14,6 +14,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	$debug.text = str(Life.world_matrix[posindex])
 	if Life.world_matrix[posindex] == -1:
 		$ColorRect.hide()
 	else:

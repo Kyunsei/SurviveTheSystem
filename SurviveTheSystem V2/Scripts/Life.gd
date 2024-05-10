@@ -35,9 +35,9 @@ func Init_Parameter(INDEX,genome_index):
 	
 func InstantiateLife(INDEX,folder):
 	var posIndex = world_matrix.find(INDEX)
-	var x = (posIndex % World.world_size) *life_size_unit
-	var y = (floor(posIndex/World.world_size))*life_size_unit
-	state_array[INDEX] = 1
+	var x = parameters_array[INDEX*par_number + 6]
+	var y = parameters_array[INDEX*par_number + 7]
+	#state_array[INDEX] = 1
 	var genome_index = parameters_array[INDEX*par_number + 0]
 	#if isOnScreen(Life.Life_Matrix_PositionX[index],Life.Life_Matrix_PositionY[index]):
 	if x >= 0 and y >= 0 and x < World.world_size*life_size_unit and y < World.world_size*life_size_unit :
@@ -49,7 +49,7 @@ func InstantiateLife(INDEX,folder):
 
 
 
-func LifeLoopCPU():
+func LifeLoopCPU(folder):
 	#this function is the main loop for life entities, will be move to GPU
 	var temp = state_array.duplicate()
 
@@ -62,14 +62,18 @@ func LifeLoopCPU():
 			setDirection(l)
 			TakeElement(l)
 			PassiveHealing(l)
+			Hunger(l)
+			
 			if isGrowthing(l):
 				Growth(l)
-			else:
-				Duplicate(l)
-				pass	
-			#Hunger(l)
 			if isDead(l):
 				NaturalKill(l)
+				#RemoveLife(l,folder)
+			else:
+				Duplicate(l,folder)
+				pass	
+				pass
+	print(World.element)
 
 
 
@@ -103,7 +107,7 @@ func NaturalKill(INDEX):
 	for i in range(current_cycle+1):
 		sum += Genome[genome_index]["lifecycle"][i]		
 		World.element += sum
-	RemoveLife(INDEX)
+
 	
 
 func isDead(INDEX):
@@ -123,19 +127,22 @@ func TakeElement(INDEX):
 func Eat(INDEX,c_INDEX):
 	var c_genome_index = parameters_array[c_INDEX*par_number+0]
 	var genome_index = parameters_array[INDEX*par_number+0]
-	if genome_index != 0 and c_genome_index == 0:
+	var c_current_cycle = parameters_array[c_INDEX*par_number+3]
+	var current_cycle = parameters_array[INDEX*par_number+3]
+	#if genome_index != 0 and c_genome_index == 0:
+	if Genome[genome_index]["digestion"][current_cycle] == Genome[c_genome_index]["composition"][c_current_cycle]:
 		#var genome_index = parameters_array[c_INDEX*par_number+0]
-		var current_cycle = parameters_array[c_INDEX*par_number+3]
+
 		
 		var sum = 0
-		for i in range(current_cycle+1):
+		for i in range(c_current_cycle+1):
 			sum += Genome[c_genome_index]["lifecycle"][i]
 		parameters_array[INDEX*par_number+2] += parameters_array[c_INDEX*par_number+2]
 		parameters_array[INDEX*par_number+2] += sum
 		
 		parameters_array[c_INDEX*par_number+2] -= parameters_array[c_INDEX*par_number+2]
-		RemoveLife(c_INDEX)
-		#state_array[c_INDEX] = -1
+		#RemoveLife(c_INDEX,folder)
+		#state_array[c_INDEX] = -2
 		pass
 
 func isGrowthing(INDEX):
@@ -155,7 +162,7 @@ func Growth(INDEX):
 	parameters_array[INDEX*par_number+3] += 1
 	parameters_array[INDEX*par_number+1] = Genome[genome_index]["PV"][current_cycle+1]
 
-func Duplicate(INDEX):
+func Duplicate(INDEX,folder):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var current_cycle = parameters_array[INDEX*par_number+3]
 	var x = parameters_array[INDEX*par_number+6]
@@ -178,14 +185,16 @@ func Duplicate(INDEX):
 			var newpos = PickRandomPlaceWithRange(x,y,2)
 			if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
 				parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0]
-				BuildLife(newpos[0],newpos[1],genome_index)
+				BuildLife(newpos[0],newpos[1],genome_index,folder)
 
 
-func BuildLife(x,y,genome_index):
+
+func BuildLife(x,y,genome_index,folder):
 	var newindex = state_array.find(-1)
 	world_matrix[x*World.world_size + y] = newindex
 	Init_Parameter(newindex,genome_index)
-	state_array[newindex] = 0
+	state_array[newindex] = 1
+	InstantiateLife(newindex,folder)
 
 
 func Move(INDEX):
@@ -222,10 +231,12 @@ func setDirection(INDEX):
 		parameters_array[INDEX*par_number+5] =0
 		
 	
-func RemoveLife(INDEX):
+func RemoveLife(INDEX, folder):
 	var posindex = world_matrix.find(INDEX)
 	world_matrix[posindex] = -1
 	state_array[INDEX] = -1
+	if folder.has_node(str(INDEX)):
+		folder.get_node(str(INDEX)).queue_free()
 	
 func PickRandomPlace():
 	var rng = RandomNumberGenerator.new()
@@ -250,22 +261,28 @@ func Init_Genome():
 		"lifecycle" : [2,2],
 		"movespeed" : [0,0],
 		"take_element" :[3,3],
-		"PV":[5,5]
+		"PV":[5,5],
+		"composition": ["plant","plant"],
+		"digestion": ["nothing","nothing"]
 	}
 	Genome[1] = {
 	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
 	"lifecycle" : [4,4,8],
 	"movespeed" : [0,1,1],
 	"take_element" :[1,0,0],
-	"PV":[5,10,20]
+	"PV":[5,10,20],
+	"composition": ["meat","meat"],
+	"digestion": ["nothing","plant"]
 	}
 	
 	Genome[2] = {
-	"sprite" : [load("res://Art/berry_1.png"),load("res://Art/berry_3.png")],#,load("res://Art/berry_3.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
-	"lifecycle" : [2,2],#,2,2,2],
-	"movespeed" : [0,0],#0,0,0],
-	"take_element" :[3,3],#3,3,3],
-	"PV":[5,5]#,5,5,5]
+	"sprite" : [load("res://Art/berry_1.png"),load("res://Art/berry_3.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
+	"lifecycle" : [2,2,2,2],
+	"movespeed" : [0,0,0,0],
+	"take_element" :[3,3,3,3],
+	"PV":[5,5,5,5],
+	"composition": ["plant","plant","plant","plant"],
+	"digestion": ["nothing","nothing","nothing","nothing"]
 	}
 	pass
 	
