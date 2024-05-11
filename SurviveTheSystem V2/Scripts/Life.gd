@@ -317,7 +317,16 @@ func Init_Genome():
 	"composition": ["chitin"],
 	"digestion": ["meat"]
 	}
-	pass
 	
+	Genome[4] = {
+	"sprite" : [load("res://Art/seed_tree_radalyp_1.png"),load("res://Art/seed_tree_radalyp_2.png"),load("res://Art/seed_tree_radalyp_3.png")],
+	"action_sprite" : [load("res://Art/seed_tree_radalyp_1.png"),load("res://Art/seed_tree_radalyp_2.png"),load("res://Art/seed_tree_radalyp_3.png")],
+	"lifecycle" : [2,2,2],
+	"movespeed" : [0,0,0],
+	"take_element" :[5,5,5],
+	"PV":[500,500,500],
+	"composition": ["plant","plant","plant"],
+	"digestion": ["plant","plant","plant"]
+	}
 
 	

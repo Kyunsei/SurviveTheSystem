@@ -18,7 +18,7 @@ func _ready():
 				Life.BuildLife(i,j,0,$Life)
 				pass
 			if i == int(World.world_size-1) and j == 0:
-				#Life.BuildLife(i,j,1,$Life)
+				Life.BuildLife(i,j,4,$Life)
 				pass
 			'if i == 1 and j == 5:
 				Life.world_matrix[i*World.world_size + j] = 1
