@@ -7,7 +7,7 @@ var current_cycle = 0
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var rng = RandomNumberGenerator.new()
-	#position.x += rng.randi_range(0,5)
+	position.x += rng.randi_range(0,5)
 	#position.y += rng.randi_range(0,5)
 	current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 	setSprite()
@@ -16,17 +16,19 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	$Debug.text =  str (Life.parameters_array[INDEX*Life.par_number + 2] )
+	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (Life.parameters_array[INDEX*Life.par_number + 2] ) +" / " + str (Life.state_array[INDEX]) 
 	if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3]:
 		current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
-		setSprite()
+		if current_cycle >= 0:
+			setSprite()
 	'if Life.state_array[INDEX] == -1 :
 		#Life.RemoveLife(INDEX)
 		#Life.state_array[INDEX] == -1
 		queue_free()'
 	
 func _physics_process(delta):
-	move()
+	if current_cycle >= 0:
+		move()
 	
 	
 func setSprite():

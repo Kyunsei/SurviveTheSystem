@@ -18,7 +18,7 @@ func _ready():
 				Life.BuildLife(i,j,0,$Life)
 				pass
 			if i == int(World.world_size-1) and j == 0:
-				#Life.BuildLife(i,j,0,$Life)
+				Life.BuildLife(i,j,1,$Life)
 				pass
 			'if i == 1 and j == 5:
 				Life.world_matrix[i*World.world_size + j] = 1
@@ -39,7 +39,7 @@ func _ready():
 func _process(delta):
 	$StarBackground.position = $Life/Player.position  #background follow player
 	$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
-
+	$UI/Debug.text = "  " + str(World.element) + " element" #FPS
 	'var idx = Life.state_array.find(0)
 	if idx >= 0:
 		Life.InstantiateLife(idx,$Life)
