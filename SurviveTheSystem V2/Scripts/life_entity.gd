@@ -42,6 +42,19 @@ func setSprite():
 	#global_position.y += y + Life.life_size_unit # Life.Genome[genome_index]["sprite"][current_cycle].get_height() #(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 	AdjustPhysics()
 	
+func setActionSprite():
+	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
+	if Life.Genome[genome_index]["action_sprite"][current_cycle] != null:
+
+		var posIndex = Life.world_matrix.find(INDEX)
+		var y = (floor(posIndex/World.world_size))*Life.life_size_unit
+		y= 0
+		$Sprite.texture = Life.Genome[genome_index]["action_sprite"][current_cycle]
+		$Sprite.offset.x = -1 * (Life.Genome[genome_index]["action_sprite"][current_cycle].get_width()-Life.life_size_unit)/2#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+		$Sprite.offset.y = -1 * Life.Genome[genome_index]["action_sprite"][current_cycle].get_height()#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+		#global_position.y += y + Life.life_size_unit # Life.Genome[genome_index]["sprite"][current_cycle].get_height() #(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+		AdjustPhysics()
+	
 func move():
 		var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 		var current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
@@ -80,9 +93,21 @@ func AdjustPhysics():
 
 
 func _on_area_2d_area_entered(area):
-	if (area.name != "Player"):
+	if (area.name != "Player" and area.name != "Attaque" ):
+		print(area.name)
 		var contact_index = area.get_parent().INDEX
 		#Life.Eat(INDEX, contact_index)
 
 
 		
+
+
+func _on_area_2d_body_entered(body):
+	if (body.name == "Player"):
+		setActionSprite()
+ # Replace with function body.
+
+
+func _on_area_2d_body_exited(body):
+	if (body.name == "Player"):
+		setSprite() # Replace with function body.

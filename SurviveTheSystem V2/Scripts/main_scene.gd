@@ -12,13 +12,13 @@ func _ready():
 		for j in World.world_size:
 			World.InstantiateBlock(i,j,$Blocks)
 			if i == 0 and j == 0:
-				Life.BuildLife(0,0,2,$Life)
+				Life.BuildLife(0,0,3,$Life)
 				pass
 			if i == int(World.world_size-1) and j == int(World.world_size-1):
 				Life.BuildLife(i,j,0,$Life)
 				pass
 			if i == int(World.world_size-1) and j == 0:
-				Life.BuildLife(i,j,1,$Life)
+				#Life.BuildLife(i,j,1,$Life)
 				pass
 			'if i == 1 and j == 5:
 				Life.world_matrix[i*World.world_size + j] = 1
