@@ -7,7 +7,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_crftt"]
 resource_local_to_scene = true
 
-[node name="Life" type="RigidBody2D"]
+[node name="Life" type="RigidBody2D" groups=["Life"]]
 collision_layer = 0
 collision_mask = 0
 gravity_scale = 0.0
@@ -26,7 +26,7 @@ offset_bottom = 23.0
 
 [node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="."]
 
-[node name="Area2D" type="Area2D" parent="."]
+[node name="Area2D" type="Area2D" parent="." groups=["Life"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_crftt")

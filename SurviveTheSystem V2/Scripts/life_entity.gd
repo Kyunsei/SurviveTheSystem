@@ -16,6 +16,8 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if Life.parameters_array[INDEX*Life.par_number + 1] <= 0:
+		queue_free()
 	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (Life.parameters_array[INDEX*Life.par_number + 2] ) +" / " + str (Life.state_array[INDEX]) 
 	if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3]:
 		current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
@@ -93,9 +95,9 @@ func AdjustPhysics():
 
 
 func _on_area_2d_area_entered(area):
-	if (area.name != "Player" and area.name != "Attaque" ):
-		print(area.name)
-		var contact_index = area.get_parent().INDEX
+	if (area.name != "Player" or area.name != "Attaque" ):
+		pass
+		#var contact_index = area.get_parent().INDEX
 		#Life.Eat(INDEX, contact_index)
 
 

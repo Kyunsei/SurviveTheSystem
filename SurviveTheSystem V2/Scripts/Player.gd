@@ -27,11 +27,23 @@ func _physics_process(delta):
 func attaque(dir):
 		var new_atk = attaque_scene.instantiate()
 		new_atk.name = "Attaque"
+		if dir[0]>0:	
+			new_atk.position.x += 16 * dir[0]
+			new_atk.position.y -= 32 
+			new_atk.rotation = 90
+		if dir[0]<0:	
+			new_atk.position.x += 16 * dir[0]
+			new_atk.position.y -= 32 
+			new_atk.rotation = -90
+		if dir[1]>0:	
+			new_atk.position.x += 16 
+			new_atk.position.y += 0#32 * dir[0]
+			new_atk.rotation = 180
+		if dir[1]<0:	
+			new_atk.position.x += 16 * dir[0]
+			new_atk.position.y -= 64
+			new_atk.rotation = 0
 
-		new_atk.position.x += 32 * dir[0]
-		new_atk.rotation = 0
-		if dir[1] <0 :
-			new_atk.position.y += 64 * dir[1]
 		add_child(new_atk)
 		
 	
