@@ -138,6 +138,9 @@ func TakeElement(INDEX):
 
 
 
+func Action(INDEX):
+	pass
+
 func Eat(INDEX,c_INDEX):
 	var c_genome_index = parameters_array[c_INDEX*par_number+0]
 	var genome_index = parameters_array[INDEX*par_number+0]
@@ -274,6 +277,7 @@ func Init_Genome():
 	#This function create different life form
 	Genome[0] = {
 		"sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
+		"action_sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
 		"lifecycle" : [2,2],
 		"movespeed" : [0,0],
 		"take_element" :[3,3],
@@ -283,6 +287,7 @@ func Init_Genome():
 	}
 	Genome[1] = {
 	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
+	"action_sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
 	"lifecycle" : [4,4,8],
 	"movespeed" : [0,1,1],
 	"take_element" :[4,0,0],
@@ -293,12 +298,24 @@ func Init_Genome():
 	
 	Genome[2] = {
 	"sprite" : [load("res://Art/berry_1.png"),load("res://Art/berry_2.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
+	"action_sprite" :[load("res://Art/berry_1.png"),load("res://Art/berry_2.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
 	"lifecycle" : [2,2,4,4],
 	"movespeed" : [0,0,0,0],
 	"take_element" :[3,3,3,3],
 	"PV":[5,5,5,5],
 	"composition": ["plant","plant","plant","plant"],
 	"digestion": ["nothing","nothing","nothing","nothing"]
+	}
+	
+	Genome[3] = {
+	"sprite" : [load("res://Art/spider.png")],
+	"action_sprite" : [load("res://Art/spider_atk1.png")],
+	"lifecycle" : [10],
+	"movespeed" : [2],
+	"take_element" :[0],
+	"PV":[50],
+	"composition": ["chitin"],
+	"digestion": ["meat"]
 	}
 	pass
 	

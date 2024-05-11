@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://dvgvvt7cl7ihx"]
+
+[ext_resource type="Texture2D" uid="uid://lpmkccsxe7jh" path="res://Art/attaque.png" id="1_nntvf"]
+[ext_resource type="Script" path="res://Scripts/attaque.gd" id="1_nopaq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_m8y2g"]
+
+[node name="Attaque" type="Area2D"]
+script = ExtResource("1_nopaq")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_nntvf")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_m8y2g")
