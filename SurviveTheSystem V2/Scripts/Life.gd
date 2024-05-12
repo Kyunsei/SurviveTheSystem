@@ -8,11 +8,19 @@ var life_scene = load("res://Scenes/life.tscn") #load scene of block
 var parameters_array = [] 
 var state_array = [] 
 var world_matrix = []
-var par_number = 8 # Genome_ID, PV, Element, LifeCycle, DirectionX, DirectionY, positionX, positionnY
+var par_number = 9 # Genome_ID, PV, Element, LifeCycle, DirectionX, DirectionY, positionX, positionnY, current action
 var Genome = {}
 
+var plant_number = 0
 
-var number_plant = 0
+
+var action_list = {
+	"0" : "none",
+	"1" : "pick",
+	"2" : "drop",
+	"3" : "use"
+} 
+
 
 func Init_matrix():
 	parameters_array.resize(World.world_size*life_size_unit*World.world_size*life_size_unit*par_number)
@@ -35,9 +43,9 @@ func Init_Parameter(INDEX,genome_index):
 	parameters_array[INDEX*par_number + 5] = 0 #DirectionY
 	parameters_array[INDEX*par_number + 6] = x #PositionX
 	parameters_array[INDEX*par_number + 7] = y #PositionY
+	parameters_array[INDEX*par_number + 8] = 0 #current action
 	
-	if Genome[genome_index]["composition"][0] == "plant":
-		number_plant += 1
+	plant_number+=1
 	
 func InstantiateLife(INDEX,folder):
 	var posIndex = world_matrix.find(INDEX)
@@ -62,26 +70,33 @@ func LifeLoopCPU(folder):
 	var l = 0
 	while l != -1:
 		l = temp.find(1)
-		if parameters_array[l*par_number] != -1:
-			temp[l] += 1
-
-			setDirection(l)
-			TakeElement(l)
-			Metabocost(l)
-			PassiveHealing(l)
-			#Hunger(l)
-						
+		temp[l] += 1
+		if l >= 0:
+		#if parameters_array[l*par_number+0] != -1:
 			if isDead(l):
-				pass
+				
 				NaturalKill(l)
-				RemoveLife(l,folder)
-			
-			elif isGrowthing(l):
-				Growth(l)
 
 			else:
-				Duplicate(l,folder)
-				pass
+				setDirection(l)
+				TakeElement(l)
+				Metabocost(l)
+				PassiveHealing(l)
+				Hunger(l)
+							
+				if isGrowthing(l):
+					Growth(l)
+				else:
+					Duplicate(l,folder)
+					pass
+	
+	var temp2 = state_array.duplicate()
+	l = 0
+	while l != -1:
+		l = temp2.find(0)
+		temp2[l] += 1
+		if l >= 0:
+			RemoveLife(l,folder)
 
 
 
@@ -112,13 +127,11 @@ func Hunger(INDEX):
 func NaturalKill(INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var current_cycle = parameters_array[INDEX*par_number+3]
-	var sum = 0 + parameters_array[INDEX*par_number+2]
+	var sum = 0 + max(0,parameters_array[INDEX*par_number+2])
 	for i in range(current_cycle+1):
 		sum += Genome[genome_index]["lifecycle"][i]		
 	World.element += sum
-	if Genome[genome_index]["composition"][0] == "plant":
-		number_plant -= 1
-
+	state_array[INDEX] = 0
 
 	
 
@@ -133,8 +146,8 @@ func TakeElement(INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var current_cycle = parameters_array[INDEX*par_number+3]
 	var value = Genome[genome_index]["take_element"][current_cycle]
-	parameters_array[INDEX*par_number+2] += min(value,World.element)
-	World.element -= min(value,World.element)
+	parameters_array[INDEX*par_number+2] += min(value,World.element/plant_number)
+	World.element -= min(value,World.element/plant_number)
 
 
 
@@ -199,7 +212,7 @@ func Duplicate(INDEX,folder):
 				debug = debug + " " + str(parameters_array[INDEX*par_number+i])
 			print(debug)
 			print(x,0,y)'
-			var newpos = PickRandomPlaceWithRange(x,y,2)
+			var newpos = PickRandomPlaceWithRange(x,y,4)
 			if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
 				parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0]
 				BuildLife(newpos[0],newpos[1],genome_index,folder)
@@ -256,6 +269,7 @@ func RemoveLife(INDEX, folder):
 	state_array[INDEX] = -1
 	for p in range(par_number):
 		parameters_array[INDEX*par_number+p]=-1
+	plant_number -= 1
 	
 func PickRandomPlace():
 	var rng = RandomNumberGenerator.new()

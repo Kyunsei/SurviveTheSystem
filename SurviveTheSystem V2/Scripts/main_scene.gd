@@ -7,23 +7,24 @@ extends Node2D
 func _ready():
 	Life.Init_matrix()
 	Life.Init_Genome()
+	Item.Init_Item()
 	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	for i in World.world_size:
 		for j in World.world_size:
 			World.InstantiateBlock(i,j,$Blocks)
 			if i == 0 and j == 0:
-				Life.BuildLife(0,0,3,$Life)
+				#Life.BuildLife(0,0,3,$Life)
 				pass
 			if i == int(World.world_size-1) and j == int(World.world_size-1):
 				Life.BuildLife(i,j,0,$Life)
 				pass
 			if i == int(World.world_size-1) and j == 0:
-				Life.BuildLife(i,j,4,$Life)
+				Life.BuildLife(i,j,2,$Life)
 				pass
-			'if i == 1 and j == 5:
-				Life.world_matrix[i*World.world_size + j] = 1
-				Life.Init_Parameter(1,0)
-			if i == 7 and j == 15:
+			if i == 1 and j == 5:
+				Item.BuildItem(i,j,0,$Items)
+
+			'if i == 7 and j == 15:
 				Life.world_matrix[i*World.world_size + j] = 2
 				Life.Init_Parameter(2,0)							
 			if i == 10 and j == 13:

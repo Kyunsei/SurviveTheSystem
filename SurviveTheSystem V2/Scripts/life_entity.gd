@@ -3,6 +3,7 @@ extends RigidBody2D
 
 var INDEX = 0
 var current_cycle = 0
+var isEquipped = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -10,18 +11,21 @@ func _ready():
 	position.x += rng.randi_range(0,5)
 	#position.y += rng.randi_range(0,5)
 	current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
+
 	setSprite()
 	pass # Replace with function body.
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if Life.parameters_array[INDEX*Life.par_number + 1] <= 0:
-		queue_free()
+
+	'if Life.state_array[INDEX] < 0:
+		queue_free()'
 	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (Life.parameters_array[INDEX*Life.par_number + 2] ) +" / " + str (Life.state_array[INDEX]) 
-	if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3]:
+	if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3] and current_cycle >= 0 :
 		current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 		if current_cycle >= 0:
+
 			setSprite()
 	'if Life.state_array[INDEX] == -1 :
 		#Life.RemoveLife(INDEX)
@@ -34,10 +38,13 @@ func _physics_process(delta):
 	
 	
 func setSprite():
+
+
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 	var posIndex = Life.world_matrix.find(INDEX)
 	var y = (floor(posIndex/World.world_size))*Life.life_size_unit
 	y= 0
+
 	$Sprite.texture = Life.Genome[genome_index]["sprite"][current_cycle]
 	$Sprite.offset.x = -1 * (Life.Genome[genome_index]["sprite"][current_cycle].get_width()-Life.life_size_unit)/2#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 	$Sprite.offset.y = -1 * Life.Genome[genome_index]["sprite"][current_cycle].get_height()#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
@@ -104,12 +111,3 @@ func _on_area_2d_area_entered(area):
 		
 
 
-func _on_area_2d_body_entered(body):
-	if (body.name == "Player"):
-		setActionSprite()
- # Replace with function body.
-
-
-func _on_area_2d_body_exited(body):
-	if (body.name == "Player"):
-		setSprite() # Replace with function body.
