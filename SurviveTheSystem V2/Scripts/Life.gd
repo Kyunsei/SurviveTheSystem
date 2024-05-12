@@ -212,7 +212,7 @@ func Duplicate(INDEX,folder):
 				debug = debug + " " + str(parameters_array[INDEX*par_number+i])
 			print(debug)
 			print(x,0,y)'
-			var newpos = PickRandomPlaceWithRange(x,y,4)
+			var newpos = PickRandomPlaceWithRange(x,y,8)
 			if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
 				parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0]
 				BuildLife(newpos[0],newpos[1],genome_index,folder)
@@ -311,11 +311,11 @@ func Init_Genome():
 	}
 	
 	Genome[2] = {
-	"sprite" : [load("res://Art/berry_1.png"),load("res://Art/berry_2.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
+	"sprite" : [load("res://Art/berry_1.png"),load("res://Art/berry_3.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
 	"action_sprite" :[load("res://Art/berry_1.png"),load("res://Art/berry_2.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
-	"lifecycle" : [2,2,4,4],
+	"lifecycle" : [2,4,4,4],
 	"movespeed" : [0,0,0,0],
-	"take_element" :[3,3,3,3],
+	"take_element" :[3,4,5,6],
 	"PV":[5,5,5,5],
 	"composition": ["plant","plant","plant","plant"],
 	"digestion": ["nothing","nothing","nothing","nothing"]
@@ -335,10 +335,10 @@ func Init_Genome():
 	Genome[4] = {
 	"sprite" : [load("res://Art/seed_tree_radalyp_1.png"),load("res://Art/seed_tree_radalyp_2.png"),load("res://Art/seed_tree_radalyp_3.png")],
 	"action_sprite" : [load("res://Art/seed_tree_radalyp_1.png"),load("res://Art/seed_tree_radalyp_2.png"),load("res://Art/seed_tree_radalyp_3.png")],
-	"lifecycle" : [2,2,2],
+	"lifecycle" : [2,4,8],
 	"movespeed" : [0,0,0],
-	"take_element" :[5,5,5],
-	"PV":[500,500,500],
+	"take_element" :[5,8,10],
+	"PV":[5,30,50],
 	"composition": ["plant","plant","plant"],
 	"digestion": ["plant","plant","plant"]
 	}

@@ -11,7 +11,7 @@ var block_scene = load("res://Scenes/world_block.tscn") #load scene of block
 
 #different variable for the "element"
 #var max_element = 100 #max quantities
-var element = 100.0 #current value
+var element = 1000.0 #current value
 
 
 func Init_matrix():
