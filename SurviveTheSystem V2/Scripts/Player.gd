@@ -38,8 +38,10 @@ func _input(event):
 	if event.is_action_pressed("interact"):
 		current_action = 1
 		Interact()
+		#World.element += 50
 	if event.is_action_pressed("drop"):
 		current_action = 2
+		#World.element -= 10
 		Drop()
 	'else:
 		current_action = 2'
@@ -74,6 +76,7 @@ func UseItem():
 func Interact():
 	if interact_with != null:
 		if interact_with.isEquipped == false:
+			Drop()
 			equipped_tool = interact_with
 			interact_with.isEquipped = true
 			interact_with.get_node("DebugRect").hide()		
