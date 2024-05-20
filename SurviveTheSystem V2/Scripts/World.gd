@@ -13,6 +13,8 @@ var block_scene = load("res://Scenes/world_block.tscn") #load scene of block
 #var max_element = 100 #max quantities
 var element = 1000.0 #current value
 
+var speed = 1.0
+
 
 func Init_matrix():
 	block_matrix_element.resize(world_size)

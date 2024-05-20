@@ -13,7 +13,7 @@ collision_mask = 0
 gravity_scale = 0.0
 script = ExtResource("1_p0lb2")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." groups=["Life"]]
 visible = false
 shape = SubResource("RectangleShape2D_fs48r")
 
@@ -24,11 +24,9 @@ centered = false
 offset_right = 40.0
 offset_bottom = 23.0
 
-[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="."]
-
 [node name="Area2D" type="Area2D" parent="." groups=["Life"]]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" groups=["Life"]]
 shape = SubResource("RectangleShape2D_crftt")
 
 [node name="DebugRect" type="ColorRect" parent="."]

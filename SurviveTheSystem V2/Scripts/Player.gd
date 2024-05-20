@@ -6,10 +6,15 @@ var speed = 300
 #var interact_array = []
 var interact_with = null
 var equipped_tool = null
-
+var INDEX = 0
+var maxEnergy = 100
 var current_action = 0
 
 var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
+
+func _process(delta):
+	speed = 300*World.speed
+	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) ) +" / " + str (Life.state_array[INDEX]) 
 
 func _physics_process(delta):
 	input_dir = Vector2.ZERO
@@ -75,12 +80,21 @@ func UseItem():
 	
 func Interact():
 	if interact_with != null:
-		if interact_with.isEquipped == false:
-			Drop()
-			equipped_tool = interact_with
-			interact_with.isEquipped = true
-			interact_with.get_node("DebugRect").hide()		
-		
+		if interact_with.is_in_group("Life") == false:
+			if interact_with.isEquipped == false:
+				Drop()
+				equipped_tool = interact_with
+				interact_with.isEquipped = true
+				interact_with.get_node("DebugRect").hide()	
+		if interact_with.is_in_group("Life") == true:
+				print("here")
+				if interact_with.isEquipped == false:
+					var interact_idx = interact_with.Interact()
+					if interact_idx == 1:
+						Drop()
+						equipped_tool = interact_with
+						interact_with.isEquipped = true
+						interact_with.get_node("DebugRect").hide()
 	'for i in interact_array:				
 	#	if i.is_in_group("Tool"):
 		if i.isEquipped == false:

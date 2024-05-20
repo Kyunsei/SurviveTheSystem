@@ -8,6 +8,7 @@ func _ready():
 	Life.Init_matrix()
 	Life.Init_Genome()
 	Item.Init_Item()
+	Life.BuildPlayer($Life)
 	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	for i in World.world_size:
 		for j in World.world_size:
@@ -52,9 +53,30 @@ func _process(delta):
 	
 	
 
-
+func UpdateSimulationSpeed():
+	$Life/LifeTimer.wait_time = 10.0 / World.speed
+	$Life/LifeTimer.start(0)
 
 func _on_life_timer_timeout():
 	Life.LifeLoopCPU($Life) 
 	pass
 
+
+
+func _on_speed_1_pressed():
+	World.speed = 1
+	UpdateSimulationSpeed() # Replace with function body.
+
+
+func _on_speed_10_pressed():
+	World.speed = 10
+	UpdateSimulationSpeed() # Replace with function body.
+
+ # Replace with function body.
+
+
+func _on_speed_100_pressed():
+	World.speed = 100
+	UpdateSimulationSpeed() # Replace with function body.
+
+ # Replace with function body.

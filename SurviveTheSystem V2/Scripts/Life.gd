@@ -65,6 +65,8 @@ func InstantiateLife(INDEX,folder):
 
 
 
+
+
 func LifeLoopCPU(folder):
 	#this function is the main loop for life entities, will be move to GPU
 	var temp = state_array.duplicate()
@@ -84,12 +86,12 @@ func LifeLoopCPU(folder):
 				Metabocost(l)
 				PassiveHealing(l)
 				Hunger(l)
-							
-				if isGrowthing(l):
-					Growth(l)
-				else:
-					Duplicate(l,folder)
-					pass
+				if l != 0: #player		
+					if isGrowthing(l):
+						Growth(l)
+					else:
+						Duplicate(l,folder)
+						pass
 	
 	var temp2 = state_array.duplicate()
 	l = 0
@@ -213,8 +215,8 @@ func Duplicate(INDEX,folder):
 	var x = (posIndex % World.world_size) 
 	var y = (floor(posIndex/World.world_size))'
 	if current_cycle+1 >=  Genome[genome_index]["lifecycle"].size():
-		if parameters_array[INDEX*par_number+2] >= Genome[genome_index]["lifecycle"][0]:
-			if parameters_array[INDEX*par_number+8] >= Genome[genome_index]["lifecycle_time"][0]*2: # *2 because give energy to new life
+		if parameters_array[INDEX*par_number+2] >= Genome[genome_index]["lifecycle"][0]*2:
+			if parameters_array[INDEX*par_number+8] >= Genome[genome_index]["lifecycle_time"][0]: # *2 because give energy to new life
 				'print("----------")
 				print(INDEX)
 				var debug = ""
@@ -239,6 +241,13 @@ func BuildLife(x,y,genome_index,folder):
 	state_array[newindex] = 1
 	InstantiateLife(newindex,folder)
 
+func BuildPlayer(folder):
+	var newindex = 0
+	Init_Parameter(newindex,3) 
+	parameters_array[newindex + 2] = 100
+	state_array[newindex] = 1
+
+	
 
 func Move(INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
@@ -296,8 +305,12 @@ func PickRandomPlaceWithRange(centerx,centery,range):
 	var random_y = rng.randi_range(max(0,centery-range),min(World.world_size-1,centery+range))
 	return [random_x, random_y]
 
-
-
+func TakeFruit(INDEX,INDEX2,folder):
+	var genome_index = parameters_array[INDEX*par_number+0]
+	var current_cycle = parameters_array[INDEX*par_number+3]
+	parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
+	BuildLife(0,0,genome_index,folder)
+	parameters_array[INDEX*par_number+8] = 0
 
 
 func Init_Genome():
@@ -311,7 +324,8 @@ func Init_Genome():
 		"movespeed" : [0,0],
 		"take_element" :[3,3],
 		"PV":[5,5],
-
+		"interaction": [1,0],
+		"use": [0,0],
 		"composition": ["plant","plant"],
 		"digestion": ["nothing","nothing"]
 	}
@@ -323,6 +337,8 @@ func Init_Genome():
 	"movespeed" : [0,1,1],
 	"take_element" :[4,0,0],
 	"PV":[5,30,50],
+	"interaction": [1,1,0],
+	"use": [1,0,0],
 	"metabospeed": [0,1,1],
 	"composition": ["meat","meat","meat"],
 	"digestion": ["Nothing","plant","plant"]
@@ -339,11 +355,28 @@ func Init_Genome():
 	"movespeed" : [0,0,0,0],
 	"take_element" :[3,4,5,6],
 	"PV":[5,5,5,5],
+	"interaction": [1,0,0,2],
+	"use": [1,0,0,2],
 	"composition": ["plant2","plant2","plant2","plant2"],
 	"digestion": ["nothing","nothing","nothing","nothing"]
 	}
 	
+	
 	Genome[3] = {
+		"sprite" : [load("res://Art/player_bulbi_scythe.png")],	
+		"lifecycle" : [20],
+		"lifecycle_time" : [0],
+		"metabospeed": [1],
+		"movespeed" : [0],
+		"take_element" :[0],
+		"PV":[100],
+		"interaction": [0],
+		"use": [0],
+		"composition": ["plant"],
+		"digestion": ["berry"]
+	}
+	
+	Genome[4] = {
 	"sprite" : [load("res://Art/spider.png")],
 	"action_sprite" : [load("res://Art/spider_atk1.png")],
 	"lifecycle" : [10],
@@ -354,7 +387,7 @@ func Init_Genome():
 	"digestion": ["meat"]
 	}
 	
-	Genome[4] = {
+	Genome[5] = {
 	"sprite" : [load("res://Art/seed_tree_radalyp_1.png"),load("res://Art/seed_tree_radalyp_2.png"),load("res://Art/seed_tree_radalyp_3.png")],
 	"action_sprite" : [load("res://Art/seed_tree_radalyp_1.png"),load("res://Art/seed_tree_radalyp_2.png"),load("res://Art/seed_tree_radalyp_3.png")],
 	"lifecycle" : [2,4,8],
@@ -364,5 +397,4 @@ func Init_Genome():
 	"composition": ["plant","plant","plant2"],
 	"digestion": ["nothing","nothing","nothing"]
 	}
-
 	

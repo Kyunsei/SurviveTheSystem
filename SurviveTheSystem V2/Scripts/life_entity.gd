@@ -85,7 +85,7 @@ func move():
 			linear_velocity = Vector2(0,0)
 			direction = Vector2(0,-1)
 					
-		moveVector = direction*Life.Genome[genome_index]["movespeed"][current_cycle]	
+		moveVector = direction*Life.Genome[genome_index]["movespeed"][current_cycle] *World.speed	
 		apply_impulse(moveVector)
 		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
 		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
@@ -107,6 +107,22 @@ func _on_area_2d_area_entered(area):
 		Life.Eat(INDEX, contact_index)
 
 
-		
+func ActivateItem():
+	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
+	var current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
+	if Life.Genome[genome_index]["use"][current_cycle] == 1: #EAT
+		Life.parameters_array[INDEX*Life.par_number+1] = 0
+		Life.parameters_array[INDEX*Life.par_number+2] = 0
+		Life.Eat(0,INDEX)
 
+func Interact():
+	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
+	var current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
+	if Life.Genome[genome_index]["interaction"][current_cycle] == 1:  #equip
+		print("equip")
+	if Life.Genome[genome_index]["interaction"][current_cycle] == 2: #take part
+		print("take fruit")
+		
+		Life.parameters_array[INDEX*Life.par_number + 3] -=1
+	return Life.Genome[genome_index]["interaction"][current_cycle]
 
