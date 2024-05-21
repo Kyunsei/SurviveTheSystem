@@ -42,7 +42,7 @@ func _input(event):
 		#attaque(input_dir)
 	if event.is_action_pressed("interact"):
 		current_action = 1
-		Interact()
+		Interact(self)
 		#World.element += 50
 	if event.is_action_pressed("drop"):
 		current_action = 2
@@ -78,7 +78,7 @@ func UseItem():
 		#if equipped_tool.is_in_group("Life") == false:
 			equipped_tool.ActivateItem()	
 	
-func Interact():
+func Interact(entity):
 	if interact_with != null:
 		if interact_with.is_in_group("Life") == false:
 			if interact_with.isEquipped == false:
@@ -89,12 +89,13 @@ func Interact():
 		if interact_with.is_in_group("Life") == true:
 				print("here")
 				if interact_with.isEquipped == false:
-					var interact_idx = interact_with.Interact()
+					var interact_idx = interact_with.Interact(entity)
 					if interact_idx == 1:
 						Drop()
 						equipped_tool = interact_with
 						interact_with.isEquipped = true
 						interact_with.get_node("DebugRect").hide()
+
 	'for i in interact_array:				
 	#	if i.is_in_group("Tool"):
 		if i.isEquipped == false:

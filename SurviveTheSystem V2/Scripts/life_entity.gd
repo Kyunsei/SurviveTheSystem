@@ -119,15 +119,20 @@ func ActivateItem():
 
 
 
-func Interact():
+func Interact(entity):
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 	var current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 	if Life.Genome[genome_index]["interaction"][current_cycle] == 1:  #equip
 		print("equip")
+		
 	if Life.Genome[genome_index]["interaction"][current_cycle] == 2: #take part
 		print("take fruit")
 		Life.parameters_array[INDEX*Life.par_number + 3] -=1
-		Life.BuildLife(0,0,genome_index,get_parent())
+		var x = int(Life.parameters_array[INDEX*Life.par_number + 6] / World.tile_size)
+		var y =int(Life.parameters_array[INDEX*Life.par_number + 7]  / World.tile_size)
+		var newindex = Life.BuildLife(x,y,genome_index,get_parent())
+		entity.interact_with = get_parent().get_node(str(newindex))
+		entity.Interact(entity)
 		
 	return Life.Genome[genome_index]["interaction"][current_cycle]
 

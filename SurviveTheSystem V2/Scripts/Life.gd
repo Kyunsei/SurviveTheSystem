@@ -248,6 +248,7 @@ func BuildLife(x,y,genome_index,folder):
 	Init_Parameter(newindex,genome_index)
 	state_array[newindex] = 1
 	InstantiateLife(newindex,folder)
+	return newindex
 
 func BuildPlayer(folder):
 	var newindex = 0
