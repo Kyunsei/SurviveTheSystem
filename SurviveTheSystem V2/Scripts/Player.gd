@@ -75,7 +75,7 @@ func attaque(dir):
 
 func UseItem():
 	if equipped_tool != null:
-		if equipped_tool.is_in_group("Life") == false:
+		#if equipped_tool.is_in_group("Life") == false:
 			equipped_tool.ActivateItem()	
 	
 func Interact():

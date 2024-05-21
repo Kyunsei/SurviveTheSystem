@@ -65,6 +65,14 @@ func InstantiateLife(INDEX,folder):
 
 
 
+func deleteLoopCPU(folder):
+	var temp = state_array.duplicate()
+	var l = 0
+	while l != -1:
+		l = temp.find(0)
+		temp[l] += 1
+		if l >= 0:
+			RemoveLife(l,folder)
 
 
 func LifeLoopCPU(folder):
@@ -319,8 +327,10 @@ func Init_Genome():
 		"sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
 		"action_sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
 		"lifecycle" : [2,2],
+		"childnumber" : [0,1],
 		"lifecycle_time" : [0,0],
 		"metabospeed": [1,1],
+		
 		"movespeed" : [0,0],
 		"take_element" :[3,3],
 		"PV":[5,5],
@@ -334,6 +344,7 @@ func Init_Genome():
 	"action_sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
 	"lifecycle" : [4,4,8],
 	"lifecycle_time" : [10,20,10],
+	"childnumber" : [0,0,5],
 	"movespeed" : [0,1,1],
 	"take_element" :[4,0,0],
 	"PV":[5,30,50],
@@ -350,22 +361,24 @@ func Init_Genome():
 	"sprite" : [load("res://Art/berry_1.png"),load("res://Art/berry_3.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
 	"action_sprite" :[load("res://Art/berry_1.png"),load("res://Art/berry_2.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
 	"lifecycle" : [2,2,4,4],
-	"lifecycle_time" : [100,20,0,0],
+	"lifecycle_time" : [0,10,0,0],
+	"childnumber" : [0,0,0,0],
 	"metabospeed": [0,1,1,1],
 	"movespeed" : [0,0,0,0],
 	"take_element" :[3,4,5,6],
 	"PV":[5,5,5,5],
 	"interaction": [1,0,0,2],
 	"use": [1,0,0,2],
-	"composition": ["plant2","plant2","plant2","plant2"],
+	"composition": ["berry","plant2","plant2","plant2"],
 	"digestion": ["nothing","nothing","nothing","nothing"]
 	}
 	
 	
 	Genome[3] = {
-		"sprite" : [load("res://Art/player_bulbi_scythe.png")],	
+		"sprite" : [load("res://Art/player_bulbi.png")],	
 		"lifecycle" : [20],
 		"lifecycle_time" : [0],
+		"childnumber" : [0],
 		"metabospeed": [1],
 		"movespeed" : [0],
 		"take_element" :[0],

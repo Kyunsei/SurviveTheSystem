@@ -50,7 +50,7 @@ func _process(delta):
 		Life.InstantiateLife(idx,$Life)
 		Life.InstantiateLife(idx)
 		pass'
-	
+	#Life.deleteLoopCPU($Life)
 	
 
 func UpdateSimulationSpeed():

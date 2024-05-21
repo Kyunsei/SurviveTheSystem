@@ -28,9 +28,9 @@ func _process(delta):
 
 			setSprite()
 	'if Life.state_array[INDEX] == -1 :
-		#Life.RemoveLife(INDEX)
-		#Life.state_array[INDEX] == -1
-		queue_free()'
+		#Life.RemoveLife(INDEX)'
+	if Life.state_array[INDEX] <= 0:
+		queue_free()
 	
 func _physics_process(delta):
 	if current_cycle >= 0:
@@ -108,12 +108,16 @@ func _on_area_2d_area_entered(area):
 
 
 func ActivateItem():
+	print("useLIFE")
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 	var current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 	if Life.Genome[genome_index]["use"][current_cycle] == 1: #EAT
-		Life.parameters_array[INDEX*Life.par_number+1] = 0
-		Life.parameters_array[INDEX*Life.par_number+2] = 0
+		'Life.parameters_array[INDEX*Life.par_number+1] = 0
+		Life.parameters_array[INDEX*Life.par_number+2] = 0'
 		Life.Eat(0,INDEX)
+		
+
+
 
 func Interact():
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
@@ -122,7 +126,8 @@ func Interact():
 		print("equip")
 	if Life.Genome[genome_index]["interaction"][current_cycle] == 2: #take part
 		print("take fruit")
-		
 		Life.parameters_array[INDEX*Life.par_number + 3] -=1
+		Life.BuildLife(0,0,genome_index,get_parent())
+		
 	return Life.Genome[genome_index]["interaction"][current_cycle]
 
