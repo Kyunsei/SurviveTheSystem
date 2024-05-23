@@ -34,6 +34,7 @@ func AdjustPhysics():
 func ActivateItem(user_index):
 	var iteminfo_index = Item.item_array[INDEX*Item.par_number + 0]
 	for i in interact_array:
+		print(i)
 		Life.parameters_array[i.INDEX*Life.par_number+1] -= Item.item_information[iteminfo_index]['value'][0]
 	
 

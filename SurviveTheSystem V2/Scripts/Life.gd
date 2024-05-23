@@ -384,7 +384,7 @@ func Init_Genome():
 	
 	Genome[3] = {
 		"sprite" : [load("res://Art/player_bulbi.png")],	
-		"lifecycle" : [2],
+		"lifecycle" : [10],
 		"lifecycle_time" : [0],
 		"childnumber" : [0],
 		"metabospeed": [1],
