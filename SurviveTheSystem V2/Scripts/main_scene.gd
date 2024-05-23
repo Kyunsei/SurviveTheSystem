@@ -2,14 +2,16 @@ extends Node2D
 
 'This Script is for the main game loop'
 
+var playerindex = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	Life.Init_matrix()
 	Life.Init_Genome()
 	Item.Init_Item()
-	Life.BuildPlayer($Life)
+	playerindex = Life.BuildPlayer($Life)
 	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+	$Life/Player.INDEX = playerindex
 	for i in World.world_size:
 		for j in World.world_size:
 			World.InstantiateBlock(i,j,$Blocks)
@@ -42,7 +44,10 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	$StarBackground.position = $Life/Player.position  #background follow player
+	if Life.state_array[playerindex] <= 0:
+		$UI/GameOverPanel.show()
+	if $Life/Player != null:
+		$StarBackground.position = $Life/Player.position  #background follow player
 	$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
 	$UI/Debug.text = "  " + str(Life.plant_number) + " plants " + str(World.element) + " element"
 	'var idx = Life.state_array.find(0)
@@ -62,6 +67,8 @@ func _on_life_timer_timeout():
 	pass
 
 
+func GameOver():
+	pass
 
 func _on_speed_1_pressed():
 	World.speed = 1
@@ -80,3 +87,16 @@ func _on_speed_100_pressed():
 	UpdateSimulationSpeed() # Replace with function body.
 
  # Replace with function body.
+
+
+func _on_button_restart_pressed():
+	pass # Replace with function body.
+	get_tree().change_scene_to_file("res://Scenes/start_menu.tscn")
+	#$UI/GameOverPanel.hide()
+	
+func _on_button_respawn_pressed():
+	var playerindex = Life.BuildPlayer($Life)
+	#$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+	$Life/Player.INDEX = playerindex # Replace with function body.
+	$Life/Player/Sprite2D.show()
+	$UI/GameOverPanel.hide()

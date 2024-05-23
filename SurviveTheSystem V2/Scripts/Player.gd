@@ -15,6 +15,11 @@ var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
 func _process(delta):
 	speed = 300*World.speed
 	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) ) +" / " + str (Life.state_array[INDEX]) 
+	if Life.state_array[INDEX] <= 0:
+		#queue_free()
+		$Sprite2D.hide()
+
+
 
 func _physics_process(delta):
 	input_dir = Vector2.ZERO

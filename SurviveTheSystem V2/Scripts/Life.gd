@@ -251,10 +251,14 @@ func BuildLife(x,y,genome_index,folder):
 	return newindex
 
 func BuildPlayer(folder):
-	var newindex = 0
+	var newindex = state_array.find(-1)
+	#var newindex = 0
+	#world_matrix[0*World.world_size + 0] = newindex
 	Init_Parameter(newindex,3) 
-	parameters_array[newindex + 2] = 100
+	#parameters_array[newindex + 2] = 100
+	#InstantiatePlayer(newindex,folder)
 	state_array[newindex] = 1
+	return newindex
 
 	
 
@@ -383,7 +387,7 @@ func Init_Genome():
 		"metabospeed": [1],
 		"movespeed" : [0],
 		"take_element" :[0],
-		"PV":[100],
+		"PV":[10],
 		"interaction": [0],
 		"use": [0],
 		"composition": ["plant"],
