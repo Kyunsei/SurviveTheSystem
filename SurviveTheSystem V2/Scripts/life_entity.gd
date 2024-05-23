@@ -107,14 +107,14 @@ func _on_area_2d_area_entered(area):
 		Life.Eat(INDEX, contact_index)
 
 
-func ActivateItem():
+func ActivateItem(user_index):
 	print("useLIFE")
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 	var current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 	if Life.Genome[genome_index]["use"][current_cycle] == 1: #EAT
 		'Life.parameters_array[INDEX*Life.par_number+1] = 0
 		Life.parameters_array[INDEX*Life.par_number+2] = 0'
-		Life.Eat(0,INDEX)
+		Life.Eat(user_index,INDEX)
 		
 
 

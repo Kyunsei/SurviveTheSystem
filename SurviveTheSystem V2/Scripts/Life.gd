@@ -222,8 +222,9 @@ func Duplicate(INDEX,folder):
 	'var posIndex = world_matrix.find(INDEX)
 	var x = (posIndex % World.world_size) 
 	var y = (floor(posIndex/World.world_size))'
-	if current_cycle+1 >=  Genome[genome_index]["lifecycle"].size():
-		if parameters_array[INDEX*par_number+2] >= Genome[genome_index]["lifecycle"][0]*2:
+	if Genome[genome_index]["childnumber"][current_cycle] > 0 :
+	#if current_cycle+1 >=  Genome[genome_index]["lifecycle"].size():
+		if parameters_array[INDEX*par_number+2] >= Genome[genome_index]["lifecycle"][0]*2*Genome[genome_index]["childnumber"][current_cycle]:
 			if parameters_array[INDEX*par_number+8] >= Genome[genome_index]["lifecycle_time"][0]: # *2 because give energy to new life
 				'print("----------")
 				print(INDEX)
@@ -232,11 +233,13 @@ func Duplicate(INDEX,folder):
 					debug = debug + " " + str(parameters_array[INDEX*par_number+i])
 				print(debug)
 				print(x,0,y)'
-				var newpos = PickRandomPlaceWithRange(x,y,8)
-				if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
-					parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
-					BuildLife(newpos[0],newpos[1],genome_index,folder)
-					parameters_array[INDEX*par_number+8] = 0
+
+				for i in range(Genome[genome_index]["childnumber"][current_cycle]):
+					var newpos = PickRandomPlaceWithRange(x,y,4)
+					if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
+						parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
+						BuildLife(newpos[0],newpos[1],genome_index,folder)
+						parameters_array[INDEX*par_number+8] = 0
 
 
 
@@ -381,7 +384,7 @@ func Init_Genome():
 	
 	Genome[3] = {
 		"sprite" : [load("res://Art/player_bulbi.png")],	
-		"lifecycle" : [20],
+		"lifecycle" : [2],
 		"lifecycle_time" : [0],
 		"childnumber" : [0],
 		"metabospeed": [1],
@@ -390,7 +393,7 @@ func Init_Genome():
 		"PV":[10],
 		"interaction": [0],
 		"use": [0],
-		"composition": ["plant"],
+		"composition": ["plant2"],
 		"digestion": ["berry"]
 	}
 	

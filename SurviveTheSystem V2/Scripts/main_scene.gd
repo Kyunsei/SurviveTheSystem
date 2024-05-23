@@ -95,7 +95,7 @@ func _on_button_restart_pressed():
 	#$UI/GameOverPanel.hide()
 	
 func _on_button_respawn_pressed():
-	var playerindex = Life.BuildPlayer($Life)
+	playerindex = Life.BuildPlayer($Life)
 	#$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	$Life/Player.INDEX = playerindex # Replace with function body.
 	$Life/Player/Sprite2D.show()

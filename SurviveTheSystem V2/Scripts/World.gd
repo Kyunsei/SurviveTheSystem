@@ -17,6 +17,7 @@ var speed = 1.0
 
 
 func Init_matrix():
+	element = 1000
 	block_matrix_element.resize(world_size)
 	block_matrix_element.fill(0)
 	
