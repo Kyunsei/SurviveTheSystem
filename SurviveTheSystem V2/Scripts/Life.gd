@@ -25,6 +25,7 @@ var action_list = {
 
 
 func Init_matrix():
+	plant_number = 0
 	parameters_array.resize(max_life*par_number)
 	parameters_array.fill(-1)
 	world_matrix.resize(World.world_size*World.world_size)
@@ -94,10 +95,10 @@ func LifeLoopCPU(folder):
 				Metabocost(l)
 				PassiveHealing(l)
 				Hunger(l)
-				if l != 0: #player		
-					if isGrowthing(l):
+				#if l != 0: #player		
+				if isGrowthing(l):
 						Growth(l)
-					else:
+				else:
 						Duplicate(l,folder)
 						pass
 	
@@ -163,9 +164,10 @@ func TakeElement(INDEX):
 
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var current_cycle = parameters_array[INDEX*par_number+3]
-	var value = Genome[genome_index]["take_element"][current_cycle] * Genome[genome_index]["metabospeed"][current_cycle]
-	parameters_array[INDEX*par_number+2] += min(value,World.element/plant_number)
-	World.element -= min(value,World.element/plant_number)
+	if parameters_array[INDEX*par_number+2] <= Genome[genome_index]["maxenergy"][current_cycle]:
+		var value = Genome[genome_index]["take_element"][current_cycle] * Genome[genome_index]["metabospeed"][current_cycle]
+		parameters_array[INDEX*par_number+2] += min(value,World.element/plant_number)
+		World.element -= min(value,World.element/plant_number)
 
 
 
@@ -177,20 +179,24 @@ func Eat(INDEX,c_INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var c_current_cycle = parameters_array[c_INDEX*par_number+3]
 	var current_cycle = parameters_array[INDEX*par_number+3]
+
+	
 	#if genome_index != 0 and c_genome_index == 0:
 	if Genome[genome_index]["digestion"][current_cycle] == Genome[c_genome_index]["composition"][c_current_cycle]:
+		if parameters_array[INDEX*par_number+2] < Genome[genome_index]["maxenergy"][current_cycle]:
 		#var genome_index = parameters_array[c_INDEX*par_number+0]		
-		var sum = 0
-		for i in range(c_current_cycle+1):
-			sum += Genome[c_genome_index]["lifecycle"][i]
-		parameters_array[INDEX*par_number+2] += parameters_array[c_INDEX*par_number+2]
-		parameters_array[INDEX*par_number+2] += sum
-		
-		parameters_array[c_INDEX*par_number+2] -= parameters_array[c_INDEX*par_number+2]
-		parameters_array[c_INDEX*par_number+1] = 0# parameters_array[c_INDEX*par_number+2]
-		#RemoveLife(c_INDEX,folder)
-		state_array[c_INDEX] = 0
-		pass
+			var sum = 0
+			for i in range(c_current_cycle+1):
+				sum += Genome[c_genome_index]["lifecycle"][i]
+			parameters_array[INDEX*par_number+2] += parameters_array[c_INDEX*par_number+2]
+			parameters_array[INDEX*par_number+2] += sum
+			
+			parameters_array[c_INDEX*par_number+2] -= parameters_array[c_INDEX*par_number+2]
+			parameters_array[c_INDEX*par_number+1] = 0# parameters_array[c_INDEX*par_number+2]
+			#RemoveLife(c_INDEX,folder)
+
+			state_array[c_INDEX] = 0
+			pass
 
 func isGrowthing(INDEX):
 	var output = false
@@ -334,10 +340,11 @@ func Init_Genome():
 	Genome[0] = {
 		"sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
 		"action_sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
-		"lifecycle" : [2,2],
+		"lifecycle" : [1,1],
 		"childnumber" : [0,1],
 		"lifecycle_time" : [0,0],
 		"metabospeed": [1,1],
+		"maxenergy": [2,2],
 		
 		"movespeed" : [0,0],
 		"take_element" :[3,3],
@@ -350,16 +357,17 @@ func Init_Genome():
 	Genome[1] = {
 	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
 	"action_sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
-	"lifecycle" : [4,4,8],
-	"lifecycle_time" : [10,20,10],
+	"lifecycle" : [10,10,20],
+	"lifecycle_time" : [50,50,40],
+	"maxenergy": [10,20,10*5*2],
 	"childnumber" : [0,0,5],
 	"movespeed" : [0,1,1],
-	"take_element" :[4,0,0],
-	"PV":[5,30,50],
+	"take_element" :[0,0,0],
+	"PV":[5,5,10],
 	"interaction": [1,1,0],
 	"use": [1,0,0],
 	"metabospeed": [0,1,1],
-	"composition": ["meat","meat","meat"],
+	"composition": ["plant","meat","meat"],
 	"digestion": ["Nothing","plant","plant"]
 	}
 	
@@ -374,6 +382,7 @@ func Init_Genome():
 	"metabospeed": [0,1,1,1],
 	"movespeed" : [0,0,0,0],
 	"take_element" :[3,4,5,6],
+	"maxenergy": [4,4,8,8],
 	"PV":[5,5,5,5],
 	"interaction": [1,0,0,2],
 	"use": [1,0,0,2],
@@ -390,10 +399,11 @@ func Init_Genome():
 		"metabospeed": [1],
 		"movespeed" : [0],
 		"take_element" :[0],
+		"maxenergy": [10],
 		"PV":[10],
 		"interaction": [0],
 		"use": [0],
-		"composition": ["plant2"],
+		"composition": ["meat2"],
 		"digestion": ["berry"]
 	}
 	
@@ -404,8 +414,12 @@ func Init_Genome():
 	"movespeed" : [2],
 	"take_element" :[0],
 	"PV":[50],
+	"lifecycle_time" : [0],
+	"childnumber" : [0],
+	"metabospeed": [0],
+	"maxenergy": [100],
 	"composition": ["chitin"],
-	"digestion": ["meat"]
+	"digestion": ["meat2"]
 	}
 	
 	Genome[5] = {

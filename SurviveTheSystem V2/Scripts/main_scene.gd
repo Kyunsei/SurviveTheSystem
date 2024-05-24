@@ -16,7 +16,7 @@ func _ready():
 		for j in World.world_size:
 			World.InstantiateBlock(i,j,$Blocks)
 			if i == 0 and j == 0:
-				#Life.BuildLife(i,j,4,$Life)
+				Life.BuildLife(i,j,4,$Life)
 				pass
 			if i == int(World.world_size-1) and j == int(World.world_size-1):
 				Life.BuildLife(i,j,0,$Life)

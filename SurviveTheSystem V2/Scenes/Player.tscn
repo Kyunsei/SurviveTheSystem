@@ -9,7 +9,7 @@ radius = 38.3275
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bmx3b"]
 size = Vector2(22, 24)
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["Life"]]
 script = ExtResource("1_s3cg0")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -22,9 +22,9 @@ offset = Vector2(0, -32)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
-[node name="Area2D" type="Area2D" parent="."]
+[node name="Area2D" type="Area2D" parent="." groups=["Life"]]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" groups=["Life"]]
 position = Vector2(0, -13)
 shape = SubResource("RectangleShape2D_bmx3b")
 

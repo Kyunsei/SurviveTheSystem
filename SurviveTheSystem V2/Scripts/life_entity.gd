@@ -104,7 +104,8 @@ func AdjustPhysics():
 func _on_area_2d_area_entered(area):
 	if area.is_in_group("Life"):
 		var contact_index = area.get_parent().INDEX
-		Life.Eat(INDEX, contact_index)
+		if Life.state_array[contact_index] > 0:
+			Life.Eat(INDEX, contact_index)
 
 
 func ActivateItem(user_index):
