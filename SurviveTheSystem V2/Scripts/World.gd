@@ -2,7 +2,7 @@ extends Node
 
 'This is the global Script for all the variable and function defining the world'
 
-var world_size = 20 #The size in tile of the World
+var world_size = 80 #The size in tile of the World
 var tile_size = 32 # the size in pixel of each tile
 
 var block_matrix_element = [] #1D matrix of the block composing the world
@@ -11,13 +11,13 @@ var block_scene = load("res://Scenes/world_block.tscn") #load scene of block
 
 #different variable for the "element"
 #var max_element = 100 #max quantities
-var element = 1000.0 #current value
+var element = 1500.0 #current value
 
-var speed = 1.0
+var speed = 5.0
 
 
 func Init_matrix():
-	element = 1000
+	element = 1500
 	block_matrix_element.resize(world_size)
 	block_matrix_element.fill(0)
 	

@@ -15,31 +15,18 @@ func _ready():
 	for i in World.world_size:
 		for j in World.world_size:
 			World.InstantiateBlock(i,j,$Blocks)
-			if i == 0 and j == 0:
-				Life.BuildLife(i,j,4,$Life)
-				pass
-			if i == int(World.world_size-1) and j == int(World.world_size-1):
-				Life.BuildLife(i,j,0,$Life)
-				pass
-			if i == int(World.world_size-1) and j == 0:
-				Life.BuildLife(i,j,2,$Life)
-				pass
-			if i == 1 and j == 5:
-				Item.BuildItem(i,j,0,$Items)
-			if i == int(World.world_size-1) and j == 10:
-				Life.BuildLife(i,j,1,$Life)
-				pass
 
-			'if i == 7 and j == 15:
-				Life.world_matrix[i*World.world_size + j] = 2
-				Life.Init_Parameter(2,0)							
-			if i == 10 and j == 13:
-				Life.world_matrix[i*World.world_size + j] = 3
-				Life.Init_Parameter(3,0)'	
-	#Life.InstantiateLife(0,$Life)
-	#Life.InstantiateLife(1,$Life)
-	#Life.InstantiateLife(2,$Life)
-	#Life.InstantiateLife(3,$Life)
+	Item.BuildItem(10,10,0,$Items)
+	
+	for n in range(100):
+		Life.BuildLifeAtRandomplace(0,1,$Life)
+	for n in range(10):
+		Life.BuildLifeAtRandomplace(1,2,$Life)
+	for n in range(5):
+		Life.BuildLifeAtRandomplace(2,2,$Life)
+	for n in range(1):
+		Life.BuildLifeAtRandomplace(4,0,$Life)
+
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -71,7 +58,7 @@ func GameOver():
 	pass
 
 func _on_speed_1_pressed():
-	World.speed = 1
+	World.speed = 5
 	UpdateSimulationSpeed() # Replace with function body.
 
 

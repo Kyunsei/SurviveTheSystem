@@ -13,7 +13,7 @@ var Genome = {}
 
 var plant_number = 0
 
-var max_life = 2000
+var max_life = 5000
 
 
 var action_list = {
@@ -249,6 +249,11 @@ func Duplicate(INDEX,folder):
 
 
 
+func BuildLifeAtRandomplace(genome_index,cycle,folder):
+	var newpos = PickRandomPlace()
+	if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
+		var idx = BuildLife(newpos[0],newpos[1],genome_index,folder)
+		parameters_array[idx*par_number + 3] = cycle
 
 
 func BuildLife(x,y,genome_index,folder):
@@ -317,8 +322,8 @@ func RemoveLife(INDEX, folder):
 	
 func PickRandomPlace():
 	var rng = RandomNumberGenerator.new()
-	var random_x = rng.randi_range(0,World.worldsize)
-	var random_y = rng.randi_range(0,World.worldsize)
+	var random_x = rng.randi_range(0,World.world_size-1)
+	var random_y = rng.randi_range(0,World.world_size-1)
 	return [random_x, random_y]
 
 func PickRandomPlaceWithRange(centerx,centery,range):
@@ -403,7 +408,7 @@ func Init_Genome():
 		"PV":[10],
 		"interaction": [0],
 		"use": [0],
-		"composition": ["meat2"],
+		"composition": ["meat"],
 		"digestion": ["berry"]
 	}
 	
@@ -419,7 +424,7 @@ func Init_Genome():
 	"metabospeed": [0],
 	"maxenergy": [100],
 	"composition": ["chitin"],
-	"digestion": ["meat2"]
+	"digestion": ["meat"]
 	}
 	
 	Genome[5] = {

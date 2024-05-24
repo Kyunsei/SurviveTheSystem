@@ -1,7 +1,8 @@
 extends CharacterBody2D
 
 var input_dir = Vector2.ZERO
-var speed = 300
+var basespeed = 100
+var speed = 100
 
 #var interact_array = []
 var interact_with = null
@@ -13,7 +14,7 @@ var current_action = 0
 var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
 
 func _process(delta):
-	speed = 300*World.speed
+	speed = basespeed*World.speed
 	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) ) +" / " + str (Life.state_array[INDEX]) 
 	if Life.state_array[INDEX] <= 0:
 		#queue_free()

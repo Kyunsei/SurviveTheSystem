@@ -80,7 +80,7 @@ text = "1x
 
 [node name="speed10" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
-text = "10x
+text = "2x
 "
 
 [node name="speed100" type="Button" parent="UI/speedContainer"]
