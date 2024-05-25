@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 World="*res://Scripts/World.gd"
 Life="*res://Scripts/Life.gd"
 Item="*res://Scripts/item.gd"
+Brain="*res://Scripts/brain.gd"
 
 [input]
 

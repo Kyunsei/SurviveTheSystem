@@ -48,6 +48,8 @@ func Init_Parameter(INDEX,genome_index):
 	parameters_array[INDEX*par_number + 7] = y #PositionY
 	parameters_array[INDEX*par_number + 8] = 0 #Age
 	
+
+	
 	plant_number+=1
 	
 func InstantiateLife(INDEX,folder):
@@ -90,7 +92,7 @@ func LifeLoopCPU(folder):
 				NaturalKill(l)
 			else:
 				GetOlder(l)
-				setDirection(l)
+
 				TakeElement(l)
 				Metabocost(l)
 				PassiveHealing(l)
@@ -276,40 +278,8 @@ func BuildPlayer(folder):
 
 	
 
-func Move(INDEX):
-	var genome_index = parameters_array[INDEX*par_number+0]
-	var current_cycle = parameters_array[INDEX*par_number+3]
-	if Genome[genome_index]["movespeed"][current_cycle] > 0:
-		setDirection(INDEX)
-		var posIndex = world_matrix.find(INDEX)
-		var directionx = parameters_array[INDEX*par_number+4]
-		var directiony = parameters_array[INDEX*par_number+5]
-		var x = posIndex % (World.world_size*life_size_unit) 
-		var y = floor(posIndex/(World.world_size*life_size_unit))				
-		var newPosX =  x + Genome[genome_index]["movespeed"][current_cycle]*directionx
-		var newPosY =  y + Genome[genome_index]["movespeed"][current_cycle]*directiony
-		newPosX = max(0,newPosX)
-		newPosX = min(newPosX, World.world_size*life_size_unit)
-		newPosY = max(0,newPosY)
-		newPosY = min(newPosY, World.world_size*life_size_unit)
-		#world_matrix[posIndex] = -1
-		if y != newPosY or x != newPosX:
-			world_matrix[newPosX + newPosY*World.world_size] = INDEX
-			world_matrix[posIndex] = -1
-	
 
-func setDirection(INDEX):
-	var genome_index = parameters_array[INDEX*par_number+0]
-	var current_cycle = parameters_array[INDEX*par_number+3]
-	if Genome[genome_index]["movespeed"][current_cycle] > 0:
-		var rng = RandomNumberGenerator.new()
-		parameters_array[INDEX*par_number+4] =rng.randi_range(-1,1)
-		parameters_array[INDEX*par_number+5] =rng.randi_range(-1,1)
-	else:
-		parameters_array[INDEX*par_number+4] =0
-		parameters_array[INDEX*par_number+5] =0
-		
-	
+
 func RemoveLife(INDEX, folder):
 	var posindex = world_matrix.find(INDEX)
 	if folder.has_node(str(INDEX)):
@@ -363,10 +333,10 @@ func Init_Genome():
 	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
 	"action_sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
 	"lifecycle" : [10,10,20],
-	"lifecycle_time" : [50,50,40],
+	"lifecycle_time" : [5,15,15],
 	"maxenergy": [10,20,10*5*2],
 	"childnumber" : [0,0,5],
-	"movespeed" : [0,1,1],
+	"movespeed" : [0,100,50],
 	"take_element" :[0,0,0],
 	"PV":[5,5,10],
 	"interaction": [1,1,0],
@@ -416,7 +386,7 @@ func Init_Genome():
 	"sprite" : [load("res://Art/spider.png")],
 	"action_sprite" : [load("res://Art/spider_atk1.png")],
 	"lifecycle" : [10],
-	"movespeed" : [2],
+	"movespeed" : [10],
 	"take_element" :[0],
 	"PV":[50],
 	"lifecycle_time" : [0],

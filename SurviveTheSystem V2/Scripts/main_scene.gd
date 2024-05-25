@@ -9,6 +9,7 @@ func _ready():
 	Life.Init_matrix()
 	Life.Init_Genome()
 	Item.Init_Item()
+	Brain.Init_Brain()
 	playerindex = Life.BuildPlayer($Life)
 	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	$Life/Player.INDEX = playerindex
@@ -20,9 +21,9 @@ func _ready():
 	
 	for n in range(100):
 		Life.BuildLifeAtRandomplace(0,1,$Life)
-	for n in range(10):
+	for n in range(1):
 		Life.BuildLifeAtRandomplace(1,2,$Life)
-	for n in range(5):
+	for n in range(15):
 		Life.BuildLifeAtRandomplace(2,2,$Life)
 	for n in range(1):
 		Life.BuildLifeAtRandomplace(4,0,$Life)
@@ -46,12 +47,18 @@ func _process(delta):
 	
 
 func UpdateSimulationSpeed():
-	$Life/LifeTimer.wait_time = 10.0 / World.speed
+	$Life/LifeTimer.wait_time = 5.0 / World.speed
 	$Life/LifeTimer.start(0)
+	
+	$Life/BrainTimer.wait_time = .5 / World.speed
+	$Life/BrainTimer.start(0)
 
 func _on_life_timer_timeout():
 	Life.LifeLoopCPU($Life) 
 	pass
+	
+func _on_brain_timer_timeout():
+	Brain.BrainLoopCPU($Life)
 
 
 func GameOver():
@@ -87,3 +94,5 @@ func _on_button_respawn_pressed():
 	$Life/Player.INDEX = playerindex # Replace with function body.
 	$Life/Player/Sprite2D.show()
 	$UI/GameOverPanel.hide()
+
+

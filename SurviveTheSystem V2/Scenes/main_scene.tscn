@@ -24,6 +24,10 @@ y_sort_enabled = true
 wait_time = 5.0
 autostart = true
 
+[node name="BrainTimer" type="Timer" parent="Life"]
+wait_time = 0.5
+autostart = true
+
 [node name="Items" type="Node2D" parent="."]
 
 [node name="UI" type="CanvasLayer" parent="."]
@@ -154,6 +158,7 @@ grow_vertical = 0
 text = "Respawn_Debug"
 
 [connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]
+[connection signal="timeout" from="Life/BrainTimer" to="." method="_on_brain_timer_timeout"]
 [connection signal="pressed" from="UI/speedContainer/speed1" to="." method="_on_speed_1_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed10" to="." method="_on_speed_10_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed100" to="." method="_on_speed_100_pressed"]

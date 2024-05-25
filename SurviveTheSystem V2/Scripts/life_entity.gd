@@ -1,12 +1,14 @@
-extends RigidBody2D
+extends CharacterBody2D
 
 
 var INDEX = 0
 var current_cycle = 0
 var isEquipped = false
+var vision_array = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	
 	var rng = RandomNumberGenerator.new()
 	position.x += rng.randi_range(0,5)
 	#position.y += rng.randi_range(0,5)
@@ -21,7 +23,7 @@ func _process(delta):
 
 	'if Life.state_array[INDEX] < 0:
 		queue_free()'
-	$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) ) +" / " + str (Life.state_array[INDEX]) 
+	$Debug.text =   str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
 	if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3] and current_cycle >= 0 :
 		current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 		if current_cycle >= 0:
@@ -33,8 +35,8 @@ func _process(delta):
 		queue_free()
 	
 func _physics_process(delta):
-	if current_cycle >= 0:
-		move()
+	if Brain.state_array[INDEX] > 0:
+		move(delta)
 	
 	
 func setSprite():
@@ -50,6 +52,8 @@ func setSprite():
 	$Sprite.offset.y = -1 * Life.Genome[genome_index]["sprite"][current_cycle].get_height()#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 	#global_position.y += y + Life.life_size_unit # Life.Genome[genome_index]["sprite"][current_cycle].get_height() #(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 	AdjustPhysics()
+	if Life.Genome[genome_index]["movespeed"][current_cycle]> 0:
+		Brain.state_array[INDEX] = 1
 	
 func setActionSprite():
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
@@ -64,29 +68,30 @@ func setActionSprite():
 		#global_position.y += y + Life.life_size_unit # Life.Genome[genome_index]["sprite"][current_cycle].get_height() #(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 		AdjustPhysics()
 	
-func move():
+func move(delta):
 		var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 		var current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 		var directionx = Life.parameters_array[INDEX*Life.par_number+4]
 		var directiony = Life.parameters_array[INDEX*Life.par_number+5]
 		var direction = Vector2(directionx,directiony)
-		var moveVector = Vector2(0,0)
+		velocity = Vector2(0,0)
 		#var speed = parameters.moveSpeed * World.World_Speed
 		if global_position.x <= 0:
-			linear_velocity = Vector2(0,0)
+			velocity = Vector2(0,0)
 			direction = Vector2(1,0)
 		if global_position.x >= World.world_size *World.tile_size:
-			linear_velocity = Vector2(0,0)
+			velocity = Vector2(0,0)
 			direction = Vector2(-1,0)
 		if global_position.y <= 0:
-			linear_velocity = Vector2(0,0)
+			velocity = Vector2(0,0)
 			direction = Vector2(0,1)
 		if global_position.y >= World.world_size *World.tile_size :
-			linear_velocity = Vector2(0,0)
+			velocity = Vector2(0,0)
 			direction = Vector2(0,-1)
 					
-		moveVector = direction*Life.Genome[genome_index]["movespeed"][current_cycle] *World.speed	
-		apply_impulse(moveVector)
+		velocity = direction*Life.Genome[genome_index]["movespeed"][current_cycle] *World.speed	
+		#apply_impulse(moveVector)
+		move_and_collide(velocity *delta)
 		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
 		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
 		
@@ -99,6 +104,7 @@ func AdjustPhysics():
 	var image_size = $Sprite.texture.get_size()
 	$Area2D/CollisionShape2D.shape.size = image_size
 	$Area2D/CollisionShape2D.position =  Vector2(width/2,-height/2)
+
 
 
 func _on_area_2d_area_entered(area):
@@ -137,3 +143,12 @@ func Interact(entity):
 		
 	return Life.Genome[genome_index]["interaction"][current_cycle]
 
+
+
+func _on_vision_area_entered(area):
+	if area.is_in_group("Life"):
+		vision_array.append(area.get_parent()) 
+		
+func _on_vision_area_exited(area):
+	if area.is_in_group("Life"):
+		vision_array.erase(area.get_parent()) 

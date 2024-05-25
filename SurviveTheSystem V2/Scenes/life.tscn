@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://xy6yvood6udx"]
+[gd_scene load_steps=5 format=3 uid="uid://xy6yvood6udx"]
 
 [ext_resource type="Script" path="res://Scripts/life_entity.gd" id="1_p0lb2"]
 
@@ -7,10 +7,12 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_crftt"]
 resource_local_to_scene = true
 
-[node name="Life" type="RigidBody2D" groups=["Life"]]
+[sub_resource type="CircleShape2D" id="CircleShape2D_550om"]
+radius = 3381.37
+
+[node name="Life" type="CharacterBody2D" groups=["Life"]]
 collision_layer = 0
 collision_mask = 0
-gravity_scale = 0.0
 script = ExtResource("1_p0lb2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." groups=["Life"]]
@@ -43,6 +45,13 @@ offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Vision" type="Area2D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Vision"]
+shape = SubResource("CircleShape2D_550om")
+debug_color = Color(0.34902, 0.505882, 0.937255, 0.176471)
+
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
-[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
-[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="area_entered" from="Vision" to="." method="_on_vision_area_entered"]
+[connection signal="area_exited" from="Vision" to="." method="_on_vision_area_exited"]
