@@ -3,6 +3,7 @@ extends Node
 
 var all_life = null
 var state_array = []
+var action_array = [] # 0:idle, 1:food
 
 func BrainLoopCPU(folder):
 	all_life = folder.get_children()
@@ -14,14 +15,22 @@ func BrainLoopCPU(folder):
 			temp[l] += 1
 			if l > 0:
 				#setDirection(l)
-				goToClosest(l,folder)
+				if isHungry(l):
+					setAction(l,1)
+				if isFull(l):
+					setAction(l,0)
+					
+				DoAction(l,folder)
+
 
 
 func Init_Brain():
 	state_array.resize(Life.max_life)
 	state_array.fill(-1)
+	action_array.resize(Life.max_life)
+	action_array.fill(-1)	
 	
-func setDirection(INDEX):
+func setRandomDirection(INDEX):
 	var genome_index = Life.parameters_array[INDEX*Life.par_number+0]
 	var current_cycle = Life.parameters_array[INDEX*Life.par_number+3]
 	if Life.Genome[genome_index]["movespeed"][current_cycle] > 0:
@@ -32,25 +41,54 @@ func setDirection(INDEX):
 		Life.parameters_array[INDEX*Life.par_number+4] =0
 		Life.parameters_array[INDEX*Life.par_number+5] =0
 
-func goToClosest(INDEX,folder):
-
-	var direction = Vector2(0,0)
+func goToClosestFood(INDEX,folder):
+	var genome_index = Life.parameters_array[INDEX*Life.par_number+0]
+	var current_cycle = Life.parameters_array[INDEX*Life.par_number+3]
+	var rng = RandomNumberGenerator.new()
+	var direction = Vector2(rng.randi_range(-1,1),rng.randi_range(-1,1))
 	if folder.has_node(str(INDEX)):
 		var entity_active = folder.get_node(str(INDEX))
-		var rangeofview = 40*World.tile_size
-		
+		var rangeofview = 40*World.tile_size		
 		for life in entity_active.vision_array:
 			if life.is_in_group("Life") and life.name != str(INDEX):	
 				var t_index = int(str(life.name))
-				if Life.parameters_array[t_index*Life.par_number] == 3:
-					var distance = entity_active.position.distance_to(life.position)
-					if distance < rangeofview:
-						rangeofview = distance
-						direction = (life.position - entity_active.position).normalized()
-						
-					
+				if Life.state_array[t_index]>0:
+					var t_genome_index = Life.parameters_array[t_index*Life.par_number]
+					var t_current_cycle = Life.parameters_array[t_index*Life.par_number+3]
+					if Life.Genome[t_genome_index]["composition"][t_current_cycle] == Life.Genome[genome_index]["digestion"][current_cycle] :
+						var distance = entity_active.position.distance_to(life.position)
+						if distance < rangeofview:
+							rangeofview = distance
+							direction = (life.position - entity_active.position).normalized()
+												
 		Life.parameters_array[INDEX*Life.par_number + 4] = direction.x
 		Life.parameters_array[INDEX*Life.par_number + 5] =  direction.y
+
+func isHungry(INDEX):
+	var genome_index = Life.parameters_array[INDEX*Life.par_number+0]
+	var current_cycle = Life.parameters_array[INDEX*Life.par_number+3]
+	if Life.parameters_array[INDEX*Life.par_number+2] < Life.Genome[genome_index]["maxenergy"][current_cycle]/2:
+		return true
+	else:
+		return false
+		
+func isFull(INDEX):
+	var genome_index = Life.parameters_array[INDEX*Life.par_number+0]
+	var current_cycle = Life.parameters_array[INDEX*Life.par_number+3]
+	if Life.parameters_array[INDEX*Life.par_number+2] >= Life.Genome[genome_index]["maxenergy"][current_cycle]:
+		return true
+	else:
+		return false
+
+func setAction(INDEX,action):
+	action_array[INDEX]=action
+
+
+func DoAction(INDEX,folder):
+	if action_array[INDEX]== 1:
+		goToClosestFood(INDEX,folder)
+	if action_array[INDEX]== 0:
+		setRandomDirection(INDEX)
 
 
 'func Move(INDEX):

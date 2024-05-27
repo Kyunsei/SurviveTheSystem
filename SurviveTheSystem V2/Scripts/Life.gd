@@ -286,6 +286,7 @@ func RemoveLife(INDEX, folder):
 		folder.get_node(str(INDEX)).queue_free()
 	world_matrix[posindex] = -1
 	state_array[INDEX] = -1
+	Brain.state_array[INDEX] = -1
 	for p in range(par_number):
 		parameters_array[INDEX*par_number+p]=-1
 	plant_number -= 1
@@ -314,12 +315,13 @@ func Init_Genome():
 	#This function create different life form
 	Genome[0] = {
 		"sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
-		"action_sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
+		"dead_sprite" : [load("res://Art/grass_dead.png"),load("res://Art/grass_dead.png")],
 		"lifecycle" : [1,1],
 		"childnumber" : [0,1],
 		"lifecycle_time" : [0,0],
 		"metabospeed": [1,1],
 		"maxenergy": [2,2],
+		
 		
 		"movespeed" : [0,0],
 		"take_element" :[3,3],
@@ -327,30 +329,33 @@ func Init_Genome():
 		"interaction": [1,0],
 		"use": [0,0],
 		"composition": ["plant","plant"],
-		"digestion": ["nothing","nothing"]
+		"digestion": ["nothing","nothing"],
+		
+		"category":[0,0]
 	}
 	Genome[1] = {
 	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
-	"action_sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
+	"dead_sprite" : [load("res://Art/sheep_dead1.png"),load("res://Art/sheep_dead2.png"),load("res://Art/sheep_dead3.png")],
 	"lifecycle" : [10,10,20],
-	"lifecycle_time" : [5,15,15],
+	"lifecycle_time" : [5,15,30],
 	"maxenergy": [10,20,10*5*2],
 	"childnumber" : [0,0,5],
-	"movespeed" : [0,100,50],
+	"movespeed" : [0,70,50],
 	"take_element" :[0,0,0],
 	"PV":[5,5,10],
 	"interaction": [1,1,0],
 	"use": [1,0,0],
 	"metabospeed": [0,1,1],
-	"composition": ["plant","meat","meat"],
-	"digestion": ["Nothing","plant","plant"]
+	"composition": ["plant2","meat","meat"],
+	"digestion": ["Nothing","plant","plant"],
+	"category":[0,1,2]
 	}
 	
 	
 	
 	Genome[2] = {
 	"sprite" : [load("res://Art/berry_1.png"),load("res://Art/berry_3.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
-	"action_sprite" :[load("res://Art/berry_1.png"),load("res://Art/berry_2.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
+	"dead_sprite" :[load("res://Art/berry_dead.png"),load("res://Art/berry_dead.png"),load("res://Art/berry_dead.png"),load("res://Art/berry_dead.png")],
 	"lifecycle" : [2,2,4,4],
 	"lifecycle_time" : [0,10,0,0],
 	"childnumber" : [0,0,0,0],
@@ -362,12 +367,14 @@ func Init_Genome():
 	"interaction": [1,0,0,2],
 	"use": [1,0,0,2],
 	"composition": ["berry","plant2","plant2","plant2"],
-	"digestion": ["nothing","nothing","nothing","nothing"]
+	"digestion": ["nothing","nothing","nothing","nothing"],
+	"category":[3,3,3]
 	}
 	
 	
 	Genome[3] = {
-		"sprite" : [load("res://Art/player_bulbi.png")],	
+		"sprite" : [load("res://Art/player_bulbi.png")],
+		"dead_sprite" : [load("res://Art/player_bulbi.png")],	
 		"lifecycle" : [10],
 		"lifecycle_time" : [0],
 		"childnumber" : [0],
@@ -379,11 +386,13 @@ func Init_Genome():
 		"interaction": [0],
 		"use": [0],
 		"composition": ["meat"],
-		"digestion": ["berry"]
+		"digestion": ["berry"],
+		"category":[2]
 	}
 	
 	Genome[4] = {
 	"sprite" : [load("res://Art/spider.png")],
+	"dead_sprite" : [load("res://Art/spider_dead.png")],
 	"action_sprite" : [load("res://Art/spider_atk1.png")],
 	"lifecycle" : [10],
 	"movespeed" : [10],
@@ -394,7 +403,8 @@ func Init_Genome():
 	"metabospeed": [0],
 	"maxenergy": [100],
 	"composition": ["chitin"],
-	"digestion": ["meat"]
+	"digestion": ["meat"],
+	"category":[4]
 	}
 	
 	Genome[5] = {

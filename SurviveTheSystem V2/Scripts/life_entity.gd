@@ -23,14 +23,15 @@ func _process(delta):
 
 	'if Life.state_array[INDEX] < 0:
 		queue_free()'
-	$Debug.text =   str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
-	if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3] and current_cycle >= 0 :
-		current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
-		if current_cycle >= 0:
-
-			setSprite()
-	'if Life.state_array[INDEX] == -1 :
-		#Life.RemoveLife(INDEX)'
+	if Life.state_array[INDEX] > 0:
+		$Debug.text =   str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
+		if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3] and current_cycle >= 0 :
+			current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
+			if current_cycle >= 0:
+				setSprite()
+		if Life.parameters_array[INDEX*Life.par_number+1] <= 0 :
+				setDeadSprite()
+			#Life.RemoveLife(INDEX)'
 	if Life.state_array[INDEX] <= 0:
 		queue_free()
 	
@@ -40,8 +41,6 @@ func _physics_process(delta):
 	
 	
 func setSprite():
-
-
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 	var posIndex = Life.world_matrix.find(INDEX)
 	var y = (floor(posIndex/World.world_size))*Life.life_size_unit
@@ -54,7 +53,21 @@ func setSprite():
 	AdjustPhysics()
 	if Life.Genome[genome_index]["movespeed"][current_cycle]> 0:
 		Brain.state_array[INDEX] = 1
+
+func setDeadSprite():
+	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
+	var posIndex = Life.world_matrix.find(INDEX)
+	var y = (floor(posIndex/World.world_size))*Life.life_size_unit
+	y= 0
+	$Sprite.texture = Life.Genome[genome_index]["dead_sprite"][current_cycle]
+	$Sprite.offset.x = -1 * (Life.Genome[genome_index]["dead_sprite"][current_cycle].get_width()-Life.life_size_unit)/2#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+	$Sprite.offset.y = -1 * Life.Genome[genome_index]["dead_sprite"][current_cycle].get_height()#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+	#global_position.y += y + Life.life_size_unit # Life.Genome[genome_index]["sprite"][current_cycle].get_height() #(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+	AdjustPhysics()
+	Brain.state_array[INDEX] = 0
 	
+
+
 func setActionSprite():
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 	if Life.Genome[genome_index]["action_sprite"][current_cycle] != null:
@@ -77,16 +90,12 @@ func move(delta):
 		velocity = Vector2(0,0)
 		#var speed = parameters.moveSpeed * World.World_Speed
 		if global_position.x <= 0:
-			velocity = Vector2(0,0)
 			direction = Vector2(1,0)
 		if global_position.x >= World.world_size *World.tile_size:
-			velocity = Vector2(0,0)
 			direction = Vector2(-1,0)
 		if global_position.y <= 0:
-			velocity = Vector2(0,0)
 			direction = Vector2(0,1)
 		if global_position.y >= World.world_size *World.tile_size :
-			velocity = Vector2(0,0)
 			direction = Vector2(0,-1)
 					
 		velocity = direction*Life.Genome[genome_index]["movespeed"][current_cycle] *World.speed	
