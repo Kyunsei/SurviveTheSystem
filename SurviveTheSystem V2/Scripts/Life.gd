@@ -13,7 +13,7 @@ var Genome = {}
 
 var plant_number = 0
 
-var max_life = 5000
+var max_life = 2000
 
 
 var action_list = {
@@ -394,13 +394,13 @@ func Init_Genome():
 	"sprite" : [load("res://Art/spider.png")],
 	"dead_sprite" : [load("res://Art/spider_dead.png")],
 	"action_sprite" : [load("res://Art/spider_atk1.png")],
-	"lifecycle" : [10],
-	"movespeed" : [10],
+	"lifecycle" : [40],
+	"movespeed" : [20],
 	"take_element" :[0],
 	"PV":[50],
 	"lifecycle_time" : [0],
-	"childnumber" : [0],
-	"metabospeed": [0],
+	"childnumber" : [1],
+	"metabospeed": [1],
 	"maxenergy": [100],
 	"composition": ["chitin"],
 	"digestion": ["meat"],

@@ -4,6 +4,7 @@ extends CharacterBody2D
 var INDEX = 0
 var current_cycle = 0
 var isEquipped = false
+var user_INDEX = -1
 var vision_array = []
 
 # Called when the node enters the scene tree for the first time.
@@ -112,7 +113,7 @@ func AdjustPhysics():
 	var height = $Sprite.texture.get_height()	
 	var image_size = $Sprite.texture.get_size()
 	$Area2D/CollisionShape2D.shape.size = image_size
-	$Area2D/CollisionShape2D.position =  Vector2(width/2,-height/2)
+	$Area2D/CollisionShape2D.position = Vector2(Life.life_size_unit/2,-height/2) #Vector2(width/2,-height/2)
 
 
 

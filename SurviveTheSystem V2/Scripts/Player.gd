@@ -1,6 +1,8 @@
 extends CharacterBody2D
 
 var input_dir = Vector2.ZERO
+var last_dir = Vector2.ZERO
+var rotation_dir = 0
 var basespeed = 100
 var speed = 100
 
@@ -27,20 +29,33 @@ func _physics_process(delta):
 	input_dir = Vector2.ZERO
 	if Input.is_action_pressed("left") :
 		input_dir.x -= 1
+		rotation_dir = -1	
 	if Input.is_action_pressed("right"):
 		input_dir.x += 1
+		rotation_dir = 1
 	if Input.is_action_pressed("up"):
 		input_dir.y -= 1
+		rotation_dir = -1
 	if Input.is_action_pressed("down"):
 		input_dir.y += 1
-
+		rotation_dir = 1
+	
+	
 	velocity = input_dir.normalized() * speed 
 	move_and_collide(velocity *delta)
+
+	
 	position.x = clamp(position.x, 0, World.world_size*World.tile_size)
 	position.y = clamp(position.y, 0, World.world_size*World.tile_size)
-	
+	if input_dir.normalized() != Vector2(0,0):
+		last_dir = input_dir
 	if equipped_tool != null:
-		equipped_tool.position = position
+		var temppos = position + last_dir * Vector2(64,96) 
+		equipped_tool.position = position - Vector2(0,32) + last_dir * Vector2(64,64) 
+		equipped_tool.rotation = (equipped_tool.position +  Vector2(0,32) ).angle_to_point(position)
+		#print(equipped_tool.rotation)
+		#equipped_tool.position = position  + last_dir * Vector2(64,64)/2
+		#equipped_tool.position = position - Vector2(16,16) + last_dir * Vector2(64,64)/2
 
 func _input(event):
 	if event.is_action_pressed("use"):
@@ -58,27 +73,7 @@ func _input(event):
 	'else:
 		current_action = 2'
 
-func attaque(dir):
-		var new_atk = attaque_scene.instantiate()
-		new_atk.name = "Attaque"
-		if dir[0]>0:	
-			new_atk.position.x += 16 * dir[0]
-			new_atk.position.y -= 32 
-			new_atk.rotation = 90
-		if dir[0]<0:	
-			new_atk.position.x += 16 * dir[0]
-			new_atk.position.y -= 32 
-			new_atk.rotation = -90
-		if dir[1]>0:	
-			new_atk.position.x += 16 
-			new_atk.position.y += 0#32 * dir[0]
-			new_atk.rotation = 180
-		if dir[1]<0:	
-			new_atk.position.x += 16 * dir[0]
-			new_atk.position.y -= 64
-			new_atk.rotation = 0
 
-		add_child(new_atk)
 
 func UseItem():
 	if equipped_tool != null:
@@ -92,6 +87,7 @@ func Interact(entity):
 				Drop()
 				equipped_tool = interact_with
 				interact_with.isEquipped = true
+				interact_with.user_INDEX = INDEX
 				interact_with.get_node("DebugRect").hide()	
 		if interact_with.is_in_group("Life") == true:
 				print("here")
@@ -113,7 +109,9 @@ func Interact(entity):
 func Drop():
 	if equipped_tool != null:
 		equipped_tool.isEquipped = false
+		equipped_tool.user_INDEX = -1
 		equipped_tool = null
+		
 
 			
 

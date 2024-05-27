@@ -9,17 +9,27 @@ size = Vector2(73, 68)
 [node name="Item" type="Area2D" groups=["Item"]]
 script = ExtResource("1_oi086")
 
-[node name="Sprite" type="Sprite2D" parent="."]
-texture = ExtResource("2_dbue3")
-centered = false
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(6.5, -58)
 shape = SubResource("RectangleShape2D_m8y2g")
 
+[node name="DebugRect2" type="ColorRect" parent="CollisionShape2D"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 20.0
+offset_bottom = 18.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_dbue3")
+centered = false
+
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.1
-autostart = true
+one_shot = true
 
 [node name="DebugRect" type="ColorRect" parent="."]
 visible = false
