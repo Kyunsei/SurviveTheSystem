@@ -39,6 +39,8 @@ func _process(delta):
 func _physics_process(delta):
 	if Brain.state_array[INDEX] > 0:
 		move(delta)
+	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
+	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
 	
 	
 func setSprite():

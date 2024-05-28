@@ -24,7 +24,7 @@ y_sort_enabled = true
 [node name="Player" parent="Life" instance=ExtResource("3_480aq")]
 
 [node name="LifeTimer" type="Timer" parent="Life"]
-wait_time = 10.0
+wait_time = 20.0
 autostart = true
 
 [node name="BrainTimer" type="Timer" parent="Life"]

@@ -398,7 +398,7 @@ func Init_Genome():
 	"sprite" : [load("res://Art/berry_1.png"),load("res://Art/berry_3.png"),load("res://Art/berry_4.png"),load("res://Art/berry_5.png")],
 	"dead_sprite" :[load("res://Art/berry_dead.png"),load("res://Art/berry_dead.png"),load("res://Art/berry_dead.png"),load("res://Art/berry_dead.png")],
 	"lifecycle" : [2,2,4,4],
-	"lifecycle_time" : [0,10,0,0],
+	"lifecycle_time" : [0,2,0,0],
 	"childnumber" : [0,0,0,0],
 	"metabospeed": [0,1,1,1],
 	"movespeed" : [0,0,0,0],
