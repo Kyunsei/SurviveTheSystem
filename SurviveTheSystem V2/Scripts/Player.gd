@@ -47,6 +47,8 @@ func _physics_process(delta):
 	
 	position.x = clamp(position.x, 0, World.world_size*World.tile_size)
 	position.y = clamp(position.y, 0, World.world_size*World.tile_size)
+	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
+	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
 	if input_dir.normalized() != Vector2(0,0):
 		last_dir = input_dir
 	if equipped_tool != null:

@@ -14,6 +14,9 @@ texture = ExtResource("2_03gyf")
 
 [node name="Blocks" type="Node2D" parent="."]
 
+[node name="BlockTimer" type="Timer" parent="Blocks"]
+autostart = true
+
 [node name="Life" type="Node2D" parent="."]
 z_as_relative = false
 y_sort_enabled = true
@@ -21,7 +24,7 @@ y_sort_enabled = true
 [node name="Player" parent="Life" instance=ExtResource("3_480aq")]
 
 [node name="LifeTimer" type="Timer" parent="Life"]
-wait_time = 5.0
+wait_time = 10.0
 autostart = true
 
 [node name="BrainTimer" type="Timer" parent="Life"]
@@ -157,6 +160,7 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "Respawn_Debug"
 
+[connection signal="timeout" from="Blocks/BlockTimer" to="." method="_on_block_timer_timeout"]
 [connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]
 [connection signal="timeout" from="Life/BrainTimer" to="." method="_on_brain_timer_timeout"]
 [connection signal="pressed" from="UI/speedContainer/speed1" to="." method="_on_speed_1_pressed"]

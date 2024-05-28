@@ -46,8 +46,14 @@ func Init_Item():
 	Init_matrix()
 	item_information[0] = {
 		'sprite' : [load("res://Art/scythe.png")],
-		'range' : [1],
+		'action' : [1],
 		'value': [10]
 		
+	}
+	
+	item_information[1] = {
+		'sprite' : [load("res://Art/poop_star.png")],
+		'action' : [2],
+		'value': [50]		
 	}
 

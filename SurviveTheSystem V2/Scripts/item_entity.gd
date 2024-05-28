@@ -40,16 +40,24 @@ func AdjustPhysics():
 
 
 func ActivateItem(user_index):
-	$CollisionShape2D/DebugRect2.show()
-	$Timer.start(0)
-	var iteminfo_index = Item.item_array[INDEX*Item.par_number + 0]
-	for i in interact_array:
-		print(i)
-		if i != null:
-			Life.parameters_array[i.INDEX*Life.par_number+1] -= Item.item_information[iteminfo_index]['value'][0]
-			if Life.Genome[Life.parameters_array[i.INDEX*Life.par_number]]["movespeed"][Life.parameters_array[i.INDEX*Life.par_number+3]] > 0:
-				i.global_position += global_position.direction_to(i.global_position) *32*1.5
 
+
+	var iteminfo_index = Item.item_array[INDEX*Item.par_number + 0]
+	if Item.item_information[iteminfo_index]['action'][0] == 1:
+		$CollisionShape2D/DebugRect2.show()
+		$Timer.start(0)
+		for i in interact_array:
+			if i != null:
+				Life.parameters_array[i.INDEX*Life.par_number+1] -= Item.item_information[iteminfo_index]['value'][0]
+				if Life.Genome[Life.parameters_array[i.INDEX*Life.par_number]]["movespeed"][Life.parameters_array[i.INDEX*Life.par_number+3]] > 0:
+					i.global_position += global_position.direction_to(i.global_position) *64
+	if Item.item_information[iteminfo_index]['action'][0] == 2:
+		var x = int(position.y/World.tile_size)
+		var y = int(position.x/World.tile_size)
+		var posindex = x*World.world_size + y
+		World.block_element_array[posindex] += Item.item_information[iteminfo_index]['value'][0]
+		pass
+		
 func _on_timer_timeout():
 	$CollisionShape2D/DebugRect2.hide()
 	#queue_free() # Replace with function body.

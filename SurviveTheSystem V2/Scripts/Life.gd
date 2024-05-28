@@ -13,7 +13,7 @@ var Genome = {}
 
 var plant_number = 0
 
-var max_life = 2000
+var max_life = 400
 
 
 var action_list = {
@@ -93,7 +93,7 @@ func LifeLoopCPU(folder):
 			else:
 				GetOlder(l)
 
-				TakeElement(l)
+				TakeBlockElement(l)
 				Metabocost(l)
 				PassiveHealing(l)
 				Hunger(l)
@@ -117,13 +117,28 @@ func LifeLoopCPU(folder):
 
 
 
-func Metabocost(INDEX):
+func Metabocost2(INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var current_cycle = parameters_array[INDEX*par_number+3]
 	var value = 1 * Genome[genome_index]["metabospeed"][current_cycle]
 	var value_2 = min(value,parameters_array[INDEX*par_number+2])
 	parameters_array[INDEX*par_number+2] -= value_2 
 	World.element += value_2 
+
+func Metabocost(INDEX):
+		var genome_index = parameters_array[INDEX*par_number+0]
+		var current_cycle = parameters_array[INDEX*par_number+3]
+		var value = 1 * Genome[genome_index]["metabospeed"][current_cycle]
+		var value_2 = min(value,parameters_array[INDEX*par_number+2])
+		parameters_array[INDEX*par_number+2] -= value_2 
+		#World.element += value_2 	
+		var x = parameters_array[INDEX*par_number + 6] 
+		var y = parameters_array[INDEX*par_number + 7] 
+		x = int(x/World.tile_size)
+		y = int(y/World.tile_size)
+		var posindex = y*World.world_size + x
+		posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
+		World.block_element_array[posindex] += value_2
 
 func PassiveHealing(INDEX):
 	var value = 1
@@ -148,7 +163,14 @@ func NaturalKill(INDEX):
 	var sum = 0 + max(0,parameters_array[INDEX*par_number+2])
 	for i in range(current_cycle+1):
 		sum += Genome[genome_index]["lifecycle"][i]		
-	World.element += sum
+	#World.element += sum
+	var x = parameters_array[INDEX*par_number + 6] 
+	var y = parameters_array[INDEX*par_number + 7] 
+	x = int(x/World.tile_size)
+	y = int(y/World.tile_size)
+	var posindex = x*World.world_size + y
+	posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
+	World.block_element_array[posindex] += sum
 	state_array[INDEX] = 0
 
 
@@ -171,6 +193,24 @@ func TakeElement(INDEX):
 		parameters_array[INDEX*par_number+2] += min(value,World.element/plant_number)
 		World.element -= min(value,World.element/plant_number)
 
+func TakeBlockElement(INDEX):
+
+	var genome_index = parameters_array[INDEX*par_number+0]
+	var current_cycle = parameters_array[INDEX*par_number+3]
+	if parameters_array[INDEX*par_number+2] <= Genome[genome_index]["maxenergy"][current_cycle]:
+		var value = Genome[genome_index]["take_element"][current_cycle] * Genome[genome_index]["metabospeed"][current_cycle]	
+		var x = parameters_array[INDEX*par_number + 6] 
+		var y = parameters_array[INDEX*par_number + 7] 
+		x = int(x/World.tile_size)
+		y = int(y/World.tile_size)
+		var posindex = y*World.world_size + x
+		posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
+		var block_value = World.block_element_array[posindex]
+		parameters_array[INDEX*par_number+2] += min(value,block_value)
+		World.block_element_array[posindex] -= min(value,block_value)
+
+ 
+	
 
 
 func Action(INDEX):
@@ -243,7 +283,7 @@ func Duplicate(INDEX,folder):
 				print(x,0,y)'
 
 				for i in range(Genome[genome_index]["childnumber"][current_cycle]):
-					var newpos = PickRandomPlaceWithRange(x,y,4)
+					var newpos = PickRandomPlaceWithRange(y,x,4)
 					if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
 						parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
 						BuildLife(newpos[0],newpos[1],genome_index,folder)
@@ -260,11 +300,12 @@ func BuildLifeAtRandomplace(genome_index,cycle,folder):
 
 func BuildLife(x,y,genome_index,folder):
 	var newindex = state_array.find(-1)
-	world_matrix[x*World.world_size + y] = newindex
-	Init_Parameter(newindex,genome_index)
-	state_array[newindex] = 1
-	InstantiateLife(newindex,folder)
-	return newindex
+	if newindex >= 0:
+		world_matrix[x*World.world_size + y] = newindex
+		Init_Parameter(newindex,genome_index)
+		state_array[newindex] = 1
+		InstantiateLife(newindex,folder)
+		return newindex
 
 func BuildPlayer(folder):
 	var newindex = state_array.find(-1)

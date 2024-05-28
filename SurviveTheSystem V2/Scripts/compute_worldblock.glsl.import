@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://boyqigs4gpoqw"
+path="res://.godot/imported/compute_worldblock.glsl-6311b96d03cd4e84b02f5bbf30e57698.res"
+
+[deps]
+
+source_file="res://Scripts/compute_worldblock.glsl"
+dest_files=["res://.godot/imported/compute_worldblock.glsl-6311b96d03cd4e84b02f5bbf30e57698.res"]
+
+[params]
+

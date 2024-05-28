@@ -6,10 +6,14 @@ var playerindex = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	World.Init_World()
+	
 	Life.Init_matrix()
 	Life.Init_Genome()
-	Item.Init_Item()
 	Brain.Init_Brain()
+	
+	Item.Init_Item()
+
 	playerindex = Life.BuildPlayer($Life)
 	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	$Life/Player.INDEX = playerindex
@@ -18,10 +22,11 @@ func _ready():
 			World.InstantiateBlock(i,j,$Blocks)
 
 	Item.BuildItem(10,10,0,$Items)
+	Item.BuildItem(15,15,1,$Items)
 	
 	for n in range(100):
 		Life.BuildLifeAtRandomplace(0,1,$Life)
-	for n in range(1):
+	for n in range(5):
 		Life.BuildLifeAtRandomplace(1,2,$Life)
 	for n in range(15):
 		Life.BuildLifeAtRandomplace(2,2,$Life)
@@ -96,3 +101,7 @@ func _on_button_respawn_pressed():
 	$UI/GameOverPanel.hide()
 
 
+
+
+func _on_block_timer_timeout():
+	World.BlockLoopGPU() # Replace with function body.

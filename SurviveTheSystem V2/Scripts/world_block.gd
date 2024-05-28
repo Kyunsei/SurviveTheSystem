@@ -14,9 +14,17 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	$debug.text = str(Life.world_matrix[posindex])
-	if Life.world_matrix[posindex] == -1:
+	$debug.text = str("%.1f" % World.block_element_array[posindex])
+	'if Life.world_matrix[posindex] == -1:
 		$ColorRect.hide()
 	else:
 		$ColorRect.show()
-	pass
+	pass'
+	$ColorRect.color = getAdjustedSoilColor()
+
+func getAdjustedSoilColor():
+	var colormax = Color(0.3, 0.2, 0.1, 1)
+	var colormin = Color(0.8, 0.6, 0.4, 1)
+	var x = min(1, World.block_element_array[posindex]/10 )
+	var col = lerp(colormin, colormax, x)
+	return col
