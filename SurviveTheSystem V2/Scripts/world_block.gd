@@ -21,6 +21,7 @@ func _process(delta):
 		$ColorRect.show()
 	pass'
 	$ColorRect.color = getAdjustedSoilColor()
+	#$outsideline.color = getAdjustedSoilColor()
 
 func getAdjustedSoilColor():
 	var colormax = Color(0.3, 0.2, 0.1, 1)

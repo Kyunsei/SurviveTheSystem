@@ -15,7 +15,8 @@ var block_scene = load("res://Scenes/world_block.tscn") #load scene of block
 #var max_element = 100 #max quantities
 var element = 1000.0 #current value
 
-var speed = 5.0
+var speed = 1.0
+var day = 0
 
 # Load GLSL shader
 var rd := RenderingServer.create_local_rendering_device()

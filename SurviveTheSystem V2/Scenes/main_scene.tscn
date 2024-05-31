@@ -24,7 +24,7 @@ y_sort_enabled = true
 [node name="Player" parent="Life" instance=ExtResource("3_480aq")]
 
 [node name="LifeTimer" type="Timer" parent="Life"]
-wait_time = 20.0
+wait_time = 10.0
 autostart = true
 
 [node name="BrainTimer" type="Timer" parent="Life"]
@@ -160,6 +160,58 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "Respawn_Debug"
 
+[node name="VictoryPanel" type="Panel" parent="UI"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -50.0
+offset_right = 100.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="UI/VictoryPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -41.5
+offset_right = 41.5
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Victory"
+
+[node name="ButtonRestart" type="Button" parent="UI/VictoryPanel"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -31.0
+offset_right = 65.0
+grow_vertical = 0
+text = "Restart"
+
+[node name="ButtonContinue" type="Button" parent="UI/VictoryPanel"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -79.0
+offset_top = -31.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Continue"
+
+[node name="DayTimer" type="Timer" parent="."]
+wait_time = 60.0
+autostart = true
+
 [connection signal="timeout" from="Blocks/BlockTimer" to="." method="_on_block_timer_timeout"]
 [connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]
 [connection signal="timeout" from="Life/BrainTimer" to="." method="_on_brain_timer_timeout"]
@@ -168,3 +220,6 @@ text = "Respawn_Debug"
 [connection signal="pressed" from="UI/speedContainer/speed100" to="." method="_on_speed_100_pressed"]
 [connection signal="pressed" from="UI/GameOverPanel/ButtonRestart" to="." method="_on_button_restart_pressed"]
 [connection signal="pressed" from="UI/GameOverPanel/ButtonRespawn" to="." method="_on_button_respawn_pressed"]
+[connection signal="pressed" from="UI/VictoryPanel/ButtonRestart" to="." method="_on_button_restart_pressed"]
+[connection signal="pressed" from="UI/VictoryPanel/ButtonContinue" to="." method="_on_button_continue_pressed"]
+[connection signal="timeout" from="DayTimer" to="." method="_on_day_timer_timeout"]

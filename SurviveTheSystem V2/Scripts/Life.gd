@@ -15,6 +15,8 @@ var plant_number = 0
 
 var max_life = 400
 
+var score = 0
+
 
 var action_list = {
 	"0" : "none",
@@ -23,6 +25,8 @@ var action_list = {
 	"3" : "use"
 } 
 
+func Calculate_score():
+	score += 1
 
 func Init_matrix():
 	plant_number = 0
@@ -168,7 +172,7 @@ func NaturalKill(INDEX):
 	var y = parameters_array[INDEX*par_number + 7] 
 	x = int(x/World.tile_size)
 	y = int(y/World.tile_size)
-	var posindex = x*World.world_size + y
+	var posindex = y*World.world_size + x
 	posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
 	World.block_element_array[posindex] += sum
 	state_array[INDEX] = 0

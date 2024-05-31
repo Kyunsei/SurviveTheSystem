@@ -3,8 +3,8 @@ extends CharacterBody2D
 var input_dir = Vector2.ZERO
 var last_dir = Vector2.ZERO
 var rotation_dir = 0
-var basespeed = 100
-var speed = 100
+var basespeed = 300
+var speed = 300
 
 #var interact_array = []
 var interact_with = null
@@ -17,6 +17,7 @@ var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
 
 func _process(delta):
 	speed = basespeed*World.speed
+	print(speed)
 	$Debug.text = "PV: " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" /Hunger " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
 	#$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) ) +" / " + str (Life.state_array[INDEX]) 
 	if Life.state_array[INDEX] <= 0:
