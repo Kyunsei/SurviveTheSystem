@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://bvgtrefdtlsul"]
+[gd_scene load_steps=5 format=3 uid="uid://bvgtrefdtlsul"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_0faxq"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
 [ext_resource type="PackedScene" uid="uid://b5k0j0umvgnc7" path="res://Scenes/Player.tscn" id="3_480aq"]
+[ext_resource type="PackedScene" uid="uid://m26fd7j0ngbx" path="res://Scenes/spawn_window.tscn" id="4_j4k08"]
 
 [node name="MainScene" type="Node2D"]
 script = ExtResource("1_0faxq")
@@ -216,6 +217,8 @@ text = "Continue"
 [node name="DayTimer" type="Timer" parent="."]
 wait_time = 60.0
 autostart = true
+
+[node name="SpawnWindow" parent="." instance=ExtResource("4_j4k08")]
 
 [connection signal="timeout" from="Blocks/BlockTimer" to="." method="_on_block_timer_timeout"]
 [connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]

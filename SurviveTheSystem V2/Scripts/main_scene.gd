@@ -114,8 +114,16 @@ func _on_button_respawn_pressed():
 	$Life/Player/Sprite2D.show()
 	$UI/GameOverPanel.hide()
 	gameover = false
-
-
+	
+func _input(event):
+	if event.is_action_pressed("Spawn"):
+		var posmouse =	get_global_mouse_position()
+		var x = int(get_global_mouse_position().y/World.tile_size)
+		var y = int(get_global_mouse_position().x/World.tile_size)
+		print(x,"--",y)
+		if (x >= 0 and y >= 0 and x < World.world_size and y < World.world_size):
+			var idx = Life.BuildLife(x,y,$SpawnWindow.genome_ID,$Life)
+			Life.parameters_array[idx*Life.par_number + 3] = $SpawnWindow.current_cycle
 
 
 func _on_block_timer_timeout():

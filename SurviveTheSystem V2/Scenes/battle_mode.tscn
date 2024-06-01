@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://b1evficpy0kl4"]
+
+[ext_resource type="Script" path="res://Scripts/battle_mode.gd" id="1_qjbk7"]
+[ext_resource type="PackedScene" uid="uid://b5k0j0umvgnc7" path="res://Scenes/Player.tscn" id="2_hlrex"]
+[ext_resource type="PackedScene" uid="uid://m26fd7j0ngbx" path="res://Scenes/spawn_window.tscn" id="3_1uwkh"]
+
+[node name="BattleMode" type="Node2D"]
+script = ExtResource("1_qjbk7")
+
+[node name="Blocks" type="Node2D" parent="."]
+
+[node name="Life" type="Node2D" parent="."]
+
+[node name="Player" parent="Life" instance=ExtResource("2_hlrex")]
+
+[node name="Items" type="Node2D" parent="."]
+
+[node name="SpawnWindow" parent="." instance=ExtResource("3_1uwkh")]
