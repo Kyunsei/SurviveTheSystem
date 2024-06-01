@@ -19,7 +19,7 @@ func _ready():
 
 	setSprite()
 	pass # Replace with function body.
-	eating_food()
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -161,6 +161,13 @@ func Interact(entity):
 		
 	return Life.Genome[genome_index]["interaction"][current_cycle]
 
+
+'func entity_eating_target()
+	if self.hitbox overlap with is_in_group("Life").hitbox
+		if interact_with !=null:
+			var contact_index = interact_with.INDEX
+			if Life.state_array[contact_index] > 0:
+				Life.Eat(INDEX, contact_index)'
 
 
 func _on_vision_area_entered(area):
