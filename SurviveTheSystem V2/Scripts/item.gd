@@ -5,7 +5,7 @@ var item_scene = load("res://Scenes/item.tscn") #load scene of block
 
 var item_array = []
 var state_array = []
-var par_number = 2  #item_INDEX, equipped
+var par_number = 3  #item_INDEX, equipped, itemstate
 
 var number_item = 10
 
@@ -24,6 +24,7 @@ func Init_matrix():
 func init_parameter(INDEX,item_index):
 	item_array[INDEX*par_number + 0] = item_index
 	item_array[INDEX*par_number + 1] = 0
+	item_array[INDEX*par_number + 2] = 0
 	pass
 	
 func BuildItem(x,y,item_index,folder):
@@ -46,6 +47,7 @@ func Init_Item():
 	Init_matrix()
 	item_information[0] = {
 		'sprite' : [load("res://Art/scythe.png")],
+		'sprite_empty' : [load("res://Art/scythe.png")],
 		'action' : [1],
 		'value': [10]
 		
@@ -53,6 +55,7 @@ func Init_Item():
 	
 	item_information[1] = {
 		'sprite' : [load("res://Art/poop_star.png")],
+		'sprite_empty' : [load("res://Art/poop_star_0.png")],
 		'action' : [2],
 		'value': [50]		
 	}

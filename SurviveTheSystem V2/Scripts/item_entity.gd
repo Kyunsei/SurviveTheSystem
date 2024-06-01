@@ -7,6 +7,8 @@ var interact_array = []
 var INDEX = 0
 var user_INDEX = -1
 
+var inter_value = 0
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	setSprite() # Replace with function body.
@@ -17,13 +19,16 @@ func _process(delta):
 	pass
 
 
-func setSprite():
+func setSprite(TYPE=0):
 	var item_index = Item.item_array[INDEX*Item.par_number]
 	var size = Item.item_information[item_index]["sprite"][0].get_size()
 	$Sprite.texture = Item.item_information[item_index]["sprite"][0]
 	#$Sprite.offset.x = -1 * (Item.item_information[item_index]["sprite"][0].get_width()-Life.life_size_unit)/2#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 	$Sprite.offset.y = -1 * Item.item_information[item_index]["sprite"][0].get_height()#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
-
+	if TYPE == 1:
+			size = Item.item_information[item_index]["sprite_empty"][0].get_size()
+			$Sprite.texture = Item.item_information[item_index]["sprite_empty"][0]
+			$Sprite.offset.y = -1 * Item.item_information[item_index]["sprite_empty"][0].get_height()#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
 	#$CollisionShape2D/DebugRect2.position = position
 	AdjustPhysics()
  
@@ -54,8 +59,26 @@ func ActivateItem(user_index):
 	if Item.item_information[iteminfo_index]['action'][0] == 2:
 		var x = int(position.y/World.tile_size)
 		var y = int(position.x/World.tile_size)
-		var posindex = x*World.world_size + y
-		World.block_element_array[posindex] += Item.item_information[iteminfo_index]['value'][0]
+		var posindex = 0
+		if Item.item_array[INDEX*Item.par_number+2]==1:	 #full		
+			for i in range(3):
+				for j in range(3):
+					posindex = (x+i)*World.world_size + y+j
+					World.block_element_array[posindex] += inter_value /(3*3)		
+			Item.item_array[INDEX*Item.par_number+2]=0		
+			inter_value = 0
+			setSprite(1)
+		elif Item.item_array[INDEX*Item.par_number+2]==0: #empty
+			for i in range(3):
+				for j in range(3):	
+					posindex = (x+i)*World.world_size + y+j
+					inter_value += World.block_element_array[posindex]
+					World.block_element_array[posindex] = 0 #Item.item_information[iteminfo_index]['value'][0]
+			Item.item_array[INDEX*Item.par_number+2]=1
+			setSprite(0)
+
+			
+			 
 		pass
 		
 func _on_timer_timeout():
