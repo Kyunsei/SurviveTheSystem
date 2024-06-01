@@ -28,7 +28,7 @@ func _process(delta):
 		queue_free()'
 	if Life.state_array[INDEX] > 0:
 		eating_food()
-		$Debug.text =  str(INDEX) + " " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
+		$Debug.text =  str(Life.parameters_array[INDEX*Life.par_number + 8] ) + " " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
 		if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3] and current_cycle >= 0 :
 			current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 			if current_cycle >= 0:

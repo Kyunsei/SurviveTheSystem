@@ -8,7 +8,7 @@ var life_scene = load("res://Scenes/life.tscn") #load scene of block
 var parameters_array = [] 
 var state_array = [] 
 var world_matrix = []
-var par_number = 9 # Genome_ID, PV, Element, LifeCycle, DirectionX, DirectionY, positionX, positionnY, Age
+var par_number = 9 # 0: Genome_ID, 1: PV, 2: Element, 3: LifeCycle, 4: DirectionX, 5: DirectionY, 6: positionX, 7: positionnY, 8: Age
 var Genome = {}
 
 var plant_number = 0
@@ -159,7 +159,7 @@ func Hunger(INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var current_cycle = parameters_array[INDEX*par_number+3]
 	if parameters_array[INDEX*par_number+2] <= 0:
-		parameters_array[INDEX*par_number+1]-= 1 * Genome[genome_index]["metabospeed"][current_cycle]
+		parameters_array[INDEX*par_number+1]-= (Genome[genome_index]["PV"][current_cycle]*0.05+1) * Genome[genome_index]["metabospeed"][current_cycle]
 
 func NaturalKill(INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
@@ -291,6 +291,8 @@ func Duplicate(INDEX,folder):
 						parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
 						BuildLife(newpos[0],newpos[1],genome_index,folder)
 						parameters_array[INDEX*par_number+8] = 0
+						if genome_index == 1 :
+							print("Varum dont know how to code : by bugsheep who cant grow anymore")
 
 
 
@@ -355,6 +357,7 @@ func TakeFruit(INDEX,INDEX2,folder):
 	parameters_array[INDEX*par_number+8] = 0
 
 
+
 func Init_Genome():
 	#This function create different life form
 	# 0: Grass /1: bugsheep /2: Bush /3: Player /4: CrabSpider /5: Tree
@@ -382,7 +385,7 @@ func Init_Genome():
 	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
 	"dead_sprite" : [load("res://Art/sheep_dead1.png"),load("res://Art/sheep_dead2.png"),load("res://Art/sheep_dead3.png")],
 	"lifecycle" : [10,10,20],
-	"lifecycle_time" : [5,2,30],
+	"lifecycle_time" : [5,2,15],
 	"maxenergy": [10,20,10*5*2],
 	"childnumber" : [0,0,5],
 	"movespeed" : [0,70,50],

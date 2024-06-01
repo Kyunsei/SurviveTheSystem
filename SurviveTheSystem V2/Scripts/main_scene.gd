@@ -22,8 +22,8 @@ func _ready():
 		for j in World.world_size:
 			World.InstantiateBlock(i,j,$Blocks)
 
-	Item.BuildItem($Life/Player.global_position.x,$Life/Player.global_position.y+3,0,$Items)
-	Item.BuildItem($Life/Player.global_position.x,$Life/Player.global_position.y-3,1,$Items)
+	Item.BuildItem($Life/Player.global_position.x/32,$Life/Player.global_position.y/32+3,0,$Items)
+	Item.BuildItem($Life/Player.global_position.x/32,$Life/Player.global_position.y/32-3,1,$Items)
 	
 	for n in range(100):
 		Life.BuildLifeAtRandomplace(0,1,$Life)
