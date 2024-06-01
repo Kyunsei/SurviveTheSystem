@@ -25,7 +25,7 @@ func _process(delta):
 	'if Life.state_array[INDEX] < 0:
 		queue_free()'
 	if Life.state_array[INDEX] > 0:
-		$Debug.text =   str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
+		$Debug.text =  str(INDEX) + " " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
 		if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3] and current_cycle >= 0 :
 			current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 			if current_cycle >= 0:
@@ -122,6 +122,9 @@ func AdjustPhysics():
 func _on_area_2d_area_entered(area):
 	if area.is_in_group("Life"):
 		var contact_index = area.get_parent().INDEX
+		print(contact_index)
+		print(INDEX)
+		print(".....")
 		if Life.state_array[contact_index] > 0:
 			Life.Eat(INDEX, contact_index)
 

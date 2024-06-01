@@ -31,8 +31,8 @@ func AdjustPhysics():
 	var width = $Sprite.texture.get_width()
 	var height = $Sprite.texture.get_height()	
 	var image_size = $Sprite.texture.get_size()
-	$CollisionShape2D.shape.size =  Vector2(image_size[0]*2,image_size[1]*4) #image_size *2
-	$CollisionShape2D.position =  Vector2(width/2,-height/2)
+	$CollisionShape2D.shape.size =  Vector2(image_size[0]*3,image_size[1]*4) #image_size *2
+	$CollisionShape2D.position =  Vector2(-width/2,-height/2)
 	
 	
 	$CollisionShape2D/DebugRect2.size = $CollisionShape2D.shape.size
