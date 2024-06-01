@@ -225,11 +225,10 @@ func Eat(INDEX,c_INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var c_current_cycle = parameters_array[c_INDEX*par_number+3]
 	var current_cycle = parameters_array[INDEX*par_number+3]
-
-	
 	#if genome_index != 0 and c_genome_index == 0:
 	if Genome[genome_index]["digestion"][current_cycle] == Genome[c_genome_index]["composition"][c_current_cycle]:
 		if parameters_array[INDEX*par_number+2] < Genome[genome_index]["maxenergy"][current_cycle]:
+
 		#var genome_index = parameters_array[c_INDEX*par_number+0]		
 			var sum = 0
 			for i in range(c_current_cycle+1):
@@ -383,7 +382,7 @@ func Init_Genome():
 	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
 	"dead_sprite" : [load("res://Art/sheep_dead1.png"),load("res://Art/sheep_dead2.png"),load("res://Art/sheep_dead3.png")],
 	"lifecycle" : [10,10,20],
-	"lifecycle_time" : [5,15,30],
+	"lifecycle_time" : [5,2,30],
 	"maxenergy": [10,20,10*5*2],
 	"childnumber" : [0,0,5],
 	"movespeed" : [0,70,50],

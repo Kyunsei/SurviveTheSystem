@@ -6,7 +6,7 @@ var current_cycle = 0
 var isEquipped = false
 var user_INDEX = -1
 var vision_array = []
-var interact_with = null
+var interact_with = []
 
 
 # Called when the node enters the scene tree for the first time.
@@ -123,10 +123,9 @@ func AdjustPhysics():
 
 
 func eating_food():
-	
-	if interact_with !=null:
-		if interact_with.is_in_group("Life"):
-			var contact_index = interact_with.INDEX
+	if interact_with.size() > 0:
+		for i in interact_with:
+			var contact_index = i.INDEX
 			if Life.state_array[contact_index] > 0:
 				Life.Eat(INDEX, contact_index)
 #	await get_tree().create_timer(0.5).timeout
@@ -180,27 +179,11 @@ func _on_vision_area_exited(area):
 
 
 func _on_area_2d_area_exited(area):
-	if area.is_in_group("Life"):
-		area.get_parent().get_node("DebugRect").hide()
-		if 	interact_with == area.get_parent():		
-			interact_with = null
-		#interact_array.erase(area.get_parent())
-	else:
-		area.get_node("DebugRect").hide()
-		if 	interact_with == area:
-			interact_with = null
-		#interact_array.erase(area) # Replace with function body.
-	
 
+	if area.is_in_group("Life"):
+		interact_with.erase(area.get_parent()) 
 
 func _on_area_2d_area_entered(area):
-	if interact_with != null:
-		interact_with.get_node("DebugRect").hide()		
 	if area.is_in_group("Life"):
-		interact_with = area.get_parent()
-		#interact_array.append(area.get_parent())
-	else:
-		interact_with = area
-		#interact_array.append(area) # Replace with function body.
-	interact_with.get_node("DebugRect").show()
-	 # Replace with function body.
+		interact_with.append(area.get_parent()) 
+
