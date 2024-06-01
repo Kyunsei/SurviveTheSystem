@@ -14,16 +14,13 @@ func BrainLoopCPU(folder):
 			l = temp.find(1)
 			temp[l] += 1
 			if l > 0:
-				#setDirection(l)
-				setAction(l,2)
-				if isHungry(l):
-					setAction(l,1)
-					setAction(l,2)
-				if isFull(l):
-					setAction(l,0)
-					setAction(l,2)
-				
-				DoAction(l,folder)
+
+				if GoAwayToDanger(l, folder) == false:
+					if isHungry(l):
+						setAction(l,1)			
+					if isFull(l):
+						setAction(l,0)	
+					DoAction(l,folder)
 
 
 
@@ -67,11 +64,13 @@ func goToClosestFood(INDEX,folder):
 		Life.parameters_array[INDEX*Life.par_number + 4] = direction.x
 		Life.parameters_array[INDEX*Life.par_number + 5] =  direction.y
 
-func isCloseToDanger(INDEX, folder) :
+
+
+func GoAwayToDanger(INDEX, folder) :
+	var dangerclose = false
 	var genome_index = Life.parameters_array[INDEX*Life.par_number+0]
 	var current_cycle = Life.parameters_array[INDEX*Life.par_number+3]
-	var rng = RandomNumberGenerator.new()
-	var direction = Vector2(rng.randi_range(-1,1),rng.randi_range(-1,1))
+	var direction = Vector2(0,0)
 	if folder.has_node(str(INDEX)):
 		var entity_active = folder.get_node(str(INDEX))
 		var rangeofview = 10*World.tile_size		
@@ -84,10 +83,12 @@ func isCloseToDanger(INDEX, folder) :
 					if t_genome_index == 4 :
 						var distance = entity_active.position.distance_to(life.position)
 						if distance < rangeofview:
+							dangerclose = true
 							rangeofview = distance
 							direction = -(life.position - entity_active.position).normalized()
 	Life.parameters_array[INDEX*Life.par_number + 4] = direction.x
 	Life.parameters_array[INDEX*Life.par_number + 5] =  direction.y
+	return dangerclose
 
 func isHungry(INDEX):
 	var genome_index = Life.parameters_array[INDEX*Life.par_number+0]
@@ -114,8 +115,8 @@ func DoAction(INDEX,folder):
 		goToClosestFood(INDEX,folder)
 	if action_array[INDEX]== 0:
 		setRandomDirection(INDEX)
-	if action_array[INDEX]== 2:
-		isCloseToDanger(INDEX,folder)
+	'if action_array[INDEX]== 2:
+		isCloseToDanger(INDEX,folder)'
 
 
 'func Move(INDEX):

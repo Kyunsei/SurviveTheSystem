@@ -229,7 +229,10 @@ func Eat(INDEX,c_INDEX):
 	
 	#if genome_index != 0 and c_genome_index == 0:
 	if Genome[genome_index]["digestion"][current_cycle] == Genome[c_genome_index]["composition"][c_current_cycle]:
+		print(INDEX)
 		if parameters_array[INDEX*par_number+2] < Genome[genome_index]["maxenergy"][current_cycle]:
+			print("miam")
+
 		#var genome_index = parameters_array[c_INDEX*par_number+0]		
 			var sum = 0
 			for i in range(c_current_cycle+1):
@@ -358,7 +361,6 @@ func TakeFruit(INDEX,INDEX2,folder):
 
 func Init_Genome():
 	#This function create different life form
-	# 0: Grass /1: bugsheep /2: Bush /3: Player /4: CrabSpider /5: Tree
 	Genome[0] = {
 		"sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
 		"dead_sprite" : [load("res://Art/grass_dead.png"),load("res://Art/grass_dead.png")],
@@ -441,7 +443,7 @@ func Init_Genome():
 	"dead_sprite" : [load("res://Art/spider_dead.png")],
 	"action_sprite" : [load("res://Art/spider_atk1.png")],
 	"lifecycle" : [40],
-	"movespeed" : [30],
+	"movespeed" : [20],
 	"take_element" :[0],
 	"PV":[50],
 	"lifecycle_time" : [0],
@@ -463,4 +465,4 @@ func Init_Genome():
 	"composition": ["plant","plant","plant2"],
 	"digestion": ["nothing","nothing","nothing"]
 	}
-
+	
