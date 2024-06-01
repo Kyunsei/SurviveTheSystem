@@ -87,7 +87,7 @@ func _on_speed_1_pressed():
 	UpdateSimulationSpeed() # Replace with function body.
 
 
-func _on_speed_10_pressed():
+func _on_speed_2_pressed():
 	World.speed = 2
 	UpdateSimulationSpeed() # Replace with function body.
 
@@ -129,3 +129,11 @@ func _on_day_timer_timeout():
 func _on_button_continue_pressed():
 	$UI/VictoryPanel.hide()
 	gameover = true # Replace with function body.
+
+
+func _on_speed_10_pressed():
+
+	World.speed = 10
+	UpdateSimulationSpeed() # Replace with function body.
+
+ # Replace with function body.

@@ -15,6 +15,7 @@ func BrainLoopCPU(folder):
 			temp[l] += 1
 			if l > 0:
 
+
 				if GoAwayToDanger(l, folder) == false:
 					if isHungry(l):
 						setAction(l,1)			

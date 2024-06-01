@@ -85,9 +85,14 @@ layout_mode = 2
 text = "1x
 "
 
-[node name="speed10" type="Button" parent="UI/speedContainer"]
+[node name="speed2" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
 text = "2x
+"
+
+[node name="speed10" type="Button" parent="UI/speedContainer"]
+layout_mode = 2
+text = "10x
 "
 
 [node name="speed100" type="Button" parent="UI/speedContainer"]
@@ -216,6 +221,7 @@ autostart = true
 [connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]
 [connection signal="timeout" from="Life/BrainTimer" to="." method="_on_brain_timer_timeout"]
 [connection signal="pressed" from="UI/speedContainer/speed1" to="." method="_on_speed_1_pressed"]
+[connection signal="pressed" from="UI/speedContainer/speed2" to="." method="_on_speed_2_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed10" to="." method="_on_speed_10_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed100" to="." method="_on_speed_100_pressed"]
 [connection signal="pressed" from="UI/GameOverPanel/ButtonRestart" to="." method="_on_button_restart_pressed"]
