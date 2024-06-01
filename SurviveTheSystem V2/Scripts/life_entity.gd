@@ -6,6 +6,8 @@ var current_cycle = 0
 var isEquipped = false
 var user_INDEX = -1
 var vision_array = []
+var interact_with = null
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -17,7 +19,7 @@ func _ready():
 
 	setSprite()
 	pass # Replace with function body.
-
+	eating_food()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -25,6 +27,7 @@ func _process(delta):
 	'if Life.state_array[INDEX] < 0:
 		queue_free()'
 	if Life.state_array[INDEX] > 0:
+		eating_food()
 		$Debug.text =  str(INDEX) + " " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
 		if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3] and current_cycle >= 0 :
 			current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
@@ -119,14 +122,14 @@ func AdjustPhysics():
 
 
 
-func _on_area_2d_area_entered(area):
-	if area.is_in_group("Life"):
-		var contact_index = area.get_parent().INDEX
-		print(contact_index)
-		print(INDEX)
-		print(".....")
-		if Life.state_array[contact_index] > 0:
-			Life.Eat(INDEX, contact_index)
+func eating_food():
+	
+	if interact_with !=null:
+		if interact_with.is_in_group("Life"):
+			var contact_index = interact_with.INDEX
+			if Life.state_array[contact_index] > 0:
+				Life.Eat(INDEX, contact_index)
+#	await get_tree().create_timer(0.5).timeout
 
 
 func ActivateItem(user_index):
@@ -167,3 +170,28 @@ func _on_vision_area_entered(area):
 func _on_vision_area_exited(area):
 	if area.is_in_group("Life"):
 		vision_array.erase(area.get_parent()) 
+
+func _on_area_2d_area_(area):
+	if interact_with != null:
+		interact_with.get_node("DebugRect").hide()		
+	if area.is_in_group("Life"):
+		interact_with = area.get_parent()
+		#interact_array.append(area.get_parent())
+	else:
+		interact_with = area
+		#interact_array.append(area) # Replace with function body.
+	interact_with.get_node("DebugRect").show()
+	
+
+func _on_area_2d_area_exited(area):
+	if area.is_in_group("Life"):
+		area.get_parent().get_node("DebugRect").hide()
+		if 	interact_with == area.get_parent():		
+			interact_with = null
+		#interact_array.erase(area.get_parent())
+	else:
+		area.get_node("DebugRect").hide()
+		if 	interact_with == area:
+			interact_with = null
+		#interact_array.erase(area) # Replace with function body.
+	
