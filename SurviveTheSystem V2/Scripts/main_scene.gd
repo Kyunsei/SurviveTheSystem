@@ -120,10 +120,10 @@ func _input(event):
 		var posmouse =	get_global_mouse_position()
 		var x = int(get_global_mouse_position().y/World.tile_size)
 		var y = int(get_global_mouse_position().x/World.tile_size)
-		print(x,"--",y)
 		if (x >= 0 and y >= 0 and x < World.world_size and y < World.world_size):
 			var idx = Life.BuildLife(x,y,$SpawnWindow.genome_ID,$Life)
-			Life.parameters_array[idx*Life.par_number + 3] = $SpawnWindow.current_cycle
+			if idx != null :
+				Life.parameters_array[idx*Life.par_number + 3] = $SpawnWindow.current_cycle
 
 
 func _on_block_timer_timeout():

@@ -3,7 +3,7 @@ extends Node
 'This is the global Script for all the variable and function defining the Life'
 
 var life_size_unit = 32
-var life_scene = load("res://Scenes/life.tscn") #load scene of block
+var life_scene = preload("res://Scenes/life.tscn") #load scene of block
 
 var parameters_array = [] 
 var state_array = [] 

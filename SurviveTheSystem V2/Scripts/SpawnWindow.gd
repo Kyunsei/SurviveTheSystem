@@ -17,7 +17,7 @@ func _process(delta):
 
 func _on_buttonleft_genome_pressed():
 	genome_ID -= 1
-	genome_ID = max(0,current_cycle) 
+	genome_ID = max(0,genome_ID) 
 	$ColorRect/GenomeBox/GenomeID.text = str(genome_ID)
 	var valuemax = Life.Genome[genome_ID]["sprite"].size()-1
 	current_cycle = min(valuemax,current_cycle) 
