@@ -103,7 +103,7 @@ horizontal_alignment = 2
 [node name="Label3" type="Label" parent="DebugLabel"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "Total Element: "
+text = "max Life: "
 horizontal_alignment = 2
 
 [node name="DebugValue" type="VBoxContainer" parent="."]
@@ -115,7 +115,6 @@ offset_bottom = 428.0
 
 [node name="worldsize" type="LineEdit" parent="DebugValue"]
 layout_mode = 2
-placeholder_text = "30"
 
 [node name="tilesize" type="LineEdit" parent="DebugValue"]
 layout_mode = 2
@@ -123,7 +122,6 @@ placeholder_text = "32"
 
 [node name="Total_Element" type="LineEdit" parent="DebugValue"]
 layout_mode = 2
-placeholder_text = "1000"
 
 [connection signal="pressed" from="Button_VBox/PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="Button_VBox/BattleButton" to="." method="_on_battle_button_pressed"]

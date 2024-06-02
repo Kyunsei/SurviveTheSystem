@@ -37,7 +37,13 @@ func _process(delta):
 				setDeadSprite()
 			#Life.RemoveLife(INDEX)'
 	if Life.state_array[INDEX] <= 0:
-		queue_free()
+		#queue_free()
+		hide()
+		if isEquipped:
+			isEquipped = false
+			get_parent().get_node("Player").equipped_tool = null
+		pass
+
 	
 func _physics_process(delta):
 	if Brain.state_array[INDEX] > 0:

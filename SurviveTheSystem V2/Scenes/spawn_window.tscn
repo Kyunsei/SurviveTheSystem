@@ -32,6 +32,7 @@ grow_horizontal = 0
 text = "X"
 
 [node name="GenomeBox" type="HBoxContainer" parent="ColorRect"]
+layout_mode = 0
 offset_left = 40.0
 offset_top = 153.0
 offset_right = 164.0
@@ -54,6 +55,7 @@ layout_mode = 2
 text = ">"
 
 [node name="CycleBox" type="HBoxContainer" parent="ColorRect"]
+layout_mode = 0
 offset_left = 45.0
 offset_top = 200.0
 offset_right = 155.0

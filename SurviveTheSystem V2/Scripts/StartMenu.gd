@@ -32,7 +32,7 @@ func _on_tilesize_text_changed(new_text):
 
 func _on_total_element_text_changed(new_text):
 	if int(new_text) > 0:
-		World.element = int(new_text) # Replace with function body.
+		Life.max_life = int(new_text) # Replace with function body.
 
 
 func _on_battle_button_pressed():

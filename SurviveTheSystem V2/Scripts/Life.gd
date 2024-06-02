@@ -62,14 +62,20 @@ func InstantiateLife(INDEX,folder):
 	var y = parameters_array[INDEX*par_number + 7]
 	#state_array[INDEX] = 1
 	var genome_index = parameters_array[INDEX*par_number + 0]
-	#if isOnScreen(Life.Life_Matrix_PositionX[index],Life.Life_Matrix_PositionY[index]):
-	if x >= 0 and y >= 0 and x < World.world_size*life_size_unit and y < World.world_size*life_size_unit :
-			var new_life = life_scene.instantiate()
-			new_life.position = Vector2(x,y)
-			new_life.name =str(INDEX)
-			new_life.INDEX = INDEX
-			folder.add_child(new_life)
-
+	if folder.has_node(str(INDEX))==false:
+		#if isOnScreen(Life.Life_Matrix_PositionX[index],Life.Life_Matrix_PositionY[index]):
+		if x >= 0 and y >= 0 and x < World.world_size*life_size_unit and y < World.world_size*life_size_unit :
+				var new_life = life_scene.instantiate()
+				new_life.position = Vector2(x,y)
+				new_life.name =str(INDEX)
+				new_life.INDEX = INDEX
+				folder.add_child(new_life)
+	else:
+		var new_life2 = folder.get_node(str(INDEX))
+		new_life2.position = Vector2(x,y)
+		new_life2.show()
+		#new_life.name =str(INDEX)
+		#new_life.INDEX = INDEX
 
 
 func deleteLoopCPU(folder):
@@ -291,8 +297,8 @@ func Duplicate(INDEX,folder):
 						parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
 						BuildLife(newpos[0],newpos[1],genome_index,folder)
 						parameters_array[INDEX*par_number+8] = 0
-						if genome_index == 1 :
-							print("Varum dont know how to code : by bugsheep who cant grow anymore")
+						'if genome_index == 1 :
+							print("Varum dont know how to code : by bugsheep who cant grow anymore")'
 
 
 
@@ -329,12 +335,12 @@ func BuildPlayer(folder):
 func RemoveLife(INDEX, folder):
 	var posindex = world_matrix.find(INDEX)
 	if folder.has_node(str(INDEX)):
-		folder.get_node(str(INDEX)).queue_free()
+		folder.get_node(str(INDEX)).hide()
 	world_matrix[posindex] = -1
 	state_array[INDEX] = -1
 	Brain.state_array[INDEX] = -1
-	for p in range(par_number):
-		parameters_array[INDEX*par_number+p]=-1
+	'for p in range(par_number):
+		parameters_array[INDEX*par_number+p]=-1'
 	plant_number -= 1
 	
 func PickRandomPlace():
