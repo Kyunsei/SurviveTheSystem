@@ -25,7 +25,7 @@ func _ready():
 	Item.BuildItem($Life/Player.global_position.x/32,$Life/Player.global_position.y/32+3,0,$Items)
 	Item.BuildItem($Life/Player.global_position.x/32,$Life/Player.global_position.y/32-3,1,$Items)
 	
-	for n in range(100):
+	for n in range(120):
 		Life.BuildLifeAtRandomplace(0,1,$Life)
 	for n in range(3):
 		Life.BuildLifeAtRandomplace(1,2,$Life)
@@ -65,7 +65,7 @@ func UpdateSimulationSpeed():
 	$Life/LifeTimer.wait_time = 10.0 / World.speed
 	$Life/LifeTimer.start(0)
 	
-	$Life/BrainTimer.wait_time = .5 / World.speed
+	$Life/BrainTimer.wait_time = 2.0 / World.speed
 	$Life/BrainTimer.start(0)
 	
 	$DayTimer.wait_time= 20. / World.speed

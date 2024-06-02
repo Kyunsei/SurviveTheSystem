@@ -29,7 +29,7 @@ wait_time = 10.0
 autostart = true
 
 [node name="BrainTimer" type="Timer" parent="Life"]
-wait_time = 0.5
+wait_time = 2.0
 autostart = true
 
 [node name="Items" type="Node2D" parent="."]

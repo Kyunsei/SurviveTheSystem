@@ -47,6 +47,8 @@ func _physics_process(delta):
 	
 	position.x = clamp(position.x, 0, World.world_size*World.tile_size)
 	position.y = clamp(position.y, 0, World.world_size*World.tile_size)
+	Life.parameters_array[INDEX*Life.par_number + 4]  = last_dir.normalized().x 
+	Life.parameters_array[INDEX*Life.par_number + 5] = last_dir.normalized().y
 	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
 	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
 	if input_dir.normalized() != Vector2(0,0):
@@ -64,18 +66,45 @@ func _input(event):
 		current_action = 3
 		UseItem()
 		#attaque(input_dir)
+		print("use is pressed")
 	if event.is_action_pressed("interact"):
 		current_action = 1
 		Interact(self)
 		#World.element += 50
+		print("interact is pressed")
 	if event.is_action_pressed("drop"):
 		current_action = 2
 		#World.element -= 10
 		Drop()
+		print("drop is pressed")
+	if event.is_action_pressed("eat"):
+		print("eat is pressed")
+		Eat()
+	if event.is_action_pressed("attack"):
+		print("attack is pressed")
+		Attack()
+	if event.is_action_pressed("throw"):
+		print( "throw is pressed")
+		Throw()
 	'else:
 		current_action = 2'
 
 
+func Eat():
+	if equipped_tool != null:
+		#if equipped_tool.is_in_group("Life") == false:
+			equipped_tool.BeEaten(INDEX)	
+
+func Attack():
+	if equipped_tool != null:
+		#if equipped_tool.is_in_group("Life") == false:
+			equipped_tool.AttackItem(INDEX)	
+			
+func Throw():
+	if equipped_tool != null:
+		#if equipped_tool.is_in_group("Life") == false:
+			equipped_tool.BeThrown(INDEX)	
+			Drop()
 
 func UseItem():
 	if equipped_tool != null:

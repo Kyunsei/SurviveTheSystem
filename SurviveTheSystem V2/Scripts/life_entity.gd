@@ -136,18 +136,32 @@ func eating_food():
 				Life.Eat(INDEX, contact_index)
 #	await get_tree().create_timer(0.5).timeout
 
-
-func ActivateItem(user_index):
-	print("useLIFE")
+func BeEaten (user_index):
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 	var current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
 	if Life.Genome[genome_index]["use"][current_cycle] == 1: #EAT
-		'Life.parameters_array[INDEX*Life.par_number+1] = 0
-		Life.parameters_array[INDEX*Life.par_number+2] = 0'
 		Life.Eat(user_index,INDEX)
-		
 
+func ActivateItem(user_index):
+	print("useLIFE")
 
+func AttackItem(user_index):
+	print("this item is attacking right now")
+	#var iteminfo_index = Item.item_array[INDEX*Item.par_number + 0]
+	#$CollisionShape2D/DebugRect2.show()
+	#$Timer.start(0)
+	#for i in interact_array:
+		#if i != null:
+			#Life.parameters_array[i.INDEX*Life.par_number+1] -= Item.item_information[iteminfo_index]['value'][0]
+			#if Life.Genome[Life.parameters_array[i.INDEX*Life.par_number]]["movespeed"][Life.parameters_array[i.INDEX*Life.par_number+3]] > 0:
+				#i.global_position += global_position.direction_to(i.global_position) *64
+				#
+func BeThrown (user_index):
+	print("This LifeEntity was thrown")
+	var distance = 100
+	var direction_throw = Vector2(Life.parameters_array[user_index*Life.par_number+4],Life.parameters_array[user_index*Life.par_number+5])
+	print(direction_throw)
+	global_position+= distance*direction_throw
 
 func Interact(entity):
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]

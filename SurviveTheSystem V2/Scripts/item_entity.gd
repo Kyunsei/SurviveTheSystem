@@ -45,17 +45,7 @@ func AdjustPhysics():
 
 
 func ActivateItem(user_index):
-
-
 	var iteminfo_index = Item.item_array[INDEX*Item.par_number + 0]
-	if Item.item_information[iteminfo_index]['action'][0] == 1:
-		$CollisionShape2D/DebugRect2.show()
-		$Timer.start(0)
-		for i in interact_array:
-			if i != null:
-				Life.parameters_array[i.INDEX*Life.par_number+1] -= Item.item_information[iteminfo_index]['value'][0]
-				if Life.Genome[Life.parameters_array[i.INDEX*Life.par_number]]["movespeed"][Life.parameters_array[i.INDEX*Life.par_number+3]] > 0:
-					i.global_position += global_position.direction_to(i.global_position) *64
 	if Item.item_information[iteminfo_index]['action'][0] == 2:
 		var x = int(position.y/World.tile_size)
 		var y = int(position.x/World.tile_size)
@@ -77,10 +67,31 @@ func ActivateItem(user_index):
 			Item.item_array[INDEX*Item.par_number+2]=1
 			setSprite(0)
 
-			
-			 
-		pass
-		
+func AttackItem(user_index):
+	var iteminfo_index = Item.item_array[INDEX*Item.par_number + 0]
+	$CollisionShape2D/DebugRect2.show()
+	$Timer.start(0)
+	for i in interact_array:
+		if i != null:
+			Life.parameters_array[i.INDEX*Life.par_number+1] -= Item.item_information[iteminfo_index]['value'][0]
+			if Life.Genome[Life.parameters_array[i.INDEX*Life.par_number]]["movespeed"][Life.parameters_array[i.INDEX*Life.par_number+3]] > 0:
+				i.global_position += global_position.direction_to(i.global_position) *64
+				
+func BeEaten (user_index):
+	print("Best print BEaten")
+	
+func BeThrown (user_index):
+	print("This thing was thrown")
+	var distance = 100
+	var direction_throw = Vector2(Life.parameters_array[user_index*Life.par_number+4],Life.parameters_array[user_index*Life.par_number+5])
+	print(direction_throw)
+	global_position+= distance*direction_throw
+
+	#holded item speed = 1000
+	#wait 2 sec
+	#holded item speed =-1000
+	#Set direction towards player cursor
+	
 func _on_timer_timeout():
 	$CollisionShape2D/DebugRect2.hide()
 	#queue_free() # Replace with function body.
