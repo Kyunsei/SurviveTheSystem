@@ -2,8 +2,10 @@ extends Node
 
 'This is the global Script for all the variable and function defining the world'
 
-var world_size = 60 #The size in tile of the World
-var tile_size = 32 # the size in pixel of each tile
+var world_size = 200 #The size in tile of the World
+var tile_size = 64 # the size in pixel of each tile
+var fieldofview = 20 #in tile
+
 
 var block_element_array = [] #1D matrix of the block composing the world
 
@@ -60,8 +62,102 @@ func InstantiateBlock(i,j,folder):
 		new_block.name =str(i)+"_"+str(j)
 		folder.add_child(new_block)
 
+func getWorldPos(position):
+	var x = int(position.x/tile_size)
+	var y = int(position.y/tile_size)
+	return Vector2(x,y)
+
+func InstantiateBlockAroundPlayer(x,y,folder):
+	for i in range(-fieldofview,fieldofview):
+		for j in range(-fieldofview,fieldofview):
+			var xpos = x + i
+			var ypos = y + j
+			World.InstantiateBlock(xpos,ypos,folder)
 
 
+func ActivateAndDesactivateBlockAround(direction,x,y,folder):
+	var allblocks = folder.get_children()
+	#var playerposindex = x*world_size + y
+	var playerpos = Vector2(x,y)
+
+	if direction.x < 0 :
+		#var s = Time.get_ticks_msec() 
+		var rightblocks = allblocks.filter(getRightBlock.bind(playerpos))
+		#var s2 = Time.get_ticks_msec() 
+
+		#print("filtre is " + str(s2-s))
+		for b in rightblocks:
+			var b_pos = b.position.x - fieldofview*2*tile_size
+			b.position.x = max(0, b_pos)
+			var newpos = getWorldPos(b.position)
+			var newposindex = newpos.y*World.world_size + newpos.x
+			b.posindex = newposindex
+		#var s3 = Time.get_ticks_msec() 
+		#print("loop is " + str(s3-s2))
+
+	if direction.x > 0 :
+		var leftblocks = allblocks.filter(getLeftBlock.bind(playerpos))
+		for b in leftblocks:
+			var b_pos = b.position.x + fieldofview*2*tile_size
+			b.position.x = min(world_size*tile_size-1, b_pos)
+			var newpos = getWorldPos(b.position)
+			var newposindex = newpos.y*World.world_size + newpos.x
+			b.posindex = newposindex	
+	
+	if direction.y < 0:
+		var bottomblocks = allblocks.filter(getBottomBlock.bind(playerpos))
+		for b in bottomblocks:
+			var b_pos = b.position.y - fieldofview*2*tile_size
+			b.position.y = max(0, b_pos)
+			var newpos = getWorldPos(b.position)
+			var newposindex = newpos.y*World.world_size + newpos.x
+			b.posindex = newposindex
+	if direction.y > 0:	
+		var topblocks = allblocks.filter(getTopBlock.bind(playerpos))
+		for b in topblocks:
+			var b_pos = b.position.y + fieldofview*2*tile_size
+			b.position.y =  min(world_size*tile_size-1, b_pos)
+			var newpos = getWorldPos(b.position)
+			var newposindex = newpos.y*World.world_size + newpos.x
+			b.posindex = newposindex
+
+	
+
+	
+
+
+
+
+func getRightBlock(block,playerpos):
+	var blockpos = getWorldPos(block.position)
+	if blockpos.x >  fieldofview*2 - 1:
+		return blockpos.x > (playerpos.x + fieldofview)
+	else:
+		return false
+
+func getBottomBlock(block,playerpos):
+	var blockpos = getWorldPos(block.position)
+	if blockpos.y >  fieldofview*2 - 1:
+		return blockpos.y > (playerpos.y + fieldofview)
+	else:
+		return false
+
+func getTopBlock(block,playerpos):
+	var blockpos = getWorldPos(block.position)
+	if blockpos.y < world_size - fieldofview*2:
+		return blockpos.y < (playerpos.y - fieldofview)
+	else:
+		return false
+
+
+
+func getLeftBlock(block,playerpos):
+	var blockpos = getWorldPos(block.position)
+	if blockpos.x < world_size - fieldofview*2:
+		return blockpos.x < (playerpos.x - fieldofview)
+	else:
+		return false
+	
 func init_buffer(A):
 	var input := PackedFloat32Array(A)
 	var input_bytes := input.to_byte_array()

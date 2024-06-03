@@ -15,21 +15,22 @@ func _ready():
 	
 	Item.Init_Item()
 
-	playerindex = Life.BuildPlayer($Life)
+	Life.player_index = Life.BuildPlayer($Life)
 	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
-	$Life/Player.INDEX = playerindex
-	for i in World.world_size:
-		for j in World.world_size:
-			World.InstantiateBlock(i,j,$Blocks)
-
-	Item.BuildItem($Life/Player.global_position.x/32,$Life/Player.global_position.y/32+3,0,$Items)
-	Item.BuildItem($Life/Player.global_position.x/32,$Life/Player.global_position.y/32-3,1,$Items)
+	$Life/Player.INDEX = Life.player_index
+	var playerworldpos = World.getWorldPos($Life/Player.global_position)
 	
-	for n in range(120):
+
+	World.InstantiateBlockAroundPlayer(playerworldpos.x,playerworldpos.y,$Blocks)
+
+	Item.BuildItem(playerworldpos.x,playerworldpos.y-1,0,$Items)
+	Item.BuildItem(playerworldpos.x,playerworldpos.y+1,1,$Items)
+	
+	for n in range(200):
 		Life.BuildLifeAtRandomplace(0,1,$Life)
-	for n in range(3):
+	for n in range(10):
 		Life.BuildLifeAtRandomplace(1,2,$Life)
-	for n in range(5):
+	for n in range(30):
 		Life.BuildLifeAtRandomplace(2,2,$Life)
 	for n in range(1):
 		Life.BuildLifeAtRandomplace(4,0,$Life)
@@ -38,6 +39,9 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	var playerworldpos = World.getWorldPos($Life/Player.global_position)
+	World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,$Blocks)
+	
 	if Life.state_array[playerindex] <= 0:
 		$UI/GameOverPanel.show()
 		gameover = true
@@ -58,8 +62,8 @@ func _process(delta):
 	
 
 func UpdateSimulationSpeed():
-	$Blocks/BlockTimer.wait_time = 1. / World.speed
-	$Blocks/BlockTimer.start(0)
+	$BlockTimer.wait_time = 5. / World.speed
+	$BlockTimer.start(0)
 	
 	
 	$Life/LifeTimer.wait_time = 10.0 / World.speed
@@ -76,7 +80,16 @@ func _on_life_timer_timeout():
 	pass
 	
 func _on_brain_timer_timeout():
+	pass
 	Brain.BrainLoopCPU($Life)
+
+func _on_block_timer_timeout():
+	pass
+	World.BlockLoopGPU() 
+	
+
+func _on_day_timer_timeout():
+	World.day += 1 # Replace with function body.
 
 
 func GameOver():
@@ -108,9 +121,9 @@ func _on_button_restart_pressed():
 	#$UI/GameOverPanel.hide()
 	
 func _on_button_respawn_pressed():
-	playerindex = Life.BuildPlayer($Life)
+	Life.player_index = Life.BuildPlayer($Life)
 	#$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
-	$Life/Player.INDEX = playerindex # Replace with function body.
+	$Life/Player.INDEX = Life.player_index # Replace with function body.
 	$Life/Player/Sprite2D.show()
 	$UI/GameOverPanel.hide()
 	gameover = false
@@ -126,12 +139,6 @@ func _input(event):
 				Life.parameters_array[idx*Life.par_number + 3] = $SpawnWindow.current_cycle
 
 
-func _on_block_timer_timeout():
-	World.BlockLoopGPU() # Replace with function body.
-
-
-func _on_day_timer_timeout():
-	World.day += 1 # Replace with function body.
 
 
 func _on_button_continue_pressed():

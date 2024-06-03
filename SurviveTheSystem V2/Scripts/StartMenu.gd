@@ -37,3 +37,10 @@ func _on_total_element_text_changed(new_text):
 
 func _on_battle_button_pressed():
 	get_tree().change_scene_to_file("res://Scenes/battle_mode.tscn") # Replace with function body.
+
+
+func _on_fo_v_text_changed(new_text):
+	if int(new_text) > 0:
+			World.fieldofview = int(new_text) # Replace with function body.
+
+ # Replace with function body.

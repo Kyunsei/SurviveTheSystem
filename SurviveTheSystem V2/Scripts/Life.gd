@@ -12,8 +12,9 @@ var par_number = 9 # 0: Genome_ID, 1: PV, 2: Element, 3: LifeCycle, 4: Direction
 var Genome = {}
 
 var plant_number = 0
+var player_index = 0
 
-var max_life = 400
+var max_life = 500
 
 var score = 0
 
@@ -39,8 +40,8 @@ func Init_matrix():
 
 func Init_Parameter(INDEX,genome_index):
 	var posIndex = world_matrix.find(INDEX)
-	var x = (posIndex % World.world_size) *life_size_unit
-	var y = (floor(posIndex/World.world_size))*life_size_unit
+	var x = (posIndex % World.world_size) *World.tile_size
+	var y = (floor(posIndex/World.world_size))*World.tile_size
 	
 	parameters_array[INDEX*par_number + 0] = genome_index #G_ID
 	parameters_array[INDEX*par_number + 1] = Genome[genome_index]["PV"][0] #PV
@@ -64,7 +65,7 @@ func InstantiateLife(INDEX,folder):
 	var genome_index = parameters_array[INDEX*par_number + 0]
 	if folder.has_node(str(INDEX))==false:
 		#if isOnScreen(Life.Life_Matrix_PositionX[index],Life.Life_Matrix_PositionY[index]):
-		if x >= 0 and y >= 0 and x < World.world_size*life_size_unit and y < World.world_size*life_size_unit :
+		if x >= 0 and y >= 0 and x < World.world_size*World.tile_size and y < World.world_size*World.tile_size :
 				var new_life = life_scene.instantiate()
 				new_life.position = Vector2(x,y)
 				new_life.name =str(INDEX)

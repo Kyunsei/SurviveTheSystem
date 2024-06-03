@@ -16,14 +16,14 @@ var current_action = 0
 var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
 
 func _process(delta):
+	
+	
 	speed = basespeed*World.speed
 	$Debug.text = "PV: " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" /Hunger " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
 	#$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) ) +" / " + str (Life.state_array[INDEX]) 
 	if Life.state_array[INDEX] <= 0:
 		#queue_free()
 		$Sprite2D.hide()
-
-
 
 func _physics_process(delta):
 	input_dir = Vector2.ZERO
@@ -39,20 +39,22 @@ func _physics_process(delta):
 	if Input.is_action_pressed("down"):
 		input_dir.y += 1
 		rotation_dir = 1
+
 	
 	
 	velocity = input_dir.normalized() * speed 
 	move_and_collide(velocity *delta)
 
-	
-	position.x = clamp(position.x, 0, World.world_size*World.tile_size)
-	position.y = clamp(position.y, 0, World.world_size*World.tile_size)
-	Life.parameters_array[INDEX*Life.par_number + 4]  = last_dir.normalized().x 
-	Life.parameters_array[INDEX*Life.par_number + 5] = last_dir.normalized().y
-	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
-	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
 	if input_dir.normalized() != Vector2(0,0):
 		last_dir = input_dir
+	position.x = clamp(position.x, 0, World.world_size*World.tile_size)
+	position.y = clamp(position.y, 0, World.world_size*World.tile_size)
+	Life.parameters_array[INDEX*Life.par_number + 4]  = input_dir.normalized().x 
+	Life.parameters_array[INDEX*Life.par_number + 5] = input_dir.normalized().y
+	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
+	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
+
+	
 	if equipped_tool != null:
 		var temppos = position + last_dir * Vector2(64,96) 
 		equipped_tool.position = position - Vector2(0,32) + last_dir * Vector2(64,64) 

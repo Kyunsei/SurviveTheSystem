@@ -17,11 +17,13 @@ offset_right = 31.0
 offset_bottom = 31.0
 color = Color(0.690196, 0.564706, 0.505882, 1)
 
-[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="."]
-
 [node name="debug" type="Label" parent="."]
 visible = false
 offset_left = -2.0
 offset_top = 10.0
 offset_right = 38.0
 offset_bottom = 33.0
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

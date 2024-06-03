@@ -12,22 +12,21 @@ var interact_with = []
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	
-	var rng = RandomNumberGenerator.new()
-	position.x += rng.randi_range(0,5)
+	#var rng = RandomNumberGenerator.new()
+	#position.x += rng.randi_range(0,5)
 	#position.y += rng.randi_range(0,5)
 	current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
-
+	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
+	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
 	setSprite()
 	pass # Replace with function body.
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-
-	'if Life.state_array[INDEX] < 0:
-		queue_free()'
+	pass
 	if Life.state_array[INDEX] > 0:
-		eating_food()
+		#eating_food()
 		$Debug.text =  str(Life.parameters_array[INDEX*Life.par_number + 8] ) + " " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
 		if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3] and current_cycle >= 0 :
 			current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
@@ -42,14 +41,14 @@ func _process(delta):
 		if isEquipped:
 			isEquipped = false
 			get_parent().get_node("Player").equipped_tool = null
-		pass
+		
 
 	
 func _physics_process(delta):
 	if Brain.state_array[INDEX] > 0:
 		move(delta)
-	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
-	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
+		Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
+		Life.parameters_array[INDEX*Life.par_number + 7] = position.y
 	
 	
 func setSprite():
@@ -189,7 +188,7 @@ func Interact(entity):
 				Life.Eat(INDEX, contact_index)'
 
 
-func _on_vision_area_entered(area):
+'func _on_vision_area_entered(area):
 	if area.is_in_group("Life"):
 		vision_array.append(area.get_parent()) 
 		
@@ -205,5 +204,5 @@ func _on_area_2d_area_exited(area):
 
 func _on_area_2d_area_entered(area):
 	if area.is_in_group("Life"):
-		interact_with.append(area.get_parent()) 
+		interact_with.append(area.get_parent()) '
 
