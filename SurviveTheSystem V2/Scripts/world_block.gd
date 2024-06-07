@@ -12,11 +12,11 @@ func _ready():
 	posindex = x*World.world_size + y
 	current_value =  World.block_element_array[posindex]
 	$ColorRect.color = getAdjustedSoilColor()
-	#$outsideline.color = getAdjustedSoilColor()
+	$outsideline.color = getAdjustedSoilColor()
 	pass # Replace with function body.
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
+#Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	#$debug.text = str("%.1f" % World.block_element_array[posindex])
 	'if Life.world_matrix[posindex] == -1:
@@ -27,7 +27,7 @@ func _process(delta):
 	if abs(current_value - World.block_element_array[posindex]) > 1 :
 		$ColorRect.color = getAdjustedSoilColor()
 		current_value = World.block_element_array[posindex]
-		#$outsideline.color = getAdjustedSoilColor()
+		$outsideline.color = getAdjustedSoilColor()
 
 func getAdjustedSoilColor():
 	var colormax = Color(0.3, 0.2, 0.1, 1)
