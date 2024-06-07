@@ -45,18 +45,33 @@ func InstantiateItem(x,y,INDEX,folder):
 
 func Init_Item():
 	Init_matrix()
-	item_information[0] = {
+	item_information[0] = { #sprite 0 , scythe
 		'sprite' : [load("res://Art/scythe.png")],
 		'sprite_empty' : [load("res://Art/scythe.png")],
-		'action' : [1],
-		'value': [10]
-		
+		'use' : [1],
+		'damagevalue': [10],
+		'throw':[10],
+		'eat':[1],
+		'attack':[1]
 	}
 	
-	item_information[1] = {
+	item_information[1] = { #sprite 1 , star
 		'sprite' : [load("res://Art/poop_star.png")],
 		'sprite_empty' : [load("res://Art/poop_star_0.png")],
-		'action' : [2],
-		'value': [50]		
+		'use' : [2], # 0 : nothing , 1: on , 2 : earth retrieval and disposal
+		'damagevalue': [1],
+		'throw':[5], # 0 : can't be launched , 1: throw 100 , 5 : throw 500
+		'eat':[0],
+		'attack':[1]
 	}
 
+
+	item_information[2] = { #sprite 2 , crystal spear
+		'sprite' : [load("res://Art/scythe.png")],
+		'sprite_empty' : [load("res://Art/scythe.png")],
+		'use' : [1],
+		'damagevalue': [10],
+		'throw':[1],
+		'eat':[0],
+		'attack':[1]
+	}

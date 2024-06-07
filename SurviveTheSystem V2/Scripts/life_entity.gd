@@ -3,6 +3,7 @@ extends CharacterBody2D
 
 var INDEX = 0
 var current_cycle = -1
+var genome_index = -1
 var isEquipped = false
 var user_INDEX = -1
 var vision_array = []
@@ -11,6 +12,11 @@ var interact_with = []
 var onScreen = true
 var activated = false
 var thread  = Thread.new()
+
+var start_pos = Vector2(0,0)
+var direction_throw = Vector2(0,0)
+var isThrown = false
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -31,16 +37,13 @@ func activate():
 	$Area2D.show()
 	$Vision.show()
 	activated = true
-	thread = Thread.new()
-	thread.start(Init)
-
-func Init():
-	call_deferred("Init2") 
-	thread.call_deferred("wait_to_finish")
-
-func Init2():
+	'thread = Thread.new()
+	thread.start(Init)'
+	genome_index = Life.parameters_array[INDEX*Life.par_number + 0]
 	global_position.x  = Life.parameters_array[INDEX*Life.par_number + 6]  
 	global_position.y = Life.parameters_array[INDEX*Life.par_number + 7]
+
+
 		
 func desactivate():
 	$CollisionShape2D.hide()
@@ -50,6 +53,7 @@ func desactivate():
 	global_position.x  = 0 
 	global_position.y = 0
 	activated = false
+
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -63,7 +67,7 @@ func _process(delta):
 		#$Debug.text = str(INDEX) +" "  + " " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
 		if current_cycle != Life.parameters_array[INDEX*Life.par_number + 3] :
 			current_cycle = Life.parameters_array[INDEX*Life.par_number + 3]
-			#setSprite()
+			setSprite()
 		if Life.parameters_array[INDEX*Life.par_number+1] <= 0 :
 			setDeadSprite()
 	if Life.state_array[INDEX] <= 0  and activated :
@@ -76,6 +80,8 @@ func _process(delta):
 
 	
 func _physics_process(delta):
+	if isThrown:
+		Throwing()
 	if Brain.state_array[INDEX] > 0:
 		move(delta)
 
@@ -181,11 +187,20 @@ func AttackItem(user_index):
 				#i.global_position += global_position.direction_to(i.global_position) *64
 				#
 func BeThrown (user_index):
-	print("This LifeEntity was thrown")
-	var distance = 100
-	var direction_throw = Vector2(Life.parameters_array[user_index*Life.par_number+4],Life.parameters_array[user_index*Life.par_number+5])
-	print(direction_throw)
-	global_position+= distance*direction_throw
+
+	direction_throw = Vector2(Life.parameters_array[user_index*Life.par_number+4],Life.parameters_array[user_index*Life.par_number+5])
+	if Life.Genome[genome_index]['throw'][current_cycle] > 0:
+		start_pos = global_position
+		isThrown = true
+
+
+func Throwing():
+	var distance = 100*Life.Genome[genome_index]['throw'][current_cycle]
+	var speed = 10.
+	if start_pos.distance_to(global_position) < distance:
+		global_position += direction_throw*speed
+	else:
+		isThrown = false
 
 func Interact(entity):
 	var genome_index = Life.parameters_array[INDEX*Life.par_number + 0]

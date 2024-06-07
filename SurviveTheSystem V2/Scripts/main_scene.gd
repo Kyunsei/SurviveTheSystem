@@ -22,8 +22,8 @@ func _ready():
 	
 	Item.Init_Item()
 
-	
-	Life.BuildLifeAtRandomplace(0,1,$Life)
+	for i in range(Life.max_life):
+		Life.BuildLifeAtRandomplace(0,1,$Life)
 	Life.player_index = Life.BuildPlayer($Life)
 	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	$Life/Player.INDEX = Life.player_index
@@ -33,15 +33,8 @@ func _ready():
 	Item.BuildItem(playerworldpos.x,playerworldpos.y+1,1,$Items)
 
 
-	'for n in range(2000):
-		Life.BuildLifeAtRandomplace(0,1,$Life)'
-	'for n in range(50):
-		Life.BuildLifeAtRandomplace(1,2,$Life)
-	for n in range(2000):
-		Life.BuildLifeAtRandomplace(2,2,$Life)
-	for n in range(0):
-		Life.BuildLifeAtRandomplace(4,0,$Life)'
 
+	
 func InitEmptyLife():
 	for i in range(current_batch, current_batch + batch_size):
 		if i < Life.max_life:
@@ -51,6 +44,15 @@ func InitEmptyLife():
 	current_batch = (current_batch + batch_size)
 	if current_batch > Life.max_life:
 		initialized = true
+	'for n in range(20):
+		Life.BuildLifeRDinThread(0,1,$Life)
+	for n in range(5):
+		Life.BuildLifeRDinThread(1,2,$Life)
+	for n in range(20):
+		Life.BuildLifeRDinThread(2,2,$Life)
+	for n in range(0):
+		Life.BuildLifeRDinThread(4,0,$Life)'
+
 
 	
 	

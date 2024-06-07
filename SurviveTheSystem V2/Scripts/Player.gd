@@ -49,8 +49,8 @@ func _physics_process(delta):
 		last_dir = input_dir
 	position.x = clamp(position.x, 0, World.world_size*World.tile_size)
 	position.y = clamp(position.y, 0, World.world_size*World.tile_size)
-	Life.parameters_array[INDEX*Life.par_number + 4]  = input_dir.normalized().x 
-	Life.parameters_array[INDEX*Life.par_number + 5] = input_dir.normalized().y
+	Life.parameters_array[INDEX*Life.par_number + 4]  = last_dir.normalized().x 
+	Life.parameters_array[INDEX*Life.par_number + 5] = last_dir.normalized().y
 	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
 	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
 
@@ -104,9 +104,20 @@ func Attack():
 			
 func Throw():
 	if equipped_tool != null:
-		#if equipped_tool.is_in_group("Life") == false:
-			equipped_tool.BeThrown(INDEX)	
-			Drop()
+		if equipped_tool.is_in_group("Life") == false:
+			var iteminfo_index = Item.item_array[equipped_tool.INDEX*Item.par_number + 0]
+			if Item.item_information[iteminfo_index]['throw'][0] > 0:
+			#if equipped_tool.is_in_group("Life") == false:
+				equipped_tool.BeThrown(INDEX)	
+				Drop()
+		elif equipped_tool.is_in_group("Life") == true:
+			var genome_index = Life.parameters_array[equipped_tool.INDEX*Life.par_number + 0]
+			var current_cycle = Life.parameters_array[equipped_tool.INDEX*Life.par_number + 3]
+			if Life.Genome[genome_index]['throw'][current_cycle] > 0:
+				#if equipped_tool.is_in_group("Life") == false:
+				equipped_tool.BeThrown(INDEX)	
+				Drop()
+
 
 func UseItem():
 	if equipped_tool != null:

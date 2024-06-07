@@ -14,7 +14,7 @@ var Genome = {}
 var plant_number = 0
 var player_index = 0
 
-var max_life = 800
+var max_life = 10
 
 var score = 0
 
@@ -361,7 +361,17 @@ func BuildLifeinThread(x,y,genome_index):
 		state_array[newindex] = 1
 		#InstantiateLifeinThread(newindex,folder)
 	return newindex
-		
+
+func BuildLifeRDinThread(x,y,genome_index):
+	var newpos = PickRandomPlace()
+	if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
+		var newindex = state_array.find(-1)
+		if newindex >= 0: # and newindex != Life.player_index:
+			world_matrix[x*World.world_size + y] = newindex
+			Init_Parameter(newindex,genome_index)
+			state_array[newindex] = 1
+			#InstantiateLifeinThread(newindex,folder)
+
 
 func BuildPlayer(folder):
 	var newindex = state_array.find(-1)
@@ -426,11 +436,16 @@ func Init_Genome():
 		"take_element" :[3,3],
 		"PV":[5,5],
 		"interaction": [1,0],
-		"use": [0,0],
 		"composition": ["plant","plant"],
 		"digestion": ["nothing","nothing"],
 		
-		"category":[0,0]
+		"category":[0,0],
+		
+		'use' : [0,0],
+		'damagevalue': [1,1],
+		'throw':[1,2],
+		'eat':[1,0],
+		'attack':[1,0]
 	}
 	Genome[1] = {
 	"sprite" : [load("res://Art/sheep1.png"),load("res://Art/sheep2.png"),load("res://Art/sheep3.png")],
@@ -443,11 +458,16 @@ func Init_Genome():
 	"take_element" :[0,0,0],
 	"PV":[5,5,10],
 	"interaction": [1,1,0],
-	"use": [1,0,0],
+	
 	"metabospeed": [0,1,1],
 	"composition": ["plant2","meat","meat"],
 	"digestion": ["Nothing","plant","plant"],
-	"category":[0,1,2]
+	"category":[0,1,2],
+	"use": [1,0,0],
+	'damagevalue': [0,0,0],
+	'throw':[0,0,0],
+	'eat':[0,0,0],
+	'attack':[0,0,0]
 	}
 	
 	
@@ -464,10 +484,15 @@ func Init_Genome():
 	"maxenergy": [4,4,8,8],
 	"PV":[5,5,5,5],
 	"interaction": [1,0,0,2],
-	"use": [1,0,0,2],
+
 	"composition": ["berry","plant2","plant2","plant2"],
 	"digestion": ["nothing","nothing","nothing","nothing"],
-	"category":[3,3,3]
+	"category":[3,3,3,3],
+	"use": [1,0,0,2],
+	'damagevalue': [1,0,0,2],
+	'throw':[1,0,0,2],
+	'eat':[1,0,0,2],
+	'attack':[1,0,0,2]
 	}
 	
 	
@@ -483,10 +508,14 @@ func Init_Genome():
 		"maxenergy": [10],
 		"PV":[10],
 		"interaction": [0],
-		"use": [0],
 		"composition": ["meat"],
 		"digestion": ["berry"],
-		"category":[2]
+		"category":[2],
+		"use": [0],
+		'damagevalue': [1],
+		'throw':[1],
+		'eat':[1],
+		'attack':[1]
 	}
 	
 	Genome[4] = {
@@ -503,7 +532,12 @@ func Init_Genome():
 	"maxenergy": [100],
 	"composition": ["chitin"],
 	"digestion": ["meat"],
-	"category":[4]
+	"category":[4],
+	"use": [0],
+	'damagevalue': [1],
+	'throw':[1],
+	'eat':[1],
+	'attack':[1]
 	}
 	
 	Genome[5] = {
@@ -514,6 +548,11 @@ func Init_Genome():
 	"take_element" :[5,8,10],
 	"PV":[5,30,50],
 	"composition": ["plant","plant","plant2"],
-	"digestion": ["nothing","nothing","nothing"]
+	"digestion": ["nothing","nothing","nothing"],
+	"use": [0,0,0],
+	'damagevalue': [0,0,0],
+	'throw':[0,0,0],
+	'eat':[0,0,0],
+	'attack':[0,0,0]
 	}
 
