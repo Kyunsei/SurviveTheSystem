@@ -50,33 +50,35 @@ func ActivateItem(user_index):
 		var x = int(position.y/World.tile_size)
 		var y = int(position.x/World.tile_size)
 		var posindex = 0
-		if Item.item_array[INDEX*Item.par_number+2]==1:	 #full		
-			for i in range(3):
-				for j in range(3):
-					posindex = (x+i)*World.world_size + y+j
-					World.block_element_array[posindex] += inter_value /(3*3)		
-			Item.item_array[INDEX*Item.par_number+2]=0		
-			inter_value = 0
-			setSprite(1)
-		elif Item.item_array[INDEX*Item.par_number+2]==0: #empty
+		#if Item.item_array[INDEX*Item.par_number+2]==1:	 #full		
+		for i in range(3):
+			for j in range(3):
+				posindex = (x+i)*World.world_size + y+j
+				World.block_element_array[posindex] += 10# inter_value /(3*3)		
+		#Item.item_array[INDEX*Item.par_number+2]=0		
+			#inter_value = 0
+			#setSprite(1)
+		'elif Item.item_array[INDEX*Item.par_number+2]==0: #empty
 			for i in range(3):
 				for j in range(3):	
 					posindex = (x+i)*World.world_size + y+j
 					inter_value += World.block_element_array[posindex]
-					World.block_element_array[posindex] = 0 #Item.item_information[iteminfo_index]['value'][0]
+					World.block_element_array[posindex] = 0 #Item.item_information[iteminfo_index]["value"][0]
 			Item.item_array[INDEX*Item.par_number+2]=1
-			setSprite(0)
+			setSprite(0)'
 
 func AttackItem(user_index):
 	var iteminfo_index = Item.item_array[INDEX*Item.par_number + 0]
-	$CollisionShape2D/DebugRect2.show()
-	$Timer.start(0)
-	for i in interact_array:
-		if i != null:
-			Life.parameters_array[i.INDEX*Life.par_number+1] -= Item.item_information[iteminfo_index]['value'][0]
-			if Life.Genome[Life.parameters_array[i.INDEX*Life.par_number]]["movespeed"][Life.parameters_array[i.INDEX*Life.par_number+3]] > 0:
-				i.global_position += global_position.direction_to(i.global_position) *64
-				
+	if Item.item_information[iteminfo_index]['action'][0] == 1:
+
+		$CollisionShape2D/DebugRect2.show()
+		$Timer.start(0)
+		for i in interact_array:
+			if i != null:
+				Life.parameters_array[i.INDEX*Life.par_number+1] -= Item.item_information[iteminfo_index]['value'][0]
+				if Life.Genome[Life.parameters_array[i.INDEX*Life.par_number]]["movespeed"][Life.parameters_array[i.INDEX*Life.par_number+3]] > 0:
+					i.global_position += global_position.direction_to(i.global_position) *64
+					
 func BeEaten (user_index):
 	print("Best print BEaten")
 	

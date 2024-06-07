@@ -5,6 +5,13 @@ extends Node2D
 var playerindex = 0
 var gameover = false
 
+#to load the map
+var batch_size = 20
+var current_batch = 0
+var initialized = false
+
+var thread = Thread.new()
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	World.Init_World()
@@ -15,30 +22,46 @@ func _ready():
 	
 	Item.Init_Item()
 
+	
+	Life.BuildLifeAtRandomplace(0,1,$Life)
 	Life.player_index = Life.BuildPlayer($Life)
 	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	$Life/Player.INDEX = Life.player_index
 	var playerworldpos = World.getWorldPos($Life/Player.global_position)
-	
-
 	World.InstantiateBlockAroundPlayer(playerworldpos.x,playerworldpos.y,$Blocks)
-
 	Item.BuildItem(playerworldpos.x,playerworldpos.y-1,0,$Items)
 	Item.BuildItem(playerworldpos.x,playerworldpos.y+1,1,$Items)
-	
-	for n in range(200):
-		Life.BuildLifeAtRandomplace(0,1,$Life)
-	for n in range(10):
+
+
+	'for n in range(2000):
+		Life.BuildLifeAtRandomplace(0,1,$Life)'
+	'for n in range(50):
 		Life.BuildLifeAtRandomplace(1,2,$Life)
-	for n in range(30):
+	for n in range(2000):
 		Life.BuildLifeAtRandomplace(2,2,$Life)
-	for n in range(1):
-		Life.BuildLifeAtRandomplace(4,0,$Life)
+	for n in range(0):
+		Life.BuildLifeAtRandomplace(4,0,$Life)'
+
+func InitEmptyLife():
+	for i in range(current_batch, current_batch + batch_size):
+		if i < Life.max_life:
+			print(i)
+			if i != Life.player_index: #player
+				Life.InstantiateEmptyLife(i,$Life)
+	current_batch = (current_batch + batch_size)
+	if current_batch > Life.max_life:
+		initialized = true
+
+	
+	
 
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	if initialized != true:
+		pass
+		InitEmptyLife()
+		#InstatiateAllLifeScene()
+	
 	var playerworldpos = World.getWorldPos($Life/Player.global_position)
 	World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,$Blocks)
 	
@@ -76,21 +99,42 @@ func UpdateSimulationSpeed():
 	$DayTimer.start(0)
 
 func _on_life_timer_timeout():
-	Life.LifeLoopCPU($Life) 
-	pass
+	if initialized:
+		pass
+		'var s1 = Time.get_ticks_msec() 
+		#print("loop started")
+		thread = Thread.new()
+		thread.start(Life.LifeLoopCPU.bind(thread))
+		var s2 = Time.get_ticks_msec() 
+		print("Scene with " + str(s2-s1))'
+		
+		Life.LifeLoopCPU($Life)
+		#for l in Life.new_lifes:
+			#$Life.add_child(l)
+	#Life.LifeLoopCPU($Life) 
+	
 	
 func _on_brain_timer_timeout():
 	pass
-	Brain.BrainLoopCPU($Life)
+	#Brain.BrainLoopCPU($Life)
 
 func _on_block_timer_timeout():
 	pass
-	World.BlockLoopGPU() 
+	#World.BlockLoopGPU() 
 	
 
 func _on_day_timer_timeout():
 	World.day += 1 # Replace with function body.
 
+
+func _exit_tree():
+	thread.wait_to_finish()
+	
+
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		thread.wait_to_finish()
+		get_tree().quit() # default behavior
 
 func GameOver():
 	pass

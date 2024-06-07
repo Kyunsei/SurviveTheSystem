@@ -14,9 +14,12 @@ var Genome = {}
 var plant_number = 0
 var player_index = 0
 
-var max_life = 500
+var max_life = 800
 
 var score = 0
+
+var new_lifes = []
+
 
 
 var action_list = {
@@ -57,6 +60,17 @@ func Init_Parameter(INDEX,genome_index):
 	
 	plant_number+=1
 	
+func InstantiateEmptyLife(INDEX,folder):
+	if folder.has_node(str(INDEX))==false:
+			var new_life = life_scene.instantiate()
+			new_life.name =str(INDEX)
+			new_life.INDEX = INDEX
+			folder.add_child(new_life)
+	else:
+		print("already instantiated")
+		#new_life.name =str(INDEX)
+		#new_life.INDEX = INDEX
+	
 func InstantiateLife(INDEX,folder):
 	var posIndex = world_matrix.find(INDEX)
 	var x = parameters_array[INDEX*par_number + 6]
@@ -64,6 +78,7 @@ func InstantiateLife(INDEX,folder):
 	#state_array[INDEX] = 1
 	var genome_index = parameters_array[INDEX*par_number + 0]
 	if folder.has_node(str(INDEX))==false:
+		print("new")
 		#if isOnScreen(Life.Life_Matrix_PositionX[index],Life.Life_Matrix_PositionY[index]):
 		if x >= 0 and y >= 0 and x < World.world_size*World.tile_size and y < World.world_size*World.tile_size :
 				var new_life = life_scene.instantiate()
@@ -79,19 +94,26 @@ func InstantiateLife(INDEX,folder):
 		#new_life.INDEX = INDEX
 
 
-func deleteLoopCPU(folder):
+
+
+
+
+func deleteLoopCPU():
 	var temp = state_array.duplicate()
 	var l = 0
 	while l != -1:
 		l = temp.find(0)
 		temp[l] += 1
 		if l >= 0:
-			RemoveLife(l,folder)
+			RemoveLife(l)
 
 
-func LifeLoopCPU(folder):
+func LifeLoopCPU(thread):
+	var s1 = Time.get_ticks_msec() 
+
 	#this function is the main loop for life entities, will be move to GPU
 	var temp = state_array.duplicate()
+	new_lifes = []
 
 	var l = 0
 	while l != -1:
@@ -112,7 +134,8 @@ func LifeLoopCPU(folder):
 				if isGrowthing(l):
 						Growth(l)
 				else:
-						Duplicate(l,folder)
+						Duplicate(l)
+
 						pass
 	
 	var temp2 = state_array.duplicate()
@@ -121,8 +144,13 @@ func LifeLoopCPU(folder):
 		l = temp2.find(0)
 		temp2[l] += 1
 		if l >= 0:
-			RemoveLife(l,folder)
+			RemoveLife(l)
 
+	var s2 = Time.get_ticks_msec() 
+	thread.call_deferred("wait_to_finish")
+	#print("loop ended with " + str(s2-s1))
+	#print(state_array)
+	#threadfinished = true
 
 
 
@@ -134,6 +162,7 @@ func Metabocost2(INDEX):
 	var value = 1 * Genome[genome_index]["metabospeed"][current_cycle]
 	var value_2 = min(value,parameters_array[INDEX*par_number+2])
 	parameters_array[INDEX*par_number+2] -= value_2 
+
 	World.element += value_2 
 
 func Metabocost(INDEX):
@@ -150,6 +179,7 @@ func Metabocost(INDEX):
 		var posindex = y*World.world_size + x
 		posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
 		World.block_element_array[posindex] += value_2
+
 
 func PassiveHealing(INDEX):
 	var value = 1
@@ -203,7 +233,7 @@ func TakeElement(INDEX):
 		var value = Genome[genome_index]["take_element"][current_cycle] * Genome[genome_index]["metabospeed"][current_cycle]
 		parameters_array[INDEX*par_number+2] += min(value,World.element/plant_number)
 		World.element -= min(value,World.element/plant_number)
-
+		
 func TakeBlockElement(INDEX):
 
 	var genome_index = parameters_array[INDEX*par_number+0]
@@ -269,7 +299,7 @@ func Growth(INDEX):
 	parameters_array[INDEX*par_number+1] = Genome[genome_index]["PV"][current_cycle+1]
 
 	
-func Duplicate(INDEX,folder):
+func Duplicate(INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var current_cycle = parameters_array[INDEX*par_number+3]
 	var x = parameters_array[INDEX*par_number+6]
@@ -282,7 +312,7 @@ func Duplicate(INDEX,folder):
 	var y = (floor(posIndex/World.world_size))'
 	if Genome[genome_index]["childnumber"][current_cycle] > 0 :
 	#if current_cycle+1 >=  Genome[genome_index]["lifecycle"].size():
-		if parameters_array[INDEX*par_number+2] >= Genome[genome_index]["lifecycle"][0]*2*Genome[genome_index]["childnumber"][current_cycle]:
+		if parameters_array[INDEX*par_number+2] > Genome[genome_index]["lifecycle"][0]*2*Genome[genome_index]["childnumber"][current_cycle]:
 			if parameters_array[INDEX*par_number+8] >= Genome[genome_index]["lifecycle_time"][0]: # *2 because give energy to new life
 				'print("----------")
 				print(INDEX)
@@ -293,11 +323,14 @@ func Duplicate(INDEX,folder):
 				print(x,0,y)'
 
 				for i in range(Genome[genome_index]["childnumber"][current_cycle]):
-					var newpos = PickRandomPlaceWithRange(y,x,4)
+					var newpos = PickRandomPlaceWithRange(y,x,10)
 					if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
-						parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
-						BuildLife(newpos[0],newpos[1],genome_index,folder)
-						parameters_array[INDEX*par_number+8] = 0
+						var newidex = BuildLifeinThread(newpos[0],newpos[1],genome_index)
+						if newidex >= 0:
+							parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
+							parameters_array[INDEX*par_number+8] = 0
+						else:
+							print("life array FULL")
 						'if genome_index == 1 :
 							print("Varum dont know how to code : by bugsheep who cant grow anymore")'
 
@@ -319,6 +352,17 @@ func BuildLife(x,y,genome_index,folder):
 		InstantiateLife(newindex,folder)
 		return newindex
 
+
+func BuildLifeinThread(x,y,genome_index):
+	var newindex = state_array.find(-1)
+	if newindex >= 0: # and newindex != Life.player_index:
+		world_matrix[x*World.world_size + y] = newindex
+		Init_Parameter(newindex,genome_index)
+		state_array[newindex] = 1
+		#InstantiateLifeinThread(newindex,folder)
+	return newindex
+		
+
 func BuildPlayer(folder):
 	var newindex = state_array.find(-1)
 	#var newindex = 0
@@ -333,10 +377,10 @@ func BuildPlayer(folder):
 
 
 
-func RemoveLife(INDEX, folder):
+func RemoveLife(INDEX):
 	var posindex = world_matrix.find(INDEX)
-	if folder.has_node(str(INDEX)):
-		folder.get_node(str(INDEX)).hide()
+	'if folder.has_node(str(INDEX)):
+		folder.get_node(str(INDEX)).hide()'
 	world_matrix[posindex] = -1
 	state_array[INDEX] = -1
 	Brain.state_array[INDEX] = -1
@@ -375,7 +419,7 @@ func Init_Genome():
 		"childnumber" : [0,1],
 		"lifecycle_time" : [0,0],
 		"metabospeed": [1,1],
-		"maxenergy": [2,2],
+		"maxenergy": [2,3],
 		
 		
 		"movespeed" : [0,0],

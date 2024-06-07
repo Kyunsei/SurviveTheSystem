@@ -2,9 +2,9 @@ extends Node
 
 'This is the global Script for all the variable and function defining the world'
 
-var world_size = 200 #The size in tile of the World
-var tile_size = 64 # the size in pixel of each tile
-var fieldofview = 20 #in tile
+var world_size = 50 #The size in tile of the World
+var tile_size = 32#128 # the size in pixel of each tile
+var fieldofview = 25 #in tile
 
 
 var block_element_array = [] #1D matrix of the block composing the world
@@ -34,7 +34,7 @@ func Init_World():
 func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
-	block_element_array.fill(5)
+	block_element_array.fill(6)
 	world_array.resize(world_size*world_size)
 	world_array.fill(-1)
 	
