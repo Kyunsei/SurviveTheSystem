@@ -421,6 +421,7 @@ func TakeFruit(INDEX,INDEX2,folder):
 
 func Init_Genome():
 	#This function create different life form
+	#Nouvelle description : Les objets commence par 1, les entités vivantes par 2. exemple Genome[10] -> Premier objet. Genome[20] -> Première entité 
 	# 0: Grass /1: bugsheep /2: Bush /3: Player /4: CrabSpider /5: Tree
 	Genome[0] = {
 		"sprite" : [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")],
