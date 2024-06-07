@@ -30,8 +30,8 @@ func _physics_process(delta):
 		if isThrown:
 			Throwing()
 		
-		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
-		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
+			global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
+			global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
 		
 
 

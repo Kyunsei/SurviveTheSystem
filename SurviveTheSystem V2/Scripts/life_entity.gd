@@ -57,11 +57,10 @@ func desactivate():
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	#await get_tree().create_timer(0.5).timeout
 	if Life.state_array[INDEX] > 0:
 		if activated != true:
 			activate()
-		
 	#if activated: 
 		#eating_food()
 		#$Debug.text = str(INDEX) +" "  + " " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  

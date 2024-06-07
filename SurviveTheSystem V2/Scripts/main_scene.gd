@@ -65,7 +65,7 @@ func _process(delta):
 		#InstatiateAllLifeScene()
 	
 	var playerworldpos = World.getWorldPos($Life/Player.global_position)
-	World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,$Blocks)
+	#World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,$Blocks)
 	
 	if Life.state_array[playerindex] <= 0:
 		$UI/GameOverPanel.show()
