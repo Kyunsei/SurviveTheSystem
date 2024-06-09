@@ -70,7 +70,9 @@ func ActivateItem(user_index): # button use
 		for i in range(3):
 			for j in range(3):
 				posindex = (x+i)*World.world_size + y+j
-				World.block_element_array[posindex] += 10# inter_value /(3*3)		
+				World.block_element_array[posindex] += 10# inter_value /(3*3)
+				#TO DO emit signal for block to update
+
 		#Item.item_array[INDEX*Item.par_number+2]=0		
 			#inter_value = 0
 			#setSprite(1)
@@ -129,7 +131,7 @@ func BeThrown (user_index):
 func Throwing():
 	var iteminfo_index = Item.item_array[INDEX*Item.par_number + 0]
 	var distance = 100*Item.item_information[iteminfo_index]['throw'][0]
-	var speed = 10.
+	var speed = 50.
 	if start_pos.distance_to(global_position) < distance:
 		global_position += direction_throw*speed
 	else:

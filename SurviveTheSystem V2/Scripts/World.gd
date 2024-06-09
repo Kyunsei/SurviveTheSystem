@@ -2,7 +2,7 @@ extends Node
 
 'This is the global Script for all the variable and function defining the world'
 
-var world_size = 50 #The size in tile of the World
+var world_size = 200 #The size in tile of the World
 var tile_size = 32#128 # the size in pixel of each tile
 var fieldofview = 25 #in tile
 
@@ -11,7 +11,7 @@ var block_element_array = [] #1D matrix of the block composing the world
 
 var world_array = [] #1D matrix of occupation
 
-var block_scene = load("res://Scenes/world_block.tscn") #load scene of block
+var block_scene = preload("res://Scenes/world_block.tscn") #load scene of block
 
 #different variable for the "element"
 #var max_element = 100 #max quantities
@@ -54,8 +54,9 @@ func Init_shader():
 func InstantiateBlock(i,j,folder):
 	if i >= 0 and j >= 0 and i < world_size and j < world_size:
 		var new_block = block_scene.instantiate()
-		new_block.get_node("outsideline").size = Vector2(tile_size,tile_size)
-		new_block.get_node("ColorRect").size = Vector2(tile_size-1,tile_size-1)
+		#new_block.get_node("outsideline").size = Vector2(tile_size,tile_size)
+		#new_block.get_node("ColorRect").size = Vector2(tile_size-1,tile_size-1)
+		new_block.get_node("ColorRect").size = Vector2(tile_size,tile_size)
 		new_block.position.x = i*tile_size
 		new_block.position.y = j*tile_size
 		#new_block.color = getBlockColor(i,j)
@@ -75,26 +76,61 @@ func InstantiateBlockAroundPlayer(x,y,folder):
 			World.InstantiateBlock(xpos,ypos,folder)
 
 
-func ActivateAndDesactivateBlockAround(direction,x,y,folder):
-	var allblocks = folder.get_children()
-	#var playerposindex = x*world_size + y
+func ActivateAndDesactivateBlockAround(direction,x,y,allblocks):
+
+
 	var playerpos = Vector2(x,y)
-
-	if direction.x < 0 :
+		#if direction.x != 0 or direction.y != 0 :
 		#var s = Time.get_ticks_msec() 
-		var rightblocks = allblocks.filter(getRightBlock.bind(playerpos))
+		#var rightblocks = allblocks.filter(getRightBlock.bind(playerpos))
 		#var s2 = Time.get_ticks_msec() 
-
-		#print("filtre is " + str(s2-s))
-		for b in rightblocks:
-			var b_pos = b.position.x - fieldofview*2*tile_size
-			b.position.x = max(0, b_pos)
-			var newpos = getWorldPos(b.position)
-			var newposindex = newpos.y*World.world_size + newpos.x
-			b.posindex = newposindex
-		#var s3 = Time.get_ticks_msec() 
-		#print("loop is " + str(s3-s2))
-
+		#if direction.x < 0:
+			#print("left")
+			#for b in allblocks:
+				#if b.position.x > tile_size*fieldofview*2 - 1 and b.position.x > (playerpos.x*tile_size + tile_size*fieldofview):
+					#var b_pos = b.position.x - fieldofview*2*tile_size
+					#b.position.x = max(0, b_pos)
+					#var newpos = getWorldPos(b.position)
+					#var newposindex = newpos.y*World.world_size + newpos.x
+					#b.posindex = newposindex
+					#b.BlockUpdate()
+			##if direction.y < 0:
+		#if direction.y < 0:
+			#print("top")
+			#for b in allblocks:
+				#if b.position.y > tile_size*fieldofview*2 - 1 and b.position.y > (playerpos.x*tile_size + tile_size*fieldofview):
+					#var b_pos = b.position.y - fieldofview*2*tile_size
+					#b.position.y = max(0, b_pos)
+					#var newpos = getWorldPos(b.position)
+					#var newposindex = newpos.y*World.world_size + newpos.x
+					#b.posindex = newposindex
+					#b.BlockUpdate()
+		##	if direction.y > 0:
+		#if direction.y > 0:
+			#print("bot")
+			#for b in allblocks:
+				#if b.position.y > tile_size*world_size - tile_size*fieldofview*2 and b.position.y > (playerpos.y*tile_size - tile_size*fieldofview):
+#
+					#var b_pos = b.position.y + fieldofview*2*tile_size
+					#b.position.y = min(world_size*tile_size-1, b_pos)
+					#var newpos = getWorldPos(b.position)
+					#var newposindex = newpos.y*World.world_size + newpos.x
+					#b.posindex = newposindex
+					#b.BlockUpdate()
+		##	if direction.x > 0:	
+		#if direction.x > 0:
+			#print("right")
+			#for b in allblocks:
+				#if b.position.x > tile_size*world_size - tile_size*fieldofview*2 and b.position.x > (playerpos.x*tile_size - tile_size*fieldofview):
+#
+					#var b_pos = b.position.x + fieldofview*2*tile_size
+					#b.position.x = min(world_size*tile_size-1, b_pos)
+					#var newpos = getWorldPos(b.position)
+					#var newposindex = newpos.y*World.world_size + newpos.x
+					#b.posindex = newposindex
+					#b.BlockUpdate()
+		#var s5 = Time.get_ticks_msec() 
+		#print("loop ALL is " + str(s5-s4))
 	if direction.x > 0 :
 		var leftblocks = allblocks.filter(getLeftBlock.bind(playerpos))
 		for b in leftblocks:
@@ -102,8 +138,20 @@ func ActivateAndDesactivateBlockAround(direction,x,y,folder):
 			b.position.x = min(world_size*tile_size-1, b_pos)
 			var newpos = getWorldPos(b.position)
 			var newposindex = newpos.y*World.world_size + newpos.x
-			b.posindex = newposindex	
+			b.posindex = newposindex
+			b.BlockUpdate()	
+
 	
+	if direction.x < 0:
+		var rightblocks = allblocks.filter(getRightBlock.bind(playerpos))
+		for b in rightblocks:
+			var b_pos = b.position.x - fieldofview*2*tile_size
+			b.position.x = max(0, b_pos)
+			var newpos = getWorldPos(b.position)
+			var newposindex = newpos.y*World.world_size + newpos.x
+			b.posindex = newposindex
+			b.BlockUpdate()
+			
 	if direction.y < 0:
 		var bottomblocks = allblocks.filter(getBottomBlock.bind(playerpos))
 		for b in bottomblocks:
@@ -112,6 +160,7 @@ func ActivateAndDesactivateBlockAround(direction,x,y,folder):
 			var newpos = getWorldPos(b.position)
 			var newposindex = newpos.y*World.world_size + newpos.x
 			b.posindex = newposindex
+			b.BlockUpdate()
 	if direction.y > 0:	
 		var topblocks = allblocks.filter(getTopBlock.bind(playerpos))
 		for b in topblocks:
@@ -120,6 +169,7 @@ func ActivateAndDesactivateBlockAround(direction,x,y,folder):
 			var newpos = getWorldPos(b.position)
 			var newposindex = newpos.y*World.world_size + newpos.x
 			b.posindex = newposindex
+			b.BlockUpdate()
 
 	
 

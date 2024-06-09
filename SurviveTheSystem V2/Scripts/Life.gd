@@ -14,11 +14,12 @@ var Genome = {}
 var plant_number = 0
 var player_index = 0
 
-var max_life = 10
+var max_life = 1500
 
 var score = 0
 
 var new_lifes = []
+var thread_finished = true
 
 
 
@@ -75,10 +76,10 @@ func InstantiateLife(INDEX,folder):
 	var posIndex = world_matrix.find(INDEX)
 	var x = parameters_array[INDEX*par_number + 6]
 	var y = parameters_array[INDEX*par_number + 7]
-	#state_array[INDEX] = 1
+	state_array[INDEX] = 1
 	var genome_index = parameters_array[INDEX*par_number + 0]
 	if folder.has_node(str(INDEX))==false:
-		print("new")
+
 		#if isOnScreen(Life.Life_Matrix_PositionX[index],Life.Life_Matrix_PositionY[index]):
 		if x >= 0 and y >= 0 and x < World.world_size*World.tile_size and y < World.world_size*World.tile_size :
 				var new_life = life_scene.instantiate()
@@ -108,9 +109,8 @@ func deleteLoopCPU():
 			RemoveLife(l)
 
 
-func LifeLoopCPU(thread):
-	var s1 = Time.get_ticks_msec() 
-
+func LifeLoopCPU(folder):
+	#var s1 = Time.get_ticks_msec() 
 	#this function is the main loop for life entities, will be move to GPU
 	var temp = state_array.duplicate()
 	new_lifes = []
@@ -146,11 +146,33 @@ func LifeLoopCPU(thread):
 		if l >= 0:
 			RemoveLife(l)
 
-	var s2 = Time.get_ticks_msec() 
-	thread.call_deferred("wait_to_finish")
+	#var s2 = Time.get_ticks_msec() 
+	#thread.call_deferred("wait_to_finish")
 	#print("loop ended with " + str(s2-s1))
 	#print(state_array)
-	#threadfinished = true
+	#print("hello?")
+	#thread_finished = true
+	#call_deferred("setFinished")
+
+
+func InstantiateNewLifeBatchCPU(folder):
+	#var s1 = Time.get_ticks_msec() 
+	#this function is the main loop for life entities, will be move to GPU
+	var temp = state_array.duplicate()
+	new_lifes = []
+	var l = 0
+	#while l != -1:
+	for i in range(5):
+		l = temp.find(5)
+		temp[l] += 1
+		InstantiateLife(l,folder)
+	
+
+
+
+
+func setFinished():
+	thread_finished = true
 
 
 
@@ -178,7 +200,8 @@ func Metabocost(INDEX):
 		y = int(y/World.tile_size)
 		var posindex = y*World.world_size + x
 		posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
-		World.block_element_array[posindex] += value_2
+		if posindex >= 0:
+			World.block_element_array[posindex] += value_2
 
 
 func PassiveHealing(INDEX):
@@ -325,7 +348,7 @@ func Duplicate(INDEX):
 				for i in range(Genome[genome_index]["childnumber"][current_cycle]):
 					var newpos = PickRandomPlaceWithRange(y,x,10)
 					if world_matrix[newpos[0]*World.world_size + newpos[1]] == -1:
-						var newidex = BuildLifeinThread(newpos[0],newpos[1],genome_index)
+						var newidex = BuildLife_noInstance(newpos[0],newpos[1],genome_index)
 						if newidex >= 0:
 							parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
 							parameters_array[INDEX*par_number+8] = 0
@@ -350,8 +373,16 @@ func BuildLife(x,y,genome_index,folder):
 		Init_Parameter(newindex,genome_index)
 		state_array[newindex] = 1
 		InstantiateLife(newindex,folder)
-		return newindex
+	return newindex
 
+func BuildLife_noInstance(x,y,genome_index):
+	var newindex = state_array.find(-1)
+	if newindex >= 0:
+		world_matrix[x*World.world_size + y] = newindex
+		Init_Parameter(newindex,genome_index)
+		state_array[newindex] = 5 # need to add
+		#InstantiateLife(newindex,folder)
+	return newindex
 
 func BuildLifeinThread(x,y,genome_index):
 	var newindex = state_array.find(-1)
