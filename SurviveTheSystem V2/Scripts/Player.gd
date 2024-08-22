@@ -15,6 +15,10 @@ var current_action = 0
 
 var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
 
+var active_sprite = load("res://Art/player_bulbi.png")
+var sleep_sprite = load("res://Art/player_sleep.png")
+var isSleeping = false
+
 func _process(delta):
 	
 	
@@ -157,7 +161,27 @@ func Drop():
 		equipped_tool = null
 		
 
-			
+func sleed_mode_on():
+	$Sprite2D.texture = sleep_sprite
+	basespeed = 0
+
+	#$Sprite2D.offset.x = -1 * (sleep_sprite.get_width()-Life.life_size_unit)/2#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+	$Sprite2D.offset.y = -32*2.5# * sleep_sprite.get_height()/2#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+	$Area2D/CollisionShape2D.shape.size = $Sprite2D.texture.get_size()
+	$Area2D/CollisionShape2D.position = Vector2(0,-$Sprite2D.texture.get_height()/2) #Vector2(width/2,-height/2)
+	Life.Genome[3]["metabospeed"][0] = 0
+	pass
+	
+
+func sleed_mode_off():
+	$Sprite2D.texture = active_sprite
+	#$Sprite2D.offset.x = -1 * (active_sprite.get_width()-Life.life_size_unit)/2#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+	$Sprite2D.offset.y = -32 # * active_sprite.get_height()#*(Life.Genome[genome_index]["sprite"][1].get_height()/Life.life_size_unit )
+	$Area2D/CollisionShape2D.shape.size = $Sprite2D.texture.get_size()
+	$Area2D/CollisionShape2D.position = Vector2(0,-$Sprite2D.texture.get_height()/2) #Vector2(width/2,-height/2)
+	basespeed = 300
+	Life.Genome[3]["metabospeed"][0] = 1
+	pass			
 
 
 func _on_area_2d_area_entered(area):
@@ -183,3 +207,15 @@ func _on_area_2d_area_exited(area):
 		if 	interact_with == area:
 			interact_with = null
 		#interact_array.erase(area) # Replace with function body.
+
+
+func _on_sleep_button_pressed():
+	if isSleeping == false:
+		sleed_mode_on()
+		isSleeping = true
+	else:
+		sleed_mode_off()
+		isSleeping = false
+		
+		
+
