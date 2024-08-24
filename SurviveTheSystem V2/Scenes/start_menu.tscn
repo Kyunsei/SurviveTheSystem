@@ -50,11 +50,6 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "play"
 
-[node name="BattleButton" type="Button" parent="Button_VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "Battle mode"
-
 [node name="Button3" type="Button" parent="Button_VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
@@ -133,7 +128,6 @@ layout_mode = 2
 layout_mode = 2
 
 [connection signal="pressed" from="Button_VBox/PlayButton" to="." method="_on_play_button_pressed"]
-[connection signal="pressed" from="Button_VBox/BattleButton" to="." method="_on_battle_button_pressed"]
 [connection signal="text_changed" from="DebugValue/worldsize" to="." method="_on_worldsize_text_changed"]
 [connection signal="text_changed" from="DebugValue/tilesize" to="." method="_on_tilesize_text_changed"]
 [connection signal="text_changed" from="DebugValue/Total_Element" to="." method="_on_total_element_text_changed"]

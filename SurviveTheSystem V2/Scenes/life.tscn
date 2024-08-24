@@ -21,6 +21,8 @@ shape = SubResource("RectangleShape2D_fs48r")
 [node name="Sprite" type="Sprite2D" parent="."]
 centered = false
 
+[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="Sprite"]
+
 [node name="Debug" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0

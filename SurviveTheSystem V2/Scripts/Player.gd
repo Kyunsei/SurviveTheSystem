@@ -13,7 +13,7 @@ var INDEX = 0
 var maxEnergy = 100
 var current_action = 0
 
-var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
+#var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
 
 var active_sprite = load("res://Art/player_bulbi.png")
 var sleep_sprite = load("res://Art/player_sleep.png")
@@ -71,6 +71,8 @@ func _input(event):
 	if event.is_action_pressed("use"):
 		current_action = 3
 		UseItem()
+		Life.stop=true
+		Life.Instantiate_NewLife_in_Batch(get_parent(),0,20,Life.new_lifes)
 		#attaque(input_dir)
 		print("use is pressed")
 	if event.is_action_pressed("interact"):
@@ -80,6 +82,7 @@ func _input(event):
 		print("interact is pressed")
 	if event.is_action_pressed("drop"):
 		current_action = 2
+		Life.stop=false
 		#World.element -= 10
 		Drop()
 		print("drop is pressed")
@@ -186,14 +189,15 @@ func sleed_mode_off():
 
 func _on_area_2d_area_entered(area):
 	if interact_with != null:
-		interact_with.get_node("DebugRect").hide()		
+		pass
+		#interact_with.get_node("DebugRect").hide()		
 	if area.is_in_group("Life"):
 		interact_with = area.get_parent()
 		#interact_array.append(area.get_parent())
 	else:
 		interact_with = area
 		#interact_array.append(area) # Replace with function body.
-	interact_with.get_node("DebugRect").show()
+	#interact_with.get_node("DebugRect").show()
 
 
 func _on_area_2d_area_exited(area):
@@ -203,7 +207,7 @@ func _on_area_2d_area_exited(area):
 			interact_with = null
 		#interact_array.erase(area.get_parent())
 	else:
-		area.get_node("DebugRect").hide()
+	#	area.get_node("DebugRect").hide()
 		if 	interact_with == area:
 			interact_with = null
 		#interact_array.erase(area) # Replace with function body.

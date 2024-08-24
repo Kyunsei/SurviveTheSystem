@@ -14,52 +14,11 @@ var thread = Thread.new()
 
 var allblocks
 
+signal world_speed_changed
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	World.Init_World()
-	
-	Life.Init_matrix()
-	Life.Init_Genome()
-	Brain.Init_Brain()
-	
-	Item.Init_Item()
-
-	#for i in range(Life.max_life):
-		#Life.BuildLifeAtRandomplace(0,1,$Life)
-	Life.player_index = Life.BuildPlayer($Life)
-	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
-	$Life/Player.INDEX = Life.player_index
-	var playerworldpos = World.getWorldPos($Life/Player.global_position)
-	World.InstantiateBlockAroundPlayer(playerworldpos.x,playerworldpos.y,$Blocks)
-	allblocks = $Blocks.get_children()
-	Item.BuildItem(playerworldpos.x,playerworldpos.y-1,0,$Items)
-	Item.BuildItem(playerworldpos.x,playerworldpos.y+1,1,$Items)
-
-
-
-	
-func InitEmptyLife():
-	for i in range(current_batch, current_batch + batch_size):
-		if i < Life.max_life:
-			print(i)
-			if i != Life.player_index: #player
-				Life.InstantiateEmptyLife(i,$Life)
-	current_batch = (current_batch + batch_size)
-	if current_batch > Life.max_life:
-		initialized = true
-	'for n in range(20):
-		Life.BuildLifeRDinThread(0,1,$Life)
-	for n in range(5):
-		Life.BuildLifeRDinThread(1,2,$Life)
-	for n in range(20):
-		Life.BuildLifeRDinThread(2,2,$Life)
-	for n in range(0):
-		Life.BuildLifeRDinThread(4,0,$Life)'
-
-
-	
-	
-
+	InitNewGame()
 
 func _process(delta):
 	if initialized != true:
@@ -69,7 +28,7 @@ func _process(delta):
 
 	#Life.InstantiateNewLifeBatchCPU($Life)
 	var playerworldpos = World.getWorldPos($Life/Player.global_position)
-	World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
+	#World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
 	
 	if Life.state_array[playerindex] <= 0:
 		$UI/GameOverPanel.show()
@@ -88,6 +47,59 @@ func _process(delta):
 		Life.InstantiateLife(idx)
 		pass'
 	#Life.deleteLoopCPU($Life)
+
+
+func InitNewGame():
+	#Init the World
+	World.Init_World()
+	
+	#init Life
+
+	Life.Init_matrix()
+	Life.Init_Genome()
+	Brain.Init_Brain()
+	
+	#init item
+	Item.Init_Item()
+		
+	
+	#Instantiate Player
+	Life.player_index = Life.BuildPlayer($Life)
+	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+	$Life/Player.INDEX = Life.player_index
+	var playerworldpos = World.getWorldPos($Life/Player.global_position)
+	
+	World.InstantiateBlockAroundPlayer(playerworldpos.x,playerworldpos.y,$Blocks)
+	allblocks = $Blocks.get_children()
+	
+
+	#instantiate Life
+	#for i in range(Life.max_life):
+		#Life.BuildLifeAtRandomplace(0,1,$Life)
+
+	#instantaite Item
+	Item.BuildItem(playerworldpos.x,playerworldpos.y-1,0,$Items)
+	Item.BuildItem(playerworldpos.x,playerworldpos.y+1,1,$Items)
+
+
+func InitEmptyLife():
+	for i in range(current_batch, current_batch + batch_size):
+		if i < Life.max_life:
+			print(i)
+			if i != Life.player_index: #player
+				Life.InstantiateEmptyLife(i,$Life)
+	current_batch = (current_batch + batch_size)
+	if current_batch > Life.max_life:
+		initialized = true
+	'for n in range(20):
+		Life.BuildLifeRDinThread(0,1,$Life)
+	for n in range(5):
+		Life.BuildLifeRDinThread(1,2,$Life)
+	for n in range(20):
+		Life.BuildLifeRDinThread(2,2,$Life)
+	for n in range(0):
+		Life.BuildLifeRDinThread(4,0,$Life)'
+
 	
 
 func UpdateSimulationSpeed():
@@ -97,6 +109,9 @@ func UpdateSimulationSpeed():
 	
 	$Life/LifeTimer.wait_time = 10.0 / World.speed
 	$Life/LifeTimer.start(0)
+
+	$Life/SpawnTimer.wait_time = 1.0 / World.speed
+	#$Life/SpawnTimer.start(0)
 	
 	$Life/BrainTimer.wait_time = 2.0 / World.speed
 	$Life/BrainTimer.start(0)
@@ -105,38 +120,40 @@ func UpdateSimulationSpeed():
 	$DayTimer.start(0)
 
 func _on_life_timer_timeout():
-	#if initialized:
-		#var s1 = Time.get_ticks_msec() 
-		#print("loop started")
-		#print(Life.thread_finished)
-		#if Life.thread_finished:
-			#thread = Thread.new()
-			#Life.thread_finished = false
-			#thread.start(Life.LifeLoopCPU.bind($Life))
-		#var s2 = Time.get_ticks_msec() 
-		#print("Scene with " + str(s2-s1))
+		pass
+		$Life/SpawnTimer.start(0)
+		Life.life_to_spawn = Life.new_lifes
+		Life.life_to_spawn_position = Life.new_lifes_position
+		Life.new_lifes = []
+		Life.new_lifes_position = []
+		print("....................")
 		
-		Life.LifeLoopCPU($Life)
-		Life.InstantiateNewLifeBatchCPU($Life)
+		'Life.LifeLoopCPU($Life)
+		Life.InstantiateNewLifeBatchCPU($Life)'
 		#for l in Life.new_lifes:
 			#$Life.add_child(l)
 	#Life.LifeLoopCPU($Life) 
 	
+
+func _on_spawn_timer_timeout():
 	
+	Life.Instantiate_NewLife_in_Batch(get_parent(),20,Life.life_to_spawn,Life.life_to_spawn_position) # Replace with function body.
+
+
 func _on_brain_timer_timeout():
 	pass
 	#Brain.BrainLoopCPU($Life)
 
 func _on_block_timer_timeout():
 	pass
-	World.BlockLoopGPU() 
+	#World.BlockLoopGPU() 
 	for b in $Blocks.get_children():
 		b.BlockUpdate()
 
 	
 
 func _on_day_timer_timeout():
-	World.day += 1 # Replace with function body.
+	pass#World.day += 1 # Replace with function body.
 
 
 func _exit_tree():
@@ -151,20 +168,30 @@ func _notification(what):
 func GameOver():
 	pass
 
-func _on_speed_1_pressed():
+func _on_speed_1_pressed():	
 	World.speed = 1
 	UpdateSimulationSpeed() # Replace with function body.
-
+	world_speed_changed.emit()
 
 func _on_speed_2_pressed():
+
 	World.speed = 2
 	UpdateSimulationSpeed() # Replace with function body.
-
+	world_speed_changed.emit()
  # Replace with function body.
+
+func _on_speed_10_pressed():
+
+	World.speed = 10
+	emit_signal("world_speed_changed")
+	UpdateSimulationSpeed() # Replace with function body.
 
 
 func _on_speed_100_pressed():
 	World.speed = 100
+	world_speed_changed.emit()
+	emit_signal("world_speed_changed")
+
 	UpdateSimulationSpeed() # Replace with function body.
 
  # Replace with function body.
@@ -202,9 +229,5 @@ func _on_button_continue_pressed():
 	gameover = true # Replace with function body.
 
 
-func _on_speed_10_pressed():
 
-	World.speed = 10
-	UpdateSimulationSpeed() # Replace with function body.
 
- # Replace with function body.

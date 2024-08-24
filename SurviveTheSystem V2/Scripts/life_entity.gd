@@ -69,20 +69,21 @@ func _process(delta):
 			setSprite()
 		if Life.parameters_array[INDEX*Life.par_number+1] <= 0 :
 			setDeadSprite()
-	if Life.state_array[INDEX] <= 0  and activated :
+	'if Life.state_array[INDEX] <= 0  and activated :
 
 				desactivate()
 				if isEquipped:
 					isEquipped = false
-					get_parent().get_node("Player").equipped_tool = null
+					get_parent().get_node("Player").equipped_tool = null'
 				
 
 	
-func _physics_process(delta):
+'func _physics_process(delta):
+	
 	if isThrown:
 		Throwing()
 	if Brain.state_array[INDEX] > 0:
-		move(delta)
+		move(delta)'
 
 	
 func setSprite():

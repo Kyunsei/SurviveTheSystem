@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bvgtrefdtlsul"]
+[gd_scene load_steps=6 format=3 uid="uid://bvgtrefdtlsul"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_0faxq"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
 [ext_resource type="PackedScene" uid="uid://b5k0j0umvgnc7" path="res://Scenes/Player.tscn" id="3_480aq"]
 [ext_resource type="PackedScene" uid="uid://m26fd7j0ngbx" path="res://Scenes/spawn_window.tscn" id="4_j4k08"]
+[ext_resource type="PackedScene" uid="uid://bb0jwatsbquk5" path="res://Scenes/life_grass.tscn" id="5_cjjb7"]
 
 [node name="MainScene" type="Node2D"]
 script = ExtResource("1_0faxq")
@@ -28,6 +29,10 @@ autostart = true
 [node name="BrainTimer" type="Timer" parent="Life"]
 wait_time = 2.0
 autostart = true
+
+[node name="Node2D" parent="Life" instance=ExtResource("5_cjjb7")]
+
+[node name="SpawnTimer" type="Timer" parent="Life"]
 
 [node name="Items" type="Node2D" parent="."]
 
@@ -123,8 +128,8 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -50.0
+offset_left = -293.0
+offset_top = -133.0
 offset_right = 100.0
 offset_bottom = 50.0
 grow_horizontal = 2
@@ -135,11 +140,15 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -41.5
-offset_right = 41.5
-offset_bottom = 23.0
+offset_left = -44.5
+offset_top = 34.0
+offset_right = 38.5
+offset_bottom = 57.0
 grow_horizontal = 2
-text = "GameOver"
+text = "Game Over
+You are dead =(
+"
+horizontal_alignment = 1
 
 [node name="ButtonRestart" type="Button" parent="UI/GameOverPanel"]
 layout_mode = 1
@@ -148,10 +157,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -32.5
-offset_top = -15.5
-offset_right = 32.5
-offset_bottom = 15.5
+offset_left = -162.5
+offset_top = 39.5
+offset_right = -97.5
+offset_bottom = 70.5
 grow_horizontal = 2
 grow_vertical = 2
 text = "Restart"
@@ -163,9 +172,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -67.5
-offset_top = -31.0
-offset_right = 67.5
+offset_left = 35.5
+offset_top = -57.0
+offset_right = 170.5
+offset_bottom = -26.0
 grow_horizontal = 2
 grow_vertical = 0
 text = "Respawn_Debug"
@@ -177,8 +187,8 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -50.0
+offset_left = -296.0
+offset_top = -148.0
 offset_right = 100.0
 offset_bottom = 50.0
 grow_horizontal = 2
@@ -189,19 +199,25 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -41.5
-offset_right = 41.5
-offset_bottom = 23.0
+offset_left = -83.0
+offset_top = 38.0
+offset_right = 84.0
+offset_bottom = 113.0
 grow_horizontal = 2
-text = "Victory"
+text = "Game Over
+You Survived 30 days!
+Congratulations! =)"
+horizontal_alignment = 1
 
 [node name="ButtonRestart" type="Button" parent="UI/VictoryPanel"]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -31.0
-offset_right = 65.0
+offset_left = 66.0
+offset_top = -60.0
+offset_right = 131.0
+offset_bottom = -29.0
 grow_vertical = 0
 text = "Restart"
 
@@ -212,8 +228,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -79.0
-offset_top = -31.0
+offset_left = -136.0
+offset_top = -62.0
+offset_right = -57.0
+offset_bottom = -31.0
 grow_horizontal = 0
 grow_vertical = 0
 text = "Continue"
@@ -230,6 +248,7 @@ autostart = true
 
 [connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]
 [connection signal="timeout" from="Life/BrainTimer" to="." method="_on_brain_timer_timeout"]
+[connection signal="timeout" from="Life/SpawnTimer" to="." method="_on_spawn_timer_timeout"]
 [connection signal="pressed" from="UI/speedContainer/speed1" to="." method="_on_speed_1_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed2" to="." method="_on_speed_2_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed10" to="." method="_on_speed_10_pressed"]

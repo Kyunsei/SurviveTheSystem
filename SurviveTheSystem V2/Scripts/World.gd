@@ -2,7 +2,7 @@ extends Node
 
 'This is the global Script for all the variable and function defining the world'
 
-var world_size = 200 #The size in tile of the World
+var world_size = 100 #The size in tile of the World
 var tile_size = 32#128 # the size in pixel of each tile
 var fieldofview = 25 #in tile
 
@@ -20,6 +20,11 @@ var element = 1000.0 #current value
 var speed = 1.0
 var day = 0
 
+var isReady = false
+
+var life_instance_thread = []
+var life_position_thread = []
+
 # Load GLSL shader
 var rd := RenderingServer.create_local_rendering_device()
 var shader_file := load("res://Scripts//compute_worldblock.glsl")
@@ -30,6 +35,9 @@ var shader := rd.shader_create_from_spirv(shader_spirv)
 func Init_World():
 	Init_matrix()
 	Init_shader()
+	speed = 1.0
+	day = 0
+	isReady = true
 
 func Init_matrix():
 	element = 1000
