@@ -6,33 +6,23 @@ var thread: Thread
 
 func Build_Genome():
 	Genome["soil_absorption"] = [2]
-	Genome["sprite"] = [load("res://Art/grass_1.png"),load("res://Art/grass_2.png")]
+	Genome["sprite"] = [preload("res://Art/grass_1.png"),preload("res://Art/grass_2.png")]
 
 func Build_Phenotype(): #go to main
 	#global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 
-	#ADD SPRITE
-	var new_sprite = Sprite2D.new()
-
-	new_sprite.texture = Genome["sprite"][current_life_cycle]
-	new_sprite.centered = false
-	new_sprite.offset.y -= new_sprite.texture.get_height()
-	new_sprite.name = "Sprite"
-
-	#new_sprite.visible = false
-	self.add_child(new_sprite)
+	# SPRITE
+	$Sprite.texture = Genome["sprite"][current_life_cycle]
+	$Sprite.offset.y -= $Sprite.texture.get_height()
 	
-
-	
-	#ADD TIMER
+	#TIMER
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time/2))
 		
 	#$Timer.start(randf_range(0,.25))
-	
 	#ADD vision
 	$Vision/CollisionShape2D.shape.radius = 150
-	$Vision/CollisionShape2D.position = Vector2(Life.life_size_unit/2,-new_sprite.texture.get_height()/2) #Vector2(width/2,-height/2)
+	$Vision/CollisionShape2D.position = Vector2(Life.life_size_unit/2,-$Sprite.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	
 func _ready():
@@ -72,11 +62,11 @@ func LifeDuplicate():
 	if current_life_cycle == 0 :
 		if energy > 2:
 			energy -= 2
-			for i in range(20):
-				Life.new_lifes.append(life_scene)
-				var newpos = PickRandomPlaceWithRange(position,5 * World.tile_size) 
-				Life.new_lifes_position.append(newpos)
-			print(Life.new_lifes.size())
+			#for i in range(20):
+			Life.new_lifes.append(life_scene)
+			var newpos = PickRandomPlaceWithRange(position,5 * World.tile_size) 
+			Life.new_lifes_position.append(newpos)
+
 			'var newlife = life_scene.instantiate()
 			newlife.global_position = PickRandomPlaceWithRange(position,5 * World.tile_size) 
 			get_parent().add_child(newlife)'

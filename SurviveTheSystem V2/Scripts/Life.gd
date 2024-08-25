@@ -18,11 +18,18 @@ var max_life = 2000
 
 var score = 0
 
+##VARIABLE for BATCH instance
 var new_lifes = []
 var new_lifes_position = []
 var life_to_spawn = []
 var life_to_spawn_position =[]
+var current_batch = 0.
+var nb_by_batch = 10.
+var min_time_by_batch = 1. #in sec
 
+
+
+#test varaible
 var thread_finished = true
 
 var stop = false
@@ -168,20 +175,17 @@ func InstantiateNewLifeBatchCPU(folder):
 		temp[l] += 1
 		InstantiateLife(l,folder)
 	
-func Instantiate_NewLife_in_Batch(folder,nb_by_call,temp_lifes,temp_lifes_position):
+func Instantiate_NewLife_in_Batch(folder,current_batch,nb_by_call,temp_lifes,temp_lifes_position):
 	#var s1 = Time.get_ticks_msec() 
 	#var new_lifes = []
 	#var new_lifes_position = []
 	#new_lifes = []
-	for i in range(nb_by_call):
+	for i in range(current_batch,current_batch + nb_by_call):
 		if i < temp_lifes.size():
 			var nl = temp_lifes[i].instantiate()
 			nl.position = temp_lifes_position[i]
 			folder.add_child(nl)
-	for i in range(nb_by_call):
-		if i < temp_lifes.size():
-			temp_lifes.remove_at(i)
-			temp_lifes_position.remove_at(i)
+	
 
 
 

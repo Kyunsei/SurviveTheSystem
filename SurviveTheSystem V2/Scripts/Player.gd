@@ -72,7 +72,7 @@ func _input(event):
 		current_action = 3
 		UseItem()
 		Life.stop=true
-		Life.Instantiate_NewLife_in_Batch(get_parent(),0,20,Life.new_lifes)
+		#Life.Instantiate_NewLife_in_Batch(get_parent(),0,20,Life.new_lifes)
 		#attaque(input_dir)
 		print("use is pressed")
 	if event.is_action_pressed("interact"):

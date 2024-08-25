@@ -105,12 +105,11 @@ func InitEmptyLife():
 func UpdateSimulationSpeed():
 	$BlockTimer.wait_time = 5. / World.speed
 	$BlockTimer.start(0)
-	
-	
+		
 	$Life/LifeTimer.wait_time = 10.0 / World.speed
 	$Life/LifeTimer.start(0)
 
-	$Life/SpawnTimer.wait_time = 1.0 / World.speed
+	$Life/SpawnTimer.wait_time = 1.#2.0 / World.speed
 	#$Life/SpawnTimer.start(0)
 	
 	$Life/BrainTimer.wait_time = 2.0 / World.speed
@@ -118,16 +117,38 @@ func UpdateSimulationSpeed():
 	
 	$DayTimer.wait_time= 20. / World.speed
 	$DayTimer.start(0)
+	
+	$UI/Wspeed.text = "World speed = " + str(World.speed) +"\n Life cycle = " + str($Life/LifeTimer.wait_time) +"\n Spawn cycle = " + str($Life/SpawnTimer.wait_time)
 
 func _on_life_timer_timeout():
 		pass
-		$Life/SpawnTimer.start(0)
+		var s = Time.get_ticks_msec()
 		Life.life_to_spawn = Life.new_lifes
 		Life.life_to_spawn_position = Life.new_lifes_position
 		Life.new_lifes = []
 		Life.new_lifes_position = []
+		Life.current_batch = 0
 		print("....................")
+		$Life/SpawnTimer.wait_time = Life.min_time_by_batch
+		var nbcycle = $Life/LifeTimer.wait_time / $Life/SpawnTimer.wait_time
+		if Life.life_to_spawn.size()/Life.nb_by_batch > nbcycle:
+			#World.speed = World.speed
+			#UpdateSimulationSpeed()
+			#$Life/LifeTimer.wait_time = 
+			var idealtime = $Life/LifeTimer.wait_time / (Life.life_to_spawn.size()/Life.nb_by_batch)
+			var mintime = 1.
+			World.speed =  World.speed * idealtime/Life.min_time_by_batch
+			UpdateSimulationSpeed()
+			$Life/SpawnTimer.wait_time = max(idealtime,mintime)
 		
+		print($Life/SpawnTimer.wait_time)
+		print(str(Engine.get_frames_per_second()) + " FPS")
+		print(str(Life.life_to_spawn.size()) + " spawn")
+		
+		
+		$Life/SpawnTimer.start(0)
+		var ss = Time.get_ticks_msec()
+		print(str(ss-s) + " ms passed in life cycle")
 		'Life.LifeLoopCPU($Life)
 		Life.InstantiateNewLifeBatchCPU($Life)'
 		#for l in Life.new_lifes:
@@ -136,8 +157,12 @@ func _on_life_timer_timeout():
 	
 
 func _on_spawn_timer_timeout():
-	
-	Life.Instantiate_NewLife_in_Batch(get_parent(),20,Life.life_to_spawn,Life.life_to_spawn_position) # Replace with function body.
+	var s = Time.get_ticks_msec()
+	Life.Instantiate_NewLife_in_Batch(get_parent(),Life.current_batch,Life.nb_by_batch,Life.life_to_spawn,Life.life_to_spawn_position) # Replace with function body.
+	#print(Life.current_batch)
+	Life.current_batch += Life.nb_by_batch
+	var ss = Time.get_ticks_msec()
+	print(str(ss-s) + " ms passed in spawn cycle")
 
 
 func _on_brain_timer_timeout():

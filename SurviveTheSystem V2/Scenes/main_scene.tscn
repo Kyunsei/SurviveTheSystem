@@ -110,7 +110,7 @@ offset_right = 501.0
 offset_bottom = 39.0
 text = "Sleep Mode"
 
-[node name="Label" type="Label" parent="UI"]
+[node name="Wspeed" type="Label" parent="UI"]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
