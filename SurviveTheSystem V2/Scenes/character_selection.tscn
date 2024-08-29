@@ -1,0 +1,65 @@
+[gd_scene load_steps=4 format=3 uid="uid://xt4chjedd4jl"]
+
+[ext_resource type="Script" path="res://Scripts/character_selection.gd" id="1_n0t0v"]
+[ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="1_y8w3k"]
+[ext_resource type="Texture2D" uid="uid://bsyxck4tyb0s2" path="res://Art/player_cat.png" id="2_q8yq6"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_n0t0v")
+
+[node name="Button_char_1" type="Button" parent="."]
+offset_left = 37.0
+offset_top = 255.0
+offset_right = 626.0
+offset_bottom = 358.0
+text = "Plant_entity"
+
+[node name="PlayerBulbi" type="Sprite2D" parent="Button_char_1"]
+position = Vector2(280, -58)
+scale = Vector2(2, 2)
+texture = ExtResource("1_y8w3k")
+
+[node name="Button_char_2" type="Button" parent="."]
+offset_left = 660.0
+offset_top = 256.0
+offset_right = 926.0
+offset_bottom = 359.0
+text = "Cat_entity"
+
+[node name="PlayerCat" type="Sprite2D" parent="Button_char_2"]
+position = Vector2(141, -53)
+scale = Vector2(2, 2)
+texture = ExtResource("2_q8yq6")
+
+[node name="Button_start" type="Button" parent="."]
+offset_left = 860.0
+offset_top = 488.0
+offset_right = 1007.0
+offset_bottom = 591.0
+text = "Start"
+
+[node name="Button_back" type="Button" parent="."]
+offset_left = 102.0
+offset_top = 492.0
+offset_right = 368.0
+offset_bottom = 595.0
+text = "Return"
+
+[node name="CheckBox" type="CheckBox" parent="."]
+offset_left = 919.0
+offset_top = 449.0
+offset_right = 1078.0
+offset_bottom = 487.0
+
+[node name="Label" type="Label" parent="."]
+offset_left = 950.0
+offset_top = 458.0
+offset_right = 1070.0
+offset_bottom = 486.0
+text = "Skip cutscene"
+
+[connection signal="pressed" from="Button_char_1" to="." method="_on_button_char_1_pressed"]
+[connection signal="pressed" from="Button_char_2" to="." method="_on_button_char_2_pressed"]
+[connection signal="pressed" from="Button_start" to="." method="_on_button_start_pressed"]
+[connection signal="pressed" from="Button_back" to="." method="_on_button_back_pressed"]
+[connection signal="toggled" from="CheckBox" to="." method="_on_check_box_toggled"]

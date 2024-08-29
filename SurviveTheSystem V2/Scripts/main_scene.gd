@@ -19,6 +19,7 @@ signal world_speed_changed
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	InitNewGame()
+	$Life/Player/Sprite2D.texture = Life.player_skin[Life.player_skin_ID]
 
 func _process(delta):
 	if initialized != true:
