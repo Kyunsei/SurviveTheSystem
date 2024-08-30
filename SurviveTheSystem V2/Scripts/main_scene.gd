@@ -21,6 +21,7 @@ func _ready():
 
 	InitNewGame()
 	$Life/Node2D.Activate()
+	$Life/Player/Sprite2D.texture = Life.player_skin[Life.player_skin_ID]
 
 
 func _process(delta):
