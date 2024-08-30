@@ -4,6 +4,7 @@ extends Node
 
 var life_size_unit = 32
 var life_scene = preload("res://Scenes/life.tscn") #load scene of block
+var life_grass_scene = load("res://Scenes/life_grass.tscn")
 
 var parameters_array = [] 
 var state_array = [] 
@@ -14,7 +15,7 @@ var Genome = {}
 var plant_number = 0
 var player_index = 0
 
-var max_life = 2000
+var max_life = 3000
 
 var score = 0
 
@@ -24,10 +25,13 @@ var new_lifes_position = []
 var life_to_spawn = []
 var life_to_spawn_position =[]
 var current_batch = 0.
-var nb_by_batch = 10.
-var min_time_by_batch = 1. #in sec
+var nb_by_batch = 1.
+var min_time_by_batch = .005 #in sec
 
-
+#variable for pooling
+var inactive_grass = []
+var grass_pool_scene = []
+var grass_pool_state =[]
 
 #test varaible
 var thread_finished = true
@@ -176,18 +180,56 @@ func InstantiateNewLifeBatchCPU(folder):
 		InstantiateLife(l,folder)
 	
 func Instantiate_NewLife_in_Batch(folder,current_batch,nb_by_call,temp_lifes,temp_lifes_position):
-	#var s1 = Time.get_ticks_msec() 
-	#var new_lifes = []
-	#var new_lifes_position = []
-	#new_lifes = []
 	for i in range(current_batch,current_batch + nb_by_call):
 		if i < temp_lifes.size():
-			var nl = temp_lifes[i].instantiate()
+			#var nl = temp_lifes[i].instantiate()
+			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
 			nl.position = temp_lifes_position[i]
+			#nl.Activate() #test for pooling
 			folder.add_child(nl)
+			Life.plant_number += 1
 	
+func Instantiate_emptyLife_pool_in_Batch(folder,current_batch,nb_by_call,temp_lifes,temp_lifes_position):
+	for i in range(current_batch,current_batch + nb_by_call):
+		if i < temp_lifes.size():
+			#var nl = temp_lifes[i].instantiate()
+			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
+			nl.hide()
+			folder.add_child(nl)
 
 
+func Instantiate_emptyLife_pool(folder, N):
+	for i in range(0,N):
+			#var nl = temp_lifes[i].instantiate()
+			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
+			grass_pool_state.append(0)
+			nl.position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			nl.pool_index = i
+			
+
+			#inactive_grass.append(nl)
+			grass_pool_scene.append(nl)
+
+
+			folder.add_child(nl)
+			#nl.Activate()
+
+
+func Instantiate_fullLife_pool(folder, N):
+	for i in range(0,N):
+			#var nl = temp_lifes[i].instantiate()
+			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
+			grass_pool_state.append(1)
+			nl.position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			nl.pool_index = i
+			nl.age = randi_range(0,20)
+			plant_number += 1
+			#inactive_grass.append(nl)
+			grass_pool_scene.append(nl)
+
+
+			folder.add_child(nl)
+			nl.Activate()
 
 func setFinished():
 	thread_finished = true

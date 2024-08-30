@@ -1,15 +1,16 @@
-[gd_scene load_steps=3 format=3 uid="uid://bb0jwatsbquk5"]
+[gd_scene load_steps=4 format=3 uid="uid://bb0jwatsbquk5"]
 
 [ext_resource type="Script" path="res://Scripts/Life_grass.gd" id="1_fmpul"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ld3jv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dv5i7"]
 
 [node name="Node2D" type="Node2D"]
 position = Vector2(1000, 1000)
 script = ExtResource("1_fmpul")
 
 [node name="Timer" type="Timer" parent="."]
-autostart = true
 
 [node name="Vision" type="Area2D" parent="."]
 
@@ -18,6 +19,19 @@ shape = SubResource("CapsuleShape2D_ld3jv")
 
 [node name="Sprite" type="Sprite2D" parent="."]
 centered = false
+
+[node name="Body" type="RigidBody2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+mass = 0.01
+gravity_scale = 0.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Body"]
+shape = SubResource("RectangleShape2D_dv5i7")
+
+[node name="DebugLabel" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="area_entered" from="Vision" to="." method="_on_vision_area_entered"]

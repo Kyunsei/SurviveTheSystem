@@ -1,6 +1,12 @@
 extends Node2D
 class_name LifeEntity
 
+
+#OPTIMISATION CPU PERFORMANCE
+var isActive = false
+var pool_index = 0
+
+
 #PHYSIC LAW
 var lifecycletime = 10. #in second
 
