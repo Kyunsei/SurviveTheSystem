@@ -17,7 +17,7 @@ var Genome = {}
 var plant_number = 0
 var player_index = 0
 
-var max_life = 3000
+var max_life = 2000
 
 var score = 0
 

@@ -64,7 +64,7 @@ func InitNewGame():
 	Brain.Init_Brain()
 	
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life)
-	Life.Instantiate_Life_in_pool($Life,5,0)
+	Life.Instantiate_Life_in_pool($Life,15,0)
 	#Life.Instantiate_fullLife_pool($Life, Life.max_life)
 	
 	#init item

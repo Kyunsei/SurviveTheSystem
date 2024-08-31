@@ -7,46 +7,79 @@ extends LifeEntity
 var current_time_speed = World.speed
 
 func Build_Genome():
-	Genome["maxPV"]=[10]
-	Genome["soil_absorption"] = [2]
-	Genome["lifespan"]=[20]#randi_range(15,20)]
+	Genome["maxPV"]=[10,10]
+	Genome["soil_absorption"] = [2,2]
+	Genome["lifespan"]=[20,20]#randi_range(15,20)]
 	Genome["sprite"] = [preload("res://Art/grass_1.png"),preload("res://Art/grass_2.png")]
-	Genome["sprite"] = [preload("res://Art/grass_2.png"),preload("res://Art/grass_2.png")]
-func Build_Phenotype(): #go to main
-	#global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 
-	# SPRITE
-	$Sprite.texture = Genome["sprite"][current_life_cycle]
-	$Sprite.offset.y -= $Sprite.texture.get_height()
+
+func Build_Phenotype(): #go to main
+	#This function should be call when building the pool.
 	
+	# SPRITE
+	$Sprite_0.texture = Genome["sprite"][0]
+	$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
+
+	$Sprite_1.texture = Genome["sprite"][1]
+	$Sprite_1.offset.y = -$Sprite_1.texture.get_height()
+	$Sprite_1.hide()
 	#TIMER
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
 		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
-	$Vision/CollisionShape2D.shape.radius = 150
-	$Vision/CollisionShape2D.position = Vector2(Life.life_size_unit/2,-$Sprite.texture.get_height()/2) #Vector2(width/2,-height/2)
+	$Vision/Collision.shape.radius = 150
+	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	#ADD Body
-	$Body/CollisionShape2D.shape.size = $Sprite.texture.get_size()
-	$Body/CollisionShape2D.position = Vector2(Life.life_size_unit/2,-$Sprite.texture.get_height()/2) #Vector2(width/2,-height/2)
+	$Body/Collision_0.shape.size = $Sprite_0.texture.get_size()
+	$Body/Collision_0.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
+	
+	$Body/Collision_1.shape.size = $Sprite_1.texture.get_size()
+	$Body/Collision_1.position = Vector2(Life.life_size_unit/2,-$Sprite_1.texture.get_height()/2) #Vector2(width/2,-height/2)
+	$Body/Collision_1.hide()	
 	
 func Build_Stat():
 	self.PV = Genome["maxPV"][0]
-
+	self.current_life_cycle = 0
+	self.PV = Genome["maxPV"][self.current_life_cycle]
+	
 	
 func _ready():
 	#pass
 	#Activate()
-	#hide()
+
 	Build_Stat()
 	Build_Genome()
 	Build_Phenotype()
 	hide() #pooling technique
+	
+	
 	#get_parent().get_parent().world_speed_changed.connect(_world_speed_modified)
 
 
+
+func _on_timer_timeout():
+	if World.isReady and isActive:
+		Absorb_soil_energy()
+		Metabo_cost()	
+		LifeDuplicate()
+		Ageing()
+		Growth()
+
+		if self.energy <= 0 or self.age >= Genome["lifespan"][current_life_cycle] or self.PV <=0:
+			Deactivate()
+		
+		if current_time_speed != World.speed:
+			adapt_time_to_worldspeed()
+
+		#Debug part
+		$DebugLabel.text = str(current_life_cycle)
+
+
+
+"resource_name"
 #EAT soil
 func Absorb_soil_energy():
 	var x = int(position.x/World.tile_size)
@@ -59,7 +92,6 @@ func Absorb_soil_energy():
 
 #METABO cost
 func Metabo_cost():
-
 	#energy lost is returned to soil
 	var x = int(position.x/World.tile_size)
 	var	y = int(position.y/World.tile_size)
@@ -78,13 +110,25 @@ func Ageing():
 	self.age +=1
 
 
+#GROWTHING
+func Growth():
+	if current_life_cycle == 0:
+		if self.age > 2 and self.energy > 2:
+			self.current_life_cycle += 1
+			
+			$Body/Collision_0.hide()
+			$Body/Collision_1.show()
+			$Sprite_1.show()
+			$Sprite_0.hide()
+			
+
 
 #Duplication
 func LifeDuplicate():
-	if current_life_cycle == 0 :
-		if self.energy > 2:
+	if current_life_cycle == 1 :
+		if self.energy > 4:
 			
-
+			
 			'var genome_ID = 0
 			Life.new_lifes.append(genome_ID)
 			var newpos = PickRandomPlaceWithRange(position,5 * World.tile_size) 
@@ -102,9 +146,9 @@ func LifeDuplicate():
 				Life.inactive_grass.remove_at(0)	
 				Life.plant_number += 1'
 			
-			#Life.grass_pool
+			#Life.grass_pool Technique
 			var li = Life.grass_pool_state.find(0)	
-			if li > -1 :
+			if li > -1 and Life.plant_number + 500 < Life.grass_pool_state.size():
 				self.energy -= 2
 				Life.grass_pool_scene[li].Activate()
 				Life.grass_pool_scene[li].energy = 2
@@ -113,10 +157,10 @@ func LifeDuplicate():
 				Life.grass_pool_scene[li].PV = Genome["maxPV"][0]
 
 				Life.plant_number += 1
-				Life.grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
+				Life.grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,2 * World.tile_size)
 			else:
 				print("pool empty")
-				#marche po car isactive est pas trouvé
+
 
 			
 func Decomposition():
@@ -136,43 +180,19 @@ func PickRandomPlaceWithRange(position,range):
 	return Vector2(random_x, random_y)
 
 
-
-func _world_speed_modified():
-	$Timer.wait_time = lifecycletime / World.speed
-	$Timer.start(randf_range(0,$Timer.wait_time/2))
-
 func adapt_time_to_worldspeed():
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	current_time_speed =  World.speed
 
-func _on_timer_timeout():
-	if World.isReady and isActive:
-		Absorb_soil_energy()
-		Metabo_cost()	
-		LifeDuplicate()
-		Ageing()
 
-		if self.energy <= 0 or self.age >= Genome["lifespan"][current_life_cycle] or self.PV <=0:
-			Deactivate()
-		
-		if current_time_speed != World.speed:
-
-			adapt_time_to_worldspeed()
-
-		#$Timer.wait_time = lifecycletime / World.speed
-		
-		#Debug part
-		#$DebugLabel.text = str(energy)
 
 
 func Activate():
 	self.isActive = true
 	Life.grass_pool_state[self.pool_index] = 1
-	self.PV = Genome["maxPV"][self.current_life_cycle]
-	
+	Build_Stat()
 	#Build_Genome()
-	#Build_Phenotype()
 	show()
 
 func Deactivate():
@@ -187,7 +207,12 @@ func Deactivate():
 	Life.plant_number -= 1
 
 	#Build_Genome()
-	#Build_Phenotype()
+	Build_Stat()
+	$Body/Collision_0.show()
+	$Body/Collision_1.hide()
+
+	$Sprite_1.hide()
+	$Sprite_0.show()
 	hide()
 
 

@@ -4,10 +4,10 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fs48r"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_crftt"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sliro"]
 resource_local_to_scene = true
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_550om"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_lwpsa"]
 radius = 3381.37
 
 [node name="Life" type="CharacterBody2D" groups=["Life"]]
@@ -30,7 +30,7 @@ offset_bottom = 23.0
 [node name="Area2D" type="Area2D" parent="." groups=["Life"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" groups=["Life"]]
-shape = SubResource("RectangleShape2D_crftt")
+shape = SubResource("RectangleShape2D_sliro")
 
 [node name="DebugRect" type="ColorRect" parent="."]
 visible = false
@@ -50,7 +50,7 @@ grow_vertical = 2
 collision_layer = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Vision"]
-shape = SubResource("CircleShape2D_550om")
+shape = SubResource("CircleShape2D_lwpsa")
 debug_color = Color(0.34902, 0.505882, 0.937255, 0)
 
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
