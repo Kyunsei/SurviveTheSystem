@@ -208,13 +208,22 @@ func Instantiate_emptyLife_pool(folder, N):
 			nl.position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 			nl.pool_index = i
 			
-
-			#inactive_grass.append(nl)
 			grass_pool_scene.append(nl)
-
 
 			folder.add_child(nl)
 			#nl.Activate()
+
+func Instantiate_Life_in_pool(folder,N,ID):
+	for i in range(0,N):
+			var li = grass_pool_state.find(0)
+			Life.grass_pool_scene[li].Activate()
+			Life.grass_pool_scene[li].energy = 2
+			Life.grass_pool_scene[li].age = randi_range(0,20)
+			Life.grass_pool_scene[li].current_life_cycle = 0
+			Life.grass_pool_scene[li].PV = Life.grass_pool_scene[li].Genome["maxPV"][0]
+			Life.plant_number += 1
+			Life.grass_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			
 
 
 func Instantiate_fullLife_pool(folder, N):

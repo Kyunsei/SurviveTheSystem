@@ -20,7 +20,7 @@ signal world_speed_changed
 func _ready():
 
 	InitNewGame()
-	$Life/Node2D.Activate()
+	#$Life/Node2D.Activate()
 	$Life/Player/Sprite2D.texture = Life.player_skin[Life.player_skin_ID]
 
 
@@ -63,8 +63,9 @@ func InitNewGame():
 	Life.Init_Genome()
 	Brain.Init_Brain()
 	
-	#Life.Instantiate_emptyLife_pool($Life, Life.max_life)
-	Life.Instantiate_fullLife_pool($Life, Life.max_life)
+	Life.Instantiate_emptyLife_pool($Life, Life.max_life)
+	Life.Instantiate_Life_in_pool($Life,5,0)
+	#Life.Instantiate_fullLife_pool($Life, Life.max_life)
 	
 	#init item
 	Item.Init_Item()

@@ -8,7 +8,7 @@ var pool_index = 0
 
 
 #PHYSIC LAW
-var lifecycletime = 10. #in second
+var lifecycletime = 20. #in second
 
 
 

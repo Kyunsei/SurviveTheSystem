@@ -108,6 +108,7 @@ func Attack():
 	if equipped_tool != null:
 		#if equipped_tool.is_in_group("Life") == false:
 			equipped_tool.AttackItem(INDEX)	
+		
 			
 func Throw():
 	if equipped_tool != null:

@@ -4,9 +4,12 @@ extends LifeEntity
 # Grass script
 #var thread: Thread
 
+var current_time_speed = World.speed
+
 func Build_Genome():
+	Genome["maxPV"]=[10]
 	Genome["soil_absorption"] = [2]
-	Genome["lifespan"]=[randi_range(20,40)]
+	Genome["lifespan"]=[20]#randi_range(15,20)]
 	Genome["sprite"] = [preload("res://Art/grass_1.png"),preload("res://Art/grass_2.png")]
 	Genome["sprite"] = [preload("res://Art/grass_2.png"),preload("res://Art/grass_2.png")]
 func Build_Phenotype(): #go to main
@@ -18,7 +21,7 @@ func Build_Phenotype(): #go to main
 	
 	#TIMER
 	$Timer.wait_time = lifecycletime / World.speed
-	$Timer.start(randf_range(0,$Timer.wait_time/2))
+	$Timer.start(randf_range(0,$Timer.wait_time))
 		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
@@ -28,12 +31,16 @@ func Build_Phenotype(): #go to main
 	#ADD Body
 	$Body/CollisionShape2D.shape.size = $Sprite.texture.get_size()
 	$Body/CollisionShape2D.position = Vector2(Life.life_size_unit/2,-$Sprite.texture.get_height()/2) #Vector2(width/2,-height/2)
+	
+func Build_Stat():
+	self.PV = Genome["maxPV"][0]
 
 	
 func _ready():
 	#pass
 	#Activate()
 	#hide()
+	Build_Stat()
 	Build_Genome()
 	Build_Phenotype()
 	hide() #pooling technique
@@ -69,8 +76,7 @@ func Metabo_cost():
 #Getting old
 func Ageing():
 	self.age +=1
-	if self.age >= Genome["lifespan"][current_life_cycle]:
-		Deactivate()
+
 
 
 #Duplication
@@ -102,9 +108,14 @@ func LifeDuplicate():
 				self.energy -= 2
 				Life.grass_pool_scene[li].Activate()
 				Life.grass_pool_scene[li].energy = 2
+				Life.grass_pool_scene[li].age = 0
+				Life.grass_pool_scene[li].current_life_cycle = 0
+				Life.grass_pool_scene[li].PV = Genome["maxPV"][0]
+
 				Life.plant_number += 1
 				Life.grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
-
+			else:
+				print("pool empty")
 				#marche po car isactive est pas trouvé
 
 			
@@ -130,6 +141,10 @@ func _world_speed_modified():
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time/2))
 
+func adapt_time_to_worldspeed():
+	$Timer.wait_time = lifecycletime / World.speed
+	$Timer.start(randf_range(0,$Timer.wait_time))
+	current_time_speed =  World.speed
 
 func _on_timer_timeout():
 	if World.isReady and isActive:
@@ -137,7 +152,15 @@ func _on_timer_timeout():
 		Metabo_cost()	
 		LifeDuplicate()
 		Ageing()
-		$Timer.wait_time = lifecycletime / World.speed
+
+		if self.energy <= 0 or self.age >= Genome["lifespan"][current_life_cycle] or self.PV <=0:
+			Deactivate()
+		
+		if current_time_speed != World.speed:
+
+			adapt_time_to_worldspeed()
+
+		#$Timer.wait_time = lifecycletime / World.speed
 		
 		#Debug part
 		#$DebugLabel.text = str(energy)
@@ -146,14 +169,16 @@ func _on_timer_timeout():
 func Activate():
 	self.isActive = true
 	Life.grass_pool_state[self.pool_index] = 1
+	self.PV = Genome["maxPV"][self.current_life_cycle]
 	
 	#Build_Genome()
 	#Build_Phenotype()
 	show()
 
 func Deactivate():
-	self.age = 0
-	global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
+
+	
+	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	
 	Decomposition()
 	self.isActive = false
@@ -163,7 +188,7 @@ func Deactivate():
 
 	#Build_Genome()
 	#Build_Phenotype()
-	#hide()
+	hide()
 
 
 
