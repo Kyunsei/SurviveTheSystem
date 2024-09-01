@@ -8,8 +8,10 @@ var pool_index = 0
 
 
 #PHYSIC LAW
-var lifecycletime = 20. #in second
+var lifecycletime = 30. #in second
 
+#LifeRule
+var isDead = false
 
 
 #Genome parameters

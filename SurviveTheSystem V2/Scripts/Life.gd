@@ -17,7 +17,8 @@ var Genome = {}
 var plant_number = 0
 var player_index = 0
 
-var max_life = 2000
+var max_life = 200
+var new_max_life = 0
 
 var score = 0
 
@@ -28,7 +29,7 @@ var life_to_spawn = []
 var life_to_spawn_position =[]
 var current_batch = 0.
 var nb_by_batch = 1.
-var min_time_by_batch = .005 #in sec
+var min_time_by_batch = .001 #in sec
 
 #variable for pooling
 var inactive_grass = []
@@ -191,12 +192,13 @@ func Instantiate_NewLife_in_Batch(folder,current_batch,nb_by_call,temp_lifes,tem
 			folder.add_child(nl)
 			Life.plant_number += 1
 	
-func Instantiate_emptyLife_pool_in_Batch(folder,current_batch,nb_by_call,temp_lifes,temp_lifes_position):
+func Instantiate_emptyLife_pool_in_Batch(folder,current_batch,nb_by_call):
 	for i in range(current_batch,current_batch + nb_by_call):
-		if i < temp_lifes.size():
-			#var nl = temp_lifes[i].instantiate()
 			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
-			nl.hide()
+			grass_pool_state.append(0)
+			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			nl.pool_index = i
+			grass_pool_scene.append(nl)
 			folder.add_child(nl)
 
 
@@ -205,11 +207,22 @@ func Instantiate_emptyLife_pool(folder, N):
 			#var nl = temp_lifes[i].instantiate()
 			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
 			grass_pool_state.append(0)
-			nl.position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 			nl.pool_index = i
-			
 			grass_pool_scene.append(nl)
-
+			folder.add_child(nl)
+			#nl.Activate()
+			
+			
+func Extend_emptyLife_pool(folder, N):
+	var old_size = Life.grass_pool_state.size()
+	for i in range(0,N):
+			#var nl = temp_lifes[i].instantiate()
+			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
+			grass_pool_state.append(0)
+			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			nl.pool_index = i + old_size
+			grass_pool_scene.append(nl)
 			folder.add_child(nl)
 			#nl.Activate()
 

@@ -20,6 +20,8 @@ z_as_relative = false
 y_sort_enabled = true
 
 [node name="Player" parent="Life" instance=ExtResource("3_480aq")]
+collision_layer = 0
+collision_mask = 0
 
 [node name="LifeTimer" type="Timer" parent="Life"]
 wait_time = 10.0
@@ -30,6 +32,7 @@ wait_time = 2.0
 autostart = true
 
 [node name="SpawnTimer" type="Timer" parent="Life"]
+process_mode = 3
 
 [node name="Items" type="Node2D" parent="."]
 
@@ -60,6 +63,7 @@ grow_horizontal = 2
 grow_vertical = 0
 
 [node name="Tuto" type="Label" parent="UI"]
+visible = false
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -68,8 +72,23 @@ offset_bottom = 23.0
 grow_horizontal = 0
 text = "W,A,S,D : Move
 SPACE : interact/pick item
+R: Attack
 F : use item
-X : drop item"
+X : drop item
+T : Throw
+ENTER: Eat"
+
+[node name="Tuto2" type="Label" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 23.0
+grow_horizontal = 0
+text = "W,A,S,D : Move
+SPACE : ADD 100 max grass
+R: Attack
+"
 
 [node name="speedContainer" type="HBoxContainer" parent="UI"]
 anchors_preset = 5
@@ -233,6 +252,33 @@ grow_horizontal = 0
 grow_vertical = 0
 text = "Continue"
 
+[node name="ProgressBar" type="ProgressBar" parent="UI"]
+process_mode = 3
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -136.0
+offset_top = -105.0
+offset_right = 127.0
+offset_bottom = -58.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="UI/ProgressBar"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -54.5
+offset_top = -30.0
+offset_right = 54.5
+offset_bottom = -7.0
+grow_horizontal = 2
+text = "Loading_grass"
+
 [node name="DayTimer" type="Timer" parent="."]
 wait_time = 60.0
 autostart = true
@@ -242,6 +288,7 @@ wait_time = 5.0
 autostart = true
 
 [node name="SpawnWindow" parent="." instance=ExtResource("4_j4k08")]
+visible = false
 
 [connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]
 [connection signal="timeout" from="Life/BrainTimer" to="." method="_on_brain_timer_timeout"]

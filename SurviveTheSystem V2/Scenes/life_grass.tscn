@@ -5,8 +5,10 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ld3jv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dv5i7"]
+size = Vector2(32, 32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dldvs"]
+size = Vector2(32, 64)
 
 [node name="Node2D" type="Node2D"]
 position = Vector2(1000, 1000)
@@ -15,6 +17,7 @@ script = ExtResource("1_fmpul")
 [node name="Timer" type="Timer" parent="."]
 
 [node name="Vision" type="Area2D" parent="."]
+visible = false
 
 [node name="Collision" type="CollisionShape2D" parent="Vision"]
 shape = SubResource("CapsuleShape2D_ld3jv")
@@ -25,11 +28,15 @@ centered = false
 [node name="Sprite_1" type="Sprite2D" parent="."]
 centered = false
 
+[node name="Dead_Sprite_0" type="Sprite2D" parent="."]
+centered = false
+
 [node name="Body" type="RigidBody2D" parent="."]
-collision_layer = 0
 collision_mask = 0
 mass = 0.01
 gravity_scale = 0.0
+freeze = true
+freeze_mode = 1
 
 [node name="Collision_0" type="CollisionShape2D" parent="Body"]
 shape = SubResource("RectangleShape2D_dv5i7")

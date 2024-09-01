@@ -20,37 +20,44 @@ signal world_speed_changed
 func _ready():
 
 	InitNewGame()
-	#$Life/Node2D.Activate()
 	$Life/Player/Sprite2D.texture = Life.player_skin[Life.player_skin_ID]
+	
+	'Life.current_batch = 0
+	$Life/SpawnTimer.wait_time = Life.min_time_by_batch
+	$Life/SpawnTimer.start(0)
+	get_tree().paused = true'
 
+	
+	Life.Instantiate_emptyLife_pool($Life, Life.max_life)
+	Life.Instantiate_Life_in_pool($Life,15,0)
 
 func _process(delta):
-	if initialized != true:
-		pass
-		#InitEmptyLife()
-		#InstatiateAllLifeScene()
-
-	#Life.InstantiateNewLifeBatchCPU($Life)
-	var playerworldpos = World.getWorldPos($Life/Player.global_position)
-	World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
+	#if initialized == true:
 	
-	if Life.state_array[playerindex] <= 0:
-		$UI/GameOverPanel.show()
-		gameover = true
-	if World.day > 10 and  gameover== false:
-		$UI/VictoryPanel.show()
-		$UI/VictoryPanel/Label.text = "Victory! \n" + "You survived " +  str(World.day) + " days\n" + "score: " + str(Life.score)
+
+		#Life.InstantiateNewLifeBatchCPU($Life)
+		var playerworldpos = World.getWorldPos($Life/Player.global_position)
+		#World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
 		
-	if $Life/Player != null:
-		$StarBackground.position = $Life/Player.position  #background follow player
-	$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
-	$UI/Debug.text = "  " + str(Life.plant_number) + " plants "  + str(World.day) + " day"
-	'var idx = Life.state_array.find(0)
-	if idx >= 0:
-		Life.InstantiateLife(idx,$Life)
-		Life.InstantiateLife(idx)
-		pass'
-	#Life.deleteLoopCPU($Life)
+		if Life.state_array[playerindex] <= 0:
+			$UI/GameOverPanel.show()
+			gameover = true
+		if World.day > 10 and  gameover== false:
+			$UI/VictoryPanel.show()
+			$UI/VictoryPanel/Label.text = "Victory! \n" + "You survived " +  str(World.day) + " days\n" + "score: " + str(Life.score)
+			
+		if $Life/Player != null:
+			$StarBackground.position = $Life/Player.position  #background follow player
+		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
+		$UI/Debug.text = "maxlife: " + str(Life.max_life) + "\n" + "  " + str(Life.plant_number) + " plants "  + str(World.day) + " day"
+		'var idx = Life.state_array.find(0)
+		if idx >= 0:
+			Life.InstantiateLife(idx,$Life)
+			Life.InstantiateLife(idx)
+			pass'
+		#Life.deleteLoopCPU($Life)
+
+
 
 
 func InitNewGame():
@@ -63,8 +70,7 @@ func InitNewGame():
 	Life.Init_Genome()
 	Brain.Init_Brain()
 	
-	Life.Instantiate_emptyLife_pool($Life, Life.max_life)
-	Life.Instantiate_Life_in_pool($Life,15,0)
+
 	#Life.Instantiate_fullLife_pool($Life, Life.max_life)
 	
 	#init item
@@ -86,8 +92,8 @@ func InitNewGame():
 		#Life.BuildLifeAtRandomplace(0,1,$Life)
 
 	#instantaite Item
-	Item.BuildItem(playerworldpos.x,playerworldpos.y-1,0,$Items)
-	Item.BuildItem(playerworldpos.x,playerworldpos.y+1,1,$Items)
+	#Item.BuildItem(playerworldpos.x,playerworldpos.y-1,0,$Items)
+	#Item.BuildItem(playerworldpos.x,playerworldpos.y+1,1,$Items)
 
 
 func InitEmptyLife():
@@ -126,7 +132,7 @@ func UpdateSimulationSpeed():
 	$DayTimer.wait_time= 20. / World.speed
 	$DayTimer.start(0)
 	
-	$UI/Wspeed.text = "World speed = " + str(World.speed) +"\n Life cycle = " + str($Life/LifeTimer.wait_time) +"\n Spawn cycle = " + str($Life/SpawnTimer.wait_time)
+	$UI/Wspeed.text = "World speed = " + str(World.speed) 
 
 func _on_life_timer_timeout():
 		pass
@@ -174,13 +180,40 @@ func _on_life_timer_timeout():
 	#Life.LifeLoopCPU($Life) 
 	
 
-'func _on_spawn_timer_timeout():
+func _on_spawn_timer_timeout():
+	Life.Extend_emptyLife_pool($Life,1)
+	Life.current_batch += 1	
+	$UI/ProgressBar.value = (Life.current_batch - Life.max_life ) * 100 / (Life.new_max_life - Life.max_life )
+	
+	if Life.current_batch > Life.new_max_life:
+		Life.max_life = Life.new_max_life
+		$UI/ProgressBar.hide()
+		$Life/SpawnTimer.stop()
+		get_tree().paused = false
+		
+
+
+		
+	
+	'Life.Instantiate_emptyLife_pool_in_Batch($Life,Life.current_batch,Life.nb_by_batch)
 	#var s = Time.get_ticks_msec()
-	Life.Instantiate_NewLife_in_Batch($Life,Life.current_batch,Life.nb_by_batch,Life.life_to_spawn,Life.life_to_spawn_position) # Replace with function body.
+	#Life.Instantiate_NewLife_in_Batch($Life,Life.current_batch,Life.nb_by_batch,Life.life_to_spawn,Life.life_to_spawn_position) # Replace with function body.
 	#print(Life.current_batch)
+	$ProgressBar.value = Life.current_batch * 100 / Life.max_life
 	Life.current_batch += Life.nb_by_batch
+	#print(Life.current_batch)
 	#var ss = Time.get_ticks_msec()
-	#print(str(ss-s) + " ms passed in spawn cycle")'
+	#print(str(ss-s) + " ms passed in spawn cycle")
+
+
+	if Life.current_batch > Life.max_life:
+		Life.Instantiate_Life_in_pool($Life,15,0)
+		initialized = true
+		get_tree().paused = false
+		$ProgressBar.hide()
+		$Life/SpawnTimer.stop()'
+
+
 
 
 func _on_brain_timer_timeout():
@@ -263,6 +296,15 @@ func _input(event):
 			var idx = Life.BuildLife(x,y,$SpawnWindow.genome_ID,$Life)
 			if idx != null :
 				Life.parameters_array[idx*Life.par_number + 3] = $SpawnWindow.current_cycle
+
+
+	if event.is_action_pressed("interact"):
+		Life.current_batch = Life.grass_pool_scene.size()
+		Life.new_max_life = Life.max_life + 100
+		$UI/ProgressBar.show()
+		$Life/SpawnTimer.wait_time = Life.min_time_by_batch
+		$Life/SpawnTimer.start(0)
+		get_tree().paused = true
 
 
 

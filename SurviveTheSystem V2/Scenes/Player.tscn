@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://b5k0j0umvgnc7"]
+[gd_scene load_steps=6 format=3 uid="uid://b5k0j0umvgnc7"]
 
 [ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="1_pdy0w"]
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="1_s3cg0"]
@@ -9,12 +9,13 @@ radius = 38.3275
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bmx3b"]
 size = Vector2(22, 24)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4tj2u"]
+
 [node name="Player" type="CharacterBody2D" groups=["Life"]]
 position = Vector2(0, 65)
 script = ExtResource("1_s3cg0")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 shape = SubResource("CircleShape2D_4ugo7")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
@@ -25,6 +26,7 @@ offset = Vector2(0, -32)
 [node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="Area2D" type="Area2D" parent="." groups=["Life"]]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" groups=["Life"]]
 position = Vector2(0, -20)
@@ -50,5 +52,32 @@ offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="BareHand_attack" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BareHand_attack"]
+shape = SubResource("RectangleShape2D_4tj2u")
+
+[node name="Timer" type="Timer" parent="BareHand_attack"]
+wait_time = 0.2
+one_shot = true
+
+[node name="sprite" type="ColorRect" parent="BareHand_attack"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
 [connection signal="area_exited" from="Area2D" to="." method="_on_area_2d_area_exited"]
+[connection signal="body_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_entered"]
+[connection signal="body_exited" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_exited"]
+[connection signal="timeout" from="BareHand_attack/Timer" to="." method="_on_timer_timeout"]

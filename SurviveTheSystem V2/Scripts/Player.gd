@@ -13,11 +13,27 @@ var INDEX = 0
 var maxEnergy = 100
 var current_action = 0
 
+
+var barehand_attack_array = []
+
 #var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
 
 var active_sprite = load("res://Art/player_bulbi.png")
 var sleep_sprite = load("res://Art/player_sleep.png")
 var isSleeping = false
+
+
+func _ready():
+	
+	$CollisionShape2D.shape.radius = $Sprite2D.texture.get_height()/2
+	$CollisionShape2D.position = Vector2(0,-$Sprite2D.texture.get_height()/2) #Vector2(width/2,-height/2)
+	
+	
+	#$BareHand_attack.position = Vector2(32,-64)
+	var size_Barehand = Vector2(32,32*3)
+	$BareHand_attack/CollisionShape2D.shape.size = size_Barehand
+	$BareHand_attack/sprite.size = size_Barehand
+	$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
 
 func _process(delta):
 	
@@ -66,35 +82,43 @@ func _physics_process(delta):
 		#print(equipped_tool.rotation)
 		#equipped_tool.position = position  + last_dir * Vector2(64,64)/2
 		#equipped_tool.position = position - Vector2(16,16) + last_dir * Vector2(64,64)/2
+	else:
+		var temppos = position + last_dir * Vector2(64,96)
+		$BareHand_attack.rotation =  (last_dir.angle()) 
+		$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite2D.texture.get_size() * Vector2(0,0.5)
 
+		#($BareHand_attack.position +  $Sprite2D.texture.get_size() * Vector2(0,0.5)).angle_to_point(position)
+		
 func _input(event):
 	if event.is_action_pressed("use"):
-		current_action = 3
-		UseItem()
-		Life.stop=true
+		#current_action = 3
+		#UseItem()
+		#Life.stop=true
 		#Life.Instantiate_NewLife_in_Batch(get_parent(),0,20,Life.new_lifes)
 		#attaque(input_dir)
 		print("use is pressed")
 	if event.is_action_pressed("interact"):
-		current_action = 1
-		Interact(self)
+		
+		#Life.Extend_emptyLife_pool(get_parent(),200)
+		#current_action = 1
+		#Interact(self)
 		#World.element += 50
 		print("interact is pressed")
 	if event.is_action_pressed("drop"):
-		current_action = 2
-		Life.stop=false
+		#current_action = 2
+		#Life.stop=false
 		#World.element -= 10
-		Drop()
+		#Drop()
 		print("drop is pressed")
 	if event.is_action_pressed("eat"):
 		print("eat is pressed")
-		Eat()
+		#Eat()
 	if event.is_action_pressed("attack"):
 		print("attack is pressed")
 		Attack()
 	if event.is_action_pressed("throw"):
 		print( "throw is pressed")
-		Throw()
+		#Throw()
 	'else:
 		current_action = 2'
 
@@ -108,7 +132,8 @@ func Attack():
 	if equipped_tool != null:
 		#if equipped_tool.is_in_group("Life") == false:
 			equipped_tool.AttackItem(INDEX)	
-		
+	else:
+		BareHand_attack()
 			
 func Throw():
 	if equipped_tool != null:
@@ -163,7 +188,18 @@ func Drop():
 		equipped_tool.isEquipped = false
 		equipped_tool.user_INDEX = -1
 		equipped_tool = null
-		
+	
+	
+func BareHand_attack():
+
+	$BareHand_attack/sprite.show()
+	$BareHand_attack/Timer.start(0)
+	for i in barehand_attack_array:
+		if i != null:
+			i.get_parent().getDamaged(10)
+			
+	#ApplyDamage()
+	
 
 func sleed_mode_on():
 	$Sprite2D.texture = sleep_sprite
@@ -224,3 +260,18 @@ func _on_sleep_button_pressed():
 		
 		
 
+
+
+func _on_bare_hand_attack_body_entered(body):
+	if body.name != "Player":
+		#print(body.get_parent().pool_index)
+		barehand_attack_array.append(body)	
+
+
+func _on_bare_hand_attack_body_exited(body):
+	if body.name != "Player":
+		barehand_attack_array.erase(body)
+
+
+func _on_timer_timeout():
+	$BareHand_attack/sprite.hide()
