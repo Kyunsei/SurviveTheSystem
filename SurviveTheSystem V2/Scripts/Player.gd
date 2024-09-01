@@ -1,5 +1,8 @@
 extends CharacterBody2D
 
+
+var species = "player"
+
 var input_dir = Vector2.ZERO
 var last_dir = Vector2.ZERO
 var rotation_dir = 0
@@ -196,7 +199,7 @@ func BareHand_attack():
 	$BareHand_attack/Timer.start(0)
 	for i in barehand_attack_array:
 		if i != null:
-			i.get_parent().getDamaged(10)
+			i.getDamaged(10)
 			
 	#ApplyDamage()
 	

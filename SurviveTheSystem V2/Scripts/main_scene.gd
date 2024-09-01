@@ -28,8 +28,10 @@ func _ready():
 	get_tree().paused = true'
 
 	
-	Life.Instantiate_emptyLife_pool($Life, Life.max_life)
-	Life.Instantiate_Life_in_pool($Life,15,0)
+	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
+	Life.Instantiate_emptyLife_pool($Life, 500, "sheep")
+	Life.Instantiate_Life_in_pool($Life,100,"grass")
+	Life.Instantiate_Life_in_pool($Life,3,"sheep")
 
 func _process(delta):
 	#if initialized == true:
@@ -49,7 +51,7 @@ func _process(delta):
 		if $Life/Player != null:
 			$StarBackground.position = $Life/Player.position  #background follow player
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
-		$UI/Debug.text = "maxlife: " + str(Life.max_life) + "\n" + "  " + str(Life.plant_number) + " plants "  + str(World.day) + " day"
+		$UI/Debug.text = str(World.day) + " day \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)    
 		'var idx = Life.state_array.find(0)
 		if idx >= 0:
 			Life.InstantiateLife(idx,$Life)

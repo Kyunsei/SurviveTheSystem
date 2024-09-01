@@ -1,0 +1,59 @@
+[gd_scene load_steps=5 format=3 uid="uid://dfy55q0tpbtav"]
+
+[ext_resource type="Script" path="res://Scripts/Life_sheep.gd" id="1_ftmai"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ld3jv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dv5i7"]
+size = Vector2(32, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dldvs"]
+size = Vector2(64, 64)
+
+[node name="sheep" type="CharacterBody2D"]
+position = Vector2(1000, 1000)
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_ftmai")
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Vision" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape2D" parent="Vision"]
+shape = SubResource("CapsuleShape2D_ld3jv")
+
+[node name="Sprite_0" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Sprite_1" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Sprite_2" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Dead_Sprite_0" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Dead_Sprite_1" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Dead_Sprite_2" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Collision_0" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_dv5i7")
+
+[node name="Collision_1" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_dldvs")
+
+[node name="DebugLabel" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="area_entered" from="Vision" to="." method="_on_vision_area_entered"]
+[connection signal="area_exited" from="Vision" to="." method="_on_vision_area_exited"]
+[connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
