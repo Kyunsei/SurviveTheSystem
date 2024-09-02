@@ -214,6 +214,18 @@ func Activate():
 	#$Timer.time_left = randf_range(0,$Timer.wait_time)
 	$Timer.start(randf_range(0,$Timer.wait_time))
 
+
+	$Collision_0.show()
+	$Collision_1.hide()
+	$Collision_1.disabled = true		
+	$Collision_0.disabled = false	
+	$Sprite_1.hide()
+	$Sprite_2.hide()
+	$Dead_Sprite_0.hide()	
+	$Dead_Sprite_1.hide()
+	$Dead_Sprite_2.hide()
+	$Sprite_0.show()
+
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	set_physics_process(false)
@@ -233,9 +245,7 @@ func Deactivate():
 	#$Body_1/Collision_1.disabled = true		
 	#$Body_0/Collision_0.disabled = false	
 	
-	$Sprite_1.hide()
-	$Dead_Sprite_0.hide()
-	$Sprite_0.show()
+
 	hide()
 
 func Eat(life):
