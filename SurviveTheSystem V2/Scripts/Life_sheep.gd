@@ -6,6 +6,10 @@ var species = "sheep"
 
 var direction = Vector2(0,0)
 
+var food_array = []
+var danger_array = []
+var friend_array = []
+
 
 
 func Build_Genome():
@@ -49,7 +53,7 @@ func Build_Phenotype(): #go to main
 		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
-	$Vision/Collision.shape.radius = 50
+	$Vision/Collision.shape.radius = 250
 	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	#ADD Body
@@ -69,11 +73,12 @@ func Build_Stat():
 
 func _physics_process(delta):
 	if isDead == false:
+		Brainy()
 		velocity = direction * Genome["speed"][self.current_life_cycle]
 		var collision = move_and_collide(velocity *delta)
-		if collision:
+		'if collision:
 			print("I collided with ", collision.get_collider().name)
-			Eat(collision.get_collider())
+			Eat(collision.get_collider())'
 		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
 		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
 	else:
@@ -170,7 +175,29 @@ func getCloser(target):
 	 
 func getAway(target):
 	direction = (position - target).normalized()
-		
+
+func Brainy():
+	if danger_array.size() >0 :
+		getAway(danger_array[0].position)
+	elif self.energy < 30 and food_array.size()>0:
+		var closest_position = Vector2(0,0)
+		var min_distance = 250
+		var calc_distance = 250
+		for p in food_array:
+			calc_distance = position.distance_to(p.position)
+			if calc_distance < min_distance:
+				min_distance = calc_distance
+				closest_position = p.position
+				if min_distance < 10 :
+					Eat(p)
+		getCloser(closest_position)
+	elif friend_array.size() > 0:
+		getCloser(friend_array[0].position)
+	else:
+		AdjustDirection()
+
+
+
 
 func Activate():
 	set_physics_process(true)
@@ -233,11 +260,30 @@ func _on_vision_body_entered(body):
 	if body.name != "PlayerBody":
 		if body.species== "grass":
 			#print(position.distance_to(body.position))
-			Eat(body)
-			getCloser(body.position)
+			food_array.append(body)
+			#Eat(body)
+			#getCloser(body.position)
 		if body.species== "sheep":
-			getAway(body.position)
+			#getAway(body.position)
+			friend_array.append(body)
 	else:
-		getAway(body.position)
+		danger_array.append(body.get_parent())
+		#getAway(body.position)
 
 
+
+
+
+func _on_vision_body_exited(body):
+	if body.name != "PlayerBody":
+		if body.species== "grass":
+			#print(position.distance_to(body.position))
+			food_array.erase(body)
+			#Eat(body)
+			#getCloser(body.position)
+		if body.species== "sheep":
+			#getAway(body.position)
+			friend_array.erase(body)
+	else:
+		danger_array.erase(body.get_parent())
+		#getAway(body.position)
