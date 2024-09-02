@@ -11,10 +11,13 @@ var danger_array = []
 var friend_array = []
 
 
+var item_array = []
+
+
 
 func Build_Genome():
 	Genome["maxPV"]=[15,10,20]
-	Genome["speed"] =[0,100,50]
+	Genome["speed"] =[0,400,200]
 	Genome["lifespan"]=[100,100,100]
 	Genome["sprite"] = [preload("res://Art/sheep1.png"),preload("res://Art/sheep2.png"),preload("res://Art/sheep3.png")]
 	Genome["dead_sprite"] = [preload("res://Art/sheep_dead1.png"),preload("res://Art/sheep_dead2.png"),preload("res://Art/sheep_dead3.png")]
@@ -81,6 +84,9 @@ func _physics_process(delta):
 			Eat(collision.get_collider())'
 		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
 		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
+		if item_array.size() > 0:
+			for i in item_array:
+				i.position = position
 	else:
 		velocity = Vector2(0,0)
 		
@@ -106,7 +112,7 @@ func _on_timer_timeout():
 			Deactivate()
 
 		#Debug part
-		$DebugLabel.text = str(age) + " " + str(energy)
+		#$DebugLabel.text = str(age) + " " + str(energy)
 
 
 
@@ -132,6 +138,7 @@ func Growth():
 			self.current_life_cycle += 1
 			$Sprite_1.show()
 			$Sprite_0.hide()
+			set_physics_process(true)
 	if current_life_cycle == 1:
 		if self.age > 4 and self.energy > 10:
 			self.current_life_cycle += 1
@@ -163,7 +170,7 @@ func LifeDuplicate():
 					Life.sheep_number += 1
 					Life.sheep_pool_scene[li].global_position = PickRandomPlaceWithRange(position,3 * World.tile_size)
 				else:
-					print("pool empty")
+					print("sheep_pool empty")
 
 
 func AdjustDirection():
@@ -177,30 +184,45 @@ func getAway(target):
 	direction = (position - target).normalized()
 
 func Brainy():
-	if danger_array.size() >0 :
-		getAway(danger_array[0].position)
-	elif self.energy < 30 and food_array.size()>0:
-		var closest_position = Vector2(0,0)
-		var min_distance = 250
-		var calc_distance = 250
-		for p in food_array:
-			calc_distance = position.distance_to(p.position)
-			if calc_distance < min_distance:
-				min_distance = calc_distance
-				closest_position = p.position
-				if min_distance < 10 :
-					Eat(p)
-		getCloser(closest_position)
-	elif friend_array.size() > 0:
-		getCloser(friend_array[0].position)
+	var danger_array_temp = danger_array.duplicate()
+	var food_array_temp = food_array.duplicate()
+	var friend_array_temp = friend_array.duplicate()
+	
+	if danger_array_temp.size() >0 :
+		var cl = getClosestLife(danger_array_temp)
+		var random = randi_range(0,100)
+		var probability = clamp(1.0 - (position.distance_to(cl.position) / 300), 0.0, 1.0) * 100
+		if random <= probability:
+			getAway(cl.position)
+
+
+	elif self.energy < 30 and food_array_temp.size()>0:
+		var cl = getClosestLife(food_array_temp)
+		if position.distance_to(cl.position) < 32 and cl.isDead == false  :
+				Eat(cl)
+		getCloser(cl.position)
+	elif friend_array_temp.size() > 0:
+		var cl = getClosestLife(friend_array_temp)
+		if position.distance_to(cl.position) > 96 :
+			getCloser(cl.position)
 	else:
 		AdjustDirection()
 
 
-
-
+func getClosestLife(array):
+	var closest_entity = array[0]
+	var min_distance = 1000
+	var calc_distance = 500
+	for p in array:
+		calc_distance = position.distance_to(p.position)
+		if calc_distance <= min_distance:
+			min_distance = calc_distance
+			closest_entity = p
+	return closest_entity
+	
+	
 func Activate():
-	set_physics_process(true)
+	#set_physics_process(true)
 	self.isActive = true
 	self.isDead = false
 	Life.sheep_pool_state[self.pool_index] = 1
@@ -249,14 +271,13 @@ func Deactivate():
 	hide()
 
 func Eat(life):
-	print("Eaten")
+	#print("Eaten")
 	self.energy += life.energy
 	life.energy= 0
 	life.Die()
 	$DebugLabel.text = str(age) + " " + str(energy)
 
 func _on_vision_area_entered(area):
-	print(area.name)
 	if area.get_parent().name == "Player":
 		pass
 
@@ -278,6 +299,7 @@ func _on_vision_body_entered(body):
 			friend_array.append(body)
 	else:
 		danger_array.append(body.get_parent())
+
 		#getAway(body.position)
 
 
@@ -297,3 +319,7 @@ func _on_vision_body_exited(body):
 	else:
 		danger_array.erase(body.get_parent())
 		#getAway(body.position)
+
+
+func _on_action_timer_timeout():
+	pass # Replace with function body.

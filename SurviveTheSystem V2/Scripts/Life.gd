@@ -8,6 +8,7 @@ var life_size_unit = 32
 var life_scene = preload("res://Scenes/life.tscn") #load scene of block
 var life_grass_scene = load("res://Scenes/life_grass.tscn")
 var life_sheep_scene = load("res://Scenes/life_sheep.tscn")
+var life_berry_scene = load("res://Scenes/life_berry.tscn")
 
 var parameters_array = [] 
 var state_array = [] 
@@ -17,6 +18,7 @@ var Genome = {}
 
 var plant_number = 0
 var sheep_number = 0
+var berry_number = 0
 var player_index = 0
 
 var max_life = 500
@@ -40,6 +42,9 @@ var grass_pool_state = []
 
 var sheep_pool_scene = []
 var sheep_pool_state = []
+
+var berry_pool_scene = []
+var berry_pool_state = []
 
 #test varaible
 var thread_finished = true
@@ -207,6 +212,7 @@ func Instantiate_emptyLife_pool_in_Batch(folder,current_batch,nb_by_call):
 			folder.add_child(nl)
 
 
+#THIS ONE IS USED
 func Instantiate_emptyLife_pool(folder, N, ID):
 	for i in range(0,N):
 			var nl = 0
@@ -220,12 +226,20 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 				nl = life_sheep_scene.instantiate() #need to write code according to genome ID
 				sheep_pool_state.append(0)
 				sheep_pool_scene.append(nl)
+			if ID == "berry":	
+				nl = life_berry_scene.instantiate() #need to write code according to genome ID
+				berry_pool_state.append(0)
+				berry_pool_scene.append(nl)
+
+			
+			
 			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 			nl.pool_index = i	
 			folder.add_child(nl)
 			#nl.Activate()
 			
-			
+	
+#THIS ONE TOOO			
 func Extend_emptyLife_pool(folder, N):
 	var old_size = Life.grass_pool_state.size()
 	for i in range(0,N):
@@ -239,13 +253,14 @@ func Extend_emptyLife_pool(folder, N):
 			folder.add_child(nl)
 			#nl.Activate()
 
+#THIS ONE is USE
 func Instantiate_Life_in_pool(folder,N,ID):
 	for i in range(0,N):
 		if ID == "grass":
 			var li = grass_pool_state.find(0)
 			Life.grass_pool_scene[li].Activate()
 			#Life.grass_pool_scene[li].energy = 2
-			Life.grass_pool_scene[li].age = randi_range(0,20)
+			Life.grass_pool_scene[li].age = randi_range(0,10)
 			Life.grass_pool_scene[li].current_life_cycle = 0
 			Life.grass_pool_scene[li].PV = Life.grass_pool_scene[li].Genome["maxPV"][0]
 			Life.plant_number += 1
@@ -253,12 +268,19 @@ func Instantiate_Life_in_pool(folder,N,ID):
 		if ID == "sheep":	
 			var li = sheep_pool_state.find(0)
 			Life.sheep_pool_scene[li].Activate()
-			#Life.sheep_pool_scene[li].energy = 2
 			Life.sheep_pool_scene[li].age = 0#randi_range(0,20)
 			Life.sheep_pool_scene[li].current_life_cycle = 0
-			#Life.sheep_pool_scene[li].PV = Life.sheep_pool_scene[li].Genome["maxPV"][0]
 			Life.sheep_number += 1
 			Life.sheep_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+		if ID == "berry":	
+			var li = berry_pool_state.find(0)
+			Life.berry_pool_scene[li].Activate()
+			Life.berry_pool_scene[li].age = 0#randi_range(0,20)
+			Life.berry_pool_scene[li].current_life_cycle = 0
+			Life.berry_number += 1
+			Life.berry_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+
+
 
 func Instantiate_fullLife_pool(folder, N):
 	for i in range(0,N):

@@ -29,9 +29,12 @@ func _ready():
 
 	
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
-	Life.Instantiate_emptyLife_pool($Life, 500, "sheep")
+	Life.Instantiate_emptyLife_pool($Life, 50, "sheep")
+	Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+	
 	Life.Instantiate_Life_in_pool($Life,100,"grass")
-	Life.Instantiate_Life_in_pool($Life,3,"sheep")
+	Life.Instantiate_Life_in_pool($Life,10,"berry")
+	Life.Instantiate_Life_in_pool($Life,5,"sheep")
 
 func _process(delta):
 	#if initialized == true:
@@ -290,7 +293,7 @@ func _on_button_respawn_pressed():
 	gameover = false
 	
 func _input(event):
-	if event.is_action_pressed("Spawn"):
+	'if event.is_action_pressed("Spawn"):
 		var posmouse =	get_global_mouse_position()
 		var x = int(get_global_mouse_position().y/World.tile_size)
 		var y = int(get_global_mouse_position().x/World.tile_size)
@@ -298,9 +301,9 @@ func _input(event):
 			var idx = Life.BuildLife(x,y,$SpawnWindow.genome_ID,$Life)
 			if idx != null :
 				Life.parameters_array[idx*Life.par_number + 3] = $SpawnWindow.current_cycle
+'
 
-
-	if event.is_action_pressed("interact"):
+	if event.is_action_pressed("Spawn"):
 		Life.current_batch = Life.grass_pool_scene.size()
 		Life.new_max_life = Life.max_life + 100
 		$UI/ProgressBar.show()

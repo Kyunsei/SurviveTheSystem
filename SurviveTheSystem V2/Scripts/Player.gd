@@ -16,7 +16,7 @@ var INDEX = 0
 var maxEnergy = 100
 var current_action = 0
 
-
+var item_array = []
 var barehand_attack_array = []
 
 #var attaque_scene = load("res://Scenes/attaque.tscn") #load scene of block
@@ -77,6 +77,9 @@ func _physics_process(delta):
 	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
 	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
 
+	if item_array.size() > 0:
+		for i in item_array:
+			i.position = position
 	
 	if equipped_tool != null:
 		var temppos = position + last_dir * Vector2(64,96) 
