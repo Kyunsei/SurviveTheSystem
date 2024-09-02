@@ -30,12 +30,12 @@ func Build_Phenotype():
 	
 	$Sprite_2.texture = Genome["sprite"][2]
 	$Sprite_2.offset.y = -$Sprite_2.texture.get_height()
-	$Sprite_2.offset.x = -$Sprite_2.texture.get_width()/4
+	$Sprite_2.offset.x = -$Sprite_2.texture.get_width()/($Sprite_2.texture.get_width()/Life.life_size_unit)
 	$Sprite_2.hide()
 	
 	$Sprite_3.texture = Genome["sprite"][3]
 	$Sprite_3.offset.y = -$Sprite_3.texture.get_height()
-	$Sprite_3.offset.x = -$Sprite_3.texture.get_width()/4
+	$Sprite_3.offset.x = -$Sprite_3.texture.get_width()/($Sprite_3.texture.get_width()/Life.life_size_unit)
 	$Sprite_3.hide()
 	
 	$Dead_Sprite_0.texture = Genome["dead_sprite"][0]
@@ -74,20 +74,21 @@ func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
 		$Timer.wait_time = lifecycletime / World.speed
 	if World.isReady and isActive:
-		if isDead == false and carried_by == null:
-			if current_life_cycle !=0:
-				Metabo_cost()	
-				Absorb_soil_energy()
-		
-			#LifeDuplicate()
-			Ageing()
-			Growth()
-
-			if self.energy <= 0 or self.age >= Genome["lifespan"][current_life_cycle] or self.PV <=0:
-				Die()
+		if isDead == false:
+			if carried_by == null:
+				if current_life_cycle !=0:
+					Metabo_cost()	
+					Absorb_soil_energy()
 			
-			if current_time_speed != World.speed:
-				adapt_time_to_worldspeed()
+				#LifeDuplicate()r
+				Ageing()
+				Growth()
+
+				if self.energy <= 0 or self.age >= Genome["lifespan"][current_life_cycle] or self.PV <=0:
+					Die()
+				
+				if current_time_speed != World.speed:
+					adapt_time_to_worldspeed()
 		else:
 			Deactivate()
 
@@ -113,6 +114,9 @@ func Absorb_soil_energy():
 #diying
 func Die():
 	self.isDead = true
+	if carried_by != null:
+		carried_by.item_array.erase(self)
+		self.carried_by = null
 	
 	$Dead_Sprite_0.show()
 	$Collision_1.disabled = true	
@@ -270,16 +274,12 @@ func _on_vision_body_entered(body):
 				LifeDuplicate2(body)	
 		else:
 			LifeDuplicate2(body.get_parent())
-	'if current_life_cycle == 0:
-		if body.name != "PlayerBody":
-			if body.species== "sheep" and body.current_life_cycle == 2:
-				getTransported(self,body)	
-		else:
-			getTransported(self,body.get_parent())'
+
 
 
 
 func _on_hitch_hike_timer_timeout():
-	carried_by.item_array.erase(self)
-	self.carried_by = null
+	if carried_by != null:
+		carried_by.item_array.erase(self)
+		self.carried_by = null
 

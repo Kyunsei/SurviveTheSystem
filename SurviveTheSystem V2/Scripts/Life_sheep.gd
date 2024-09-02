@@ -13,6 +13,8 @@ var friend_array = []
 
 var item_array = []
 
+var action_finished = true
+
 
 
 func Build_Genome():
@@ -56,7 +58,7 @@ func Build_Phenotype(): #go to main
 		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
-	$Vision/Collision.shape.radius = 250
+	$Vision/Collision.shape.radius = 200
 	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	#ADD Body
@@ -119,6 +121,13 @@ func _on_timer_timeout():
 
 #diying
 func Die():
+	for i in item_array:
+		i.carried_by = null
+	
+	item_array = []
+
+	
+	
 	self.isDead = true
 	if self.current_life_cycle == 0:
 		$Dead_Sprite_0.show()
@@ -198,15 +207,19 @@ func Brainy():
 
 	elif self.energy < 30 and food_array_temp.size()>0:
 		var cl = getClosestLife(food_array_temp)
-		if position.distance_to(cl.position) < 32 and cl.isDead == false  :
+		if position.distance_to(cl.position) < 32 and cl.isDead == false:
 				Eat(cl)
-		getCloser(cl.position)
+				getCloser(cl.position)
 	elif friend_array_temp.size() > 0:
 		var cl = getClosestLife(friend_array_temp)
 		if position.distance_to(cl.position) > 96 :
 			getCloser(cl.position)
 	else:
-		AdjustDirection()
+		if action_finished == true:
+			action_finished = false
+			$ActionTimer.start(0.5)
+			AdjustDirection()
+		
 
 
 func getClosestLife(array):
@@ -275,7 +288,7 @@ func Eat(life):
 	self.energy += life.energy
 	life.energy= 0
 	life.Die()
-	$DebugLabel.text = str(age) + " " + str(energy)
+	#$DebugLabel.text = str(age) + " " + str(energy)
 
 func _on_vision_area_entered(area):
 	if area.get_parent().name == "Player":
@@ -322,4 +335,4 @@ func _on_vision_body_exited(body):
 
 
 func _on_action_timer_timeout():
-	pass # Replace with function body.
+	action_finished = true

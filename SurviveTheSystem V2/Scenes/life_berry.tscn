@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bbko1vt8u3g83"]
+[gd_scene load_steps=7 format=3 uid="uid://bbko1vt8u3g83"]
 
 [ext_resource type="Script" path="res://Scripts/Life_berry.gd" id="1_hvx4d"]
 
@@ -9,6 +9,12 @@ size = Vector2(32, 32)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dldvs"]
 size = Vector2(64, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kca24"]
+size = Vector2(96, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jx2cc"]
+size = Vector2(96, 96)
 
 [node name="Berry" type="CharacterBody2D"]
 position = Vector2(1000, 1000)
@@ -51,10 +57,10 @@ shape = SubResource("RectangleShape2D_dv5i7")
 shape = SubResource("RectangleShape2D_dldvs")
 
 [node name="Collision_2" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_dldvs")
+shape = SubResource("RectangleShape2D_kca24")
 
 [node name="Collision_3" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_dldvs")
+shape = SubResource("RectangleShape2D_jx2cc")
 
 [node name="HitchHike_Timer" type="Timer" parent="."]
 one_shot = true

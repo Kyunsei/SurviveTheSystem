@@ -47,7 +47,7 @@ func Build_Stat():
 	self.PV = Genome["maxPV"][0]
 	self.current_life_cycle = 0
 	self.PV = Genome["maxPV"][self.current_life_cycle]
-	self.energy = 2
+	self.energy = 1
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -147,9 +147,9 @@ func LifeDuplicate():
 			var li = Life.grass_pool_state.find(0)	
 			#+ Life.grass_pool_state.size()*0.05
 			if li > -1 and Life.plant_number  < Life.grass_pool_state.size():
-				self.energy -= 2
+				self.energy -= 1
 				Life.grass_pool_scene[li].Activate()
-				Life.grass_pool_scene[li].energy = 2
+				Life.grass_pool_scene[li].energy = 1
 				Life.grass_pool_scene[li].age = 0
 				Life.grass_pool_scene[li].current_life_cycle = 0
 				Life.grass_pool_scene[li].PV = Genome["maxPV"][0]
