@@ -54,7 +54,7 @@ func _process(delta):
 		if $Life/Player != null:
 			$StarBackground.position = $Life/Player.position  #background follow player
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
-		$UI/Debug.text = str(World.day) + " day \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)    
+		$UI/Debug.text = str(World.day) + " day \n" +"berry: " +   str(Life.berry_number) + " / " + str(Life.berry_pool_state.size()) + " \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)    
 		'var idx = Life.state_array.find(0)
 		if idx >= 0:
 			Life.InstantiateLife(idx,$Life)
