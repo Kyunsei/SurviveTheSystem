@@ -28,8 +28,8 @@ var isSleeping = false
 
 func _ready():
 	
-	$CollisionShape2D.shape.radius = $Sprite2D.texture.get_height()/2
-	$CollisionShape2D.position = Vector2(0,-$Sprite2D.texture.get_height()/2) #Vector2(width/2,-height/2)
+	$PlayerBody/CollisionShape2D.shape.radius = $Sprite2D.texture.get_height()/2
+	$PlayerBody/CollisionShape2D.position = Vector2(0,-$Sprite2D.texture.get_height()/2) #Vector2(width/2,-height/2)
 	
 	
 	#$BareHand_attack.position = Vector2(32,-64)
@@ -266,15 +266,17 @@ func _on_sleep_button_pressed():
 
 
 func _on_bare_hand_attack_body_entered(body):
-	if body.name != "Player":
+	if body.name != "PlayerBody":
 		#print(body.get_parent().pool_index)
 		barehand_attack_array.append(body)	
 
 
 func _on_bare_hand_attack_body_exited(body):
-	if body.name != "Player":
+	if body.name != "PlayerBody":
 		barehand_attack_array.erase(body)
 
 
 func _on_timer_timeout():
 	$BareHand_attack/sprite.hide()
+
+

@@ -1,22 +1,27 @@
-[gd_scene load_steps=6 format=3 uid="uid://b5k0j0umvgnc7"]
+[gd_scene load_steps=7 format=3 uid="uid://b5k0j0umvgnc7"]
 
 [ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="1_pdy0w"]
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="1_s3cg0"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_4ugo7"]
-radius = 38.3275
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lgq21"]
+size = Vector2(100, 100)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bmx3b"]
 size = Vector2(22, 24)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4tj2u"]
 
-[node name="Player" type="CharacterBody2D" groups=["Life"]]
-position = Vector2(0, 65)
+[sub_resource type="CircleShape2D" id="CircleShape2D_gkwjp"]
+
+[node name="Player" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 0
 script = ExtResource("1_s3cg0")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_4ugo7")
+[node name="bug?" type="CollisionShape2D" parent="."]
+visible = false
+shape = SubResource("RectangleShape2D_lgq21")
+debug_color = Color(0.823529, 0.301961, 0.662745, 0.419608)
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(1, 1)
@@ -27,12 +32,15 @@ offset = Vector2(0, -32)
 
 [node name="Area2D" type="Area2D" parent="." groups=["Life"]]
 visible = false
+collision_layer = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" groups=["Life"]]
+visible = false
 position = Vector2(0, -20)
 shape = SubResource("RectangleShape2D_bmx3b")
 
 [node name="Debug" type="Label" parent="."]
+visible = false
 offset_left = -33.0
 offset_top = -88.0
 offset_right = 7.0
@@ -53,6 +61,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="BareHand_attack" type="Area2D" parent="."]
+collision_layer = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BareHand_attack"]
 shape = SubResource("RectangleShape2D_4tj2u")
@@ -76,8 +85,14 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 0
 
+[node name="PlayerBody" type="CharacterBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerBody"]
+shape = SubResource("CircleShape2D_gkwjp")
+
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
 [connection signal="area_exited" from="Area2D" to="." method="_on_area_2d_area_exited"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
 [connection signal="body_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_entered"]
 [connection signal="body_exited" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_exited"]
 [connection signal="timeout" from="BareHand_attack/Timer" to="." method="_on_timer_timeout"]

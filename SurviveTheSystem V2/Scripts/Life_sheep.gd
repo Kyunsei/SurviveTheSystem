@@ -165,6 +165,11 @@ func AdjustDirection():
 	direction.x = randi_range(-1,1)
 	direction.y = randi_range(-1,1)
 
+func getCloser(target):
+	direction = -(position - target).normalized()
+	 
+func getAway(target):
+	direction = (position - target).normalized()
 		
 
 func Activate():
@@ -201,7 +206,6 @@ func Deactivate():
 	#$Body_1/Collision_1.disabled = true		
 	#$Body_0/Collision_0.disabled = false	
 	
-	
 	$Sprite_1.hide()
 	$Dead_Sprite_0.hide()
 	$Sprite_0.show()
@@ -226,7 +230,14 @@ func _on_vision_area_exited(area):
 
 
 func _on_vision_body_entered(body):
-	if body.species== "grass":
-		#print(position.distance_to(body.position))
-		Eat(body)
+	if body.name != "PlayerBody":
+		if body.species== "grass":
+			#print(position.distance_to(body.position))
+			Eat(body)
+			getCloser(body.position)
+		if body.species== "sheep":
+			getAway(body.position)
+	else:
+		getAway(body.position)
+
 
