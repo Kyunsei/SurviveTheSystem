@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://bvgtrefdtlsul"]
+[gd_scene load_steps=6 format=3 uid="uid://bvgtrefdtlsul"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_0faxq"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
 [ext_resource type="PackedScene" uid="uid://b5k0j0umvgnc7" path="res://Scenes/Player.tscn" id="3_480aq"]
 [ext_resource type="PackedScene" uid="uid://m26fd7j0ngbx" path="res://Scenes/spawn_window.tscn" id="4_j4k08"]
+[ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_ytf0d"]
 
 [node name="MainScene" type="Node2D"]
 script = ExtResource("1_0faxq")
@@ -280,6 +281,9 @@ offset_right = 54.5
 offset_bottom = -7.0
 grow_horizontal = 2
 text = "Loading_grass"
+
+[node name="GameOver" parent="UI" instance=ExtResource("4_ytf0d")]
+visible = false
 
 [node name="DayTimer" type="Timer" parent="."]
 wait_time = 60.0

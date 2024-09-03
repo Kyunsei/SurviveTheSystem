@@ -47,9 +47,9 @@ func _process(delta):
 		if Life.state_array[playerindex] <= 0:
 			$UI/GameOverPanel.show()
 			gameover = true
-		if World.day > 10 and  gameover== false:
-			$UI/VictoryPanel.show()
-			$UI/VictoryPanel/Label.text = "Victory! \n" + "You survived " +  str(World.day) + " days\n" + "score: " + str(Life.score)
+		#if World.day > 10 and  gameover== false:
+		#	$UI/VictoryPanel.show()
+		#	$UI/VictoryPanel/Label.text = "Victory! \n" + "You survived " +  str(World.day) + " days\n" + "score: " + str(Life.score)
 			
 		if $Life/Player != null:
 			$StarBackground.position = $Life/Player.position  #background follow player
@@ -61,6 +61,10 @@ func _process(delta):
 			Life.InstantiateLife(idx)
 			pass'
 		#Life.deleteLoopCPU($Life)
+		if World.day == 20 and gameover == false:
+			$UI/GameOver.show()
+			gameover = true
+			get_tree().paused = true
 
 
 
@@ -234,7 +238,7 @@ func _on_block_timer_timeout():
 	
 
 func _on_day_timer_timeout():
-	pass#World.day += 1 # Replace with function body.
+	World.day += 1 # Replace with function body.
 
 
 'func _exit_tree():
@@ -292,7 +296,10 @@ func _on_button_respawn_pressed():
 	$UI/GameOverPanel.hide()
 	gameover = false
 	
-func _input(event):
+func _input(event): #gameover fonction
+	#if event.is_action_pressed("interact"):
+	#	$UI/GameOver.show()
+	#	get_tree().paused = true
 	'if event.is_action_pressed("Spawn"):
 		var posmouse =	get_global_mouse_position()
 		var x = int(get_global_mouse_position().y/World.tile_size)

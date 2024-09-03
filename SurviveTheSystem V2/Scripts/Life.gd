@@ -18,7 +18,9 @@ var Genome = {}
 
 var plant_number = 0
 var sheep_number = 0
+var crab_number = 0
 var berry_number = 0
+var player_number = 0
 var player_index = 0
 
 var max_life = 500
