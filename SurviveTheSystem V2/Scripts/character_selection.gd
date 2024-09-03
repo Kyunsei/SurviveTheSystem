@@ -30,7 +30,10 @@ func _on_button_back_pressed():
 
 
 func _on_button_start_pressed():
-	get_tree().change_scene_to_file("res://Scenes/loading_screen.tscn")
+	if $CheckBox.button_pressed == true :
+		get_tree().change_scene_to_file("res://Scenes/loading_screen.tscn")
+	elif $CheckBox.button_pressed == false:
+		get_tree().change_scene_to_file("res://Scenes/intro_story.tscn")
 	print("text button start is pressed")
 	pass # Replace with function body.
 

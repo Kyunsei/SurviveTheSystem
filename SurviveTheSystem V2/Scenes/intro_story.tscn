@@ -1,0 +1,115 @@
+[gd_scene load_steps=8 format=3 uid="uid://clx5yxipfcf8l"]
+
+[ext_resource type="Texture2D" uid="uid://cicqy5v6205k1" path="res://Art/player_sleep.png" id="1_1vkjr"]
+[ext_resource type="Script" path="res://Scripts/intro_story.gd" id="1_gumkr"]
+[ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="2_ja232"]
+[ext_resource type="Texture2D" uid="uid://1go6qx6r661l" path="res://Art/player_bulbi_scythe.png" id="3_qcbfd"]
+[ext_resource type="Texture2D" uid="uid://b2uflijcgxb2d" path="res://Art/spacecraft_placeholder.png" id="4_dv3o7"]
+[ext_resource type="Texture2D" uid="uid://b00vg28puu7cv" path="res://Art/spacecraft_placeholder_2.png" id="5_djpuf"]
+[ext_resource type="Texture2D" uid="uid://cg8jna1y730qc" path="res://Art/player_cat.png" id="6_ftyut"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_gumkr")
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="plant_story" type="Node2D" parent="."]
+visible = false
+
+[node name="text1" type="Label" parent="plant_story"]
+offset_left = 213.0
+offset_top = 92.0
+offset_right = 340.0
+offset_bottom = 115.0
+text = "One day a tree..."
+metadata/_edit_use_anchors_ = true
+
+[node name="text2" type="Label" parent="plant_story"]
+visible = false
+offset_left = 472.0
+offset_top = 194.0
+offset_right = 668.0
+offset_bottom = 217.0
+text = "Became something else..."
+metadata/_edit_use_anchors_ = true
+
+[node name="text3" type="Label" parent="plant_story"]
+visible = false
+offset_left = 768.0
+offset_top = 212.0
+offset_right = 1020.0
+offset_bottom = 235.0
+text = "And went on into the wild world."
+metadata/_edit_use_anchors_ = true
+
+[node name="img1" type="Sprite2D" parent="plant_story"]
+position = Vector2(269, 291)
+scale = Vector2(2, 2)
+texture = ExtResource("1_1vkjr")
+
+[node name="img2" type="Sprite2D" parent="plant_story"]
+visible = false
+position = Vector2(558, 349)
+scale = Vector2(3, 3)
+texture = ExtResource("2_ja232")
+
+[node name="img3" type="Sprite2D" parent="plant_story"]
+visible = false
+position = Vector2(884, 350)
+scale = Vector2(3, 3)
+texture = ExtResource("3_qcbfd")
+
+[node name="cat_story" type="Node2D" parent="."]
+visible = false
+
+[node name="text1" type="Label" parent="cat_story"]
+offset_left = 91.0
+offset_top = 35.0
+offset_right = 471.0
+offset_bottom = 58.0
+text = "One day a catronaut was traveling through space..."
+metadata/_edit_use_anchors_ = true
+
+[node name="text2" type="Label" parent="cat_story"]
+visible = false
+offset_left = 145.0
+offset_top = 211.0
+offset_right = 524.0
+offset_bottom = 234.0
+text = "Catronaut spaceship was going to be destroyed..."
+metadata/_edit_use_anchors_ = true
+
+[node name="text3" type="Label" parent="cat_story"]
+visible = false
+offset_left = 647.0
+offset_top = 224.0
+offset_right = 1140.0
+offset_bottom = 247.0
+text = "They managed to escape and landed on a whole new wild world."
+metadata/_edit_use_anchors_ = true
+
+[node name="text4" type="Label" parent="cat_story"]
+visible = false
+offset_left = 755.0
+offset_top = 504.0
+offset_right = 1251.0
+offset_bottom = 527.0
+text = "Rescue will be there in 20 days..."
+metadata/_edit_use_anchors_ = true
+
+[node name="img1" type="Sprite2D" parent="cat_story"]
+position = Vector2(287, 130)
+texture = ExtResource("4_dv3o7")
+
+[node name="img2" type="Sprite2D" parent="cat_story"]
+visible = false
+position = Vector2(334, 419)
+texture = ExtResource("5_djpuf")
+
+[node name="img3" type="Sprite2D" parent="cat_story"]
+visible = false
+position = Vector2(865, 367)
+scale = Vector2(3, 3)
+texture = ExtResource("6_ftyut")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
