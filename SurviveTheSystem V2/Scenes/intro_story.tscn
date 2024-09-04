@@ -112,4 +112,14 @@ position = Vector2(865, 367)
 scale = Vector2(3, 3)
 texture = ExtResource("6_ftyut")
 
+[node name="StartButton" type="Button" parent="."]
+visible = false
+offset_left = 861.0
+offset_top = 572.0
+offset_right = 1041.0
+offset_bottom = 630.0
+theme_override_font_sizes/font_size = 30
+text = "Start"
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="pressed" from="StartButton" to="." method="_on_start_button_pressed"]

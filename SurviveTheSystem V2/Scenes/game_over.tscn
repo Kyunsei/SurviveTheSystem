@@ -16,12 +16,14 @@ offset_right = 117.0
 offset_bottom = 35.0
 
 [node name="Label2" type="Label" parent="."]
+layout_mode = 0
 offset_left = 528.0
 offset_top = 88.0
 offset_right = 568.0
 offset_bottom = 111.0
 
 [node name="Label3" type="Label" parent="."]
+layout_mode = 0
 offset_left = 194.0
 offset_top = 133.0
 offset_right = 234.0
@@ -42,6 +44,7 @@ offset_bottom = 335.0
 text = "Continue to Survive"
 
 [node name="Button2" type="Button" parent="."]
+layout_mode = 0
 offset_left = 323.0
 offset_top = 370.0
 offset_right = 497.0
@@ -49,6 +52,7 @@ offset_bottom = 426.0
 text = "Return to main menu"
 
 [node name="Button3" type="Button" parent="."]
+layout_mode = 0
 offset_left = 671.0
 offset_top = 370.0
 offset_right = 834.0
@@ -56,6 +60,7 @@ offset_bottom = 425.0
 text = "Close Game"
 
 [node name="Button4" type="Button" parent="."]
+layout_mode = 0
 offset_left = 971.0
 offset_top = 580.0
 offset_right = 1108.0

@@ -14,13 +14,15 @@ var initialized = false
 
 var allblocks
 
+var player
+
 signal world_speed_changed
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 
 	InitNewGame()
-	$Life/Player/Sprite2D.texture = Life.player_skin[Life.player_skin_ID]
+	#$Life/Player/Sprite2D.texture = Life.player_skin[Life.player_skin_ID]
 	
 	'Life.current_batch = 0
 	$Life/SpawnTimer.wait_time = Life.min_time_by_batch
@@ -28,31 +30,27 @@ func _ready():
 	get_tree().paused = true'
 
 	
-	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
-	Life.Instantiate_emptyLife_pool($Life, 50, "sheep")
-	Life.Instantiate_emptyLife_pool($Life, 100, "berry")
-	
-	Life.Instantiate_Life_in_pool($Life,100,"grass")
-	Life.Instantiate_Life_in_pool($Life,10,"berry")
-	Life.Instantiate_Life_in_pool($Life,5,"sheep")
 
+	
+
+	
 func _process(delta):
 	#if initialized == true:
 	
 
 		#Life.InstantiateNewLifeBatchCPU($Life)
-		var playerworldpos = World.getWorldPos($Life/Player.global_position)
+		#var playerworldpos = World.getWorldPos($Life/Player.global_position)
 		#World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
 		
-		if Life.state_array[playerindex] <= 0:
+		'if Life.state_array[playerindex] <= 0:
 			$UI/GameOverPanel.show()
-			gameover = true
+			gameover = true'
 		#if World.day > 10 and  gameover== false:
 		#	$UI/VictoryPanel.show()
 		#	$UI/VictoryPanel/Label.text = "Victory! \n" + "You survived " +  str(World.day) + " days\n" + "score: " + str(Life.score)
 			
-		if $Life/Player != null:
-			$StarBackground.position = $Life/Player.position  #background follow player
+		if player != null:
+			$StarBackground.position = player.position  #background follow player
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
 		$UI/Debug.text = str(World.day) + " day \n" +"berry: " +   str(Life.berry_number) + " / " + str(Life.berry_pool_state.size()) + " \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)    
 		'var idx = Life.state_array.find(0)
@@ -74,24 +72,40 @@ func InitNewGame():
 	World.Init_World()
 	
 	#init Life
+	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
+	Life.Instantiate_emptyLife_pool($Life, 50, "sheep")
+	Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+	Life.Instantiate_emptyLife_pool($Life, 3, "cat")
+	#Life.Instantiate_emptyLife_pool($Life, 3, "planty")
+	
+	Life.Instantiate_Life_in_pool($Life,100,"grass")
+	Life.Instantiate_Life_in_pool($Life,10,"berry")
+	Life.Instantiate_Life_in_pool($Life,5,"sheep")
+	#Life.Instantiate_Life_in_pool($Life,1,Life.char_selected)
+	Life.Instantiate_Life_in_pool($Life,1,"cat")
 
-	Life.Init_matrix()
-	Life.Init_Genome()
-	Brain.Init_Brain()
+	
+
+	#Life.Init_matrix()
+	#Life.Init_Genome()
+	#Brain.Init_Brain()
 	
 
 	#Life.Instantiate_fullLife_pool($Life, Life.max_life)
 	
 	#init item
-	Item.Init_Item()
+	#Item.Init_Item()
 		
 	
 	#Instantiate Player
-	Life.player_index = Life.BuildPlayer($Life)
-	$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
-	$Life/Player.INDEX = Life.player_index
-	var playerworldpos = World.getWorldPos($Life/Player.global_position)
+	#Life.player_index = Life.BuildPlayer($Life)
+	#$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+	#$Life/Player.INDEX = Life.player_index
 	
+	player = Life.cat_pool_scene[0] #TEMPORAIRE
+	#player.get_node("Camera2D").enabled = true 
+	player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+	var playerworldpos = World.getWorldPos(player.global_position)
 	World.InstantiateBlockAroundPlayer(playerworldpos.x,playerworldpos.y,$Blocks)
 	allblocks = $Blocks.get_children()
 	
@@ -297,7 +311,15 @@ func _on_button_respawn_pressed():
 	gameover = false
 	
 func _input(event): #gameover fonction
-	#if event.is_action_pressed("interact"):
+	if event.is_action_pressed("interact"):
+		pass
+		'Life.sheep_pool_scene[0].isPlayer = true
+		#Life.sheep_pool_scene[0].set_physics_process(true)
+		var camera = $Life/Camera2D
+		$Life.remove_child($Life/Camera2D)
+		Life.sheep_pool_scene[0].add_child(camera)'
+
+		#.isPlayer = true
 	#	$UI/GameOver.show()
 	#	get_tree().paused = true
 	'if event.is_action_pressed("Spawn"):

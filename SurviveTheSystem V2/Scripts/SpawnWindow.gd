@@ -10,7 +10,8 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	$ColorRect/Sprite2D.texture = Life.Genome[genome_ID]["sprite"][current_cycle]
+	pass
+	#$ColorRect/Sprite2D.texture = Life.Genome[genome_ID]["sprite"][current_cycle]
 
 
 

@@ -29,6 +29,7 @@ texture = ExtResource("1_pdy0w")
 offset = Vector2(0, -32)
 
 [node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
 
 [node name="Area2D" type="Area2D" parent="." groups=["Life"]]
 visible = false

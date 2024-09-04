@@ -13,13 +13,15 @@ func _process(delta):
 
 func _on_button_char_1_pressed():
 	print("text button 1 is pressed")
-	Life.player_skin_ID = 0
+	#Life.player_skin_ID = 0
+	Life.char_selected = "planty"
 	pass # Replace with function body.
 
 
 func _on_button_char_2_pressed():
 	print("text button 2 is pressed")
-	Life.player_skin_ID = 1
+	#Life.player_skin_ID = 1
+	Life.char_selected = "cat"
 	pass # Replace with function body.
 
 

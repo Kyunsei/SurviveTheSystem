@@ -1,0 +1,96 @@
+[gd_scene load_steps=6 format=3 uid="uid://e2vhj8gjm240"]
+
+[ext_resource type="Script" path="res://Scripts/cat_entity.gd" id="1_ur5ob"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gm5t3"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wmr4f"]
+size = Vector2(64, 64)
+
+[sub_resource type="Theme" id="Theme_g2d4v"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5qtdw"]
+
+[node name="Catronaute" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_ur5ob")
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="ActionTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="Vision" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape2D" parent="Vision"]
+shape = SubResource("CapsuleShape2D_gm5t3")
+
+[node name="Sprite_0" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Dead_Sprite_0" type="Sprite2D" parent="."]
+centered = false
+
+[node name="Collision_0" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_wmr4f")
+
+[node name="DebugLabel" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="HP_bar" type="ProgressBar" parent="."]
+offset_left = -48.0
+offset_top = -63.0
+offset_right = -38.0
+offset_bottom = -1.0
+theme = SubResource("Theme_g2d4v")
+step = 1.0
+value = 10.0
+fill_mode = 3
+show_percentage = false
+
+[node name="Energy_bar" type="ProgressBar" parent="."]
+offset_left = -34.0
+offset_top = -64.0
+offset_right = -23.0
+offset_bottom = -1.0
+step = 1.0
+value = 50.0
+fill_mode = 3
+show_percentage = false
+
+[node name="BareHand_attack" type="Area2D" parent="."]
+collision_layer = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BareHand_attack"]
+shape = SubResource("RectangleShape2D_5qtdw")
+
+[node name="ActionTimer" type="Timer" parent="BareHand_attack"]
+wait_time = 0.2
+one_shot = true
+
+[node name="sprite" type="ColorRect" parent="BareHand_attack"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="body_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_entered"]
+[connection signal="body_exited" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_exited"]
+[connection signal="timeout" from="BareHand_attack/ActionTimer" to="." method="_on_action_timer_timeout"]

@@ -42,11 +42,11 @@ func _process(delta):
 	
 	
 	speed = basespeed*World.speed
-	$Debug.text = "PV: " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" /Hunger " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
+	#$Debug.text = "PV: " + str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" /Hunger " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) )  
 	#$Debug.text = str (Life.parameters_array[INDEX*Life.par_number + 1] ) +" / " + str (floor(Life.parameters_array[INDEX*Life.par_number + 2]) ) +" / " + str (Life.state_array[INDEX]) 
-	if Life.state_array[INDEX] <= 0:
+	#if Life.state_array[INDEX] <= 0:
 		#queue_free()
-		$Sprite2D.hide()
+		#$Sprite2D.hide()
 
 func _physics_process(delta):
 	input_dir = Vector2.ZERO
@@ -63,8 +63,6 @@ func _physics_process(delta):
 		input_dir.y += 1
 		rotation_dir = 1
 
-	
-	
 	velocity = input_dir.normalized() * speed 
 	move_and_collide(velocity *delta)
 
@@ -72,10 +70,10 @@ func _physics_process(delta):
 		last_dir = input_dir
 	position.x = clamp(position.x, 0, World.world_size*World.tile_size)
 	position.y = clamp(position.y, 0, World.world_size*World.tile_size)
-	Life.parameters_array[INDEX*Life.par_number + 4]  = last_dir.normalized().x 
+	'Life.parameters_array[INDEX*Life.par_number + 4]  = last_dir.normalized().x 
 	Life.parameters_array[INDEX*Life.par_number + 5] = last_dir.normalized().y
 	Life.parameters_array[INDEX*Life.par_number + 6]  = position.x 
-	Life.parameters_array[INDEX*Life.par_number + 7] = position.y
+	Life.parameters_array[INDEX*Life.par_number + 7] = position.y'
 
 	if item_array.size() > 0:
 		for i in item_array:

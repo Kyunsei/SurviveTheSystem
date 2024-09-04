@@ -1,8 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://bvgtrefdtlsul"]
+[gd_scene load_steps=5 format=3 uid="uid://bvgtrefdtlsul"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_0faxq"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
-[ext_resource type="PackedScene" uid="uid://b5k0j0umvgnc7" path="res://Scenes/Player.tscn" id="3_480aq"]
 [ext_resource type="PackedScene" uid="uid://m26fd7j0ngbx" path="res://Scenes/spawn_window.tscn" id="4_j4k08"]
 [ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_ytf0d"]
 
@@ -19,8 +18,6 @@ texture = ExtResource("2_03gyf")
 [node name="Life" type="Node2D" parent="."]
 z_as_relative = false
 y_sort_enabled = true
-
-[node name="Player" parent="Life" instance=ExtResource("3_480aq")]
 
 [node name="LifeTimer" type="Timer" parent="Life"]
 wait_time = 10.0
@@ -123,6 +120,7 @@ text = "100x
 "
 
 [node name="SleepButton" type="Button" parent="UI"]
+visible = false
 offset_left = 403.0
 offset_top = 8.0
 offset_right = 501.0
@@ -303,7 +301,6 @@ visible = false
 [connection signal="pressed" from="UI/speedContainer/speed2" to="." method="_on_speed_2_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed10" to="." method="_on_speed_10_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed100" to="." method="_on_speed_100_pressed"]
-[connection signal="pressed" from="UI/SleepButton" to="Life/Player" method="_on_sleep_button_pressed"]
 [connection signal="pressed" from="UI/GameOverPanel/ButtonRestart" to="." method="_on_button_restart_pressed"]
 [connection signal="pressed" from="UI/GameOverPanel/ButtonRespawn" to="." method="_on_button_respawn_pressed"]
 [connection signal="pressed" from="UI/VictoryPanel/ButtonRestart" to="." method="_on_button_restart_pressed"]
