@@ -84,10 +84,9 @@ grow_horizontal = 0
 text = "W,A,S,D : Move
 P : ADD 100 max grass
 R: Attack
-
----SOONISH----
-
 SPACE: pick-up
+X: drop
+ENTER: eat
 "
 
 [node name="speedContainer" type="HBoxContainer" parent="UI"]

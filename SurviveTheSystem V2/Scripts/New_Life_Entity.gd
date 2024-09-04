@@ -18,6 +18,11 @@ var isDead = false
 var isPlayer = false
 
 
+
+#INVENTAIRE
+var item_array = []
+var carried_by = null
+
 #Genome parameters
 var Genome = {
 	"maxPV": [0],
@@ -95,15 +100,34 @@ func Player_Control_movement():
 
 		position.x = clamp(position.x, 0, World.world_size*World.tile_size)
 		position.y = clamp(position.y, 0, World.world_size*World.tile_size)
-
+		return input_dir
+		
 func _physics_process(delta):
 	if isPlayer:
 		Player_Control_movement()	
 	move_and_collide(velocity *delta)
 
 	
+func getPickUP(transporter):
+	if self.carried_by != null:
+		carried_by.item_array.erase(self)
+	self.carried_by = transporter
+	transporter.item_array.append(self)
+	#seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
 
 
+
+
+func getClosestLife(array,minDist):
+	var closest_entity = null
+	var min_distance = minDist
+	var calc_distance = 0
+	for p in array:
+		calc_distance = position.distance_to(p.position)
+		if calc_distance <= min_distance:
+			min_distance = calc_distance
+			closest_entity = p
+	return closest_entity
 
 #METABO cost
 func Metabo_cost():

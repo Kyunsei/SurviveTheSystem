@@ -82,7 +82,7 @@ func InitNewGame():
 	Life.Instantiate_Life_in_pool($Life,10,"berry")
 	Life.Instantiate_Life_in_pool($Life,5,"sheep")
 	#Life.Instantiate_Life_in_pool($Life,1,Life.char_selected)
-	Life.Instantiate_Life_in_pool($Life,1,"cat")
+	Life.Instantiate_Life_in_pool($Life,2,"cat")
 
 	
 
@@ -103,6 +103,7 @@ func InitNewGame():
 	#$Life/Player.INDEX = Life.player_index
 	
 	player = Life.cat_pool_scene[0] #TEMPORAIRE
+	player.isPlayer = true #HERE
 	#player.get_node("Camera2D").enabled = true 
 	player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	var playerworldpos = World.getWorldPos(player.global_position)

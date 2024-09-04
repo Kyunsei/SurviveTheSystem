@@ -91,7 +91,10 @@ func Absorb_soil_energy():
 #diying
 func Die():
 	self.isDead = true
-	
+	if carried_by != null:
+		carried_by.item_array.erase(self)
+		self.carried_by = null
+		z_index = 0
 	$Dead_Sprite_0.show()
 	$Collision_1.disabled = true		
 	$Collision_0.disabled = false		

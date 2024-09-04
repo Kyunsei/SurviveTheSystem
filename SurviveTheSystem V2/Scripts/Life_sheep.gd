@@ -11,7 +11,7 @@ var danger_array = []
 var friend_array = []
 
 
-var item_array = []
+
 
 var action_finished = true
 
@@ -123,7 +123,11 @@ func _on_timer_timeout():
 func Die():
 	for i in item_array:
 		i.carried_by = null
-	
+		i.z_index = 0
+	if carried_by != null:
+		carried_by.item_array.erase(self)
+		self.carried_by = null
+		z_index = 0
 	item_array = []
 
 	
@@ -198,7 +202,7 @@ func Brainy():
 	var friend_array_temp = friend_array.duplicate()
 	
 	if danger_array_temp.size() >0 :
-		var cl = getClosestLife(danger_array_temp)
+		var cl = getClosestLife(danger_array_temp,1000)
 		var random = randi_range(0,100)
 		var probability = clamp(1.0 - (position.distance_to(cl.position) / 300), 0.0, 1.0) * 100
 		if random <= probability:
@@ -206,12 +210,13 @@ func Brainy():
 
 
 	elif self.energy < 30 and food_array_temp.size()>0:
-		var cl = getClosestLife(food_array_temp)
-		if position.distance_to(cl.position) < 32 and cl.isDead == false:
-				Eat(cl)
-				getCloser(cl.position)
+		var cl = getClosestLife(food_array_temp,1000)
+		if cl !=null:
+			if position.distance_to(cl.position) < 32 and cl.isDead == false:
+					Eat(cl)
+					getCloser(cl.position)
 	elif friend_array_temp.size() > 0:
-		var cl = getClosestLife(friend_array_temp)
+		var cl = getClosestLife(friend_array_temp,1000)
 		if position.distance_to(cl.position) > 96 :
 			getCloser(cl.position)
 	else:
@@ -222,7 +227,7 @@ func Brainy():
 		
 
 
-func getClosestLife(array):
+'func getClosestLife(array, 1000):
 	var closest_entity = array[0]
 	var min_distance = 1000
 	var calc_distance = 500
@@ -231,7 +236,7 @@ func getClosestLife(array):
 		if calc_distance <= min_distance:
 			min_distance = calc_distance
 			closest_entity = p
-	return closest_entity
+	return closest_entity'
 	
 	
 func Activate():

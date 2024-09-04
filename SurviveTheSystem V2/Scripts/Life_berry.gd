@@ -6,7 +6,7 @@ extends LifeEntity
 var species = "berry"
 
 
-var carried_by = null
+
 
 func Build_Genome():
 	Genome["maxPV"]=[10,10,15,20]
@@ -117,6 +117,7 @@ func Die():
 	if carried_by != null:
 		carried_by.item_array.erase(self)
 		self.carried_by = null
+		z_index = 0
 	
 	$Dead_Sprite_0.show()
 	$Collision_1.disabled = true	
@@ -204,8 +205,11 @@ func LifeDuplicate2(transporter):
 
 func getTransported(seed,transporter):
 	seed.carried_by = transporter
+	seed.z_index = 1
 	transporter.item_array.append(seed)
-	seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
+	if transporter.isPlayer == false:
+		print("hello")
+		seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
 
 
 		
@@ -282,4 +286,5 @@ func _on_hitch_hike_timer_timeout():
 	if carried_by != null:
 		carried_by.item_array.erase(self)
 		self.carried_by = null
+		self.z_index = 0
 

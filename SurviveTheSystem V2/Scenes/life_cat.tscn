@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://e2vhj8gjm240"]
 
-[ext_resource type="Script" path="res://Scripts/cat_entity.gd" id="1_ur5ob"]
+[ext_resource type="Script" path="res://Scripts/life_cat.gd" id="1_ur5ob"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gm5t3"]
 
@@ -89,6 +89,22 @@ offset_bottom = 16.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 0
+
+[node name="sprite2" type="ColorRect" parent="BareHand_attack"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+color = Color(0, 0.894118, 0.898039, 1)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="body_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_entered"]

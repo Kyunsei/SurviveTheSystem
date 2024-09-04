@@ -2,8 +2,8 @@ extends LifeEntity
 
 var species = "catronaute"
 
-var item_array = []
-var barehand_attack_array = []
+
+var barehand_array = []
 var action_finished = true
 
 #movmnt
@@ -18,7 +18,7 @@ func Build_Genome():
 	Genome["sprite"] = [preload("res://Art/player_cat.png")]
 	Genome["dead_sprite"] = [preload("res://Art/poop_star.png")]
 	
-	Genome["planty_sprite"] = [preload("res://Art/player_bulbi.png")]
+	Genome["planty_sprite"] = [preload("res://Art/player_bulbi.png")] #TEMPORAIRE
 
 func init_progressbar():
 	$HP_bar.modulate = Color(1, 0, 0)
@@ -30,16 +30,15 @@ func Build_Stat():
 	self.PV = Genome["maxPV"][self.current_life_cycle]	
 	self.PV = 5	
 	self.energy = 10
-	self.isPlayer = true #HERE
+
 
 	AdjustBar()
 	
-func Build_Phenotype(): #go to main
+func Build_Phenotype(): 
 	# SPRITE
-	
 	$Sprite_0.texture = Genome["sprite"][0]
 	if Life.char_selected == "planty":
-		$Sprite_0.texture = Genome["planty_sprite"][0]
+		$Sprite_0.texture = Genome["planty_sprite"][0] #TEMPORAIRE
 		
 	$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
 	$Sprite_0.offset.x = -$Sprite_0.texture.get_width()/4
@@ -48,9 +47,9 @@ func Build_Phenotype(): #go to main
 	$Dead_Sprite_0.offset.y = -$Dead_Sprite_0.texture.get_height()
 	
 	$Dead_Sprite_0.hide()
-	#$Dead_Sprite_2.offset.x = -$Dead_Sprite_2.texture.get_width()/4
+
 	#ADD Body
-	#$Body_0/Collision_0.shape.size = $Sprite_0.texture.get_size()
+
 	$Collision_0.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	init_progressbar()
@@ -60,70 +59,53 @@ func Build_Phenotype(): #go to main
 	$BareHand_attack/CollisionShape2D.shape.size = size_Barehand
 	$BareHand_attack/sprite.size = size_Barehand
 	$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
+	$BareHand_attack/sprite2.size = size_Barehand
+	$BareHand_attack/sprite2.position = -Vector2(0.5,0.5)*size_Barehand
 
 
 func _physics_process(delta):
-	input_dir = Vector2.ZERO
-	rotation_dir = 0
-	if Input.is_action_pressed("left") :
-		input_dir.x -= 1
-		rotation_dir = -1	
-	if Input.is_action_pressed("right"):
-		input_dir.x += 1
-		rotation_dir = 1
-	if Input.is_action_pressed("up"):
-		input_dir.y -= 1
-		rotation_dir = -1
-	if Input.is_action_pressed("down"):
-		input_dir.y += 1
-		rotation_dir = 1
-			
-	velocity = input_dir.normalized() * Genome["speed"][self.current_life_cycle]
-
-	move_and_collide(velocity *delta)
-	position.x = clamp(position.x, 0, World.world_size*World.tile_size)
-	position.y = clamp(position.y, 0, World.world_size*World.tile_size)
+	if isPlayer:
+		input_dir = Player_Control_movement()
+		move_and_collide(velocity *delta)
 
 
-	if item_array.size() > 0:
-		for i in item_array:
-			i.position = position
-	
-	if input_dir.normalized() != Vector2(0,0):
-		last_dir = input_dir
-	var temppos = position + last_dir * Vector2(64,96)
-	$BareHand_attack.rotation =  (last_dir.angle()) 
-	$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
+		if item_array.size() > 0:
+			var c = 0
+			for i in item_array:
+				i.position = position + Vector2(c*16,0)
+				c += 1
+		
+		if input_dir.normalized() != Vector2(0,0):
+			last_dir = input_dir
+		var temppos = position + last_dir * Vector2(64,96)
+		$BareHand_attack.rotation =  (last_dir.angle()) 
+		$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
 
 func _input(event):
-	if event.is_action_pressed("use"):
-		#current_action = 3
-		#UseItem()
-		#Life.stop=true
-		#Life.Instantiate_NewLife_in_Batch(get_parent(),0,20,Life.new_lifes)
-		#attaque(input_dir)
-		print("use is pressed")
-	if event.is_action_pressed("interact"):
-		
-		#Life.Extend_emptyLife_pool(get_parent(),200)
-		#current_action = 1
-		#Interact(self)
-		#World.element += 50
-		print("interact is pressed")
-	if event.is_action_pressed("drop"):
+	if isPlayer:
+		if event.is_action_pressed("use"):
+			#current_action = 3
+			#UseItem()
+			#Life.stop=true
+			#Life.Instantiate_NewLife_in_Batch(get_parent(),0,20,Life.new_lifes)
+			#attaque(input_dir)
+			print("use is pressed")
+		if event.is_action_pressed("interact"):
+			PickUp()
 
-		print("drop is pressed")
-	if event.is_action_pressed("eat"):
-		print("eat is pressed")
-		#Eat()
-	if event.is_action_pressed("attack"):
-		print("attack is pressed")
-		Attack()
-	if event.is_action_pressed("throw"):
-		print( "throw is pressed")
-		#Throw()
-	'else:
-		current_action = 2'
+		if event.is_action_pressed("drop"):
+			Drop()
+
+		if event.is_action_pressed("eat"):
+			Eat_Action()
+			#Eat()
+		if event.is_action_pressed("attack"):
+			Attack()
+		if event.is_action_pressed("throw"):
+			print( "throw is pressed")
+			#Throw()
+		'else:
+			current_action = 2'
 
 
 
@@ -132,7 +114,6 @@ func _on_timer_timeout():
 		if $Timer.wait_time != lifecycletime / World.speed:
 			$Timer.wait_time = lifecycletime / World.speed
 		if isDead == false:
-
 
 			Metabo_cost()
 			Ageing()
@@ -152,17 +133,56 @@ func AdjustBar():
 	$Energy_bar.value = self.energy *100 / 10 
 
 
-
 func Attack():
 	BareHand_attack()
 
-func BareHand_attack():
+func PickUp():
+	$BareHand_attack/sprite2.show()
+	$BareHand_attack/ActionTimer.start(0)
+	var closestItem = getClosestLife(barehand_array,$Vision/Collision.shape.radius+100)
+	if closestItem != null:
+		var distancetoclosestItem = position.distance_to(closestItem.position)
+		if  distancetoclosestItem < 64 :
 
+			if closestItem.species == "berry":
+				if closestItem.current_life_cycle == 0:
+					closestItem.getPickUP(self)
+					closestItem.z_index = 1
+				if closestItem.current_life_cycle == 3:
+					closestItem.LifeDuplicate2(self)
+
+			if closestItem.species == "sheep" and closestItem.current_life_cycle < 2:
+				closestItem.getPickUP(self)
+				closestItem.z_index = 1
+			if closestItem.species == "grass" :
+				closestItem.getPickUP(self)
+				closestItem.z_index = 1
+
+	
+func Drop():
+	if item_array.size() >0:
+		item_array[0].carried_by = null
+		item_array[0].z_index = 0
+		item_array.remove_at(0)
+
+
+func Throw():
+	pass
+
+func Eat_Action():
+	if item_array.size() >0:	
+		Eat(item_array[0])
+		AdjustBar()
+
+
+
+func BareHand_attack():
 	$BareHand_attack/sprite.show()
 	$BareHand_attack/ActionTimer.start(0)
-	for i in barehand_attack_array:
+	for i in barehand_array:
 		if i != null:
 			i.getDamaged(10)
+
 			
 
 func Die():
@@ -204,21 +224,27 @@ func Deactivate():
 
 func Eat(life):
 	#print("Eaten")
-	self.energy += life.energy
-	life.energy= 0
-	life.Die()
+	if life.species == "berry" and life.current_life_cycle == 0:
+		self.energy += life.energy
+		life.energy= 0
+		life.Die()
+	elif life.species == "sheep" and life.current_life_cycle < 2:
+		self.energy += life.energy
+		life.energy= 0
+		life.Die()
 	#$DebugLabel.text = str(age) + " " + str(energy)
 
 func _on_bare_hand_attack_body_entered(body):
 	if body != self:
 		#print(body.get_parent().pool_index)
-		barehand_attack_array.append(body)	
+		barehand_array.append(body)	
 
 
 func _on_bare_hand_attack_body_exited(body):
 	if body != self:
-		barehand_attack_array.erase(body)
+		barehand_array.erase(body)
 
 
 func _on_action_timer_timeout():
 	$BareHand_attack/sprite.hide()
+	$BareHand_attack/sprite2.hide()
