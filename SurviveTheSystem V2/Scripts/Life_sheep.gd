@@ -19,7 +19,7 @@ var action_finished = true
 
 func Build_Genome():
 	Genome["maxPV"]=[15,10,20]
-	Genome["speed"] =[0,400,200]
+	Genome["speed"] =[0,200,100]
 	Genome["lifespan"]=[100,100,100]
 	Genome["sprite"] = [preload("res://Art/sheep1.png"),preload("res://Art/sheep2.png"),preload("res://Art/sheep3.png")]
 	Genome["dead_sprite"] = [preload("res://Art/sheep_dead1.png"),preload("res://Art/sheep_dead2.png"),preload("res://Art/sheep_dead3.png")]
@@ -77,20 +77,19 @@ func Build_Stat():
 	self.energy = 10
 
 func _physics_process(delta):
+	if isPlayer:
+		Player_Control_movement()	
 	if isDead == false:
 		Brainy()
-		velocity = direction * Genome["speed"][self.current_life_cycle]
-		var collision = move_and_collide(velocity *delta)
-		'if collision:
-			print("I collided with ", collision.get_collider().name)
-			Eat(collision.get_collider())'
-		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
-		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
-		if item_array.size() > 0:
-			for i in item_array:
-				i.position = position
 	else:
 		velocity = Vector2(0,0)
+		
+	var collision = move_and_collide(velocity *delta)	
+	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
+	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
+	if item_array.size() > 0:
+		for i in item_array:
+			i.position = position	
 		
 func _on_timer_timeout():
 	
@@ -147,13 +146,13 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 2 and self.energy > 8:
+		if self.age > 4 and self.energy > 8:
 			self.current_life_cycle += 1
 			$Sprite_1.show()
 			$Sprite_0.hide()
 			set_physics_process(true)
 	if current_life_cycle == 1:
-		if self.age > 4 and self.energy > 10:
+		if self.age > 8 and self.energy > 10:
 			self.current_life_cycle += 1
 			$Sprite_2.show()
 			$Sprite_1.hide()
@@ -169,6 +168,7 @@ func Growth():
 func LifeDuplicate():
 	if current_life_cycle == 2 :
 		if self.age % 10 == 0 and self.energy > 20:
+			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
 			for i in range(0,int(self.energy-10)/10):
 			#Lpool Technique
 				var li = Life.sheep_pool_state.find(0)	
@@ -181,26 +181,39 @@ func LifeDuplicate():
 					Life.sheep_pool_scene[li].current_life_cycle = 0
 					Life.sheep_pool_scene[li].PV = Genome["maxPV"][0]
 					Life.sheep_number += 1
-					Life.sheep_pool_scene[li].global_position = PickRandomPlaceWithRange(position,3 * World.tile_size)
+					Life.sheep_pool_scene[li].global_position = newpos + Vector2(randf_range(0,32),randf_range(0,32))
 				else:
 					print("sheep_pool empty")
 
 
 func AdjustDirection():
-	direction.x = randi_range(-1,1)
-	direction.y = randi_range(-1,1)
+	if action_finished == true:
+		direction.x = randi_range(-1,1)
+		direction.y = randi_range(-1,1)
+		velocity = direction * Genome["speed"][self.current_life_cycle]*0.5
+		action_finished = false
+		$ActionTimer.start(0.5)
+		$DebugLabel.text = "Idle"
 
 func getCloser(target):
 	direction = -(position - target).normalized()
+	velocity = direction * Genome["speed"][self.current_life_cycle]
+	$DebugLabel.text = "feeding"
 	 
 func getAway(target):
-	direction = (position - target).normalized()
+	if action_finished == true:
+		direction = (position - target).normalized()
+		velocity = direction * 400  # Genome["speed"][self.current_life_cycle] *2
+		action_finished = false
+		$DebugLabel.text = "avoid"
+		$ActionTimer.start(0.5)
 
 func Brainy():
 	var danger_array_temp = danger_array.duplicate()
 	var food_array_temp = food_array.duplicate()
 	var friend_array_temp = friend_array.duplicate()
 	
+
 	if danger_array_temp.size() >0 :
 		var cl = getClosestLife(danger_array_temp,1000)
 		var random = randi_range(0,100)
@@ -209,22 +222,22 @@ func Brainy():
 			getAway(cl.position)
 
 
-	elif self.energy < 30 and food_array_temp.size()>0:
-		var cl = getClosestLife(food_array_temp,1000)
-		if cl !=null:
-			if position.distance_to(cl.position) < 32 and cl.isDead == false:
-					Eat(cl)
-					getCloser(cl.position)
-	elif friend_array_temp.size() > 0:
+	if action_finished == true:
+		if self.energy < 50 and food_array_temp.size()>0:
+			var cl = getClosestLife(food_array_temp,1000)
+			if cl !=null:
+				if position.distance_to(cl.position) < 32 and cl.isDead == false:
+						Eat(cl)
+				if cl.isDead == false:
+						getCloser(cl.position)
+			else:
+				AdjustDirection()
+		else:
+				AdjustDirection()
+		'elif friend_array_temp.size() > 0:
 		var cl = getClosestLife(friend_array_temp,1000)
 		if position.distance_to(cl.position) > 96 :
-			getCloser(cl.position)
-	else:
-		if action_finished == true:
-			action_finished = false
-			$ActionTimer.start(0.5)
-			AdjustDirection()
-		
+			getCloser(cl.position)'		
 
 
 'func getClosestLife(array, 1000):
@@ -315,6 +328,8 @@ func _on_vision_body_entered(body):
 		if body.species== "sheep":
 			#getAway(body.position)
 			friend_array.append(body)
+		if body.species == "catronaute":
+			danger_array.append(body)
 	else:
 		danger_array.append(body.get_parent())
 
@@ -334,6 +349,8 @@ func _on_vision_body_exited(body):
 		if body.species== "sheep":
 			#getAway(body.position)
 			friend_array.erase(body)
+		if body.species == "catronaute":
+			danger_array.erase(body)
 	else:
 		danger_array.erase(body.get_parent())
 		#getAway(body.position)
@@ -341,3 +358,4 @@ func _on_vision_body_exited(body):
 
 func _on_action_timer_timeout():
 	action_finished = true
+
