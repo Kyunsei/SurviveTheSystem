@@ -198,8 +198,30 @@ func AdjustDirection():
 func getCloser(target):
 	direction = -(position - target).normalized()
 	velocity = direction * Genome["speed"][self.current_life_cycle]
-	$DebugLabel.text = "feeding"
-	 
+	#$DebugLabel.text = "feeding"
+	
+
+func goToMiddle(life_array):
+	if action_finished == true:
+		var sum = Vector2(0,0)
+		for l in life_array:
+			sum += l.position
+		var middle_pos = sum/life_array.size()
+		getCloser(middle_pos + Vector2(randf_range(-16,16),randf_range(-16,16)))
+		action_finished = false
+		$ActionTimer.start(0.5)
+####################
+
+
+
+
+
+
+
+	
+	
+	
+###############3	 
 func getAway(target):
 	if action_finished == true:
 		direction = (position - target).normalized()
@@ -226,14 +248,29 @@ func Brainy():
 		if self.energy < 50 and food_array_temp.size()>0:
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
+				$DebugLabel.text ="feeding"
 				if position.distance_to(cl.position) < 32 and cl.isDead == false:
 						Eat(cl)
 				if cl.isDead == false:
 						getCloser(cl.position)
+				else:
+					AdjustDirection()
+			else:
+				AdjustDirection()
+		elif friend_array_temp.size() > 0:
+			$DebugLabel.text ="herd"
+			var cl = getClosestLife(food_array_temp,1000)
+			if cl !=null:
+
+				if position.distance_to(cl.position) > 32 :
+					#getCloser(cl.position)
+					goToMiddle(friend_array_temp)
+				else:
+					AdjustDirection()
 			else:
 				AdjustDirection()
 		else:
-				AdjustDirection()
+			AdjustDirection()
 		'elif friend_array_temp.size() > 0:
 		var cl = getClosestLife(friend_array_temp,1000)
 		if position.distance_to(cl.position) > 96 :
@@ -325,7 +362,7 @@ func _on_vision_body_entered(body):
 			food_array.append(body)
 			#Eat(body)
 			#getCloser(body.position)
-		if body.species== "sheep":
+		if body.species== "sheep" and body!= self:
 			#getAway(body.position)
 			friend_array.append(body)
 		if body.species == "catronaute":
@@ -346,7 +383,7 @@ func _on_vision_body_exited(body):
 			food_array.erase(body)
 			#Eat(body)
 			#getCloser(body.position)
-		if body.species== "sheep":
+		if body.species== "sheep" and body!= self:
 			#getAway(body.position)
 			friend_array.erase(body)
 		if body.species == "catronaute":
