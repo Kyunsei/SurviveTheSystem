@@ -87,7 +87,10 @@ R: Attack
 SPACE: pick-up
 X: drop
 ENTER: eat
-"
+
+
+-----DEBUG-------
+mouse wheel: zoom in/out"
 
 [node name="speedContainer" type="HBoxContainer" parent="UI"]
 anchors_preset = 5

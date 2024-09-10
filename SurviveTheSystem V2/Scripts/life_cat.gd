@@ -106,8 +106,13 @@ func _input(event):
 			#Throw()
 		'else:
 			current_action = 2'
+		if event.is_action_pressed("zoom_in"):
+			$Camera2D.zoom.x += 0.25
+			$Camera2D.zoom.y += 0.25
 
-
+		if event.is_action_pressed("zoom_out"):
+			$Camera2D.zoom.x -= 0.25
+			$Camera2D.zoom.y -= 0.25
 
 func _on_timer_timeout():
 	if World.isReady and isActive:

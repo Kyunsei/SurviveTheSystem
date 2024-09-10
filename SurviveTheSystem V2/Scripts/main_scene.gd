@@ -40,7 +40,7 @@ func _process(delta):
 
 		#Life.InstantiateNewLifeBatchCPU($Life)
 		#var playerworldpos = World.getWorldPos($Life/Player.global_position)
-		#World.ActivateAndDesactivateBlockAround($Life/Player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
+
 		
 		'if Life.state_array[playerindex] <= 0:
 			$UI/GameOverPanel.show()
@@ -50,6 +50,8 @@ func _process(delta):
 		#	$UI/VictoryPanel/Label.text = "Victory! \n" + "You survived " +  str(World.day) + " days\n" + "score: " + str(Life.score)
 			
 		if player != null:
+			var playerworldpos = World.getWorldPos(player.global_position)
+			World.ActivateAndDesactivateBlockAround(player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
 			$StarBackground.position = player.position  #background follow player
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
 		$UI/Debug.text = str(World.day) + " day \n" +"berry: " +   str(Life.berry_number) + " / " + str(Life.berry_pool_state.size()) + " \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)    
@@ -74,13 +76,13 @@ func InitNewGame():
 	#init Life
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
 	Life.Instantiate_emptyLife_pool($Life, 50, "sheep")
-	Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+	Life.Instantiate_emptyLife_pool($Life, 200, "berry")
 	Life.Instantiate_emptyLife_pool($Life, 3, "cat")
 	#Life.Instantiate_emptyLife_pool($Life, 3, "planty")
 	
 	Life.Instantiate_Life_in_pool($Life,100,"grass")
-	Life.Instantiate_Life_in_pool($Life,10,"berry")
-	Life.Instantiate_Life_in_pool($Life,5,"sheep")
+	Life.Instantiate_Life_in_pool($Life,40,"berry")
+	Life.Instantiate_Life_in_pool($Life,10,"sheep")
 	#Life.Instantiate_Life_in_pool($Life,1,Life.char_selected)
 	Life.Instantiate_Life_in_pool($Life,2,"cat")
 
