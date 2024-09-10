@@ -22,6 +22,10 @@ Life="*res://Scripts/Life.gd"
 Item="*res://Scripts/item.gd"
 Brain="*res://Scripts/brain.gd"
 
+[display]
+
+window/stretch/mode="canvas_items"
+
 [input]
 
 right={
