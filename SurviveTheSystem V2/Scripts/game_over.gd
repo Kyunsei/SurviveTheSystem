@@ -27,6 +27,10 @@ func _on_button_3_pressed(): #Close the Game
 
 
 func _on_button_4_pressed(): # Respawn for debugging only
+	get_parent().get_parent().player.Activate()
+	#Life.Instantiate_Life_in_pool($Life,1,"cat")
+	get_parent().get_parent().gameover = false
 	get_tree().paused = false
 	hide()
+
 

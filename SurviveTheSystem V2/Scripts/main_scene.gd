@@ -66,7 +66,11 @@ func _process(delta):
 			gameover = true
 			get_tree().paused = true
 
-
+		if player != null and gameover == false:
+			if player.isActive != true:
+				$UI/GameOver.show()
+				gameover = true
+				get_tree().paused = true
 
 
 func InitNewGame():

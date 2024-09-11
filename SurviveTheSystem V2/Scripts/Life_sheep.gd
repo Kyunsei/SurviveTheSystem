@@ -236,7 +236,7 @@ func Brainy():
 	var friend_array_temp = friend_array.duplicate()
 	
 
-	if danger_array_temp.size() >0 :
+	if danger_array_temp.size() > 0 :
 		var cl = getClosestLife(danger_array_temp,1000)
 		var random = randi_range(0,100)
 		var probability = clamp(1.0 - (position.distance_to(cl.position) / 300), 0.0, 1.0) * 100
