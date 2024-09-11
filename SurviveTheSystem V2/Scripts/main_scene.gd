@@ -62,15 +62,13 @@ func _process(delta):
 			pass'
 		#Life.deleteLoopCPU($Life)
 		if World.day == 20 and gameover == false:
-			$UI/GameOver.show()
-			gameover = true
-			get_tree().paused = true
+			CallGameOver()
+
 
 		if player != null and gameover == false:
 			if player.isActive != true:
-				$UI/GameOver.show()
-				gameover = true
-				get_tree().paused = true
+				CallGameOver()
+
 
 
 func InitNewGame():
@@ -271,8 +269,11 @@ func _notification(what):
 		thread.wait_to_finish()
 		get_tree().quit() # default behavior'
 
-func GameOver():
-	pass
+func CallGameOver():
+	$UI/GameOver.SetUp_GameOver_Screen()
+	$UI/GameOver.show()
+	gameover = true
+	get_tree().paused = true
 
 func _on_speed_1_pressed():	
 	World.speed = 1
