@@ -10,6 +10,7 @@ var life_grass_scene = load("res://Scenes/life_grass.tscn")
 var life_sheep_scene = load("res://Scenes/life_sheep.tscn")
 var life_berry_scene = load("res://Scenes/life_berry.tscn")
 var life_cat_scene = load("res://Scenes/life_cat.tscn")
+var life_stingtree_scene = load("res://Scenes/life_stingtree.tscn")
 
 var parameters_array = [] 
 var state_array = [] 
@@ -23,6 +24,7 @@ var crab_number = 0
 var berry_number = 0
 var player_number = 0
 var cat_number = 0
+var stingtree_number = 0
 
 var char_selected = "cat"
 var player_index = 0
@@ -55,6 +57,8 @@ var sheep_pool_state = []
 var berry_pool_scene = []
 var berry_pool_state = []
 
+var stingtree_pool_state = []
+var stingtree_pool_scene = []
 #test varaible
 var thread_finished = true
 
@@ -243,6 +247,10 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 				nl = life_cat_scene.instantiate() #need to write code according to genome ID
 				cat_pool_state.append(0)
 				cat_pool_scene.append(nl)
+			if ID == "stingtree":	
+				nl = life_stingtree_scene.instantiate() #need to write code according to genome ID
+				stingtree_pool_state.append(0)
+				stingtree_pool_scene.append(nl)
 			
 			
 			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
@@ -298,6 +306,13 @@ func Instantiate_Life_in_pool(folder,N,ID):
 			Life.cat_pool_scene[li].current_life_cycle = 0
 			Life.cat_number += 1
 			Life.cat_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+		if ID == "stingtree":	
+			var li = stingtree_pool_state.find(0)
+			Life.stingtree_pool_scene[li].Activate()
+			Life.stingtree_pool_scene[li].age = 0#randi_range(0,20)
+			Life.stingtree_pool_scene[li].current_life_cycle = 0
+			Life.stingtree_number += 1
+			Life.stingtree_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 
 
 

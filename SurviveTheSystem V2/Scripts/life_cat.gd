@@ -133,6 +133,12 @@ func _on_timer_timeout():
 			Deactivate()
 
 
+func getDamaged(value):
+	self.PV -= value
+	AdjustBar()
+	if self.PV <= 0:
+		Die()
+
 func AdjustBar():
 	$HP_bar.value = self.PV *100 / 10 
 	$Energy_bar.value = self.energy *100 / 10 
