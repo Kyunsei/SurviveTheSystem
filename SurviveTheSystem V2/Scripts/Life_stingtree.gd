@@ -146,12 +146,12 @@ func Growth():
 func LifeDuplicate():
 	if hasFruit == false:
 		
-		if self.energy > 20 and self.age > 10 and self.current_life_cycle > 2 and hasFruit == false:
+		if self.energy > 40 and self.age > 10 and self.current_life_cycle > 2 and hasFruit == false:
 					
 			#Life.grass_pool Technique
 
 			#+ Life.grass_pool_state.size()*0.05
-			var number = randi_range(10,20)
+			var number = randi_range(30,40)
 			for i in range(0,number):
 				var li = Life.stingtree_pool_state.find(0)	
 				if li > -1 and Life.stingtree_number  < Life.stingtree_pool_state.size():
@@ -181,24 +181,38 @@ func start_as_fruit(mother_tree):
 	self.mother_tree = mother_tree
 	$Sprite_0.hide()
 	$Sprite_0_in_tree.show()
-	var tree_height = 64 * (mother_tree.current_life_cycle-2)
-	var tree_width =  32 * 2
-	global_position = PickRandomPlaceWithRange(mother_tree.position,tree_width) - Vector2(0,tree_height)
+	var mother_tree_size = $Sprite_3/fruitplace.get_size() * scale
+	
+	#var tree_height =  $Sprite_3.get_height()* scales
+	#var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* scale.y
+	#var tree_width =  int($Sprite_3.texture.get_width()* scale.x /2)
+	var minx = int(mother_tree.position.x - $Sprite_3.texture.get_width()* mother_tree.scale.x /2)
+	var maxx = int(mother_tree.position.x + $Sprite_3.texture.get_width()* mother_tree.scale.x /2)
+	var miny = int(mother_tree.position.y - ($Sprite_3.texture.get_height() - $Sprite_3/fruitplace.get_size().y)* mother_tree.scale.y)
+	var maxy =int(mother_tree.position.y - $Sprite_3.texture.get_height()* mother_tree.scale.y)
+	var random_x = randi_range(max(0,minx),min((World.world_size)* World.tile_size ,maxx))
+	var random_y = randi_range(max(0,miny),min((World.world_size)* World.tile_size ,maxy))
+	global_position = Vector2(random_x, random_y)
+	#global_position = PickRandomPlaceWithRange(mother_tree.position,tree_width) - Vector2(0,tree_middle_leaf_height)
 	z_index = 1
-	#$Vision.position += Vector2(0,tree_height)
-	$Fruit_Timer.start(randf_range(5,7))
+	var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* scale.y
+	$Vision.position += Vector2(0,tree_middle_leaf_height)
+	$Fruit_Timer.start(randf_range(10,11))
 	isOnTree = true
 
 func fall():
-	var tree_height = 64 * (mother_tree.current_life_cycle-2)
+	#var tree_height = 64 * (mother_tree.current_life_cycle-2)
+	var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* scale.y
 	$Sprite_0.show()
 	$Sprite_0_in_tree.hide()
 	#$Vision.position -= Vector2(0,tree_height)
 	z_index = 0
-	global_position += Vector2(0,tree_height)
+	global_position += Vector2(0,tree_middle_leaf_height)
+	$Vision.position -= Vector2(0,tree_middle_leaf_height)
 	mother_tree.hasFruit = false
+	print(contact_array)
 	for l in contact_array:
-		l.getDamaged(1)
+		l.getDamaged(10)
 
 
 func Activate():
@@ -243,6 +257,7 @@ func Deactivate():
 func _on_vision_body_entered(body):
 	if body.species != "stingtree":
 		contact_array.append(body)
+		print(body.species)
 
 
 		#getAway(body.position)
@@ -254,7 +269,7 @@ func _on_vision_body_entered(body):
 func _on_vision_body_exited(body):	
 	if body.species != "stingtree":
 		contact_array.erase(body)
-
+		print(body.species)
 
 
 

@@ -49,6 +49,13 @@ centered = false
 texture = ExtResource("5_xen52")
 centered = false
 
+[node name="fruitplace" type="ColorRect" parent="Sprite_3"]
+visible = false
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 181.0
+offset_bottom = 99.0
+
 [node name="DebugLabel" type="Label" parent="."]
 offset_right = 40.0
 offset_bottom = 23.0

@@ -83,12 +83,12 @@ func InitNewGame():
 	#Life.Instantiate_emptyLife_pool($Life, 3, "planty")
 	Life.Instantiate_emptyLife_pool($Life, 100, "stingtree")
 	
-	Life.Instantiate_Life_in_pool($Life,100,"grass")
-	Life.Instantiate_Life_in_pool($Life,40,"berry")
-	Life.Instantiate_Life_in_pool($Life,10,"sheep")
+	Life.Instantiate_Life_in_pool($Life,10,"grass")
+	Life.Instantiate_Life_in_pool($Life,4,"berry")
+	Life.Instantiate_Life_in_pool($Life,3,"sheep")
 	#Life.Instantiate_Life_in_pool($Life,1,Life.char_selected)
-	Life.Instantiate_Life_in_pool($Life,2,"cat")
-	Life.Instantiate_Life_in_pool($Life, 5, "stingtree")
+	Life.Instantiate_Life_in_pool($Life,1,"cat")
+	Life.Instantiate_Life_in_pool($Life, 1, "stingtree")
 
 	
 
