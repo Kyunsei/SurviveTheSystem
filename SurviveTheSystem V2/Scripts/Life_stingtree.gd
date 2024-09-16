@@ -9,6 +9,7 @@ var isOnTree = false
 var hasFruit = false
 var contact_array = []
 var mother_tree = null
+var fruits_array = []
 
 
 func Build_Genome():
@@ -64,7 +65,7 @@ func Build_Stat():
 	self.PV = Genome["maxPV"][0]
 	self.current_life_cycle = 0
 	self.PV = Genome["maxPV"][self.current_life_cycle]
-	self.energy = 50
+	self.energy = 1
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -89,22 +90,23 @@ func _on_timer_timeout():
 			Deactivate()
 
 		#Debug part
-		#$DebugLabel.text = str(self.energy)
+		#$DebugLabel.text = str(self.energy) + " " + str(self.current_life_cycle)
 
 
 #EAT soil
 func Absorb_soil_energy():
-	var x = int(position.x/World.tile_size)
-	var	y = int(position.y/World.tile_size)
-	var posindex = y*World.world_size + x
-	if posindex < World.block_element_array.size():
-		var soil_energy = World.block_element_array[posindex]	
-		energy += min(Genome["soil_absorption"][1],soil_energy)
-		World.block_element_array[posindex]	-= min(Genome["soil_absorption"][1],soil_energy)
-
-
-			
-'	if parameters_array[INDEX*par_number+2] <= Genome[genome_index]["maxenergy"][current_cycle]:'
+	var middle = position + Vector2(size.x/2,-size.y/2)
+	var center_x = int(middle.x/World.tile_size)
+	var	center_y = int(middle.y/World.tile_size)
+	var radius = min(4,self.current_life_cycle) #in tiles
+	for x in range(center_x - radius, center_x + radius + 1):
+		for y in range(center_y - radius, center_y + radius + 1):
+			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+				var posindex = y*World.world_size + x
+				if posindex < World.block_element_array.size():
+					var soil_energy = World.block_element_array[posindex]	
+					energy += min(Genome["soil_absorption"][1],soil_energy)
+					World.block_element_array[posindex]	-= min(Genome["soil_absorption"][1],soil_energy)
 
 
 #diying
@@ -114,6 +116,8 @@ func Die():
 		carried_by.item_array.erase(self)
 		self.carried_by = null
 		z_index = 0
+	for f in fruits_array:
+		f.fall()
 	
 	#$Dead_Sprite_0.show()
 	$Collision_1.disabled = true			
@@ -136,11 +140,21 @@ func Growth():
 			get_node("Collision_0").hide()
 			get_node("Collision_1").disabled = false
 			get_node("Collision_0").disabled = true	
+			self.size = get_node("Collision_1").shape.size
+
 		if self.current_life_cycle < 4:
 			get_node("Sprite_"+str(self.current_life_cycle)).show()
 			get_node("Sprite_"+str(self.current_life_cycle-1)).hide()
+
 		else:
 			$Sprite_3.scale += Vector2(0.2,0.2)
+			var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* $Sprite_3.scale.y
+			for f in fruits_array:
+				#f.position.x += 
+				f.position.y -= 192*0.2
+
+				f.get_node("Vision").position.y += 192*0.2
+
 
 #Duplication
 func LifeDuplicate():
@@ -179,6 +193,7 @@ func LifeDuplicate():
 
 func start_as_fruit(mother_tree):
 	self.mother_tree = mother_tree
+	mother_tree.fruits_array.append(self)
 	$Sprite_0.hide()
 	$Sprite_0_in_tree.show()
 	var mother_tree_size = $Sprite_3/fruitplace.get_size() * scale
@@ -186,33 +201,38 @@ func start_as_fruit(mother_tree):
 	#var tree_height =  $Sprite_3.get_height()* scales
 	#var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* scale.y
 	#var tree_width =  int($Sprite_3.texture.get_width()* scale.x /2)
-	var minx = int(mother_tree.position.x - $Sprite_3.texture.get_width()* mother_tree.scale.x /2)
-	var maxx = int(mother_tree.position.x + $Sprite_3.texture.get_width()* mother_tree.scale.x /2)
-	var miny = int(mother_tree.position.y - ($Sprite_3.texture.get_height() - $Sprite_3/fruitplace.get_size().y)* mother_tree.scale.y)
-	var maxy =int(mother_tree.position.y - $Sprite_3.texture.get_height()* mother_tree.scale.y)
+	var minx = int(mother_tree.position.x - $Sprite_3.texture.get_width()* mother_tree.get_node("Sprite_3").scale.x /2)
+	var maxx = int(mother_tree.position.x + $Sprite_3.texture.get_width()* mother_tree.get_node("Sprite_3").scale.x /2)
+	var miny = int(mother_tree.position.y - ($Sprite_3.texture.get_height() - $Sprite_3/fruitplace.get_size().y)* mother_tree.get_node("Sprite_3").scale.y)
+	var maxy =int(mother_tree.position.y - $Sprite_3.texture.get_height()* mother_tree.get_node("Sprite_3").scale.y)
 	var random_x = randi_range(max(0,minx),min((World.world_size)* World.tile_size ,maxx))
 	var random_y = randi_range(max(0,miny),min((World.world_size)* World.tile_size ,maxy))
 	global_position = Vector2(random_x, random_y)
 	#global_position = PickRandomPlaceWithRange(mother_tree.position,tree_width) - Vector2(0,tree_middle_leaf_height)
 	z_index = 1
-	var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* scale.y
+	var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* mother_tree.get_node("Sprite_3").scale.y
 	$Vision.position += Vector2(0,tree_middle_leaf_height)
 	$Fruit_Timer.start(randf_range(10,11))
 	isOnTree = true
 
 func fall():
-	#var tree_height = 64 * (mother_tree.current_life_cycle-2)
-	var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* scale.y
-	$Sprite_0.show()
-	$Sprite_0_in_tree.hide()
-	#$Vision.position -= Vector2(0,tree_height)
-	z_index = 0
-	global_position += Vector2(0,tree_middle_leaf_height)
-	$Vision.position -= Vector2(0,tree_middle_leaf_height)
-	mother_tree.hasFruit = false
-	print(contact_array)
-	for l in contact_array:
-		l.getDamaged(10)
+	if mother_tree != null:
+		#var tree_height = 64 * (mother_tree.current_life_cycle-2)
+		var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* mother_tree.get_node("Sprite_3").scale.y
+		#$Vision.position -= Vector2(0,tree_middle_leaf_height)
+		$Sprite_0.show()
+		$Sprite_0_in_tree.hide()
+		#$Vision.position -= Vector2(0,tree_height)
+
+
+		mother_tree.hasFruit = false
+		mother_tree.fruits_array.erase(self)
+		mother_tree = null
+		z_index = 0
+		global_position += Vector2(0,tree_middle_leaf_height)
+		$Vision.position = Vector2(0,0)
+		for l in contact_array:
+			l.getDamaged(10)
 
 
 func Activate():
@@ -225,6 +245,8 @@ func Activate():
 	show()
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
+	
+	self.size = get_node("Collision_0").shape.size
 
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)

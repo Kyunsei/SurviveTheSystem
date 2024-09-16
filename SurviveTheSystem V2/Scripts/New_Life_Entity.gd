@@ -34,7 +34,7 @@ var Genome = {
 #Inter parameters
 var energy = 0  #current level of energy/hunger
 var age = 0 #current age
-var size = 0 #size from sprite
+var size = Vector2(0,0) #size from sprite
 var PV = 0 #current level of health
 var current_life_cycle = 0 #which state of life it is. egg, young, adult, etc..
 var metabolic_cost = 1 #how much energy is consumed by cycle to keep biological function
@@ -132,8 +132,10 @@ func getClosestLife(array,minDist):
 #METABO cost
 func Metabo_cost():
 	#energy lost is returned to soil
-	var x = int(position.x/World.tile_size)
-	var	y = int(position.y/World.tile_size)
+	var middle = position + Vector2(size.x/2,-size.y/2)
+	var x = int(middle.x/World.tile_size)
+	var	y = int(middle.y/World.tile_size)
+
 	var posindex = y*World.world_size + x
 	#	posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
 	#if posindex >= 0:
@@ -153,8 +155,9 @@ func Die():
 	
 #EAT soil
 func Absorb_soil_energy():
-	var x = int(position.x/World.tile_size)
-	var	y = int(position.y/World.tile_size)
+	var middle = position + Vector2(size.x/2,-size.y/2)
+	var x = int(middle.x/World.tile_size)
+	var	y = int(middle.y/World.tile_size)
 	var posindex = y*World.world_size + x
 	if posindex < World.block_element_array.size():
 		var soil_energy = World.block_element_array[posindex]	
@@ -192,8 +195,9 @@ func LifeDuplicate():
 
 			
 func Decomposition():
-	var x = int(position.x/World.tile_size)
-	var	y = int(position.y/World.tile_size)
+	var middle = position + Vector2(size.x/2,-size.y/2)
+	var x = int(middle.x/World.tile_size)
+	var	y = int(middle.y/World.tile_size)
 	var posindex = y*World.world_size + x
 	#	posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
 	#if posindex >= 0:

@@ -120,7 +120,7 @@ func _on_timer_timeout():
 			$Timer.wait_time = lifecycletime / World.speed
 		if isDead == false:
 
-			#Metabo_cost()
+			Metabo_cost()
 			Ageing()
 			AdjustBar()
 
@@ -168,6 +168,10 @@ func PickUp():
 			if closestItem.species == "grass" :
 				closestItem.getPickUP(self)
 				closestItem.z_index = 1
+			if closestItem.species == "stingtree" and  closestItem.current_life_cycle == 0:
+				if closestItem.mother_tree == null:
+					closestItem.getPickUP(self)
+					closestItem.z_index = 1
 
 	
 func Drop():
@@ -247,13 +251,14 @@ func Eat(life):
 
 func _on_bare_hand_attack_body_entered(body):
 	if body != self:
-		#print(body.get_parent().pool_index)
-		barehand_array.append(body)	
+		if body.z_index == 0:
+			barehand_array.append(body)	
 
 
 func _on_bare_hand_attack_body_exited(body):
 	if body != self:
-		barehand_array.erase(body)
+		if barehand_array.has(body):
+			barehand_array.erase(body)
 
 
 func _on_action_timer_timeout():

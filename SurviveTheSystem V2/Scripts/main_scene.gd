@@ -83,9 +83,9 @@ func InitNewGame():
 	#Life.Instantiate_emptyLife_pool($Life, 3, "planty")
 	Life.Instantiate_emptyLife_pool($Life, 100, "stingtree")
 	
-	Life.Instantiate_Life_in_pool($Life,10,"grass")
-	Life.Instantiate_Life_in_pool($Life,4,"berry")
-	Life.Instantiate_Life_in_pool($Life,3,"sheep")
+	Life.Instantiate_Life_in_pool($Life,100,"grass")
+	Life.Instantiate_Life_in_pool($Life,10,"berry")
+	Life.Instantiate_Life_in_pool($Life,5,"sheep")
 	#Life.Instantiate_Life_in_pool($Life,1,Life.char_selected)
 	Life.Instantiate_Life_in_pool($Life,1,"cat")
 	Life.Instantiate_Life_in_pool($Life, 1, "stingtree")
@@ -147,7 +147,7 @@ func InitEmptyLife():
 	
 
 func UpdateSimulationSpeed():
-	$BlockTimer.wait_time = 5. / World.speed
+	$BlockTimer.wait_time = 1. / World.speed
 	$BlockTimer.start(0)
 		
 	$Life/LifeTimer.wait_time = 10.0 / World.speed

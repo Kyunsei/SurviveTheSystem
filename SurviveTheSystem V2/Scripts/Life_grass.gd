@@ -73,19 +73,6 @@ func _on_timer_timeout():
 		#$DebugLabel.text = str(pool_index)
 
 
-#EAT soil
-func Absorb_soil_energy():
-	var x = int(position.x/World.tile_size)
-	var	y = int(position.y/World.tile_size)
-	var posindex = y*World.world_size + x
-	if posindex < World.block_element_array.size():
-		var soil_energy = World.block_element_array[posindex]	
-		energy += min(Genome["soil_absorption"][current_life_cycle],soil_energy)
-		World.block_element_array[posindex]	-= min(Genome["soil_absorption"][current_life_cycle],soil_energy)
-
-
-			
-'	if parameters_array[INDEX*par_number+2] <= Genome[genome_index]["maxenergy"][current_cycle]:'
 
 
 #diying
@@ -116,6 +103,7 @@ func Growth():
 			$Collision_0.disabled = true	
 			$Sprite_1.show()
 			$Sprite_0.hide()
+
 
 			#$Body/Collision_0.set_deferred("disabled", true)
 
@@ -183,6 +171,7 @@ func Activate():
 	show()
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
+	self.size = get_node("Collision_0").shape.size
 
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
@@ -194,6 +183,7 @@ func Deactivate():
 	Life.grass_pool_state[self.pool_index] = 0
 	#Life.inactive_grass.append(self)
 	Life.plant_number -= 1
+
 
 
 	#prepare for new instance
