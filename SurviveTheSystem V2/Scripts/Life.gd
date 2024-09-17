@@ -230,8 +230,30 @@ func Instantiate_emptyLife_pool_in_Batch(folder,current_batch,nb_by_call):
 			folder.add_child(nl)
 
 
+func Init_life_pool():
+	cat_pool_scene = []
+	cat_pool_state = []
+
+	grass_pool_scene = []
+	grass_pool_state = []
+
+	sheep_pool_scene = []
+	sheep_pool_state = []
+
+	berry_pool_scene = []
+	berry_pool_state = []
+
+	stingtree_pool_state = []
+	stingtree_pool_scene = []
+
+	spidercrab_pool_state = []
+	spidercrab_pool_scene = []
+
 #THIS ONE IS USED
 func Instantiate_emptyLife_pool(folder, N, ID):
+
+
+	
 	for i in range(0,N):
 			var nl = 0
 			if ID == "grass":

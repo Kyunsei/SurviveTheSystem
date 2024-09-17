@@ -75,7 +75,11 @@ func InitNewGame():
 	#Init the World
 	World.Init_World()
 	
+	
 	#init Life
+	
+	Life.Init_life_pool()
+	
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
 	Life.Instantiate_emptyLife_pool($Life, 200, "sheep")
 	Life.Instantiate_emptyLife_pool($Life, 100, "berry")

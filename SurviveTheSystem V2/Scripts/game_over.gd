@@ -17,6 +17,7 @@ func _process(delta):
 func _on_button_pressed(): #Continue to Survive
 	if 	get_parent().get_parent().player.isActive:
 		get_tree().paused = false
+		get_parent().get_parent().gameover = false
 		hide()
 	else:
 		$Button.text = "Player dead"
