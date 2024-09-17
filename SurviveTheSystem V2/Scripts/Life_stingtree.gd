@@ -279,7 +279,6 @@ func Deactivate():
 func _on_vision_body_entered(body):
 	if body.species != "stingtree":
 		contact_array.append(body)
-		print(body.species)
 
 
 		#getAway(body.position)
@@ -291,7 +290,7 @@ func _on_vision_body_entered(body):
 func _on_vision_body_exited(body):	
 	if body.species != "stingtree":
 		contact_array.erase(body)
-		print(body.species)
+
 
 
 

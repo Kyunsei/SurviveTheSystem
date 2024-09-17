@@ -4,7 +4,7 @@ extends LifeEntity
 # sheep script
 var species = "sheep"
 
-var direction = Vector2(0,0)
+
 
 var food_array = []
 var danger_array = []
@@ -13,7 +13,7 @@ var friend_array = []
 
 
 
-var action_finished = true
+
 
 
 
@@ -72,9 +72,12 @@ func Build_Phenotype(): #go to main
 	$Collision_1.disabled = true		
 
 func Build_Stat():
+	Build_Genome()
 	self.current_life_cycle = 0
 	self.PV = Genome["maxPV"][self.current_life_cycle]
 	self.energy = 10
+	self.maxSpeed = Genome["speed"][self.current_life_cycle]
+
 
 func _physics_process(delta):
 	if isPlayer:
@@ -151,6 +154,7 @@ func Growth():
 			$Sprite_1.show()
 			$Sprite_0.hide()
 			set_physics_process(true)
+			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 	if current_life_cycle == 1:
 		if self.age > 8 and self.energy > 10:
 			self.current_life_cycle += 1
@@ -160,6 +164,7 @@ func Growth():
 			$Collision_1.show()
 			$Collision_1.disabled = false		
 			$Collision_0.disabled = true	
+			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 
 			
 
@@ -186,51 +191,9 @@ func LifeDuplicate():
 					print("sheep_pool empty")
 
 
-func AdjustDirection():
-	if action_finished == true:
-		direction.x = randi_range(-1,1)
-		direction.y = randi_range(-1,1)
-		velocity = direction * Genome["speed"][self.current_life_cycle]*0.5
-		action_finished = false
-		$ActionTimer.start(0.5)
-		$DebugLabel.text = "Idle"
-
-func getCloser(target):
-	direction = -(position - target).normalized()
-	velocity = direction * Genome["speed"][self.current_life_cycle]
-	#$DebugLabel.text = "feeding"
-	
-
-func goToMiddle(life_array):
-	if action_finished == true:
-		var sum = Vector2(0,0)
-		for l in life_array:
-			sum += l.position
-		var middle_pos = sum/life_array.size()
-		getCloser(middle_pos + Vector2(randf_range(-16,16),randf_range(-16,16)))
-		action_finished = false
-		$ActionTimer.start(0.5)
-####################
-
-
-
-
-
-
-
-	
-	
-	
-###############3	 
-func getAway(target):
-	if action_finished == true:
-		direction = (position - target).normalized()
-		velocity = direction * 400  # Genome["speed"][self.current_life_cycle] *2
-		action_finished = false
-		$DebugLabel.text = "avoid"
-		$ActionTimer.start(0.5)
 
 func Brainy():
+	var center = position + Vector2(32,-32) #temporaire
 	var danger_array_temp = danger_array.duplicate()
 	var food_array_temp = food_array.duplicate()
 	var friend_array_temp = friend_array.duplicate()
@@ -249,7 +212,7 @@ func Brainy():
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
 				$DebugLabel.text ="feeding"
-				if position.distance_to(cl.position) < 32 and cl.isDead == false:
+				if center.distance_to(cl.position) < 32 and cl.isDead == false:
 						Eat(cl)
 				if cl.isDead == false:
 						getCloser(cl.position)
@@ -365,7 +328,7 @@ func _on_vision_body_entered(body):
 		if body.species== "sheep" and body!= self:
 			#getAway(body.position)
 			friend_array.append(body)
-		if body.species == "catronaute":
+		if body.species == "catronaute" or body.species == "spidercrab":
 			danger_array.append(body)
 	else:
 		danger_array.append(body.get_parent())
@@ -386,7 +349,7 @@ func _on_vision_body_exited(body):
 		if body.species== "sheep" and body!= self:
 			#getAway(body.position)
 			friend_array.erase(body)
-		if body.species == "catronaute":
+		if body.species == "catronaute" or body.species == "spidercrab":
 			danger_array.erase(body)
 	else:
 		danger_array.erase(body.get_parent())

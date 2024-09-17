@@ -81,14 +81,16 @@ func InitNewGame():
 	Life.Instantiate_emptyLife_pool($Life, 200, "berry")
 	Life.Instantiate_emptyLife_pool($Life, 3, "cat")
 	#Life.Instantiate_emptyLife_pool($Life, 3, "planty")
-	Life.Instantiate_emptyLife_pool($Life, 100, "stingtree")
+	Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
+	Life.Instantiate_emptyLife_pool($Life, 100, "spidercrab")
 	
 	Life.Instantiate_Life_in_pool($Life,100,"grass")
-	Life.Instantiate_Life_in_pool($Life,10,"berry")
+	Life.Instantiate_Life_in_pool($Life,20,"berry")
 	Life.Instantiate_Life_in_pool($Life,5,"sheep")
 	#Life.Instantiate_Life_in_pool($Life,1,Life.char_selected)
 	Life.Instantiate_Life_in_pool($Life,1,"cat")
-	Life.Instantiate_Life_in_pool($Life, 1, "stingtree")
+	Life.Instantiate_Life_in_pool($Life, 3, "stingtree")
+	Life.Instantiate_Life_in_pool($Life, 3, "spidercrab")
 
 	
 
@@ -160,9 +162,15 @@ func UpdateSimulationSpeed():
 	$Life/BrainTimer.start(0)
 	
 	$DayTimer.wait_time= 20. / World.speed
-	$DayTimer.start(0)
+	$DayTimer.start()
+	
+	$NightTimer.wait_time= 10. / World.speed
+	$NightTimer.start()
 	
 	$UI/Wspeed.text = "World speed = " + str(World.speed) 
+
+func NewDay():
+	$UI/Night_filtre.show()
 
 func _on_life_timer_timeout():
 		pass
@@ -260,8 +268,13 @@ func _on_block_timer_timeout():
 
 func _on_day_timer_timeout():
 	World.day += 1 # Replace with function body.
+	$UI/Night_filtre.show()
+	$NightTimer.start()
 
 
+func _on_night_timer_timeout():
+	$UI/Night_filtre.hide()
+	$DayTimer.start()
 'func _exit_tree():
 	thread.wait_to_finish()
 	
@@ -356,6 +369,7 @@ func _input(event): #gameover fonction
 func _on_button_continue_pressed():
 	$UI/VictoryPanel.hide()
 	gameover = true # Replace with function body.
+
 
 
 

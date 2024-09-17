@@ -1,9 +1,10 @@
 extends LifeEntity
 
-var species = "catronaute"
+var species = "spidercrab"
 
 
 var barehand_array = []
+var food_array = []
 
 
 #movmnt
@@ -12,13 +13,13 @@ var last_dir = Vector2.ZERO
 var rotation_dir = 0
 
 func Build_Genome():
-	Genome["maxPV"]=[10]
+	Genome["maxPV"]=[40]
 	Genome["speed"] =[200]
 	Genome["lifespan"]=[1000]
-	Genome["sprite"] = [preload("res://Art/player_cat.png")]
-	Genome["dead_sprite"] = [preload("res://Art/poop_star.png")]
+	#Genome["sprite"] = [preload("res://Art/player_cat.png")]
+	#Genome["dead_sprite"] = [preload("res://Art/poop_star.png")]
 	
-	Genome["planty_sprite"] = [preload("res://Art/player_bulbi.png")] #TEMPORAIRE
+	#Genome["planty_sprite"] = [preload("res://Art/player_bulbi.png")] #TEMPORAIRE
 
 func init_progressbar():
 	$HP_bar.modulate = Color(1, 0, 0)
@@ -27,30 +28,33 @@ func init_progressbar():
 
 func Build_Stat():
 	self.current_life_cycle = 0
-	self.PV = 5	
+	self.PV = 40# Genome["maxPV"][self.current_life_cycle]	
 	self.energy = 10
-	self.maxPV = 10
+	self.maxPV = 40#Genome["maxPV"][self.current_life_cycle]	
+	self.maxSpeed = 200
 
 
 	AdjustBar()
 	
 func Build_Phenotype(): 
 	# SPRITE
-	$Sprite_0.texture = Genome["sprite"][0]
-	if Life.char_selected == "planty":
-		$Sprite_0.texture = Genome["planty_sprite"][0] #TEMPORAIRE
+	
 		
 	$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
-	$Sprite_0.offset.x = -$Sprite_0.texture.get_width()/4
+	#$Sprite_0.offset.x = 0 # -$Sprite_0.texture.get_width()/4
 	
-	$Dead_Sprite_0.texture = Genome["dead_sprite"][0]
 	$Dead_Sprite_0.offset.y = -$Dead_Sprite_0.texture.get_height()
+	#$Dead_Sprite_0.offset.x = 0# -$Dead_Sprite_0.texture.get_width()/2
 	
 	$Dead_Sprite_0.hide()
 
-	#ADD Body
+	#Body
+	$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
-	$Collision_0.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
+	#Vision
+	$Vision/Collision.shape.radius = 2000
+	$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
+
 
 	init_progressbar()
 	
@@ -66,20 +70,24 @@ func Build_Phenotype():
 func _physics_process(delta):
 	if isPlayer:
 		input_dir = Player_Control_movement()
-		move_and_collide(velocity *delta)
 
+	else:
+		Brainy()
 
-		if item_array.size() > 0:
-			var c = 0
-			for i in item_array:
-				i.position = position + Vector2(c*16,0)
-				c += 1
-		
-		if input_dir.normalized() != Vector2(0,0):
-			last_dir = input_dir
-		var temppos = position + last_dir * Vector2(64,96)
-		$BareHand_attack.rotation =  (last_dir.angle()) 
-		$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
+	move_and_collide(velocity *delta)
+	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
+	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
+	if item_array.size() > 0:
+		var c = 0
+		for i in item_array:
+			i.position = position + Vector2(c*16,0)
+			c += 1
+	
+	if direction.normalized() != Vector2(0,0):
+		last_dir = direction
+	var temppos = position + last_dir * Vector2(64,96)
+	$BareHand_attack.rotation =  (last_dir.angle()) 
+	$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
 
 func _input(event):
 	if isPlayer:
@@ -114,6 +122,60 @@ func _input(event):
 			$Camera2D.zoom.x -= 0.25
 			$Camera2D.zoom.y -= 0.25
 
+
+func Brainy():
+	var center = position + Vector2($Sprite_0.texture.get_width()/2, -$Sprite_0.texture.get_height()/2)
+	var food_array_temp = food_array.duplicate()
+
+	if action_finished == true:
+		if self.energy < 50 and food_array_temp.size()>0:
+			var cl = getClosestLife(food_array_temp,1000)
+			if cl !=null:
+				$DebugLabel.text ="feeding" 
+				#NEED TO ADJUST DISTANCE ACCORDING TO CENTER NOT CORNER
+				if center.distance_to(cl.position) < (128*3) and cl.isDead == false:
+					$DebugLabel.text ="charging"
+					var rdn = randi_range(0,100)
+					if rdn < 30:
+						ChargeToward(cl.position)
+					else:
+						velocity = Vector2(0,0)
+						action_finished = false
+						$ActionTimer.start(2.)
+					
+				elif center.distance_to(cl.position) < 64 and cl.isDead == false:
+							Eat(cl)
+							velocity = Vector2(0,0)
+							$DebugLabel.text ="Eat"
+				elif cl.isDead == false and center.distance_to(cl.position) >= 128*3:
+						#ChargeToward(cl.position)
+						getCloser(cl.position)
+						$DebugLabel.text ="getToFood "
+				else:
+					AdjustDirection()
+			else:
+				AdjustDirection()
+		else:
+			AdjustDirection()
+	else:
+		var cl = getClosestLife(food_array_temp,1000)
+		if cl !=null:
+			if center.distance_to(cl.position) < 64 and cl.isDead == false:
+					Eat(cl)
+					velocity = Vector2(0,0)
+					$DebugLabel.text ="Eat"
+		'#AdjustDirection()
+		print("here?")
+		velocity = Vector2(0,0)'	
+
+func ChargeToward(target):
+	var center = position + Vector2($Sprite_0.texture.get_width()/2, -$Sprite_0.texture.get_height()/2)
+	if action_finished == true:
+		action_finished = false
+		$ActionTimer.start(0.5)
+		direction = -(center - target).normalized()
+		velocity = direction * maxSpeed*4			
+
 func _on_timer_timeout():
 	if World.isReady and isActive:
 		if $Timer.wait_time != lifecycletime / World.speed:
@@ -123,6 +185,7 @@ func _on_timer_timeout():
 			Metabo_cost()
 			Ageing()
 			AdjustBar()
+			LifeDuplicate()
 
 
 			if self.energy <= 0 or self.age >= Genome["lifespan"][self.current_life_cycle] or self.PV <=0:
@@ -133,16 +196,22 @@ func _on_timer_timeout():
 			Deactivate()
 
 
-func getDamaged(value):
-	self.PV -= value
-	AdjustBar()
-	if self.PV <= 0:
-		Die()
-
-func AdjustBar():
-	$HP_bar.value = self.PV *100 / 10 
-	$Energy_bar.value = self.energy *100 / 10 
-
+func LifeDuplicate():
+	if self.age % 10 == 0 and self.energy > 40:
+			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
+			var li = Life.spidercrab_pool_state.find(0)	
+			#+ Life.grass_pool_state.size()*0.05
+			if li > -1 and Life.spidercrab_number  < Life.spidercrab_pool_scene.size():
+				self.energy -= 20
+				Life.spidercrab_pool_scene[li].Activate()
+				Life.spidercrab_pool_scene[li].energy = 20
+				Life.spidercrab_pool_scene[li].age = 0
+				Life.spidercrab_pool_scene[li].current_life_cycle = 0
+				Life.spidercrab_pool_scene[li].PV = Genome["maxPV"][0]
+				Life.spidercrab_number += 1
+				Life.spidercrab_pool_scene[li].global_position = newpos 
+			else:
+				print("spidercrab_pool empty")
 
 func Attack():
 	BareHand_attack()
@@ -209,7 +278,7 @@ func Activate():
 	set_physics_process(true)
 	self.isActive = true
 	self.isDead = false
-	Life.cat_pool_state[self.pool_index] = 1
+	Life.spidercrab_pool_state[self.pool_index] = 1
 	Build_Stat()
 	show()
 	
@@ -233,21 +302,15 @@ func Deactivate():
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()
 	self.isActive = false
-	Life.cat_pool_state[self.pool_index] = 0
-	Life.cat_number -= 1
+	Life.spidercrab_pool_state[self.pool_index] = 0
+	Life.spidercrab_number -= 1
 	hide()
 
 func Eat(life):
-	#print("Eaten")
-	if life.species == "berry" and life.current_life_cycle == 0:
-		self.energy += life.energy
-		life.energy= 0
-		life.Die()
-	elif life.species == "sheep" and life.current_life_cycle < 2:
-		self.energy += life.energy
-		life.energy= 0
-		life.Die()
-	#$DebugLabel.text = str(age) + " " + str(energy)
+	self.energy += life.energy
+	life.energy= 0
+	life.Die()
+
 
 func _on_bare_hand_attack_body_entered(body):
 	if body != self:
@@ -264,3 +327,34 @@ func _on_bare_hand_attack_body_exited(body):
 func _on_action_timer_timeout():
 	$BareHand_attack/sprite.hide()
 	$BareHand_attack/sprite2.hide()
+	action_finished = true
+
+
+func _on_mouse_entered():
+	AdjustBar()
+	$HP_bar.show()
+	$Energy_bar.show()
+
+
+func _on_mouse_exited():
+	$HP_bar.hide()
+	$Energy_bar.hide()
+	
+
+func _on_vision_body_entered(body):
+	if body.species== "sheep":
+		if body.current_life_cycle > 0:
+			food_array.append(body)
+	if body.species == "catronaute":
+		food_array.append(body)
+
+		#getAway(body.position)
+
+
+func _on_vision_body_exited(body):
+
+	if body.species== "sheep" :
+		if body.current_life_cycle > 0:
+			food_array.erase(body)
+	if body.species == "catronaute":
+		food_array.erase(body)

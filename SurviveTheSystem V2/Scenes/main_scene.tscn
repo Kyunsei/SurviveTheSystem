@@ -140,121 +140,6 @@ offset_bottom = 66.0
 grow_horizontal = 2
 text = "Debug Speed"
 
-[node name="GameOverPanel" type="Panel" parent="UI"]
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -293.0
-offset_top = -133.0
-offset_right = 100.0
-offset_bottom = 50.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Label" type="Label" parent="UI/GameOverPanel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -44.5
-offset_top = 34.0
-offset_right = 38.5
-offset_bottom = 57.0
-grow_horizontal = 2
-text = "Game Over
-You are dead =(
-"
-horizontal_alignment = 1
-
-[node name="ButtonRestart" type="Button" parent="UI/GameOverPanel"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -162.5
-offset_top = 39.5
-offset_right = -97.5
-offset_bottom = 70.5
-grow_horizontal = 2
-grow_vertical = 2
-text = "Restart"
-
-[node name="ButtonRespawn" type="Button" parent="UI/GameOverPanel"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = 35.5
-offset_top = -57.0
-offset_right = 170.5
-offset_bottom = -26.0
-grow_horizontal = 2
-grow_vertical = 0
-text = "Respawn_Debug"
-
-[node name="VictoryPanel" type="Panel" parent="UI"]
-visible = false
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -296.0
-offset_top = -148.0
-offset_right = 100.0
-offset_bottom = 50.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Label" type="Label" parent="UI/VictoryPanel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -83.0
-offset_top = 38.0
-offset_right = 84.0
-offset_bottom = 113.0
-grow_horizontal = 2
-text = "Game Over
-You Survived 30 days!
-Congratulations! =)"
-horizontal_alignment = 1
-
-[node name="ButtonRestart" type="Button" parent="UI/VictoryPanel"]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 66.0
-offset_top = -60.0
-offset_right = 131.0
-offset_bottom = -29.0
-grow_vertical = 0
-text = "Restart"
-
-[node name="ButtonContinue" type="Button" parent="UI/VictoryPanel"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -136.0
-offset_top = -62.0
-offset_right = -57.0
-offset_bottom = -31.0
-grow_horizontal = 0
-grow_vertical = 0
-text = "Continue"
-
 [node name="ProgressBar" type="ProgressBar" parent="UI"]
 process_mode = 3
 visible = false
@@ -285,9 +170,24 @@ text = "Loading_grass"
 [node name="GameOver" parent="UI" instance=ExtResource("4_ytf0d")]
 visible = false
 
+[node name="Night_filtre" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.721569, 0.282353, 0.92549, 0.290196)
+
 [node name="DayTimer" type="Timer" parent="."]
 wait_time = 60.0
+one_shot = true
 autostart = true
+
+[node name="NightTimer" type="Timer" parent="."]
+wait_time = 60.0
+one_shot = true
 
 [node name="BlockTimer" type="Timer" parent="."]
 wait_time = 5.0
@@ -303,9 +203,6 @@ visible = false
 [connection signal="pressed" from="UI/speedContainer/speed2" to="." method="_on_speed_2_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed10" to="." method="_on_speed_10_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed100" to="." method="_on_speed_100_pressed"]
-[connection signal="pressed" from="UI/GameOverPanel/ButtonRestart" to="." method="_on_button_restart_pressed"]
-[connection signal="pressed" from="UI/GameOverPanel/ButtonRespawn" to="." method="_on_button_respawn_pressed"]
-[connection signal="pressed" from="UI/VictoryPanel/ButtonRestart" to="." method="_on_button_restart_pressed"]
-[connection signal="pressed" from="UI/VictoryPanel/ButtonContinue" to="." method="_on_button_continue_pressed"]
 [connection signal="timeout" from="DayTimer" to="." method="_on_day_timer_timeout"]
+[connection signal="timeout" from="NightTimer" to="." method="_on_night_timer_timeout"]
 [connection signal="timeout" from="BlockTimer" to="." method="_on_block_timer_timeout"]

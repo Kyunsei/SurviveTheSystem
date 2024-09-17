@@ -16,12 +16,17 @@ var isDead = false
 
 #control
 var isPlayer = false
-
-
+var action_finished = true
 
 #INVENTAIRE
 var item_array = []
 var carried_by = null
+var direction = Vector2(0,0)
+
+#Internal parameters
+var maxPV = 10
+var maxSpeed = 0
+
 
 #Genome parameters
 var Genome = {
@@ -116,7 +121,46 @@ func getPickUP(transporter):
 	#seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
 
 
+#####################################################3MOVMENT script
 
+
+func AdjustDirection():
+	if action_finished == true:
+		direction.x = randi_range(-1,1)
+		direction.y = randi_range(-1,1)
+		velocity = direction * self.maxSpeed * 0.5
+		action_finished = false
+		$ActionTimer.start(0.5)
+		$DebugLabel.text = "Idle"
+
+
+
+func getCloser(target):
+	var center = position + Vector2(32,-32) #temporaire
+	direction = -(center - target).normalized()
+	velocity = direction * Genome["speed"][self.current_life_cycle]
+	#$DebugLabel.text = "feeding"
+	
+
+func goToMiddle(life_array):
+	if action_finished == true:
+		var sum = Vector2(0,0)
+		for l in life_array:
+			sum += l.position
+		var middle_pos = sum/life_array.size()
+		getCloser(middle_pos + Vector2(randf_range(-16,16),randf_range(-16,16)))
+		action_finished = false
+		$ActionTimer.start(0.5)
+ 
+func getAway(target):
+	if action_finished == true:
+		direction = (position - target).normalized()
+		velocity = direction * 400  # Genome["speed"][self.current_life_cycle] *2
+		action_finished = false
+		$DebugLabel.text = "avoid"
+		$ActionTimer.start(0.5)
+
+##################################
 
 func getClosestLife(array,minDist):
 	var closest_entity = null
@@ -205,9 +249,19 @@ func Decomposition():
 		World.block_element_array[posindex] += self.energy
 		energy = 0
 
+func AdjustBar():
+	$HP_bar.value = self.PV *100 / self.maxPV 
+	$Energy_bar.value = self.energy *100 / self.maxPV
+
+
 
 func getDamaged(value):
 	self.PV -= value
+
+	if self.has_node("HP_bar"):
+
+		self.AdjustBar()
+		self.get_node("HP_bar").show()
 	if self.PV <= 0:
 		Die()
 		#position -= Vector2(-10,0)
