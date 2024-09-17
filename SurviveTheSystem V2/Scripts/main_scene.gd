@@ -368,13 +368,5 @@ func _input(event): #gameover fonction
 
 
 
-func _on_button_continue_pressed():
-	$UI/VictoryPanel.hide()
-	gameover = true # Replace with function body.
-
-
-
-
-
 func _on_timer_timeout():
 	$UI/DayCount.hide() # Replace with function body.

@@ -113,6 +113,30 @@ func _input(event):
 		if event.is_action_pressed("zoom_out"):
 			$Camera2D.zoom.x -= 0.25
 			$Camera2D.zoom.y -= 0.25
+		if event.is_action_pressed("test1"):
+			var middle = position  #+ Vector2(size.x/2,-size.y/2)'
+			var center_x = int(middle.x/World.tile_size)
+			var	center_y = int(middle.y/World.tile_size)
+			var radius = 2 #in tiles
+			for x in range(center_x - radius, center_x + radius + 1):
+				for y in range(center_y - radius, center_y + radius + 1):
+					if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+						var posindex = y*World.world_size + x
+						if posindex < World.block_element_array.size():				
+							World.block_element_array[posindex]	-= 2
+
+		if event.is_action_pressed("test2"):
+			var middle = position  #+ Vector2(size.x/2,-size.y/2)'
+			var center_x = int(middle.x/World.tile_size)
+			var	center_y = int(middle.y/World.tile_size)
+			var radius = 2 #in tiles
+			for x in range(center_x - radius, center_x + radius + 1):
+				for y in range(center_y - radius, center_y + radius + 1):
+					if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+						var posindex = y*World.world_size + x
+						if posindex < World.block_element_array.size():				
+							World.block_element_array[posindex]	+= 2
+
 
 func _on_timer_timeout():
 	if World.isReady and isActive:

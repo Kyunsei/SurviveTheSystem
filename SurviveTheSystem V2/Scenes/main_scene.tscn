@@ -90,7 +90,8 @@ ENTER: eat
 
 
 -----DEBUG-------
-mouse wheel: zoom in/out"
+mouse wheel: zoom in/out
+Q/E : add/remove energy"
 
 [node name="speedContainer" type="HBoxContainer" parent="UI"]
 anchors_preset = 5
