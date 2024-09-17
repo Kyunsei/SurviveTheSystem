@@ -180,13 +180,29 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(0.721569, 0.282353, 0.92549, 0.290196)
 
+[node name="DayCount" type="Label" parent="UI"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 40
+
+[node name="Timer" type="Timer" parent="UI/DayCount"]
+
 [node name="DayTimer" type="Timer" parent="."]
-wait_time = 60.0
+wait_time = 15.0
 one_shot = true
 autostart = true
 
 [node name="NightTimer" type="Timer" parent="."]
-wait_time = 60.0
+wait_time = 5.0
 one_shot = true
 
 [node name="BlockTimer" type="Timer" parent="."]
@@ -203,6 +219,7 @@ visible = false
 [connection signal="pressed" from="UI/speedContainer/speed2" to="." method="_on_speed_2_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed10" to="." method="_on_speed_10_pressed"]
 [connection signal="pressed" from="UI/speedContainer/speed100" to="." method="_on_speed_100_pressed"]
+[connection signal="timeout" from="UI/DayCount/Timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="DayTimer" to="." method="_on_day_timer_timeout"]
 [connection signal="timeout" from="NightTimer" to="." method="_on_night_timer_timeout"]
 [connection signal="timeout" from="BlockTimer" to="." method="_on_block_timer_timeout"]

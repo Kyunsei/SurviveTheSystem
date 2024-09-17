@@ -161,16 +161,15 @@ func UpdateSimulationSpeed():
 	$Life/BrainTimer.wait_time = 2.0 / World.speed
 	$Life/BrainTimer.start(0)
 	
-	$DayTimer.wait_time= 20. / World.speed
+	$DayTimer.wait_time= 15. / World.speed
 	$DayTimer.start()
 	
-	$NightTimer.wait_time= 10. / World.speed
+	$NightTimer.wait_time= 5. / World.speed
 	$NightTimer.start()
 	
 	$UI/Wspeed.text = "World speed = " + str(World.speed) 
 
-func NewDay():
-	$UI/Night_filtre.show()
+
 
 func _on_life_timer_timeout():
 		pass
@@ -275,6 +274,9 @@ func _on_day_timer_timeout():
 func _on_night_timer_timeout():
 	$UI/Night_filtre.hide()
 	$DayTimer.start()
+	$UI/DayCount.show()
+	$UI/DayCount.text = "Day " + str(World.day)
+	$UI/DayCount/Timer.start(0.5)
 'func _exit_tree():
 	thread.wait_to_finish()
 	
@@ -374,3 +376,5 @@ func _on_button_continue_pressed():
 
 
 
+func _on_timer_timeout():
+	$UI/DayCount.hide() # Replace with function body.
