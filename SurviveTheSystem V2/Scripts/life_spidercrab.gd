@@ -134,7 +134,7 @@ func Brainy():
 			if cl !=null:
 				$DebugLabel.text ="feeding" 
 				#NEED TO ADJUST DISTANCE ACCORDING TO CENTER NOT CORNER
-				if center.distance_to(cl.position) < (128*2) and cl.isDead == false:
+				if center.distance_to(cl.position) < (128*1.5) and cl.isDead == false:
 					$DebugLabel.text ="charging"
 					var rdn = randi_range(0,100)
 					if rdn < 25:
@@ -148,7 +148,7 @@ func Brainy():
 							Eat(cl)
 							velocity = Vector2(0,0)
 							$DebugLabel.text ="Eat"
-				elif cl.isDead == false and center.distance_to(cl.position) >= 128*2:
+				elif cl.isDead == false and center.distance_to(cl.position) >= 128*1.5:
 						#ChargeToward(cl.position)
 						getCloser(cl.position)
 						$DebugLabel.text ="getToFood "
