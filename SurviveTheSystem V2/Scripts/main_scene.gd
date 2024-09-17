@@ -276,7 +276,7 @@ func _on_night_timer_timeout():
 	$DayTimer.start()
 	$UI/DayCount.show()
 	$UI/DayCount.text = "Day " + str(World.day)
-	$UI/DayCount/Timer.start(0.5)
+	$UI/DayCount/Timer.start(1.)
 'func _exit_tree():
 	thread.wait_to_finish()
 	
