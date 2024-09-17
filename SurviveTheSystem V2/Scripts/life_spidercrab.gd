@@ -52,7 +52,7 @@ func Build_Phenotype():
 	$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	#Vision
-	$Vision/Collision.shape.radius = 2000
+	$Vision/Collision.shape.radius = 1500
 	$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 
@@ -68,11 +68,12 @@ func Build_Phenotype():
 
 
 func _physics_process(delta):
-	if isPlayer:
+	if isPlayer and isDead == false:
 		input_dir = Player_Control_movement()
 
 	else:
-		Brainy()
+		if isDead == false :
+			Brainy()
 
 	move_and_collide(velocity *delta)
 	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
@@ -271,6 +272,7 @@ func BareHand_attack():
 
 func Die():
 	self.isDead = true
+	velocity = Vector2(0,0)
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()
 	

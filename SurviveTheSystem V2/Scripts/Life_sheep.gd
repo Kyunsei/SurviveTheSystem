@@ -201,10 +201,11 @@ func Brainy():
 
 	if danger_array_temp.size() > 0 :
 		var cl = getClosestLife(danger_array_temp,1000)
-		var random = randi_range(0,100)
-		var probability = clamp(1.0 - (position.distance_to(cl.position) / 300), 0.0, 1.0) * 100
-		if random <= probability:
-			getAway(cl.position)
+		if cl != null:
+			var random = randi_range(0,100)
+			var probability = clamp(1.0 - (position.distance_to(cl.position) / 300), 0.0, 1.0) * 100
+			if random <= probability:
+				getAway(cl.position)
 
 
 	if action_finished == true:
