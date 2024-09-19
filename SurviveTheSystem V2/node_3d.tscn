@@ -1,0 +1,102 @@
+[gd_scene load_steps=10 format=3 uid="uid://d337i48mpiy7h"]
+
+[ext_resource type="Texture2D" uid="uid://bfae5syr2y1x4" path="res://Art/grass_2.png" id="1_8fcm7"]
+[ext_resource type="Script" path="res://CharacterBody3D.gd" id="2_ewiei"]
+[ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="3_5r0y3"]
+[ext_resource type="Texture2D" uid="uid://cqy3pl3cheab1" path="res://Art/sheep3.png" id="4_c8iyh"]
+[ext_resource type="Script" path="res://CanvasLayer.gd" id="5_n1qfl"]
+[ext_resource type="Script" path="res://Sprite3D5.gd" id="5_qteqn"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_57cb8"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_3icm4"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_kq2t2"]
+size = Vector3(60, 1, 60)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+alpha_cut = 2
+texture = ExtResource("1_8fcm7")
+script = ExtResource("5_qteqn")
+
+[node name="Sprite3D2" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.38556, 0.0244512, 0)
+alpha_cut = 2
+texture = ExtResource("1_8fcm7")
+script = ExtResource("5_qteqn")
+
+[node name="Sprite3D3" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.867962, 0, 0)
+texture = ExtResource("1_8fcm7")
+script = ExtResource("5_qteqn")
+
+[node name="Sprite3D4" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.59653, 0.0233393, -0.886715)
+texture = ExtResource("1_8fcm7")
+script = ExtResource("5_qteqn")
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+script = ExtResource("2_ewiei")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
+shape = SubResource("BoxShape3D_57cb8")
+
+[node name="Sprite3D" type="Sprite3D" parent="CharacterBody3D"]
+texture = ExtResource("3_5r0y3")
+
+[node name="Node3D" type="Node3D" parent="CharacterBody3D"]
+
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 0.766044, 0.642788, 0, -0.642788, 0.766044, 0, 2, 3)
+
+[node name="Sprite3D5" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3169, 0.155758, 0)
+texture = ExtResource("4_c8iyh")
+script = ExtResource("5_qteqn")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+script = ExtResource("5_n1qfl")
+
+[node name="CheckButton" type="CheckButton" parent="CanvasLayer"]
+offset_right = 44.0
+offset_bottom = 24.0
+disabled = true
+action_mode = 0
+
+[node name="Label" type="Label" parent="CanvasLayer/CheckButton"]
+layout_mode = 0
+offset_left = 60.0
+offset_top = 3.0
+offset_right = 174.0
+offset_bottom = 26.0
+text = "SHIFT: rotate X"
+
+[node name="CheckButton2" type="CheckButton" parent="CanvasLayer"]
+offset_left = 6.0
+offset_top = 37.0
+offset_right = 50.0
+offset_bottom = 61.0
+disabled = true
+
+[node name="Label2" type="Label" parent="CanvasLayer/CheckButton2"]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 3.0
+offset_right = 168.0
+offset_bottom = 26.0
+text = "ALT: rotate Y"
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_3icm4")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.21903)
+mesh = SubResource("BoxMesh_kq2t2")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.939693, -0.34202, 0, 0.321394, 0.883022, 0.34202, -0.116978, -0.321394, 0.939693, 1, 2, 2)

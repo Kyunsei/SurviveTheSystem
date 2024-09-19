@@ -45,3 +45,7 @@ func _on_fo_v_text_changed(new_text):
 			World.fieldofview = int(new_text) # Replace with function body.
 
  # Replace with function body.
+
+
+func _on_button_test_pressed():
+	get_tree().change_scene_to_file("res://node_3d.tscn") # Replace with function body.

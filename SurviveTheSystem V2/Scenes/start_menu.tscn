@@ -50,10 +50,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "play"
 
-[node name="Button3" type="Button" parent="Button_VBox"]
+[node name="Button_TEST" type="Button" parent="Button_VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "button3"
+text = "TEST 3D"
 
 [node name="Button4" type="Button" parent="Button_VBox"]
 layout_mode = 2
@@ -128,6 +128,7 @@ layout_mode = 2
 layout_mode = 2
 
 [connection signal="pressed" from="Button_VBox/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="Button_VBox/Button_TEST" to="." method="_on_button_test_pressed"]
 [connection signal="text_changed" from="DebugValue/worldsize" to="." method="_on_worldsize_text_changed"]
 [connection signal="text_changed" from="DebugValue/tilesize" to="." method="_on_tilesize_text_changed"]
 [connection signal="text_changed" from="DebugValue/Total_Element" to="." method="_on_total_element_text_changed"]

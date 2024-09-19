@@ -369,8 +369,14 @@ func _input(event): #gameover fonction
 		$Life/SpawnTimer.start(0)
 		get_tree().paused = true
 
-
-
+	if event.is_action_pressed("Esc"):
+		print("Esc")
+		if 	get_tree().paused == true:
+			get_tree().paused = false
+			$UI/Pause_menu.hide()
+		else:
+			get_tree().paused = true
+			$UI/Pause_menu.show()	
 
 func _on_timer_timeout():
 	$UI/DayCount.hide() # Replace with function body.

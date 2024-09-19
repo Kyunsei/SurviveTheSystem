@@ -49,6 +49,7 @@ offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
 
 [node name="HP_bar" type="ProgressBar" parent="."]
 visible = false
