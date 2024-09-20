@@ -1,24 +1,36 @@
-[gd_scene load_steps=10 format=3 uid="uid://d337i48mpiy7h"]
+[gd_scene load_steps=13 format=3 uid="uid://d337i48mpiy7h"]
 
 [ext_resource type="Texture2D" uid="uid://bfae5syr2y1x4" path="res://Art/grass_2.png" id="1_8fcm7"]
 [ext_resource type="Script" path="res://CharacterBody3D.gd" id="2_ewiei"]
 [ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="3_5r0y3"]
+[ext_resource type="Texture2D" uid="uid://ct4q6i1xlhp06" path="res://Art/sting_tree_3.png" id="3_pgkpi"]
 [ext_resource type="Texture2D" uid="uid://cqy3pl3cheab1" path="res://Art/sheep3.png" id="4_c8iyh"]
 [ext_resource type="Script" path="res://CanvasLayer.gd" id="5_n1qfl"]
 [ext_resource type="Script" path="res://Sprite3D5.gd" id="5_qteqn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_57cb8"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_fnaqw"]
+size = Vector3(9.86572, 1, 10.1035)
+
+[sub_resource type="BoxMesh" id="BoxMesh_83jm2"]
+size = Vector3(10, 1, 10)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_3icm4"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_kq2t2"]
-size = Vector3(60, 1, 60)
 
 [node name="Node3D" type="Node3D"]
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
 alpha_cut = 2
 texture = ExtResource("1_8fcm7")
+script = ExtResource("5_qteqn")
+
+[node name="Sprite3D6" type="Sprite3D" parent="."]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.88119, 2.43087, -2.31697)
+alpha_cut = 2
+texture = ExtResource("3_pgkpi")
 script = ExtResource("5_qteqn")
 
 [node name="Sprite3D2" type="Sprite3D" parent="."]
@@ -52,7 +64,7 @@ texture = ExtResource("3_5r0y3")
 transform = Transform3D(1, 0, 0, 0, 0.766044, 0.642788, 0, -0.642788, 0.766044, 0, 2, 3)
 
 [node name="Sprite3D5" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3169, 0.155758, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.317, 0, 0)
 texture = ExtResource("4_c8iyh")
 script = ExtResource("5_qteqn")
 
@@ -89,12 +101,24 @@ offset_bottom = 26.0
 text = "ALT: rotate Y"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 2, 0, -1, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("BoxShape3D_3icm4")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0471191, 0, 1.1875)
+shape = SubResource("BoxShape3D_fnaqw")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.21903)
+mesh = SubResource("BoxMesh_83jm2")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0165961, 0, 1.205)
+shape = SubResource("BoxShape3D_3icm4")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.21903)
 mesh = SubResource("BoxMesh_kq2t2")
 
