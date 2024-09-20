@@ -231,6 +231,15 @@ func Instantiate_emptyLife_pool_in_Batch(folder,current_batch,nb_by_call):
 
 
 func Init_life_pool():
+	
+	plant_number = 0
+	sheep_number = 0
+	spidercrab_number = 0
+	berry_number = 0
+	player_number = 0
+	cat_number = 0
+	stingtree_number = 0
+	
 	cat_pool_scene = []
 	cat_pool_state = []
 
