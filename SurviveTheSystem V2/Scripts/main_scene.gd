@@ -5,6 +5,7 @@ extends Node2D
 var playerindex = 0
 var gameover = false
 
+
 #to load the map
 var batch_size = 20
 var current_batch = 0
@@ -61,12 +62,18 @@ func _process(delta):
 			Life.InstantiateLife(idx)
 			pass'
 		#Life.deleteLoopCPU($Life)
+		
+		
+		#20 days
 		if World.day == 20 and gameover == false:
-			CallGameOver()
+			if player.isActive == true:
+				gameover = true
+				CallGameOver()
+				
 
-
-		if player != null and gameover == false:
-			if player.isActive != true:
+		#dead player
+		if player != null:
+			if player.isActive != true:# and gameover == false:
 				CallGameOver()
 
 
@@ -293,7 +300,7 @@ func _notification(what):
 func CallGameOver():
 	$UI/GameOver.SetUp_GameOver_Screen()
 	$UI/GameOver.show()
-	gameover = true
+	#gameover = true
 	get_tree().paused = true
 
 func _on_speed_1_pressed():	

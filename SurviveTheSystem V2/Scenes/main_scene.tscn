@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_ytf0d"]
 
 [node name="MainScene" type="Node2D"]
-process_mode = 3
+process_mode = 1
 script = ExtResource("1_0faxq")
 
 [node name="StarBackground" type="Sprite2D" parent="."]
@@ -48,7 +48,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.658824, 0.196078, 0.862745, 0.419608)
+color = Color(0.203922, 0.47451, 0.792157, 0.419608)
 
 [node name="FPS" type="Label" parent="UI"]
 anchors_preset = 3
