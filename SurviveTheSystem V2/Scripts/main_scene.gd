@@ -36,33 +36,16 @@ func _ready():
 
 	
 func _process(delta):
-	#if initialized == true:
 	
 
-		#Life.InstantiateNewLifeBatchCPU($Life)
-		#var playerworldpos = World.getWorldPos($Life/Player.global_position)
-
-		
-		'if Life.state_array[playerindex] <= 0:
-			$UI/GameOverPanel.show()
-			gameover = true'
-		#if World.day > 10 and  gameover== false:
-		#	$UI/VictoryPanel.show()
-		#	$UI/VictoryPanel/Label.text = "Victory! \n" + "You survived " +  str(World.day) + " days\n" + "score: " + str(Life.score)
-			
 		if player != null:
 			var playerworldpos = World.getWorldPos(player.global_position)
 			World.ActivateAndDesactivateBlockAround(player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
 			$StarBackground.position = player.position  #background follow player
+			
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
 		$UI/Debug.text = str(World.day) + " day \n" +"berry: " +   str(Life.berry_number) + " / " + str(Life.berry_pool_state.size()) + " \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)  + "\n stingtree: " +   str(Life.stingtree_number) + " / " + str(Life.stingtree_pool_state.size()) + " \n" + "crabspider: " +   str(Life.spidercrab_number) + " / " + str(Life.spidercrab_pool_state.size())   
-		'var idx = Life.state_array.find(0)
-		if idx >= 0:
-			Life.InstantiateLife(idx,$Life)
-			Life.InstantiateLife(idx)
-			pass'
-		#Life.deleteLoopCPU($Life)
-		
+
 		
 		#20 days
 		if World.day == 20 and gameover == false:
@@ -81,10 +64,9 @@ func _process(delta):
 func InitNewGame():
 	#Init the World
 	World.Init_World()
-	
+	UpdateSimulationSpeed()
 	
 	#init Life
-	
 	Life.Init_life_pool()
 	
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
@@ -139,7 +121,7 @@ func InitNewGame():
 	#Item.BuildItem(playerworldpos.x,playerworldpos.y+1,1,$Items)
 
 
-func InitEmptyLife():
+'func InitEmptyLife():
 	for i in range(current_batch, current_batch + batch_size):
 		if i < Life.max_life:
 			print(i)
@@ -147,8 +129,9 @@ func InitEmptyLife():
 				Life.InstantiateEmptyLife(i,$Life)
 	current_batch = (current_batch + batch_size)
 	if current_batch > Life.max_life:
-		initialized = true
-	'for n in range(20):
+		initialized = true'
+		
+'	for n in range(20):
 		Life.BuildLifeRDinThread(0,1,$Life)
 	for n in range(5):
 		Life.BuildLifeRDinThread(1,2,$Life)
@@ -163,20 +146,25 @@ func UpdateSimulationSpeed():
 	$BlockTimer.wait_time = 1. / World.speed
 	$BlockTimer.start(0)
 		
-	$Life/LifeTimer.wait_time = 10.0 / World.speed
-	$Life/LifeTimer.start(0)
+	'$Life/LifeTimer.wait_time = 10.0 / World.speed
+	$Life/LifeTimer.start(0)'
 
-	$Life/SpawnTimer.wait_time = 1.#2.0 / World.speed
-	#$Life/SpawnTimer.start(0)
+	'$Life/SpawnTimer.wait_time = 1.#2.0 / World.speed
+	#$Life/SpawnTimer.start(0)'
 	
-	$Life/BrainTimer.wait_time = 2.0 / World.speed
-	$Life/BrainTimer.start(0)
+	'$Life/BrainTimer.wait_time = 2.0 / World.speed
+	$Life/BrainTimer.start(0)'
 	
-	$DayTimer.wait_time= 15. / World.speed
-	$DayTimer.start()
+	$UI/Clock.Uptade_timesimulation()
 	
-	$NightTimer.wait_time= 5. / World.speed
-	$NightTimer.start()
+
+	$DayTimer.wait_time= World.daytime / World.speed
+	$DayTimer.start(0)
+	
+	print($DayTimer.wait_time)
+	
+	$NightTimer.wait_time= World.nighttime / World.speed
+	$NightTimer.start(0)
 	
 	$UI/Wspeed.text = "World speed = " + str(World.speed) 
 
@@ -264,9 +252,9 @@ func _on_spawn_timer_timeout():
 
 
 
-func _on_brain_timer_timeout():
+'func _on_brain_timer_timeout():
 	pass
-	#Brain.BrainLoopCPU($Life)
+	#Brain.BrainLoopCPU($Life)'
 
 func _on_block_timer_timeout():
 	pass
@@ -332,7 +320,7 @@ func _on_speed_100_pressed():
  # Replace with function body.
 
 
-func _on_button_restart_pressed():
+'func _on_button_restart_pressed():
 	pass # Replace with function body.
 	gameover = false
 	get_tree().change_scene_to_file("res://Scenes/start_menu.tscn")
@@ -344,7 +332,7 @@ func _on_button_respawn_pressed():
 	$Life/Player.INDEX = Life.player_index # Replace with function body.
 	$Life/Player/Sprite2D.show()
 	$UI/GameOverPanel.hide()
-	gameover = false
+	gameover = false'
 	
 func _input(event): #gameover fonction
 	if event.is_action_pressed("interact"):

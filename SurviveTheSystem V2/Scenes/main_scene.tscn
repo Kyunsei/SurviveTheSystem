@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://bvgtrefdtlsul"]
+[gd_scene load_steps=7 format=3 uid="uid://bvgtrefdtlsul"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_0faxq"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
 [ext_resource type="PackedScene" uid="uid://cgax0tyixs3og" path="res://Scenes/pause_menu.tscn" id="3_qkr51"]
 [ext_resource type="PackedScene" uid="uid://m26fd7j0ngbx" path="res://Scenes/spawn_window.tscn" id="4_j4k08"]
 [ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_ytf0d"]
+[ext_resource type="PackedScene" uid="uid://dx8j1h6gp20xq" path="res://Scenes/clock.tscn" id="5_a43f2"]
 
 [node name="MainScene" type="Node2D"]
 process_mode = 1
@@ -38,17 +39,6 @@ process_mode = 3
 process_mode = 1
 
 [node name="UI" type="CanvasLayer" parent="."]
-process_mode = 3
-
-[node name="Night_filtre" type="ColorRect" parent="UI"]
-visible = false
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0.203922, 0.47451, 0.792157, 0.419608)
 
 [node name="FPS" type="Label" parent="UI"]
 anchors_preset = 3
@@ -79,8 +69,8 @@ visible = false
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -40.0
-offset_bottom = 23.0
+offset_left = -199.0
+offset_bottom = 179.0
 grow_horizontal = 0
 text = "W,A,S,D : Move
 SPACE : interact/pick item
@@ -94,15 +84,15 @@ ENTER: Eat"
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -40.0
-offset_bottom = 23.0
+offset_left = -205.0
+offset_bottom = 283.0
 grow_horizontal = 0
 text = "W,A,S,D : Move
 P : ADD 100 max grass
 R: Attack
 SPACE: pick-up
 X: drop
-ENTER: eat
+C: eat
 
 
 -----DEBUG-------
@@ -113,8 +103,8 @@ Q/E : add/remove energy"
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
+offset_left = -72.5
+offset_right = 72.5
 offset_bottom = 40.0
 grow_horizontal = 2
 
@@ -206,6 +196,18 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 40
 
 [node name="Timer" type="Timer" parent="UI/DayCount"]
+
+[node name="Night_filtre" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.203922, 0.47451, 0.792157, 0.419608)
+
+[node name="Clock" parent="UI" instance=ExtResource("5_a43f2")]
 
 [node name="DayTimer" type="Timer" parent="."]
 process_mode = 1

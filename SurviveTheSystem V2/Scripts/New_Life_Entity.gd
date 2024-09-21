@@ -25,6 +25,7 @@ var direction = Vector2(0,0)
 
 #Internal parameters
 var maxPV = 10
+var maxEnergy = 100
 var maxSpeed = 0
 
 

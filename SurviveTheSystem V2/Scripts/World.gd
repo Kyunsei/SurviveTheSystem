@@ -20,6 +20,10 @@ var element = 1000.0 #current value
 var speed = 1.0
 var day = 0
 
+#30 min max (in second) / nb jours total * proprtion nuit/jour
+var daytime = 30. *60 / 20 * 2/3
+var nighttime = 30. *60 / 20 * 2/3
+
 var isReady = false
 
 var life_instance_thread = []

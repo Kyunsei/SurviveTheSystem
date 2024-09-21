@@ -13,6 +13,7 @@ var rotation_dir = 0
 
 func Build_Genome():
 	Genome["maxPV"]=[10]
+	Genome["maxEnergy"]=[100]
 	Genome["speed"] =[200]
 	Genome["lifespan"]=[1000]
 	Genome["sprite"] = [preload("res://Art/player_cat.png")]
@@ -28,8 +29,9 @@ func init_progressbar():
 func Build_Stat():
 	self.current_life_cycle = 0
 	self.PV = 5	
-	self.energy = 10
+	self.energy = 50
 	self.maxPV = 10
+	self.maxEnergy = 100
 
 
 	AdjustBar()
@@ -107,12 +109,12 @@ func _input(event):
 		'else:
 			current_action = 2'
 		if event.is_action_pressed("zoom_in"):
-			$Camera2D.zoom.x += 0.25
-			$Camera2D.zoom.y += 0.25
+			$Camera2D.zoom.x += 0.05
+			$Camera2D.zoom.y += 0.05
 
 		if event.is_action_pressed("zoom_out"):
-			$Camera2D.zoom.x -= 0.25
-			$Camera2D.zoom.y -= 0.25
+			$Camera2D.zoom.x -= 0.05
+			$Camera2D.zoom.y -= 0.05
 		if event.is_action_pressed("test1"):
 			var middle = position  #+ Vector2(size.x/2,-size.y/2)'
 			var center_x = int(middle.x/World.tile_size)
@@ -164,8 +166,8 @@ func getDamaged(value):
 		Die()
 
 func AdjustBar():
-	$HP_bar.value = self.PV *100 / 10 
-	$Energy_bar.value = self.energy *100 / 10 
+	$HP_bar.value = self.PV *100 / self.maxPV
+	$Energy_bar.value = self.energy *100 / self.maxEnergy
 
 
 func Attack():
