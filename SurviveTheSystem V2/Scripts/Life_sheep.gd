@@ -155,6 +155,8 @@ func Growth():
 			$Sprite_0.hide()
 			set_physics_process(true)
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
+			self.maxPV = Genome["maxPV"][self.current_life_cycle]
+			self.PV = self.maxPV
 	if current_life_cycle == 1:
 		if self.age > 8 and self.energy > 10:
 			self.current_life_cycle += 1
@@ -165,6 +167,8 @@ func Growth():
 			$Collision_1.disabled = false		
 			$Collision_0.disabled = true	
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
+			self.maxPV = Genome["maxPV"][self.current_life_cycle]
+			self.PV = self.maxPV
 
 			
 

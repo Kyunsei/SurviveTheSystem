@@ -141,11 +141,13 @@ func Growth():
 			get_node("Collision_1").disabled = false
 			get_node("Collision_0").disabled = true	
 			self.size = get_node("Collision_1").shape.size
-
+			self.maxPV += 5
+			self.PV += 5
 		if self.current_life_cycle < 4:
 			get_node("Sprite_"+str(self.current_life_cycle)).show()
 			get_node("Sprite_"+str(self.current_life_cycle-1)).hide()
-
+			self.maxPV += 5
+			self.PV += 5
 		else:
 			$Sprite_3.scale += Vector2(0.2,0.2)
 			var tree_middle_leaf_height = ($Sprite_3.texture.get_height() -  $Sprite_3/fruitplace.get_size().y/2 )* $Sprite_3.scale.y

@@ -132,6 +132,8 @@ func Growth():
 			$Collision_0.disabled = true	
 			$Sprite_1.show()
 			$Sprite_0.hide()
+			self.maxPV = Genome["maxPV"][self.current_life_cycle]
+			self.PV = self.maxPV
 	if current_life_cycle == 1:
 		if self.age > 4 and self.energy > 5:
 			self.current_life_cycle += 1	
@@ -141,6 +143,8 @@ func Growth():
 			$Collision_1.disabled = true	
 			$Sprite_2.show()
 			$Sprite_1.hide()
+			self.maxPV = Genome["maxPV"][self.current_life_cycle]
+			self.PV = self.maxPV
 	if current_life_cycle == 2:
 		if self.age > 8 and self.energy > 10:
 			self.current_life_cycle += 1	
@@ -150,6 +154,8 @@ func Growth():
 			$Collision_2.disabled = true	
 			$Sprite_3.show()
 			$Sprite_2.hide()
+			self.maxPV = Genome["maxPV"][self.current_life_cycle]
+			self.PV = self.maxPV
 
 
 #Duplication

@@ -4,7 +4,7 @@ var species = "catronaute"
 
 
 var barehand_array = []
-
+var isimmobile_1sec = false
 
 #movmnt
 var input_dir = Vector2.ZERO
@@ -21,6 +21,13 @@ func Build_Genome():
 	
 	Genome["planty_sprite"] = [preload("res://Art/player_bulbi.png")] #TEMPORAIRE
 
+func passive_healing():
+	if self.PV < self.maxPV and isimmobile_1sec == true:
+		self.PV += 0.5
+		AdjustBar()
+		isimmobile_1sec = false
+
+
 func init_progressbar():
 	$HP_bar.modulate = Color(1, 0, 0)
 	$Energy_bar.modulate = Color(0, 1, 0)
@@ -28,11 +35,11 @@ func init_progressbar():
 
 func Build_Stat():
 	self.current_life_cycle = 0
-	self.PV = 5	
+	self.PV = 30	
 	self.energy = 50
-	self.maxPV = 10
+	self.maxPV = 50
 	self.maxEnergy = 100
-
+	self.maxSpeed = 200	
 
 	AdjustBar()
 	
@@ -70,7 +77,9 @@ func _physics_process(delta):
 		input_dir = Player_Control_movement()
 		move_and_collide(velocity *delta)
 
-
+		if Input.is_action_pressed("sprint"):
+			Sprint_Action()
+			isimmobile_1sec = false
 		if item_array.size() > 0:
 			var c = 0
 			for i in item_array:
@@ -78,7 +87,12 @@ func _physics_process(delta):
 				c += 1
 		
 		if input_dir.normalized() != Vector2(0,0):
-			last_dir = input_dir
+			last_dir = input_dir 
+			isimmobile_1sec = false
+		else :
+			if isimmobile_1sec == false:
+				$BareHand_attack/ActionTimer.start(1)
+				isimmobile_1sec = true
 		var temppos = position + last_dir * Vector2(64,96)
 		$BareHand_attack.rotation =  (last_dir.angle()) 
 		$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
@@ -92,29 +106,39 @@ func _input(event):
 			#Life.Instantiate_NewLife_in_Batch(get_parent(),0,20,Life.new_lifes)
 			#attaque(input_dir)
 			print("use is pressed")
+			isimmobile_1sec = false
 		if event.is_action_pressed("interact"):
 			PickUp()
-
+			isimmobile_1sec = false
 		if event.is_action_pressed("drop"):
 			Drop()
+			isimmobile_1sec = false
 
 		if event.is_action_pressed("eat"):
 			Eat_Action()
 			#Eat()
+			isimmobile_1sec = false
+		if event.is_action_released("sprint"):
+			Sprint_Action_Stop()
+			isimmobile_1sec = false
 		if event.is_action_pressed("attack"):
 			Attack()
+			isimmobile_1sec = false
 		if event.is_action_pressed("throw"):
 			print( "throw is pressed")
 			#Throw()
+			isimmobile_1sec = false
 		'else:
 			current_action = 2'
 		if event.is_action_pressed("zoom_in"):
 			$Camera2D.zoom.x += 0.05
 			$Camera2D.zoom.y += 0.05
 
+
 		if event.is_action_pressed("zoom_out"):
 			$Camera2D.zoom.x -= 0.05
 			$Camera2D.zoom.y -= 0.05
+
 		if event.is_action_pressed("test1"):
 			var middle = position  #+ Vector2(size.x/2,-size.y/2)'
 			var center_x = int(middle.x/World.tile_size)
@@ -160,8 +184,14 @@ func _on_timer_timeout():
 
 
 func getDamaged(value):
-	self.PV -= value
-	AdjustBar()
+	if InvicibilityTime == 0:
+		self.PV -= value
+		AdjustBar()
+		InvicibilityTime = 1 
+		$Sprite_0.modulate = Color(1, 0.2, 0.2)
+		await get_tree().create_timer(0.5).timeout
+		InvicibilityTime = 0
+		$Sprite_0.modulate = Color(1, 1, 1)
 	if self.PV <= 0:
 		Die()
 
@@ -173,9 +203,24 @@ func AdjustBar():
 func Attack():
 	BareHand_attack()
 
+func Sprint_Action():
+	if self.PV > 1 :
+		if self.maxSpeed < 300 :
+			self.maxSpeed = 300
+		print("sprinting")
+		await get_tree().create_timer(0.2).timeout
+		self.PV -= 0.02
+		print("lost health")
+		AdjustBar()
+	else :
+		self.maxSpeed = 200
+
+func Sprint_Action_Stop():
+	self.maxSpeed = 200
+
 func PickUp():
 	$BareHand_attack/sprite2.show()
-	$BareHand_attack/ActionTimer.start(0)
+	$BareHand_attack/ActionTimer.start(0.2)
 	var closestItem = getClosestLife(barehand_array,$Vision/Collision.shape.radius+100)
 	if closestItem != null:
 		var distancetoclosestItem = position.distance_to(closestItem.position)
@@ -219,7 +264,7 @@ func Eat_Action():
 
 func BareHand_attack():
 	$BareHand_attack/sprite.show()
-	$BareHand_attack/ActionTimer.start(0)
+	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
 		if i != null:
 			i.getDamaged(10)
@@ -290,3 +335,4 @@ func _on_bare_hand_attack_body_exited(body):
 func _on_action_timer_timeout():
 	$BareHand_attack/sprite.hide()
 	$BareHand_attack/sprite2.hide()
+	passive_healing()

@@ -145,6 +145,9 @@ func Brainy():
 						$ActionTimer.start(2.)
 					
 				elif center.distance_to(cl.position) < 64 and cl.isDead == false:
+						if cl.species=="catronaute":
+							cl.getDamaged(10)
+						else :
 							Eat(cl)
 							velocity = Vector2(0,0)
 							$DebugLabel.text ="Eat"
@@ -162,6 +165,9 @@ func Brainy():
 		var cl = getClosestLife(food_array_temp,1000)
 		if cl !=null:
 			if center.distance_to(cl.position) < 64 and cl.isDead == false:
+				if cl.species=="catronaute":
+					cl.getDamaged(10)
+				else :
 					Eat(cl)
 					velocity = Vector2(0,0)
 					$DebugLabel.text ="Eat"

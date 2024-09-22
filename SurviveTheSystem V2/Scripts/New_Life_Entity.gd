@@ -101,7 +101,7 @@ func Player_Control_movement():
 			input_dir.y += 1
 			rotation_dir = 1
 				
-		velocity = input_dir.normalized() * Genome["speed"][self.current_life_cycle]
+		velocity = input_dir.normalized() * self.maxSpeed
 
 
 		position.x = clamp(position.x, 0, World.world_size*World.tile_size)
@@ -255,9 +255,16 @@ func AdjustBar():
 	$Energy_bar.value = self.energy *100 / self.maxPV
 
 
+var InvicibilityTime = 0
 
 func getDamaged(value):
-	self.PV -= value
+	if InvicibilityTime == 0:
+		self.PV -= value
+		InvicibilityTime = 1 
+		modulate = Color(1, 0.2, 0.2)
+		await get_tree().create_timer(0.5).timeout
+		InvicibilityTime = 0
+		modulate = Color(1, 1, 1)
 
 	if self.has_node("HP_bar"):
 
