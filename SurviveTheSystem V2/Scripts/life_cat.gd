@@ -90,7 +90,7 @@ func _physics_process(delta):
 			last_dir = input_dir 
 			isimmobile_1sec = false
 		else :
-			if isimmobile_1sec == false:
+			if isimmobile_1sec == false and action_finished == true:
 				$BareHand_attack/ActionTimer.start(1)
 				isimmobile_1sec = true
 		var temppos = position + last_dir * Vector2(64,96)
@@ -201,10 +201,12 @@ func AdjustBar():
 
 
 func Attack():
+	action_finished = false
 	BareHand_attack()
 
 func Sprint_Action():
 	if self.PV > 1 :
+		action_finished = false
 		if self.maxSpeed < 300 :
 			self.maxSpeed = 300
 		print("sprinting")
@@ -213,12 +215,15 @@ func Sprint_Action():
 		print("lost health")
 		AdjustBar()
 	else :
+		action_finished = true
 		self.maxSpeed = 200
 
 func Sprint_Action_Stop():
+	action_finished = true
 	self.maxSpeed = 200
 
 func PickUp():
+	action_finished = false
 	$BareHand_attack/sprite2.show()
 	$BareHand_attack/ActionTimer.start(0.2)
 	var closestItem = getClosestLife(barehand_array,$Vision/Collision.shape.radius+100)
@@ -336,3 +341,4 @@ func _on_action_timer_timeout():
 	$BareHand_attack/sprite.hide()
 	$BareHand_attack/sprite2.hide()
 	passive_healing()
+	action_finished = true
