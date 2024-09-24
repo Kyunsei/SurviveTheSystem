@@ -36,7 +36,6 @@ func _ready():
 
 	
 func _process(delta):
-	
 
 		if player != null:
 			var playerworldpos = World.getWorldPos(player.global_position)
@@ -85,7 +84,8 @@ func InitNewGame():
 	Life.Instantiate_Life_in_pool($Life, 5, "stingtree")
 	Life.Instantiate_Life_in_pool($Life, 2, "spidercrab")
 
-	
+
+
 
 	#Life.Init_matrix()
 	#Life.Init_Genome()
@@ -108,7 +108,8 @@ func InitNewGame():
 	#player.get_node("Camera2D").enabled = true 
 	player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	var playerworldpos = World.getWorldPos(player.global_position)
-	World.InstantiateBlockAroundPlayer(playerworldpos.x,playerworldpos.y,$Blocks)
+	World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,1)
+	#World.InstantiateALLBlock($Blocks)
 	allblocks = $Blocks.get_children()
 	
 
@@ -121,24 +122,7 @@ func InitNewGame():
 	#Item.BuildItem(playerworldpos.x,playerworldpos.y+1,1,$Items)
 
 
-'func InitEmptyLife():
-	for i in range(current_batch, current_batch + batch_size):
-		if i < Life.max_life:
-			print(i)
-			if i != Life.player_index: #player
-				Life.InstantiateEmptyLife(i,$Life)
-	current_batch = (current_batch + batch_size)
-	if current_batch > Life.max_life:
-		initialized = true'
-		
-'	for n in range(20):
-		Life.BuildLifeRDinThread(0,1,$Life)
-	for n in range(5):
-		Life.BuildLifeRDinThread(1,2,$Life)
-	for n in range(20):
-		Life.BuildLifeRDinThread(2,2,$Life)
-	for n in range(0):
-		Life.BuildLifeRDinThread(4,0,$Life)'
+
 
 	
 
@@ -336,6 +320,9 @@ func _on_button_respawn_pressed():
 	
 func _input(event): #gameover fonction
 	if event.is_action_pressed("interact"):
+		#var playerworldpos = World.getWorldPos(player.global_position)
+		#World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,player.get_node("Camera2D").zoom)
+
 		pass
 		'Life.sheep_pool_scene[0].isPlayer = true
 		#Life.sheep_pool_scene[0].set_physics_process(true)

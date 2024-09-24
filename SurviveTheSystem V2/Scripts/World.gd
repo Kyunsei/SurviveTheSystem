@@ -2,9 +2,9 @@ extends Node
 
 'This is the global Script for all the variable and function defining the world'
 
-var world_size = 100 #The size in tile of the World
+var world_size = 150 #The size in tile of the World
 var tile_size = 32#128 # the size in pixel of each tile
-var fieldofview = 25 #in tile
+var fieldofview = Vector2(0,0) #in tile
 
 
 var block_element_array = [] #1D matrix of the block composing the world
@@ -42,6 +42,7 @@ func Init_World():
 	speed = 1.0
 	day = 0
 	isReady = true
+	fieldofview = round(get_viewport().get_visible_rect().size / tile_size) 
 
 func Init_matrix():
 	element = 1000
@@ -81,10 +82,27 @@ func getWorldPos(position):
 	return Vector2(x,y)
 
 func InstantiateBlockAroundPlayer(x,y,folder):
+
 	for i in range(-fieldofview,fieldofview):
 		for j in range(-fieldofview,fieldofview):
 			var xpos = x + i
 			var ypos = y + j
+			World.InstantiateBlock(xpos,ypos,folder)
+
+func InstantiateBlockAroundPlayer2(x,y,folder,zoom):
+	fieldofview = round(fieldofview / zoom)
+	for i in range(-fieldofview.x,fieldofview.x):
+		for j in range(-fieldofview.y,fieldofview.y):
+			var xpos = x + i
+			var ypos = y + j
+			World.InstantiateBlock(xpos,ypos,folder)
+
+
+func InstantiateALLBlock(folder):
+	for i in range(0,world_size):
+		for j in range(0,world_size):
+			var xpos =  i
+			var ypos =  j
 			World.InstantiateBlock(xpos,ypos,folder)
 
 
@@ -146,7 +164,7 @@ func ActivateAndDesactivateBlockAround(direction,x,y,allblocks):
 	if direction.x > 0 :
 		var leftblocks = allblocks.filter(getLeftBlock.bind(playerpos))
 		for b in leftblocks:
-			var b_pos = b.position.x + fieldofview*2*tile_size
+			var b_pos = b.position.x + fieldofview.x*2*tile_size
 			b.position.x = min(world_size*tile_size-1, b_pos)
 			var newpos = getWorldPos(b.position)
 			var newposindex = newpos.y*World.world_size + newpos.x
@@ -157,7 +175,7 @@ func ActivateAndDesactivateBlockAround(direction,x,y,allblocks):
 	if direction.x < 0:
 		var rightblocks = allblocks.filter(getRightBlock.bind(playerpos))
 		for b in rightblocks:
-			var b_pos = b.position.x - fieldofview*2*tile_size
+			var b_pos = b.position.x - fieldofview.x*2*tile_size
 			b.position.x = max(0, b_pos)
 			var newpos = getWorldPos(b.position)
 			var newposindex = newpos.y*World.world_size + newpos.x
@@ -167,7 +185,7 @@ func ActivateAndDesactivateBlockAround(direction,x,y,allblocks):
 	if direction.y < 0:
 		var bottomblocks = allblocks.filter(getBottomBlock.bind(playerpos))
 		for b in bottomblocks:
-			var b_pos = b.position.y - fieldofview*2*tile_size
+			var b_pos = b.position.y - fieldofview.y*2*tile_size
 			b.position.y = max(0, b_pos)
 			var newpos = getWorldPos(b.position)
 			var newposindex = newpos.y*World.world_size + newpos.x
@@ -176,7 +194,7 @@ func ActivateAndDesactivateBlockAround(direction,x,y,allblocks):
 	if direction.y > 0:	
 		var topblocks = allblocks.filter(getTopBlock.bind(playerpos))
 		for b in topblocks:
-			var b_pos = b.position.y + fieldofview*2*tile_size
+			var b_pos = b.position.y + fieldofview.y*2*tile_size
 			b.position.y =  min(world_size*tile_size-1, b_pos)
 			var newpos = getWorldPos(b.position)
 			var newposindex = newpos.y*World.world_size + newpos.x
@@ -192,22 +210,22 @@ func ActivateAndDesactivateBlockAround(direction,x,y,allblocks):
 
 func getRightBlock(block,playerpos):
 	var blockpos = getWorldPos(block.position)
-	if blockpos.x >  fieldofview*2 - 1:
-		return blockpos.x > (playerpos.x + fieldofview)
+	if blockpos.x >  fieldofview.x*2 - 1:
+		return blockpos.x > (playerpos.x + fieldofview.x)
 	else:
 		return false
 
 func getBottomBlock(block,playerpos):
 	var blockpos = getWorldPos(block.position)
-	if blockpos.y >  fieldofview*2 - 1:
-		return blockpos.y > (playerpos.y + fieldofview)
+	if blockpos.y >  fieldofview.y*2 - 1:
+		return blockpos.y > (playerpos.y + fieldofview.y)
 	else:
 		return false
 
 func getTopBlock(block,playerpos):
 	var blockpos = getWorldPos(block.position)
-	if blockpos.y < world_size - fieldofview*2:
-		return blockpos.y < (playerpos.y - fieldofview)
+	if blockpos.y < world_size - fieldofview.y*2:
+		return blockpos.y < (playerpos.y - fieldofview.y)
 	else:
 		return false
 
@@ -215,8 +233,8 @@ func getTopBlock(block,playerpos):
 
 func getLeftBlock(block,playerpos):
 	var blockpos = getWorldPos(block.position)
-	if blockpos.x < world_size - fieldofview*2:
-		return blockpos.x < (playerpos.x - fieldofview)
+	if blockpos.x < world_size - fieldofview.x * 2:
+		return blockpos.x < (playerpos.x - fieldofview.x)
 	else:
 		return false
 	
