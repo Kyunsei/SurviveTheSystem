@@ -1,0 +1,340 @@
+[gd_scene load_steps=6 format=3 uid="uid://dc76b7k2evprp"]
+
+[ext_resource type="Script" path="res://Test/diffusion_scene.gd" id="1_12x8v"]
+[ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_335vg"]
+[ext_resource type="PackedScene" uid="uid://cgax0tyixs3og" path="res://Scenes/pause_menu.tscn" id="3_uuggl"]
+[ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_hcm0q"]
+[ext_resource type="Script" path="res://Test/DiffussionPanel.gd" id="5_ifk4t"]
+
+[node name="DiffusionScene" type="Node2D"]
+process_mode = 1
+script = ExtResource("1_12x8v")
+
+[node name="StarBackground" type="Sprite2D" parent="."]
+position = Vector2(18, -82)
+scale = Vector2(0.469708, 0.469708)
+texture = ExtResource("2_335vg")
+
+[node name="Blocks" type="Node2D" parent="."]
+process_mode = 1
+
+[node name="Life" type="Node2D" parent="."]
+process_mode = 1
+z_as_relative = false
+y_sort_enabled = true
+
+[node name="LifeTimer" type="Timer" parent="Life"]
+wait_time = 10.0
+autostart = true
+
+[node name="BrainTimer" type="Timer" parent="Life"]
+wait_time = 2.0
+autostart = true
+
+[node name="SpawnTimer" type="Timer" parent="Life"]
+process_mode = 3
+
+[node name="Items" type="Node2D" parent="."]
+process_mode = 1
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="FPS" type="Label" parent="UI"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -23.0
+grow_horizontal = 0
+grow_vertical = 0
+text = " FPS"
+
+[node name="Debug" type="Label" parent="UI"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -0.5
+offset_top = -23.0
+offset_right = 0.5
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Tuto2" type="Label" parent="UI"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -205.0
+offset_bottom = 283.0
+grow_horizontal = 0
+text = "W,A,S,D : Move
+P : ADD 100 max grass
+R: Attack
+SPACE: pick-up
+X: drop
+C: eat
+
+
+-----DEBUG-------
+mouse wheel: zoom in/out
+Q/E : add/remove energy
+SPACE: plant grass (max 1000)"
+
+[node name="speedContainer" type="HBoxContainer" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -72.5
+offset_right = 72.5
+offset_bottom = 40.0
+grow_horizontal = 2
+
+[node name="speed1" type="Button" parent="UI/speedContainer"]
+layout_mode = 2
+text = "1x
+"
+
+[node name="speed2" type="Button" parent="UI/speedContainer"]
+layout_mode = 2
+text = "2x
+"
+
+[node name="speed10" type="Button" parent="UI/speedContainer"]
+layout_mode = 2
+text = "10x
+"
+
+[node name="speed100" type="Button" parent="UI/speedContainer"]
+layout_mode = 2
+text = "100x
+"
+
+[node name="SleepButton" type="Button" parent="UI"]
+visible = false
+offset_left = 403.0
+offset_top = 8.0
+offset_right = 501.0
+offset_bottom = 39.0
+text = "Sleep Mode"
+
+[node name="Wspeed" type="Label" parent="UI"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -66.0
+offset_top = 43.0
+offset_right = 36.0
+offset_bottom = 66.0
+grow_horizontal = 2
+text = "Debug Speed"
+
+[node name="ProgressBar" type="ProgressBar" parent="UI"]
+process_mode = 3
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -136.0
+offset_top = -105.0
+offset_right = 127.0
+offset_bottom = -58.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="UI/ProgressBar"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -54.5
+offset_top = -30.0
+offset_right = 54.5
+offset_bottom = -7.0
+grow_horizontal = 2
+text = "Loading_grass"
+
+[node name="Pause_menu" parent="UI" instance=ExtResource("3_uuggl")]
+process_mode = 2
+visible = false
+
+[node name="GameOver" parent="UI" instance=ExtResource("4_hcm0q")]
+visible = false
+
+[node name="Night_filtre" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.203922, 0.47451, 0.792157, 0.419608)
+
+[node name="DiffussionPanel" type="ColorRect" parent="UI"]
+process_mode = 3
+offset_right = 456.0
+offset_bottom = 436.0
+color = Color(0.392157, 0.392157, 0.392157, 1)
+script = ExtResource("5_ifk4t")
+
+[node name="minium" type="HScrollBar" parent="UI/DiffussionPanel"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 51.0
+offset_right = 162.0
+offset_bottom = 67.0
+max_value = 10.0
+step = 0.5
+
+[node name="Label" type="Label" parent="UI/DiffussionPanel/minium"]
+layout_mode = 0
+offset_left = -12.0
+offset_top = 20.0
+offset_right = 157.0
+offset_bottom = 71.0
+text = "energy cannot diffuse 
+below this number"
+
+[node name="value" type="Label" parent="UI/DiffussionPanel/minium"]
+layout_mode = 0
+offset_left = 148.0
+offset_top = -3.0
+offset_right = 188.0
+offset_bottom = 20.0
+
+[node name="DiffusionSpeed" type="HScrollBar" parent="UI/DiffussionPanel"]
+layout_mode = 0
+offset_left = 121.0
+offset_top = 321.0
+offset_right = 255.0
+offset_bottom = 337.0
+min_value = 0.1
+max_value = 5.0
+step = 0.5
+value = 0.1
+
+[node name="Label" type="Label" parent="UI/DiffussionPanel/DiffusionSpeed"]
+layout_mode = 0
+offset_left = -12.0
+offset_top = 20.0
+offset_right = 157.0
+offset_bottom = 71.0
+text = "Speed (time) of diffusion"
+
+[node name="value" type="Label" parent="UI/DiffussionPanel/DiffusionSpeed"]
+layout_mode = 0
+offset_left = 148.0
+offset_top = -3.0
+offset_right = 188.0
+offset_bottom = 20.0
+
+[node name="DiffusionFactor" type="HScrollBar" parent="UI/DiffussionPanel"]
+layout_mode = 0
+offset_left = 27.0
+offset_top = 183.0
+offset_right = 161.0
+offset_bottom = 199.0
+max_value = 1.0
+step = 0.2
+
+[node name="Label" type="Label" parent="UI/DiffussionPanel/DiffusionFactor"]
+layout_mode = 0
+offset_left = -12.0
+offset_top = 20.0
+offset_right = 157.0
+offset_bottom = 71.0
+text = "Which proportion of
+ energy is tranffered 
+to next block
+"
+
+[node name="value" type="Label" parent="UI/DiffussionPanel/DiffusionFactor"]
+layout_mode = 0
+offset_left = 139.0
+offset_right = 179.0
+offset_bottom = 23.0
+
+[node name="DiffusionQuantity" type="HScrollBar" parent="UI/DiffussionPanel"]
+visible = false
+layout_mode = 0
+offset_left = 221.0
+offset_top = 185.0
+offset_right = 355.0
+offset_bottom = 201.0
+max_value = 10.0
+step = 1.0
+
+[node name="Label" type="Label" parent="UI/DiffussionPanel/DiffusionQuantity"]
+layout_mode = 0
+offset_left = -7.0
+offset_top = 25.0
+offset_right = 168.0
+offset_bottom = 76.0
+text = "(NOT IMPLEMENTED)
+Hw much energy
+ is transferred to block"
+
+[node name="value" type="Label" parent="UI/DiffussionPanel/DiffusionQuantity"]
+layout_mode = 0
+offset_left = 148.0
+offset_top = -3.0
+offset_right = 188.0
+offset_bottom = 20.0
+
+[node name="Diffusionblocklimit" type="HScrollBar" parent="UI/DiffussionPanel"]
+visible = false
+layout_mode = 0
+offset_left = 226.0
+offset_top = 53.0
+offset_right = 360.0
+offset_bottom = 69.0
+max_value = 5.0
+step = 1.0
+
+[node name="Label" type="Label" parent="UI/DiffussionPanel/Diffusionblocklimit"]
+layout_mode = 0
+offset_left = -12.0
+offset_top = 20.0
+offset_right = 157.0
+offset_bottom = 71.0
+text = "(NOT IMPLEMENTED)
+energy diffusion block limit.
+"
+
+[node name="value" type="Label" parent="UI/DiffussionPanel/Diffusionblocklimit"]
+layout_mode = 0
+offset_left = 148.0
+offset_top = -3.0
+offset_right = 188.0
+offset_bottom = 20.0
+
+[node name="DiffusionButton" type="Button" parent="UI"]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Hide"
+
+[node name="BlockTimer" type="Timer" parent="."]
+process_mode = 1
+wait_time = 5.0
+autostart = true
+
+[connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]
+[connection signal="timeout" from="Life/BrainTimer" to="." method="_on_brain_timer_timeout"]
+[connection signal="timeout" from="Life/SpawnTimer" to="." method="_on_spawn_timer_timeout"]
+[connection signal="pressed" from="UI/speedContainer/speed1" to="." method="_on_speed_1_pressed"]
+[connection signal="pressed" from="UI/speedContainer/speed2" to="." method="_on_speed_2_pressed"]
+[connection signal="pressed" from="UI/speedContainer/speed10" to="." method="_on_speed_10_pressed"]
+[connection signal="pressed" from="UI/speedContainer/speed100" to="." method="_on_speed_100_pressed"]
+[connection signal="value_changed" from="UI/DiffussionPanel/minium" to="UI/DiffussionPanel" method="_on_minium_value_changed"]
+[connection signal="value_changed" from="UI/DiffussionPanel/DiffusionSpeed" to="UI/DiffussionPanel" method="_on_diffusion_speed_value_changed"]
+[connection signal="value_changed" from="UI/DiffussionPanel/DiffusionFactor" to="UI/DiffussionPanel" method="_on_diffusion_factor_value_changed"]
+[connection signal="value_changed" from="UI/DiffussionPanel/DiffusionQuantity" to="UI/DiffussionPanel" method="_on_diffusion_quantity_value_changed"]
+[connection signal="value_changed" from="UI/DiffussionPanel/Diffusionblocklimit" to="." method="_on_diffusion_block_limit_value_changed"]
+[connection signal="value_changed" from="UI/DiffussionPanel/Diffusionblocklimit" to="UI/DiffussionPanel" method="_on_diffusionblocklimit_value_changed"]
+[connection signal="pressed" from="UI/DiffusionButton" to="." method="_on_diffusion_button_pressed"]
+[connection signal="timeout" from="BlockTimer" to="." method="_on_block_timer_timeout"]

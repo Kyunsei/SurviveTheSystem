@@ -8,10 +8,17 @@ func _ready():
 	if Life.char_selected == "planty":
 		print("player is a tree")
 		$plant_story.show()
+		$Timer.start(2)
 	elif Life.char_selected == "cat":
 		print("player is a cat");
 		$cat_story.show()
-	$Timer.start(2)
+		$Timer.start(2)
+	elif Life.char_selected == "sheep":
+		$StartButton.show()
+		#get_tree().change_scene_to_file("res://Scenes/loading_screen.tscn")
+
+
+		
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):

@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://c7u7jgmi0x1yb"]
+[gd_scene load_steps=5 format=3 uid="uid://c7u7jgmi0x1yb"]
 
 [ext_resource type="Script" path="res://Scripts/character_selection.gd" id="1_n0t0v"]
 [ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="1_y8w3k"]
 [ext_resource type="Texture2D" uid="uid://cg8jna1y730qc" path="res://Art/player_cat.png" id="2_q8yq6"]
+[ext_resource type="Texture2D" uid="uid://ba3ghrf00sjvg" path="res://Art/sheep1.png" id="4_cb1tt"]
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_n0t0v")
@@ -30,6 +31,18 @@ text = "Cat_entity"
 position = Vector2(141, -53)
 scale = Vector2(2, 2)
 texture = ExtResource("2_q8yq6")
+
+[node name="Button_char_3" type="Button" parent="."]
+offset_left = 882.0
+offset_top = 132.0
+offset_right = 1148.0
+offset_bottom = 235.0
+text = "An_egg?"
+
+[node name="PlayerCat" type="Sprite2D" parent="Button_char_3"]
+position = Vector2(141, -53)
+scale = Vector2(2, 2)
+texture = ExtResource("4_cb1tt")
 
 [node name="Button_start" type="Button" parent="."]
 offset_left = 860.0
@@ -60,6 +73,7 @@ text = "Skip cutscene"
 
 [connection signal="pressed" from="Button_char_1" to="." method="_on_button_char_1_pressed"]
 [connection signal="pressed" from="Button_char_2" to="." method="_on_button_char_2_pressed"]
+[connection signal="pressed" from="Button_char_3" to="." method="_on_button_char_3_pressed"]
 [connection signal="pressed" from="Button_start" to="." method="_on_button_start_pressed"]
 [connection signal="pressed" from="Button_back" to="." method="_on_button_back_pressed"]
 [connection signal="toggled" from="CheckBox" to="." method="_on_check_box_toggled"]

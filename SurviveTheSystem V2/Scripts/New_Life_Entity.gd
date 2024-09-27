@@ -185,9 +185,8 @@ func Metabo_cost():
 	#	posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
 	#if posindex >= 0:
 	if posindex < World.block_element_array.size():
-		energy -= min(energy,metabolic_cost)
 		World.block_element_array[posindex] += min(energy, metabolic_cost)
-			
+		energy -= min(energy,metabolic_cost)
 #Getting old
 func Ageing():
 	self.age +=1

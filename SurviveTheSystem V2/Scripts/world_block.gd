@@ -31,6 +31,7 @@ func _ready():
 
 func BlockUpdate():
 		$ColorRect.color = getAdjustedSoilColor()
+
 		#$outsideline.color = getAdjustedSoilColor()
 
 func getAdjustedSoilColor():
@@ -38,6 +39,7 @@ func getAdjustedSoilColor():
 	var colormin = Color(0.8, 0.6, 0.4, 1)
 	var x = min(1, World.block_element_array[posindex]/10. )
 	var col = lerp(colormin, colormax, x)
+	$debug.text = "%0.1f" % World.block_element_array[posindex]
 	return col
 
 

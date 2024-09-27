@@ -16,10 +16,17 @@ layout(set = 0, binding = 1, std430) restrict buffer BlockBuffer_0 {
 }
 block_buffer_0;
 
+layout(set = 0, binding = 2, std430) restrict buffer BlockArraybuffer_par {
+    float data[];
+}
+block_buffer_par;
+
+//  block_buffer_par = [diffusion_factor,diffusion_number,diffusion_min_limit,diffusion_block_limit]
 
 
 float numberblockadj = 4.0;
-float dt = 0.5;
+float dt =  block_buffer_par.data[0]; //0.5;
+float minvalue = block_buffer_par.data[2];
 //int worldsize = 20;
 int getArrayLength = block_buffer.data.length(); 
 
@@ -42,12 +49,12 @@ void main(){
             numberblockadj = 2;
 
             //first axis
-            block_buffer.data[gid] +=  1* block_buffer_0.data[gid+1]/4 * dt;
-            block_buffer.data[gid] += 0* block_buffer_0.data[gid-1]/4* dt;
+            block_buffer.data[gid] += max(0, 1* (block_buffer_0.data[gid+1]- minvalue)/4 * dt);
+            block_buffer.data[gid] += max(0,0* (block_buffer_0.data[gid-1]- minvalue)/4* dt);
 
             //second axis
-            block_buffer.data[gid] +=  1* block_buffer_0.data[gid+1*worldsize]/4 * dt;
-            block_buffer.data[gid] +=  0*block_buffer_0.data[gid-1*worldsize]/4 * dt;
+            block_buffer.data[gid] += max(0, 1* (block_buffer_0.data[gid+1*worldsize]- minvalue)/4 * dt);
+            block_buffer.data[gid] += max(0, 0*(block_buffer_0.data[gid-1*worldsize]- minvalue)/4 * dt);
             }
 
         // bottom corner
@@ -55,23 +62,23 @@ void main(){
              numberblockadj = 2;
 
             //first axis
-            block_buffer.data[gid] +=  1* block_buffer_0.data[gid+1]/4 * dt;
-            block_buffer.data[gid] += 0* block_buffer_0.data[gid-1]/4* dt;
+            block_buffer.data[gid] += max(0, 1* (block_buffer_0.data[gid+1]- minvalue)/4 * dt);
+            block_buffer.data[gid] +=max(0, 0* (block_buffer_0.data[gid-1]- minvalue)/4* dt);
 
             //second axis
-            block_buffer.data[gid] +=  0*block_buffer_0.data[gid+1*worldsize]/4 * dt;
-            block_buffer.data[gid] +=  1*block_buffer_0.data[gid-1*worldsize]/4 * dt;
+            block_buffer.data[gid] +=  0*max(0,(block_buffer_0.data[gid+1*worldsize]- minvalue)/4 * dt);
+            block_buffer.data[gid] +=  1*max(0,(block_buffer_0.data[gid-1*worldsize]- minvalue)/4 * dt);
          }
 
         else{
             numberblockadj = 3;
             //first axis
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid+1]/4 * dt;
-            block_buffer.data[gid] += 0* block_buffer_0.data[gid-1]/4* dt;
+            block_buffer.data[gid] += max(0, 1* (block_buffer_0.data[gid+1]- minvalue)/4 * dt ) ;
+            block_buffer.data[gid] += max(0, 0* (block_buffer_0.data[gid-1]- minvalue)/4* dt );
 
             //second axis
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid+1*worldsize]/4 * dt;
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid-1*worldsize]/4 * dt;
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid+1*worldsize]- minvalue)/4 * dt);
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid-1*worldsize]- minvalue)/4 * dt);
         }
 
     }
@@ -83,12 +90,12 @@ void main(){
             numberblockadj = 2;
 
             //first axis
-            block_buffer.data[gid] +=  0* block_buffer_0.data[gid+1]/4 * dt;
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid-1]/4* dt;
+            block_buffer.data[gid] +=  0* max(0,(block_buffer_0.data[gid+1]- minvalue)/4 * dt);
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid-1]- minvalue)/4* dt);
 
             //second axis
-            block_buffer.data[gid] +=  1* block_buffer_0.data[gid+1*worldsize]/4 * dt;
-            block_buffer.data[gid] +=  0*block_buffer_0.data[gid-1*worldsize]/4 * dt;
+            block_buffer.data[gid] +=  1* max(0,(block_buffer_0.data[gid+1*worldsize]- minvalue)/4 * dt);
+            block_buffer.data[gid] +=  0*max(0,(block_buffer_0.data[gid-1*worldsize]- minvalue)/4 * dt);
             }
 
         //bottom corner
@@ -97,23 +104,23 @@ void main(){
 
 
             //first axis
-            block_buffer.data[gid] +=  0* block_buffer_0.data[gid+1]/4 * dt;
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid-1]/4* dt;
+            block_buffer.data[gid] +=  0* max(0,(block_buffer_0.data[gid+1]- minvalue)/4 * dt);
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid-1]- minvalue)/4* dt);
 
             //second axis
-            block_buffer.data[gid] +=  0*block_buffer_0.data[gid+1*worldsize]/4 * dt;
-            block_buffer.data[gid] +=  1*block_buffer_0.data[gid-1*worldsize]/4 * dt;
+            block_buffer.data[gid] +=  0*max(0,(block_buffer_0.data[gid+1*worldsize]- minvalue)/4 * dt);
+            block_buffer.data[gid] +=  1*max(0,(block_buffer_0.data[gid-1*worldsize]- minvalue)/4 * dt);
          }
 
         else{
             numberblockadj = 3;
             //first axis
-            block_buffer.data[gid] += 0* block_buffer_0.data[gid+1]/4 * dt;
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid-1]/4* dt;
+            block_buffer.data[gid] += 0* max(0,(block_buffer_0.data[gid+1]- minvalue)/4 * dt);
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid-1]- minvalue)/4* dt);
 
             //second axis
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid+1*worldsize]/4 * dt;
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid-1*worldsize]/4 * dt;
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid+1*worldsize]- minvalue)/4 * dt);
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid-1*worldsize]- minvalue)/4 * dt);
         }
     }
 
@@ -122,24 +129,24 @@ void main(){
     else if(gid < worldsize){
            numberblockadj = 3;
             //first axis
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid+1]/4 * dt;
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid-1]/4* dt;
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid+1]- minvalue)/4 * dt);
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid-1]- minvalue)/4* dt);
 
             //second axis
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid+1*worldsize]/4 * dt;
-            block_buffer.data[gid] += 0* block_buffer_0.data[gid-1*worldsize]/4 * dt;
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid+1*worldsize]- minvalue)/4 * dt);
+            block_buffer.data[gid] += 0* max(0,(block_buffer_0.data[gid-1*worldsize]- minvalue)/4 * dt);
     }
 
     //right border
     else if(gid > (worldsize*worldsize - worldsize)){
            numberblockadj = 3;
             //first axis
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid+1]/4 * dt;
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid-1]/4* dt;
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid+1]- minvalue)/4 * dt);
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid-1]- minvalue)/4* dt);
 
             //second axis
-            block_buffer.data[gid] += 0* block_buffer_0.data[gid+1*worldsize]/4 * dt;
-            block_buffer.data[gid] += 1* block_buffer_0.data[gid-1*worldsize]/4 * dt;
+            block_buffer.data[gid] += 0* max(0,(block_buffer_0.data[gid+1*worldsize]- minvalue)/4 * dt);
+            block_buffer.data[gid] += 1* max(0,(block_buffer_0.data[gid-1*worldsize]- minvalue)/4 * dt);
 
     }
 
@@ -148,18 +155,18 @@ void main(){
     numberblockadj = 4;
 
     //first axis
-    block_buffer.data[gid] +=  1*block_buffer_0.data[gid+1]/4 * dt;
-    block_buffer.data[gid] +=  1*block_buffer_0.data[gid-1]/4* dt;
+    block_buffer.data[gid] +=  max(0, (1*block_buffer_0.data[gid+1]- minvalue)/4 * dt );
+    block_buffer.data[gid] +=  max(0, (1*block_buffer_0.data[gid-1]- minvalue)/4* dt );
 
     //second axis
-    block_buffer.data[gid] +=  1*block_buffer_0.data[gid+1*worldsize]/4 * dt;
-    block_buffer.data[gid] +=  1*block_buffer_0.data[gid-1*worldsize]/4 * dt;
+    block_buffer.data[gid] +=  max(0, (1*block_buffer_0.data[gid+1*worldsize]- minvalue)/4 * dt);
+    block_buffer.data[gid] +=  max(0, (1*block_buffer_0.data[gid-1*worldsize]- minvalue)/4 * dt) ;
     }
 
 
     //howmuch they gave
 
-    block_buffer.data[gid] -= block_buffer_0.data[gid]*numberblockadj/4 * dt;
+    block_buffer.data[gid] -= max(0, (block_buffer_0.data[gid]- minvalue)*numberblockadj/4 * dt) ;
 
     //block_buffer.data[gid] = gid;
 }

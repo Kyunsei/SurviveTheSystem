@@ -1,12 +1,12 @@
 [gd_scene load_steps=13 format=3 uid="uid://d337i48mpiy7h"]
 
 [ext_resource type="Texture2D" uid="uid://bfae5syr2y1x4" path="res://Art/grass_2.png" id="1_8fcm7"]
-[ext_resource type="Script" path="res://CharacterBody3D.gd" id="2_ewiei"]
+[ext_resource type="Script" path="res://Test/CharacterBody3D.gd" id="2_ewiei"]
 [ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="3_5r0y3"]
 [ext_resource type="Texture2D" uid="uid://ct4q6i1xlhp06" path="res://Art/sting_tree_3.png" id="3_pgkpi"]
 [ext_resource type="Texture2D" uid="uid://cqy3pl3cheab1" path="res://Art/sheep3.png" id="4_c8iyh"]
-[ext_resource type="Script" path="res://CanvasLayer.gd" id="5_n1qfl"]
-[ext_resource type="Script" path="res://Sprite3D5.gd" id="5_qteqn"]
+[ext_resource type="Script" path="res://Test/CanvasLayer.gd" id="5_n1qfl"]
+[ext_resource type="Script" path="res://Test/Sprite3D5.gd" id="5_qteqn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_57cb8"]
 

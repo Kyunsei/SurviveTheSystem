@@ -45,3 +45,7 @@ func _on_check_box_toggled(toggled_on):
 	pass # Replace with function body.
 
 #get_tree().change_scene_to_file("res://Scenes/battle_mode.tscn")
+
+
+func _on_button_char_3_pressed():
+	Life.char_selected = "sheep"

@@ -12,7 +12,7 @@ var friend_array = []
 
 
 
-
+var input_dir = Vector2(0,0)
 
 
 
@@ -81,7 +81,7 @@ func Build_Stat():
 
 func _physics_process(delta):
 	if isPlayer:
-		Player_Control_movement()	
+		input_dir = Player_Control_movement()	
 	if isDead == false:
 		Brainy()
 	else:

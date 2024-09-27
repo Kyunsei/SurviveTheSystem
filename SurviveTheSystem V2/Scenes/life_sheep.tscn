@@ -57,6 +57,8 @@ shape = SubResource("RectangleShape2D_dldvs")
 offset_right = 40.0
 offset_bottom = 23.0
 
+[node name="Camera2D" type="Camera2D" parent="."]
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="ActionTimer" to="." method="_on_action_timer_timeout"]
 [connection signal="area_entered" from="Vision" to="." method="_on_vision_area_entered"]

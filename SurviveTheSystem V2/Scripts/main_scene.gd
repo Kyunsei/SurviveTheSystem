@@ -39,6 +39,7 @@ func _process(delta):
 
 		if player != null:
 			var playerworldpos = World.getWorldPos(player.global_position)
+			print(playerworldpos)
 			World.ActivateAndDesactivateBlockAround(player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
 			$StarBackground.position = player.position  #background follow player
 			
@@ -81,7 +82,7 @@ func InitNewGame():
 	Life.Instantiate_Life_in_pool($Life,10,"sheep")
 	#Life.Instantiate_Life_in_pool($Life,1,Life.char_selected)
 	Life.Instantiate_Life_in_pool($Life,1,"cat")
-	Life.Instantiate_Life_in_pool($Life, 5, "stingtree")
+	Life.Instantiate_Life_in_pool($Life, 0, "stingtree")
 	Life.Instantiate_Life_in_pool($Life, 2, "spidercrab")
 
 
@@ -102,9 +103,14 @@ func InitNewGame():
 	#Life.player_index = Life.BuildPlayer($Life)
 	#$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	#$Life/Player.INDEX = Life.player_index
-	
-	player = Life.cat_pool_scene[0] #TEMPORAIRE
-	player.isPlayer = true #HERE
+	if Life.char_selected != "sheep":
+		player = Life.cat_pool_scene[0] #TEMPORAIRE
+		player.isPlayer = true #HERE
+	else:
+		player = Life.sheep_pool_scene[0]
+		player.age = 0
+		player.isPlayer = true 
+
 	#player.get_node("Camera2D").enabled = true 
 	player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	var playerworldpos = World.getWorldPos(player.global_position)

@@ -12,6 +12,7 @@ var life_berry_scene = load("res://Scenes/life_berry.tscn")
 var life_cat_scene = load("res://Scenes/life_cat.tscn")
 var life_stingtree_scene = load("res://Scenes/life_stingtree.tscn")
 var life_spidercrab_scene = load("res://Scenes/life_spidercrab.tscn")
+var life_debug_scene = load("res://Scenes/life_debug.tscn")
 
 var parameters_array = [] 
 var state_array = [] 

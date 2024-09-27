@@ -36,17 +36,34 @@ var shader_spirv: RDShaderSPIRV = shader_file.get_spirv()
 var shader := rd.shader_create_from_spirv(shader_spirv)
 
 
+#Diffusion Control
+var diffusion_speed = .5 #in sec
+var diffusion_quantity_style = false # false = factor true = number
+var diffusion_factor = 0.0
+var diffusion_number = 1.
+var diffusion_min_limit = 0. #cannot diffuse lower than 1
+var diffusion_block_limit = 2 #how many block energy move. not implemented.
+var block_diffusion_par = []
+
 func Init_World():
 	Init_matrix()
 	Init_shader()
 	speed = 1.0
 	day = 0
 	isReady = true
-	fieldofview = round(get_viewport().get_visible_rect().size / tile_size) 
+	fieldofview = get_viewport().get_visible_rect().size / tile_size
 
 func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
+	'for i in range(block_element_array.size()):
+		if i < 2000:
+			block_element_array[i] = 0
+		elif i < 5000:
+			block_element_array[i] = 3
+		else: 
+			block_element_array[i] = 3'
+			
 	block_element_array.fill(6)
 	world_array.resize(world_size*world_size)
 	world_array.fill(-1)
@@ -266,8 +283,14 @@ func BlockLoopGPU():
 	var BlockArraybuffer0 = init_buffer(World.block_element_array)
 	var Blockuniform0 = init_uniform(BlockArraybuffer0,1)	
 	
+
+	World.block_diffusion_par = [diffusion_factor,diffusion_number,diffusion_min_limit,diffusion_block_limit]
+
+	var BlockArraybuffer_par = init_buffer(World.block_diffusion_par)
+	var Blockuniform1 = init_uniform(BlockArraybuffer_par,2)
+	
 	#bind them
-	var uniform_set := rd.uniform_set_create([Blockuniform,Blockuniform0], shader, 0) # the last parameter (the 0) needs to match the "set" in our shader file
+	var uniform_set := rd.uniform_set_create([Blockuniform,Blockuniform0,Blockuniform1], shader, 0) # the last parameter (the 0) needs to match the "set" in our shader file
 
 	# Create a compute pipeline
 	var pipeline := rd.compute_pipeline_create(shader)
