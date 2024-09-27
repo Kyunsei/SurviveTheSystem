@@ -110,6 +110,8 @@ func InitNewGame():
 		player = Life.sheep_pool_scene[0]
 		player.age = 0
 		player.isPlayer = true 
+	player.get_node("Camera2D").enabled = true
+	
 
 	#player.get_node("Camera2D").enabled = true 
 	player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))

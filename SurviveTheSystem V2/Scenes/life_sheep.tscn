@@ -58,6 +58,7 @@ offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="ActionTimer" to="." method="_on_action_timer_timeout"]
