@@ -31,7 +31,7 @@ var stingtree_number = 0
 var char_selected = "cat"
 var player_index = 0
 
-var max_life = 1500
+var max_life = 1
 var new_max_life = 0
 
 var score = 0
