@@ -13,9 +13,9 @@ var last_dir = Vector2.ZERO
 var rotation_dir = 0
 
 func Build_Genome():
-	Genome["maxPV"]=[40]
+	Genome["maxPV"]=[60]
 	Genome["speed"] =[200]
-	Genome["lifespan"]=[1000]
+	Genome["lifespan"]=[5000]
 	#Genome["sprite"] = [preload("res://Art/player_cat.png")]
 	#Genome["dead_sprite"] = [preload("res://Art/poop_star.png")]
 	
@@ -28,9 +28,9 @@ func init_progressbar():
 
 func Build_Stat():
 	self.current_life_cycle = 0
-	self.PV = 40# Genome["maxPV"][self.current_life_cycle]	
-	self.energy = 10
-	self.maxPV = 40#Genome["maxPV"][self.current_life_cycle]	
+	self.PV = 60# Genome["maxPV"][self.current_life_cycle]	
+	self.energy = 100
+	self.maxPV = 60#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
 
 
@@ -129,7 +129,7 @@ func Brainy():
 	var food_array_temp = food_array.duplicate()
 
 	if action_finished == true:
-		if self.energy < 50 and food_array_temp.size()>0:
+		if self.energy < 90 and food_array_temp.size()>0:
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
 				$DebugLabel.text ="feeding" 
@@ -204,14 +204,14 @@ func _on_timer_timeout():
 
 
 func LifeDuplicate():
-	if self.age % 10 == 0 and self.energy > 40:
+	if self.age % 70 == 0 and self.energy > 60:
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
 			var li = Life.spidercrab_pool_state.find(0)	
 			#+ Life.grass_pool_state.size()*0.05
 			if li > -1 and Life.spidercrab_number  < Life.spidercrab_pool_scene.size():
-				self.energy -= 20
+				self.energy -= 30
 				Life.spidercrab_pool_scene[li].Activate()
-				Life.spidercrab_pool_scene[li].energy = 20
+				Life.spidercrab_pool_scene[li].energy = 30
 				Life.spidercrab_pool_scene[li].age = 0
 				Life.spidercrab_pool_scene[li].current_life_cycle = 0
 				Life.spidercrab_pool_scene[li].PV = Genome["maxPV"][0]

@@ -20,7 +20,7 @@ var input_dir = Vector2(0,0)
 func Build_Genome():
 	Genome["maxPV"]=[15,10,20]
 	Genome["speed"] =[0,200,100]
-	Genome["lifespan"]=[100,100,100]
+	Genome["lifespan"]=[100,300,600]
 	Genome["sprite"] = [preload("res://Art/sheep1.png"),preload("res://Art/sheep2.png"),preload("res://Art/sheep3.png")]
 	Genome["dead_sprite"] = [preload("res://Art/sheep_dead1.png"),preload("res://Art/sheep_dead2.png"),preload("res://Art/sheep_dead3.png")]
 
@@ -116,7 +116,7 @@ func _on_timer_timeout():
 			Deactivate()
 
 		#Debug part
-		#$DebugLabel.text = str(age) + " " + str(energy)
+		$DebugLabel.text = str(age) + " " + str(energy)
 
 
 
@@ -149,7 +149,7 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 4 and self.energy > 8:
+		if self.age > 20 and self.energy > 8:
 			self.current_life_cycle += 1
 			$Sprite_1.show()
 			$Sprite_0.hide()
@@ -158,7 +158,7 @@ func Growth():
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 	if current_life_cycle == 1:
-		if self.age > 8 and self.energy > 10:
+		if self.age > 40 and self.energy > 20:
 			self.current_life_cycle += 1
 			$Sprite_2.show()
 			$Sprite_1.hide()
@@ -176,7 +176,7 @@ func Growth():
 #Duplication
 func LifeDuplicate():
 	if current_life_cycle == 2 :
-		if self.age % 10 == 0 and self.energy > 20:
+		if self.age % 50 == 0 and self.energy > 40:
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
 			for i in range(0,int(self.energy-10)/10):
 			#Lpool Technique
@@ -213,10 +213,10 @@ func Brainy():
 
 
 	if action_finished == true:
-		if self.energy < 50 and food_array_temp.size()>0:
+		if self.energy < 80 and food_array_temp.size()>0:
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
-				$DebugLabel.text ="feeding"
+				#$DebugLabel.text ="feeding"
 				if center.distance_to(cl.position) < 32 and cl.isDead == false:
 						Eat(cl)
 				if cl.isDead == false:
@@ -226,7 +226,7 @@ func Brainy():
 			else:
 				AdjustDirection()
 		elif friend_array_temp.size() > 0:
-			$DebugLabel.text ="herd"
+			#$DebugLabel.text ="herd"
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
 
