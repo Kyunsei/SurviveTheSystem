@@ -329,11 +329,12 @@ func _on_button_respawn_pressed():
 	gameover = false'
 	
 func _input(event): #gameover fonction
-	if event.is_action_pressed("Spawn"):
-		for b in $Blocks.get_children():
+	if event.is_action_pressed("interact"):
+		pass
+		'for b in $Blocks.get_children():
 			b.queue_free()
 		
-		World.InstantiateALLBlock($Blocks)
+		World.InstantiateALLBlock($Blocks)'
 		#var playerworldpos = World.getWorldPos(player.global_position)
 		#World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,player.get_node("Camera2D").zoom)
 
