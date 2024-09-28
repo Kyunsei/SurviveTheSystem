@@ -13,7 +13,7 @@ var initialized = false
 
 #var thread = Thread.new()
 
-var allblocks
+var allblocks = []
 
 
 
@@ -120,7 +120,7 @@ func InitNewGame():
 	#World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,1)
 	World.InstantiateALLBlock($Blocks)
 	#World.InstantiateALLBlock($Blocks)
-	allblocks = $Blocks.get_children()
+	#allblocks = $Blocks.get_children()
 	
 
 	#instantiate Life

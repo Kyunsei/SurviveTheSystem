@@ -121,6 +121,7 @@ func ActivateAndDesactivateBlockAroundPlayer():
 
 
 func _on_visible_on_screen_notifier_2d_screen_exited():
+	get_parent().get_parent().allblocks.erase(self)
 	pass
 	'if Life.player.input_dir != Vector2(0,0):
 		print(World.fieldofview)
@@ -165,3 +166,9 @@ func _on_visible_on_screen_notifier_2d_screen_exited():
 			var newposindex = newworldpos.y*World.world_size + newworldpos.x
 			posindex = newposindex
 			BlockUpdate()	'
+
+
+func _on_visible_on_screen_notifier_2d_screen_entered():
+	get_parent().get_parent().allblocks.append(self) # Replace with function body.
+	BlockUpdate()
+	#$ColorRect.color = Color(0,0,1,1)
