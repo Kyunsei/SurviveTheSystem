@@ -63,6 +63,8 @@ func Build_Phenotype():
 
 	init_progressbar()
 	
+	self.size = $Sprite_0.texture.get_size()
+	
 	#attack
 	var size_Barehand = Vector2(32,32*3)
 	$BareHand_attack/CollisionShape2D.shape.size = size_Barehand
@@ -149,7 +151,11 @@ func _input(event):
 					if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
 						var posindex = y*World.world_size + x
 						if posindex < World.block_element_array.size():				
-							World.block_element_array[posindex]	-= 2
+							World.block_element_array[posindex]	-= 4
+							if 	World.block_element_array[posindex]	< 0:
+								World.block_element_array[posindex]	= 0
+			for b in get_parent().get_parent().get_node("Blocks").get_children():
+				b.BlockUpdate()
 
 		if event.is_action_pressed("test2"):
 			var middle = position  #+ Vector2(size.x/2,-size.y/2)'
@@ -161,7 +167,9 @@ func _input(event):
 					if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
 						var posindex = y*World.world_size + x
 						if posindex < World.block_element_array.size():				
-							World.block_element_array[posindex]	+= 2
+							World.block_element_array[posindex]	+= 4
+			for b in get_parent().get_parent().get_node("Blocks").get_children():
+				b.BlockUpdate()
 
 
 func _on_timer_timeout():
@@ -209,10 +217,10 @@ func Sprint_Action():
 		action_finished = false
 		if self.maxSpeed < 300 :
 			self.maxSpeed = 300
-		print("sprinting")
+
 		await get_tree().create_timer(0.2).timeout
 		self.PV -= 0.02
-		print("lost health")
+
 		AdjustBar()
 	else :
 		action_finished = true

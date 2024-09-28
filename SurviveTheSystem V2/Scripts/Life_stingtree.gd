@@ -75,7 +75,7 @@ func _on_timer_timeout():
 			if carried_by == null:
 				if isOnTree == false:
 					Metabo_cost()	
-					Absorb_soil_energy()
+					Absorb_soil_energy(min(4,self.current_life_cycle))
 			
 					LifeDuplicate()
 					Ageing()
@@ -94,19 +94,6 @@ func _on_timer_timeout():
 
 
 #EAT soil
-func Absorb_soil_energy():
-	var middle = position + Vector2(size.x/2,-size.y/2)
-	var center_x = int(middle.x/World.tile_size)
-	var	center_y = int(middle.y/World.tile_size)
-	var radius = min(4,self.current_life_cycle) #in tiles
-	for x in range(center_x - radius, center_x + radius + 1):
-		for y in range(center_y - radius, center_y + radius + 1):
-			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
-				var posindex = y*World.world_size + x
-				if posindex < World.block_element_array.size():
-					var soil_energy = World.block_element_array[posindex]	
-					energy += min(Genome["soil_absorption"][1],soil_energy)
-					World.block_element_array[posindex]	-= min(Genome["soil_absorption"][1],soil_energy)
 
 
 #diying

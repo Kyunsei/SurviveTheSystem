@@ -39,7 +39,6 @@ func _process(delta):
 
 		if player != null:
 			var playerworldpos = World.getWorldPos(player.global_position)
-			print(playerworldpos)
 			World.ActivateAndDesactivateBlockAround(player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
 			$StarBackground.position = player.position  #background follow player
 			
@@ -70,8 +69,8 @@ func InitNewGame():
 	Life.Init_life_pool()
 	
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
-	Life.Instantiate_emptyLife_pool($Life, 200, "sheep")
-	Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+	Life.Instantiate_emptyLife_pool($Life, 50, "sheep")
+	Life.Instantiate_emptyLife_pool($Life, 200, "berry")
 	Life.Instantiate_emptyLife_pool($Life, 3, "cat")
 	#Life.Instantiate_emptyLife_pool($Life, 3, "planty")
 	Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
@@ -135,7 +134,7 @@ func InitNewGame():
 	
 
 func UpdateSimulationSpeed():
-	$BlockTimer.wait_time = 1. / World.speed
+	$BlockTimer.wait_time = World.diffusion_speed / World.speed
 	$BlockTimer.start(0)
 		
 	'$Life/LifeTimer.wait_time = 10.0 / World.speed
@@ -250,7 +249,7 @@ func _on_spawn_timer_timeout():
 
 func _on_block_timer_timeout():
 	pass
-	#World.BlockLoopGPU() 
+	World.BlockLoopGPU() 
 	for b in $Blocks.get_children():
 		b.BlockUpdate()
 

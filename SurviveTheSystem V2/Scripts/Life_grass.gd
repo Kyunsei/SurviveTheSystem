@@ -55,7 +55,7 @@ func _on_timer_timeout():
 	if World.isReady and isActive:
 		if isDead == false:
 			
-			Absorb_soil_energy()
+			Absorb_soil_energy(1)
 			Metabo_cost()	
 			LifeDuplicate()
 			Ageing()
@@ -146,7 +146,7 @@ func LifeDuplicate():
 				Life.grass_pool_scene[li].PV = Genome["maxPV"][0]
 
 				Life.plant_number += 1
-				Life.grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,2 * World.tile_size)
+				Life.grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
 			else:
 				print("pool empty")
 

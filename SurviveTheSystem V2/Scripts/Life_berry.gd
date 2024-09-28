@@ -78,7 +78,7 @@ func _on_timer_timeout():
 			if carried_by == null:
 				if current_life_cycle !=0:
 					Metabo_cost()	
-					Absorb_soil_energy()
+					Absorb_soil_energy(2)
 			
 				#LifeDuplicate()r
 				Ageing()

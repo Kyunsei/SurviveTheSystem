@@ -2,7 +2,7 @@ extends Node
 
 'This is the global Script for all the variable and function defining the world'
 
-var world_size = 150 #The size in tile of the World
+var world_size = 80 #The size in tile of the World
 var tile_size = 32#128 # the size in pixel of each tile
 var fieldofview = Vector2(0,0) #in tile
 
@@ -37,11 +37,11 @@ var shader := rd.shader_create_from_spirv(shader_spirv)
 
 
 #Diffusion Control
-var diffusion_speed = .5 #in sec
+var diffusion_speed = 2.5 #in sec
 var diffusion_quantity_style = false # false = factor true = number
-var diffusion_factor = 0.0
+var diffusion_factor = 0.5
 var diffusion_number = 1.
-var diffusion_min_limit = 0. #cannot diffuse lower than 1
+var diffusion_min_limit = 4. #cannot diffuse lower than 1
 var diffusion_block_limit = 2 #how many block energy move. not implemented.
 var block_diffusion_par = []
 
