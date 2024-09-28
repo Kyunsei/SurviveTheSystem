@@ -133,13 +133,17 @@ func _input(event):
 		'else:
 			current_action = 2'
 		if event.is_action_pressed("zoom_in"):
-			$Camera2D.zoom.x += 0.05
-			$Camera2D.zoom.y += 0.05
+			if input_dir == Vector2(0,0):
+				$Camera2D.zoom.x += 0.05
+				$Camera2D.zoom.y += 0.05
+				World.fieldofview = round(get_viewport().get_visible_rect().size * 1/$Camera2D.zoom / World.tile_size) 
 
 
 		if event.is_action_pressed("zoom_out"):
-			$Camera2D.zoom.x -= 0.05
-			$Camera2D.zoom.y -= 0.05
+			if input_dir == Vector2(0,0):
+				$Camera2D.zoom.x -= 0.05
+				$Camera2D.zoom.y -= 0.05
+				World.fieldofview = round(get_viewport().get_visible_rect().size * 1/$Camera2D.zoom / World.tile_size)
 
 		if event.is_action_pressed("test1"):
 			var middle = position  #+ Vector2(size.x/2,-size.y/2)'

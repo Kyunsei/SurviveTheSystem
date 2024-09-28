@@ -3,6 +3,7 @@ extends Node
 'This is the global Script for all the variable and function defining the Life'
 var player_skin = [load("res://Art/player_bulbi.png"),load("res://Art/player_cat.png")]
 var player_skin_ID = 0
+var player = null
 
 var life_size_unit = 32
 var life_scene = preload("res://Scenes/life.tscn") #load scene of block

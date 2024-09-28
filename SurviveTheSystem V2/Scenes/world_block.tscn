@@ -13,9 +13,14 @@ offset_bottom = 31.0
 mouse_filter = 1
 color = Color(0.690196, 0.564706, 0.505882, 1)
 
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="ColorRect"]
+visible = false
+
 [node name="debug" type="Label" parent="."]
 visible = false
 offset_left = -2.0
 offset_top = 10.0
 offset_right = 38.0
 offset_bottom = 33.0
+
+[connection signal="screen_exited" from="ColorRect/VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

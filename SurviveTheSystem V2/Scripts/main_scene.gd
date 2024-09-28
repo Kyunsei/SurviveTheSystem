@@ -15,7 +15,7 @@ var initialized = false
 
 var allblocks
 
-var player
+
 
 signal world_speed_changed
 
@@ -37,10 +37,10 @@ func _ready():
 	
 func _process(delta):
 
-		if player != null:
-			var playerworldpos = World.getWorldPos(player.global_position)
-			World.ActivateAndDesactivateBlockAround(player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
-			$StarBackground.position = player.position  #background follow player
+		if Life.player != null:
+			var playerworldpos = World.getWorldPos(Life.player.global_position)
+			#World.ActivateAndDesactivateBlockAround(player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
+			$StarBackground.position = Life.player.position  #background follow player
 			
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
 		$UI/Debug.text = str(World.day) + " day \n" +"berry: " +   str(Life.berry_number) + " / " + str(Life.berry_pool_state.size()) + " \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)  + "\n stingtree: " +   str(Life.stingtree_number) + " / " + str(Life.stingtree_pool_state.size()) + " \n" + "crabspider: " +   str(Life.spidercrab_number) + " / " + str(Life.spidercrab_pool_state.size())   
@@ -48,14 +48,14 @@ func _process(delta):
 		
 		#20 days
 		if World.day == 20 and gameover == false:
-			if player.isActive == true:
+			if Life.player.isActive == true:
 				gameover = true
 				CallGameOver()
 				
 
 		#dead player
-		if player != null:
-			if player.isActive != true:# and gameover == false:
+		if Life.player != null:
+			if Life.player.isActive != true:# and gameover == false:
 				CallGameOver()
 
 
@@ -105,19 +105,20 @@ func InitNewGame():
 	#$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	#$Life/Player.INDEX = Life.player_index
 	if Life.char_selected != "sheep":
-		player = Life.cat_pool_scene[0] #TEMPORAIRE
-		player.isPlayer = true #HERE
+		Life.player = Life.cat_pool_scene[0] #TEMPORAIRE
+		Life.player.isPlayer = true #HERE
 	else:
-		player = Life.sheep_pool_scene[0]
-		player.age = 0
-		player.isPlayer = true 
-	player.get_node("Camera2D").enabled = true
+		Life.player = Life.sheep_pool_scene[0]
+		Life.player.age = 0
+		Life.player.isPlayer = true 
+	Life.player.get_node("Camera2D").enabled = true
 	
 
 	#player.get_node("Camera2D").enabled = true 
-	player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
-	var playerworldpos = World.getWorldPos(player.global_position)
-	World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,1)
+	Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+	#var playerworldpos = World.getWorldPos(Life.player.global_position)
+	#World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,1)
+	World.InstantiateALLBlock($Blocks)
 	#World.InstantiateALLBlock($Blocks)
 	allblocks = $Blocks.get_children()
 	
@@ -328,7 +329,11 @@ func _on_button_respawn_pressed():
 	gameover = false'
 	
 func _input(event): #gameover fonction
-	if event.is_action_pressed("interact"):
+	if event.is_action_pressed("Spawn"):
+		for b in $Blocks.get_children():
+			b.queue_free()
+		
+		World.InstantiateALLBlock($Blocks)
 		#var playerworldpos = World.getWorldPos(player.global_position)
 		#World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,player.get_node("Camera2D").zoom)
 

@@ -31,7 +31,8 @@ func _ready():
 
 func BlockUpdate():
 		$ColorRect.color = getAdjustedSoilColor()
-
+		#$debug.text = str(posindex)
+		pass
 		#$outsideline.color = getAdjustedSoilColor()
 
 func getAdjustedSoilColor():
@@ -113,3 +114,54 @@ func ActivateAndDesactivateBlockAroundPlayer():
 
 
 
+
+
+
+
+
+
+func _on_visible_on_screen_notifier_2d_screen_exited():
+	pass
+	'if Life.player.input_dir != Vector2(0,0):
+		print(World.fieldofview)
+		$ColorRect.color = Color(0,0,1,1)
+		var newpos = position #Life.player.position - (position - Life.player.position)
+
+
+		#var direction = (position -  Life.player.position).normalized()
+				
+		if Life.player.input_dir.x != 0  and Life.player.input_dir.y != 0:
+			if Life.player.input_dir == Vector2(1,1):	
+				if position.y < Life.player.position.y - (World.fieldofview.y* World.tile_size)/2:
+					newpos += (World.fieldofview * World.tile_size + Vector2(1,1)*World.tile_size ) * Vector2(0,1) 
+				if position.x < Life.player.position.x - (World.fieldofview.x* World.tile_size)/2:
+					newpos += (World.fieldofview * World.tile_size + Vector2(1,1)*World.tile_size )* Vector2(1,0)			
+			elif Life.player.input_dir == Vector2(-1,-1):	
+				if position.y > Life.player.position.y + (World.fieldofview.y* World.tile_size)/2:
+					newpos += (World.fieldofview * World.tile_size + Vector2(1,1)*World.tile_size ) * Vector2(0,-1) 
+				if position.x > Life.player.position.x + (World.fieldofview.x* World.tile_size)/2:
+					newpos += (World.fieldofview * World.tile_size + Vector2(1,1)*World.tile_size )* Vector2(-1,0)			
+			elif Life.player.input_dir == Vector2(1,-1):	
+				if position.y > Life.player.position.y + (World.fieldofview.y* World.tile_size)/2:
+					newpos += (World.fieldofview * World.tile_size + Vector2(1,1)*World.tile_size ) * Vector2(0,-1) 
+				if position.x < Life.player.position.x - (World.fieldofview.x* World.tile_size)/2:
+					newpos += (World.fieldofview * World.tile_size + Vector2(1,1)*World.tile_size )* Vector2(1,0)			
+			elif Life.player.input_dir == Vector2(-1,1):	
+				if position.y < Life.player.position.y - (World.fieldofview.y* World.tile_size)/2:
+					newpos += (World.fieldofview * World.tile_size + Vector2(1,1)*World.tile_size ) * Vector2(0,1) 
+				if position.x > Life.player.position.x + (World.fieldofview.x* World.tile_size)/2:
+					newpos += (World.fieldofview * World.tile_size + Vector2(1,1)*World.tile_size )* Vector2(-1,0)			
+												
+			
+		else:
+
+			newpos += World.fieldofview * World.tile_size * Life.player.input_dir 
+				
+
+		if newpos.x > 0 and newpos.y > 0 and newpos.x < World.world_size*World.tile_size and newpos.y < World.world_size*World.tile_size:
+			position = newpos
+
+			var newworldpos = World.getWorldPos(position)
+			var newposindex = newworldpos.y*World.world_size + newworldpos.x
+			posindex = newposindex
+			BlockUpdate()	'
