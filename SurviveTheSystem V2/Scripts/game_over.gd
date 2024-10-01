@@ -17,7 +17,7 @@ func _process(delta):
 
 func _on_button_pressed(): #Continue to Survive
 	print("here")
-	if 	get_parent().get_parent().player.isActive:
+	if 	Life.player.isActive:
 		print("player alive")
 		get_tree().paused = false
 		#get_parent().get_parent().gameover = false
@@ -38,7 +38,7 @@ func _on_button_3_pressed(): #Close the Game
 
 
 func _on_button_4_pressed(): # Respawn for debugging only
-	get_parent().get_parent().player.Activate()
+	Life.player.Activate()
 	#get_parent().get_parent().gameover = false
 	get_tree().paused = false
 	hide()

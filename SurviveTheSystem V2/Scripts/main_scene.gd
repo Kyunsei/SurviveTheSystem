@@ -39,7 +39,7 @@ func _process(delta):
 
 		if Life.player != null:
 			var playerworldpos = World.getWorldPos(Life.player.global_position)
-			#World.ActivateAndDesactivateBlockAround(player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
+			World.ActivateAndDesactivateBlockAround(Life.player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
 			$StarBackground.position = Life.player.position  #background follow player
 			
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
@@ -116,9 +116,9 @@ func InitNewGame():
 
 	#player.get_node("Camera2D").enabled = true 
 	Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
-	#var playerworldpos = World.getWorldPos(Life.player.global_position)
-	#World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,1)
-	World.InstantiateALLBlock($Blocks)
+	var playerworldpos = World.getWorldPos(Life.player.global_position)
+	World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,1)
+	#World.InstantiateALLBlock($Blocks)
 	#World.InstantiateALLBlock($Blocks)
 	#allblocks = $Blocks.get_children()
 	
