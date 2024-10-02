@@ -124,8 +124,7 @@ func InstantiateALLBlock(folder):
 
 
 func ActivateAndDesactivateBlockAround(direction,x,y,allblocks):
-
-
+	print(allblocks.size())
 	var playerpos = Vector2(x,y)
 		
 	if direction.x > 0 :
