@@ -336,7 +336,7 @@ func Instantiate_Life_in_pool(folder,N,ID):
 		if ID == "berry":	
 			var li = berry_pool_state.find(0)
 			Life.berry_pool_scene[li].Activate()
-			Life.berry_pool_scene[li].age = randi_range(0,20)
+			Life.berry_pool_scene[li].age = randi_range(12,20)
 			Life.berry_pool_scene[li].current_life_cycle = 0#randi_range(0,3)
 			Life.berry_number += 1
 			Life.berry_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))

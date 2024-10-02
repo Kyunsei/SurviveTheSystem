@@ -13,7 +13,7 @@ var counter = 0
 func Build_Genome():
 	Genome["maxPV"]=[10,10,15,20]
 	Genome["soil_absorption"] = [0,2,4,6]
-	Genome["lifespan"]=[200,200,200,200]#randi_range(15,20)]
+	Genome["lifespan"]=[300,300,300,300]#randi_range(15,20)]
 	Genome["sprite"] = [preload("res://Art/berry_1.png"),preload("res://Art/berry_3.png"),preload("res://Art/berry_4.png"),preload("res://Art/berry_5.png")]
 	Genome["dead_sprite"] = [preload("res://Art/berry_dead.png")]
 
@@ -128,7 +128,7 @@ func Growth():
 	if current_life_cycle == 0:
 		if World.isNight == true:
 			$PointLight2D.show()
-		if self.age > 2 and self.energy > 2:
+		if self.age > 5 and self.energy > 2:
 			self.current_life_cycle += 1	
 			$Collision_0.hide()
 			$Collision_1.show()
@@ -139,9 +139,8 @@ func Growth():
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 	if current_life_cycle == 1:
-		if World.isNight == false:
-			$PointLight2D.hide()
-		if self.age > 4 and self.energy > 5:
+		$PointLight2D.hide()
+		if self.age > 10 and self.energy > 5:
 			self.current_life_cycle += 1	
 			$Collision_1.hide()
 			$Collision_2.show()
@@ -152,9 +151,8 @@ func Growth():
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 	if current_life_cycle == 2:
-		if World.isNight == false:
-			$PointLight2D.hide()
-		if self.age > 8 and self.energy > 10 and self.counter == 0:
+		$PointLight2D.hide()
+		if self.age > 20 and self.energy > 10 and self.counter == 0:
 			self.current_life_cycle += 1	
 			$Collision_2.hide()
 			$Collision_3.show()
@@ -167,7 +165,7 @@ func Growth():
 			
 		
 		self.counter +=1
-		if self.counter == 5:
+		if self.counter == 20:
 			self.counter = 0
 	if current_life_cycle == 3:
 		if World.isNight == true:
@@ -176,7 +174,7 @@ func Growth():
 
 #Duplication
 func LifeDuplicate2(transporter):
-		if self.energy > 10:
+		if self.energy > 10 :
 					
 			#Life.grass_pool Technique
 			var li = Life.berry_pool_state.find(0)	
