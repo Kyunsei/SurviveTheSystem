@@ -22,6 +22,7 @@ signal world_speed_changed
 # Called when the node enters the scene tree for the first time.
 func _ready():
 
+  
 	InitNewGame()
 	#$Life/Player/Sprite2D.texture = Life.player_skin[Life.player_skin_ID]
 	
@@ -29,7 +30,6 @@ func _ready():
 	$Life/SpawnTimer.wait_time = Life.min_time_by_batch
 	$Life/SpawnTimer.start(0)
 	get_tree().paused = true'
-
 	
 
 	
@@ -258,15 +258,22 @@ func _on_block_timer_timeout():
 		b.BlockUpdate()
 
 	
+signal light_on
+signal light_out
 
 func _on_day_timer_timeout():
 	World.day += 1 # Replace with function body.
-	$UI/Night_filtre.show()
+	#$UI/Night_filtre.show()
+	$DirectionalLight2D.show()
 	$NightTimer.start()
+	light_on.emit()
+	
 
 
 func _on_night_timer_timeout():
-	$UI/Night_filtre.hide()
+	$DirectionalLight2D.hide()
+	#$UI/Night_filtre.hide()
+	light_out.emit()
 	$DayTimer.start()
 	$UI/DayCount.show()
 	$UI/DayCount.text = "Day " + str(World.day)

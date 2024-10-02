@@ -237,6 +237,10 @@ autostart = true
 [node name="SpawnWindow" parent="." instance=ExtResource("4_j4k08")]
 visible = false
 
+[node name="DirectionalLight2D" type="DirectionalLight2D" parent="."]
+visible = false
+blend_mode = 1
+
 [connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]
 [connection signal="timeout" from="Life/BrainTimer" to="." method="_on_brain_timer_timeout"]
 [connection signal="timeout" from="Life/SpawnTimer" to="." method="_on_spawn_timer_timeout"]

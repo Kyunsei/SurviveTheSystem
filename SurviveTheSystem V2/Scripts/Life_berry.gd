@@ -206,8 +206,13 @@ func getTransported(seed,transporter):
 
 
 		
+signal light_on
+signal light_out
 
 func Activate():
+
+	get_parent().get_parent().light_out.connect( _on_light_out)
+	get_parent().get_parent().light_on.connect( _on_light_on)
 	self.isActive = true
 	Life.berry_pool_state[self.pool_index] = 1
 	Build_Stat()
@@ -281,4 +286,11 @@ func _on_hitch_hike_timer_timeout():
 		carried_by.item_array.erase(self)
 		self.carried_by = null
 		self.z_index = 0
+
+func _on_light_on() :
+	$PointLight2D.show()
+	
+func _on_light_out() :
+	$PointLight2D.hide()
+
 
