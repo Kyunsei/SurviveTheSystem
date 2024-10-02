@@ -299,7 +299,7 @@ func _on_vision_body_entered(body):
 		if body.name != "PlayerBody":
 			if body.species== "sheep" and body.current_life_cycle == 2:
 				LifeDuplicate2(body)	
-			if body.species== "spidercrab" :
+			if body.species== "spidercrab" and body.item_array.size() == 0 :
 				LifeDuplicate2(body)	
 		else:
 			LifeDuplicate2(body.get_parent())

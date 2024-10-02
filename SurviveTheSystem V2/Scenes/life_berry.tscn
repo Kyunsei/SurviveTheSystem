@@ -16,12 +16,12 @@ size = Vector2(96, 64)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_jx2cc"]
 size = Vector2(96, 96)
 
-[sub_resource type="Gradient" id="Gradient_o2yc0"]
-offsets = PackedFloat32Array(0, 0.694805)
-colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+[sub_resource type="Gradient" id="Gradient_q0a1l"]
+offsets = PackedFloat32Array(0, 0.506494, 0.714286)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.470588, 0.0431373, 0.0431373, 0.0431373, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_rwo2g"]
-gradient = SubResource("Gradient_o2yc0")
+gradient = SubResource("Gradient_q0a1l")
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 
@@ -76,7 +76,8 @@ one_shot = true
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
 visible = false
-scale = Vector2(11, 11)
+scale = Vector2(16, 16)
+blend_mode = 2
 texture = SubResource("GradientTexture2D_rwo2g")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
