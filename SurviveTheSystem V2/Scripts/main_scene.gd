@@ -150,16 +150,19 @@ func UpdateSimulationSpeed():
 	'$Life/BrainTimer.wait_time = 2.0 / World.speed
 	$Life/BrainTimer.start(0)'
 	
-	$UI/Clock.Uptade_timesimulation()
+
 	
 
 	$DayTimer.wait_time= World.daytime / World.speed
+	$NightTimer.stop()
+	$DirectionalLight2D.hide()
+	light_out.emit()
 	$DayTimer.start(0)
 	
-	print($DayTimer.wait_time)
-	
 	$NightTimer.wait_time= World.nighttime / World.speed
-	$NightTimer.start(0)
+	#$NightTimer.start(0)
+	
+	$UI/Clock.Uptade_timesimulation()
 	
 	$UI/Wspeed.text = "World speed = " + str(World.speed) 
 
@@ -262,22 +265,23 @@ signal light_on
 signal light_out
 
 func _on_day_timer_timeout():
-	World.day += 1 # Replace with function body.
 	#$UI/Night_filtre.show()
 	$DirectionalLight2D.show()
 	$NightTimer.start()
 	light_on.emit()
+
 	
 
 
 func _on_night_timer_timeout():
+	World.day += 1 # Replace with function body.
 	$DirectionalLight2D.hide()
 	#$UI/Night_filtre.hide()
 	light_out.emit()
 	$DayTimer.start()
 	$UI/DayCount.show()
 	$UI/DayCount.text = "Day " + str(World.day)
-	$UI/DayCount/Timer.start(1.)
+	$UI/DayCount/Timer.start()
 'func _exit_tree():
 	thread.wait_to_finish()
 	

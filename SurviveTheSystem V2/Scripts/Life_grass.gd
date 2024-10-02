@@ -148,7 +148,8 @@ func LifeDuplicate():
 				Life.plant_number += 1
 				Life.grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
 			else:
-				print("pool empty")
+				pass
+				#print("pool empty")
 
 
 			

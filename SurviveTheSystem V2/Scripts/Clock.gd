@@ -16,6 +16,7 @@ func _process(delta):
 
 func Uptade_timesimulation():
 	var fullday = (World.daytime + World.nighttime)  
+
 	$Timer.wait_time = (fullday/ World.speed) / (fullday)
 	$Timer.start(0)
 	$HBoxContainer/ProgressBar_night.value = 0

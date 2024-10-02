@@ -227,7 +227,6 @@ grow_vertical = 1
 process_mode = 1
 wait_time = 15.0
 one_shot = true
-autostart = true
 
 [node name="NightTimer" type="Timer" parent="."]
 process_mode = 1
