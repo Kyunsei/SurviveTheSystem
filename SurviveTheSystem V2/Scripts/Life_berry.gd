@@ -77,15 +77,20 @@ func _on_timer_timeout():
 		$Timer.wait_time = lifecycletime / World.speed
 	if World.isReady and isActive:
 		if isDead == false:
-			if carried_by == null:
+			if carried_by == null :
 				if current_life_cycle !=0:
 					Metabo_cost()	
 					Absorb_soil_energy(2)
-			
+					
 				#LifeDuplicate()r
 				Ageing()
 				Growth()
-
+				
+			elif carried_by.species == "spidercrab":
+				if current_life_cycle !=0:
+					Metabo_cost()	
+					Absorb_soil_energy(2)
+					
 				if self.energy <= 0 or self.age >= Genome["lifespan"][current_life_cycle] or self.PV <=0:
 					Die()
 				
@@ -216,11 +221,11 @@ func getTransported(seed,transporter):
 	seed.carried_by = transporter
 	seed.z_index = 1
 	transporter.item_array.append(seed)
-	if transporter.isPlayer == false:
+	if transporter.isPlayer == false and transporter.isspidercrab == false :
 		print("hello")
 		seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
-
-
+	if transporter.isPlayer == false and transporter.isspidercrab == true :
+		pass
 		
 signal light_on
 signal light_out
@@ -296,6 +301,8 @@ func _on_vision_body_entered(body):
 	if current_life_cycle == 3:
 		if body.name != "PlayerBody":
 			if body.species== "sheep" and body.current_life_cycle == 2:
+				LifeDuplicate2(body)	
+			if body.species== "spidercrab" :
 				LifeDuplicate2(body)	
 		else:
 			LifeDuplicate2(body.get_parent())
