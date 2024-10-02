@@ -92,7 +92,7 @@ func _physics_process(delta):
 	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
 	if item_array.size() > 0:
 		for i in item_array:
-			i.position = position	
+			i.position = position+Vector2(0,-32)	
 		
 func _on_timer_timeout():
 	
@@ -331,9 +331,16 @@ func _on_vision_body_entered(body):
 			#Eat(body)
 			#getCloser(body.position)
 		if body.species== "sheep" and body!= self:
+			if item_array.size() > 0 :
+				if item_array[0].species == "berry" :
+					danger_array.append(body)
+			elif body.item_array.size() > 0 :
+				if body.item_array[0].species == "berry" :
+					danger_array.append(body)
+			else :
 			#getAway(body.position)
-			friend_array.append(body)
-		if body.species == "catronaute" or body.species == "spidercrab":
+				friend_array.append(body)
+		if body.species == "catronaute" or body.species == "spidercrab" :
 			danger_array.append(body)
 	else:
 		danger_array.append(body.get_parent())
@@ -353,7 +360,15 @@ func _on_vision_body_exited(body):
 			#getCloser(body.position)
 		if body.species== "sheep" and body!= self:
 			#getAway(body.position)
-			friend_array.erase(body)
+			if item_array.size() > 0 :
+				if item_array[0].species == "berry" :
+					danger_array.erase(body)
+			elif body.item_array.size() > 0 :
+				if body.item_array[0].species == "berry" :
+					danger_array.erase(body)
+			else :
+			#getAway(body.position)
+				friend_array.erase(body)
 		if body.species == "catronaute" or body.species == "spidercrab":
 			danger_array.erase(body)
 	else:
