@@ -110,21 +110,26 @@ grow_horizontal = 2
 
 [node name="speed1" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
+focus_mode = 0
+action_mode = 0
 text = "1x
 "
 
 [node name="speed2" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
+focus_mode = 0
 text = "2x
 "
 
 [node name="speed10" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
+focus_mode = 0
 text = "10x
 "
 
 [node name="speed100" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
+focus_mode = 0
 text = "100x
 "
 
