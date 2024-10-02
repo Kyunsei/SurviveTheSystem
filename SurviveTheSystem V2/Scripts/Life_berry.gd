@@ -5,6 +5,8 @@ extends LifeEntity
 
 var species = "berry"
 
+var counter = 0
+
 
 
 
@@ -152,7 +154,7 @@ func Growth():
 	if current_life_cycle == 2:
 		if World.isNight == false:
 			$PointLight2D.hide()
-		if self.age > 8 and self.energy > 10:
+		if self.age > 8 and self.energy > 10 and self.counter == 0:
 			self.current_life_cycle += 1	
 			$Collision_2.hide()
 			$Collision_3.show()
@@ -162,6 +164,11 @@ func Growth():
 			$Sprite_2.hide()
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
+			
+		
+		self.counter +=1
+		if self.counter == 5:
+			self.counter = 0
 	if current_life_cycle == 3:
 		if World.isNight == true:
 			$PointLight2D.show()
