@@ -289,6 +289,7 @@ func BareHand_attack():
 			
 
 func Die():
+	Drop()
 	self.isDead = true
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()

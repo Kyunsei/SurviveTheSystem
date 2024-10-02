@@ -81,20 +81,19 @@ func _on_timer_timeout():
 				if current_life_cycle !=0:
 					Metabo_cost()	
 					Absorb_soil_energy(2)
-					
-				#LifeDuplicate()r
 				Ageing()
 				Growth()
-				
 			elif carried_by.species == "spidercrab":
 				if current_life_cycle !=0:
 					Metabo_cost()	
-					Absorb_soil_energy(2)
-					
-				if self.energy <= 0 or self.age >= Genome["lifespan"][current_life_cycle] or self.PV <=0:
+					Absorb_life_energy(10)
+				Ageing()
+				Growth()
+				
+			if self.energy <= 0 or self.age >= Genome["lifespan"][current_life_cycle] or self.PV <=0:
 					Die()
 				
-				if current_time_speed != World.speed:
+			if current_time_speed != World.speed:
 					adapt_time_to_worldspeed()
 		else:
 			Deactivate()
@@ -221,11 +220,9 @@ func getTransported(seed,transporter):
 	seed.carried_by = transporter
 	seed.z_index = 1
 	transporter.item_array.append(seed)
-	if transporter.isPlayer == false and transporter.isspidercrab == false :
-		print("hello")
+	if transporter.isPlayer == false and transporter.species != "spidercrab" :
 		seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
-	if transporter.isPlayer == false and transporter.isspidercrab == true :
-		pass
+
 		
 signal light_on
 signal light_out

@@ -81,7 +81,7 @@ func _physics_process(delta):
 	if item_array.size() > 0:
 		var c = 0
 		for i in item_array:
-			i.position = position + Vector2(c*16,0)
+			i.position = position + Vector2(32+c*16,-64)
 			c += 1
 	
 	if direction.normalized() != Vector2(0,0):
@@ -279,6 +279,7 @@ func BareHand_attack():
 func Die():
 	self.isDead = true
 	velocity = Vector2(0,0)
+	Drop()
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()
 	

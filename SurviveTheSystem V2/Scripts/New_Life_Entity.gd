@@ -194,6 +194,7 @@ func Ageing():
 	
 #diying
 func Die():
+	Drop()
 	self.isDead = true
 	pass
 	#NEED to be customized
@@ -221,6 +222,18 @@ func Absorb_soil_energy(radius):
 					var soil_energy = World.block_element_array[posindex]	
 					energy += min(Genome["soil_absorption"][1],soil_energy)
 					World.block_element_array[posindex]	-= min(Genome["soil_absorption"][1],soil_energy)
+
+
+
+func Absorb_life_energy(value):
+	var absorbed_energy = min (self.carried_by.energy, value)	
+	energy += absorbed_energy 
+	self.carried_by.energy	-= absorbed_energy 
+
+func Drop():
+	for i in item_array:
+		i.carried_by = null
+		i.z_index = 0
 
 
 #GROWTHING
