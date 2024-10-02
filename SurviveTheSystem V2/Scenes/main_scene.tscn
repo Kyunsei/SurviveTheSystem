@@ -107,24 +107,29 @@ offset_left = -72.5
 offset_right = 72.5
 offset_bottom = 40.0
 grow_horizontal = 2
+focus_mode = 1
 
 [node name="speed1" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
+focus_mode = 0
 text = "1x
 "
 
 [node name="speed2" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
+focus_mode = 0
 text = "2x
 "
 
 [node name="speed10" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
+focus_mode = 0
 text = "10x
 "
 
 [node name="speed100" type="Button" parent="UI/speedContainer"]
 layout_mode = 2
+focus_mode = 0
 text = "100x
 "
 

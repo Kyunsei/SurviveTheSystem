@@ -22,7 +22,7 @@ var day = 0
 
 #30 min max (in second) / nb jours total * proprtion nuit/jour
 var daytime = 30. *60 / 20 * 2/3
-var nighttime = 30. *60 / 20 * 2/3
+var nighttime = 30. *60 / 20 * 1/3
 
 var isReady = false
 
