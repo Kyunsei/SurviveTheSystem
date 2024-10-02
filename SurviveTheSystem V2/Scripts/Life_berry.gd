@@ -109,6 +109,7 @@ func Die():
 		z_index = 0
 	
 	$Dead_Sprite_0.show()
+	$PointLight2D.hide()
 	$Collision_1.disabled = true	
 	$Collision_2.disabled = true		
 	$Collision_3.disabled = true		
@@ -165,7 +166,7 @@ func Growth():
 			
 		
 		self.counter +=1
-		if self.counter == 20:
+		if self.counter == 10:
 			self.counter = 0
 	if current_life_cycle == 3:
 		if World.isNight == true:
