@@ -269,6 +269,7 @@ func _on_day_timer_timeout():
 	$DirectionalLight2D.show()
 	$NightTimer.start()
 	light_on.emit()
+	World.isNight = true
 
 	
 
@@ -282,6 +283,7 @@ func _on_night_timer_timeout():
 	$UI/DayCount.show()
 	$UI/DayCount.text = "Day " + str(World.day)
 	$UI/DayCount/Timer.start()
+	World.isNight = false
 'func _exit_tree():
 	thread.wait_to_finish()
 	

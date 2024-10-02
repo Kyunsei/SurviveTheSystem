@@ -19,6 +19,8 @@ var element = 1000.0 #current value
 
 var speed = 1.0
 var day = 0
+var isNight = false
+
 
 #30 min max (in second) / nb jours total * proprtion nuit/jour
 var daytime = 30. *60 / 20 * 2/3

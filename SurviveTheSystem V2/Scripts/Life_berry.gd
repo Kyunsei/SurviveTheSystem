@@ -124,6 +124,8 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
+		if World.isNight == true:
+			$PointLight2D.show()
 		if self.age > 2 and self.energy > 2:
 			self.current_life_cycle += 1	
 			$Collision_0.hide()
@@ -135,6 +137,8 @@ func Growth():
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 	if current_life_cycle == 1:
+		if World.isNight == false:
+			$PointLight2D.hide()
 		if self.age > 4 and self.energy > 5:
 			self.current_life_cycle += 1	
 			$Collision_1.hide()
@@ -146,6 +150,8 @@ func Growth():
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 	if current_life_cycle == 2:
+		if World.isNight == false:
+			$PointLight2D.hide()
 		if self.age > 8 and self.energy > 10:
 			self.current_life_cycle += 1	
 			$Collision_2.hide()
@@ -156,6 +162,9 @@ func Growth():
 			$Sprite_2.hide()
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
+	if current_life_cycle == 3:
+		if World.isNight == true:
+			$PointLight2D.show()
 
 
 #Duplication
@@ -180,6 +189,7 @@ func LifeDuplicate2(transporter):
 				
 				
 				self.current_life_cycle = 2
+				$PointLight2D.hide()
 				self.energy -= 5
 				$Collision_3.hide()
 				$Collision_2.show()
@@ -223,6 +233,12 @@ func Activate():
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	self.size = get_node("Collision_0").shape.size
+	if self.current_life_cycle == 0 or self.current_life_cycle == 3 :
+		if World.isNight == true:
+			$PointLight2D.show()
+	if self.current_life_cycle == 1 or self.current_life_cycle == 2 :
+		if World.isNight == false:
+			$PointLight2D.hide()
 
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
@@ -288,7 +304,9 @@ func _on_hitch_hike_timer_timeout():
 		self.z_index = 0
 
 func _on_light_on() :
-	$PointLight2D.show()
+	if self.current_life_cycle == 0 or self.current_life_cycle == 3 :
+		$PointLight2D.show()
+	
 	
 func _on_light_out() :
 	$PointLight2D.hide()
