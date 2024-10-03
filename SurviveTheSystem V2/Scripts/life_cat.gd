@@ -213,35 +213,66 @@ func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV
 	$Energy_bar.value = self.energy *100 / self.maxEnergy
 
-
+var isAttacking: bool = false
 func Attack():
 	action_finished = false
 	if item_array.size() != 0:
 		if item_array[0].species == "crab_leg" :
 			#item_array[0].species.crab_leg.position = Vector2(get_viewport().get_mouse_position())
+			#item_array[0].position = position
+			#item_array[0].position = position.normalized()*65#Vector2(get_viewport().get_mouse_position() - 
+				
+			#$Object_attack/crab_leg_combat.look_at(get_viewport().get_mouse_position())
+			#var object_attack_vector = Vector2(get_viewport().get_mouse_position() - self.position)
+			#object_attack_vector = object_attack_vector.normalized()*60
 			$Object_attack.show()
 			$Object_attack/crab_leg_combat.show()
-			#item_array[0].position = position
-			item_array[0].position = position.normalized()*65#Vector2(get_viewport().get_mouse_position() - 
+			isAttacking = true
+			match(LastOrientation) :
+				"down":
+					$AnimationPlayer.play("Attack_animation")
+				"right":
+					$AnimationPlayer.play("Attack_animationUp")
+				"left":
+					$AnimationPlayer.play("Attack_animationLeft")
+				"up":
+					$AnimationPlayer.play("Attack_animationTrueUp")
+			await $AnimationPlayer.animation_finished
+			isAttacking = false
+			$Object_attack.hide()
+			$Object_attack/crab_leg_combat.hide()
 				
-			$Object_attack/crab_leg_combat.look_at(get_viewport().get_mouse_position())
-				#var object_attack_vector = Vector2(get_viewport().get_mouse_position() - self.position)
-				#object_attack_vector = object_attack_vector.normalized()*60
 			#if LastOrientation == "down" :
-		#		print("attack down")
-		#		animations.play("Attack")
+				#print("attack down")
+
+				#$Object_attack/crab_leg_combat.visible = true
+				#$AnimationPlayer.play("Attack_animation")
 			#if LastOrientation == "up" :
-		#		print("attack up")
-				#animations.play("Attack_")
-		#	if LastOrientation == "left" :
-		#		print("attack left")
-				#animations.play("Attack_")
-		#	if LastOrientation == "right" :
-		#		print("attack right")
-				#animations.play("Attack_")
+				#print("attack up")
+				#isAttacking = true
+#
+				#$AnimationPlayer.play("Attack_animationTrueUp")
+			#if LastOrientation == "left" :
+				#print("attack left")
+				#isAttacking = true
+				#$Object_attack/crab_leg_combat.visible = true
+				#$AnimationPlayer.play("Attack_animationLeft")
+				#await $AnimationPlayer.animation_finished
+
+			#if LastOrientation == "right" :
+				#print("attack right")
+				#$AnimationPlayer.play("Attack_animationUp")
+				#isAttacking = true
+				#$Object_attack/crab_leg_combat.visible = true
+				#isAttacking = false
+			# == $Object_attack.show() :
+			#
+
 	else :
 		BareHand_attack()
+		
 
+	
 func Sprint_Action():
 	if self.PV > 1 :
 		action_finished = false
