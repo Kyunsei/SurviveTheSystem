@@ -80,7 +80,7 @@ func _on_timer_timeout():
 			if carried_by == null :
 				if current_life_cycle !=0:
 					Metabo_cost()	
-					Absorb_soil_energy(2)
+					Absorb_soil_energy(2,2)
 				Ageing()
 				Growth()
 			#elif carried_by.species == "spidercrab": 

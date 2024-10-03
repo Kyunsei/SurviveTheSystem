@@ -73,7 +73,7 @@ func _on_timer_timeout():
 	if World.isReady and isActive:
 		if isDead == false:
 			
-			Absorb_soil_energy(0)
+			Absorb_soil_energy(0,0)
 			Metabo_cost()	
 			LifeDuplicate()
 			Ageing()
@@ -210,7 +210,7 @@ func Die():
 		energy += min(Genome["soil_absorption"][current_life_cycle],soil_energy)
 		World.block_element_array[posindex]	-= min(Genome["soil_absorption"][current_life_cycle],soil_energy)
 '
-func Absorb_soil_energy(radius):
+func Absorb_soil_energy(value,radius):
 	var middle = position + Vector2(size.x/2,0)#-size.y/2)
 	var center_x = int(middle.x/World.tile_size)
 	var	center_y = int(middle.y/World.tile_size)
@@ -220,8 +220,8 @@ func Absorb_soil_energy(radius):
 				var posindex = y*World.world_size + x
 				if posindex < World.block_element_array.size():
 					var soil_energy = World.block_element_array[posindex]	
-					energy += min(Genome["soil_absorption"][1],soil_energy)
-					World.block_element_array[posindex]	-= min(Genome["soil_absorption"][1],soil_energy)
+					energy += min(value,soil_energy)
+					World.block_element_array[posindex]	-= min(value,soil_energy)
 
 
 
