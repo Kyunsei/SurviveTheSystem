@@ -13,6 +13,7 @@ var life_berry_scene = load("res://Scenes/life_berry.tscn")
 var life_cat_scene = load("res://Scenes/life_cat.tscn")
 var life_stingtree_scene = load("res://Scenes/life_stingtree.tscn")
 var life_spidercrab_scene = load("res://Scenes/life_spidercrab.tscn")
+var crab_leg_combat_scene = load("res://Scenes/crab_leg_combat.tscn")
 var life_debug_scene = load("res://Scenes/life_debug.tscn")
 
 var parameters_array = [] 
@@ -28,6 +29,7 @@ var berry_number = 0
 var player_number = 0
 var cat_number = 0
 var stingtree_number = 0
+var crab_leg_number = 0
 
 var char_selected = "cat"
 var player_index = 0
@@ -65,6 +67,9 @@ var stingtree_pool_scene = []
 
 var spidercrab_pool_state = []
 var spidercrab_pool_scene = []
+
+var crab_leg_pool_state = []
+var crab_leg_pool_scene = []
 
 #test varaible
 var thread_finished = true
@@ -241,6 +246,7 @@ func Init_life_pool():
 	player_number = 0
 	cat_number = 0
 	stingtree_number = 0
+	crab_leg_number = 0
 	
 	cat_pool_scene = []
 	cat_pool_state = []
@@ -259,6 +265,9 @@ func Init_life_pool():
 
 	spidercrab_pool_state = []
 	spidercrab_pool_scene = []
+	
+	crab_leg_pool_state = []
+	crab_leg_pool_scene = []
 
 #THIS ONE IS USED
 func Instantiate_emptyLife_pool(folder, N, ID):
@@ -293,6 +302,10 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 				nl = life_spidercrab_scene.instantiate() #need to write code according to genome ID
 				spidercrab_pool_state.append(0)
 				spidercrab_pool_scene.append(nl)			
+			if ID == "crab_leg":	
+				nl = crab_leg_combat_scene.instantiate() #need to write code according to genome ID
+				crab_leg_pool_state.append(0)
+				crab_leg_pool_scene.append(nl)			
 			
 			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 			nl.pool_index = i	
@@ -361,7 +374,13 @@ func Instantiate_Life_in_pool(folder,N,ID):
 			Life.spidercrab_pool_scene[li].current_life_cycle = 0
 			Life.spidercrab_number += 1
 			Life.spidercrab_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-
+		if ID == "crab_leg":	
+			var li = crab_leg_pool_state.find(0)
+			Life.crab_leg_scene[li].Activate()
+			Life.crab_leg_scene[li].age = 0#randi_range(0,20)
+			Life.crab_leg_scene[li].current_life_cycle = 0
+			#Life.crab_leg_number += 1
+			Life.crab_leg_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 
 
 func Instantiate_fullLife_pool(folder, N):

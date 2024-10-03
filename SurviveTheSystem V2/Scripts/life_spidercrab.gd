@@ -204,13 +204,21 @@ func _on_timer_timeout():
 
 
 func LifeDuplicate():
-	if self.age % 70 == 0 and self.energy > 60:
+	if self.age % 1 == 0 and self.energy > 60:
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
-			var li = Life.spidercrab_pool_state.find(0)	
+			var li = Life.spidercrab_pool_state.find(0)
+			#var li2 = Life.crab_leg_pool_state.find(0)		
 			#+ Life.grass_pool_state.size()*0.05
 			if li > -1 and Life.spidercrab_number  < Life.spidercrab_pool_scene.size():
 				self.energy -= 30
 				Life.spidercrab_pool_scene[li].Activate()
+				var crab_leg_combat_scene = Life.crab_leg_combat_scene.instantiate()
+				get_parent().add_child(crab_leg_combat_scene) 
+				crab_leg_combat_scene.position = newpos
+			#	Life.crab_leg_pool_scene[li2].Activate()
+			#	Life.crab_leg_pool_scene[li2].PV = Genome["maxPV"][0]
+		#		Life.crab_leg_pool_scene[li2].age = 0
+		#		Life.crab_leg_pool_scene[li2].global_position = newpos 
 				Life.spidercrab_pool_scene[li].energy = 30
 				Life.spidercrab_pool_scene[li].age = 0
 				Life.spidercrab_pool_scene[li].current_life_cycle = 0

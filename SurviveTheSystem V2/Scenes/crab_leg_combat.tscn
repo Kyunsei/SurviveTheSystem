@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://bxlj56vbn5rrk"]
+
+[ext_resource type="Texture2D" uid="uid://deacu702ktmt2" path="res://Art/crab_leg.png" id="1_fbiep"]
+[ext_resource type="Script" path="res://Scripts/crab_leg_combat.gd" id="1_smxua"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3mxph"]
+size = Vector2(72, 35)
+
+[node name="crab_leg_combat" type="CharacterBody2D"]
+light_mask = 0
+position = Vector2(1000, 1000)
+collision_mask = 0
+script = ExtResource("1_smxua")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+light_mask = 0
+position = Vector2(-34, 0)
+shape = SubResource("RectangleShape2D_3mxph")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+light_mask = 0
+position = Vector2(-34, 0)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_fbiep")

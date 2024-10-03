@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://b5k0j0umvgnc7"]
+[gd_scene load_steps=14 format=3 uid="uid://b5k0j0umvgnc7"]
 
 [ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="1_pdy0w"]
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="1_s3cg0"]
+[ext_resource type="PackedScene" uid="uid://bxlj56vbn5rrk" path="res://Scenes/crab_leg_combat.tscn" id="3_k3470"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lgq21"]
 size = Vector2(100, 100)
@@ -12,6 +13,154 @@ size = Vector2(22, 24)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_4tj2u"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_gkwjp"]
+
+[sub_resource type="Animation" id="Animation_i7nux"]
+resource_name = "Attack_with_object_down"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Object_attack:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.349066, -2.79253]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Object_attack:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-10, 0), Vector2(0, 5), Vector2(10, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_hx35s"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Object_attack:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [-0.349066]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Object_attack:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-10, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_02jkg"]
+resource_name = "Attack_with_object_up"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Object_attack:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(20, -55), Vector2(0, -60), Vector2(-20, -55)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Object_attack:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [2.61799, 1.5708, 0.523599]
+}
+
+[sub_resource type="Animation" id="Animation_gbrqa"]
+resource_name = "Attack_with_object_right"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Object_attack:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(15, -5), Vector2(25, -15), Vector2(25, -25)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Object_attack:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [4.18879, 3.14159, 2.0944]
+}
+
+[sub_resource type="Animation" id="Animation_613ep"]
+resource_name = "Attack_with_object_left"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Object_attack:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [1.0472, 0.0, -1.0472]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Object_attack:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(-20, -20), Vector2(-25, -10), Vector2(-15, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_5prn2"]
+_data = {
+"Attack_with_object_down": SubResource("Animation_i7nux"),
+"Attack_with_object_left": SubResource("Animation_613ep"),
+"Attack_with_object_right": SubResource("Animation_gbrqa"),
+"Attack_with_object_up": SubResource("Animation_02jkg"),
+"RESET": SubResource("Animation_hx35s")
+}
 
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 0
@@ -61,6 +210,12 @@ offset_bottom = 8.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Object_attack" type="Node2D" parent="."]
+position = Vector2(-10, 0)
+rotation = -0.349066
+
+[node name="crab_leg_combat" parent="Object_attack" instance=ExtResource("3_k3470")]
+
 [node name="BareHand_attack" type="Area2D" parent="."]
 collision_layer = 0
 
@@ -90,6 +245,11 @@ size_flags_horizontal = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerBody"]
 shape = SubResource("CircleShape2D_gkwjp")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_5prn2")
+}
 
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]
 [connection signal="area_exited" from="Area2D" to="." method="_on_area_2d_area_exited"]

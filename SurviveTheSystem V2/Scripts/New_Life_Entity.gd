@@ -19,7 +19,7 @@ var isPlayer = false
 var action_finished = true
 
 #INVENTAIRE
-var item_array = []
+var item_array = [] 
 var carried_by = null
 var direction = Vector2(0,0)
 
@@ -91,23 +91,28 @@ func Player_Control_movement():
 		if Input.is_action_pressed("left") :
 			input_dir.x -= 1
 			rotation_dir = -1	
+			LastOrientation = "left"
 		if Input.is_action_pressed("right"):
 			input_dir.x += 1
 			rotation_dir = 1
+			LastOrientation = "right"
 		if Input.is_action_pressed("up"):
 			input_dir.y -= 1
 			rotation_dir = -1
+			LastOrientation = "up"
 		if Input.is_action_pressed("down"):
 			input_dir.y += 1
 			rotation_dir = 1
+			LastOrientation = "down"
 				
 		velocity = input_dir.normalized() * self.maxSpeed
-
-
 		position.x = clamp(position.x, 0, World.world_size*World.tile_size)
 		position.y = clamp(position.y, 0, World.world_size*World.tile_size)
 		return input_dir
 		
+var LastOrientation = "down"
+
+
 func _physics_process(delta):
 	if isPlayer:
 		Player_Control_movement()	

@@ -101,6 +101,8 @@ func _physics_process(delta):
 
 func _input(event):
 	if isPlayer:
+		var object_attack_vector = Vector2(get_viewport().get_mouse_position() - self.position)
+		object_attack_vector = object_attack_vector.normalized()*60
 		if event.is_action_pressed("use"):
 			#current_action = 3
 			#UseItem()
@@ -214,7 +216,31 @@ func AdjustBar():
 
 func Attack():
 	action_finished = false
-	BareHand_attack()
+	if item_array.size() != 0:
+		if item_array[0].species == "crab_leg" :
+			#item_array[0].species.crab_leg.position = Vector2(get_viewport().get_mouse_position())
+			$Object_attack.show()
+			$Object_attack/crab_leg_combat.show()
+			#item_array[0].position = position
+			item_array[0].position = position.normalized()*65#Vector2(get_viewport().get_mouse_position() - 
+				
+			$Object_attack/crab_leg_combat.look_at(get_viewport().get_mouse_position())
+				#var object_attack_vector = Vector2(get_viewport().get_mouse_position() - self.position)
+				#object_attack_vector = object_attack_vector.normalized()*60
+			#if LastOrientation == "down" :
+		#		print("attack down")
+		#		animations.play("Attack")
+			#if LastOrientation == "up" :
+		#		print("attack up")
+				#animations.play("Attack_")
+		#	if LastOrientation == "left" :
+		#		print("attack left")
+				#animations.play("Attack_")
+		#	if LastOrientation == "right" :
+		#		print("attack right")
+				#animations.play("Attack_")
+	else :
+		BareHand_attack()
 
 func Sprint_Action():
 	if self.PV > 1 :
@@ -249,6 +275,11 @@ func PickUp():
 					closestItem.z_index = 1
 				if closestItem.current_life_cycle == 3:
 					closestItem.LifeDuplicate2(self)
+
+			if closestItem.species == "crab_leg":
+				closestItem.getPickUP(self)
+				closestItem.z_index = 1
+
 
 			if closestItem.species == "sheep" and closestItem.current_life_cycle < 2:
 				closestItem.getPickUP(self)
