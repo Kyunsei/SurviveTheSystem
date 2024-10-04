@@ -162,7 +162,7 @@ _data = {
 
 [node name="Catronaute" type="CharacterBody2D"]
 collision_layer = 0
-collision_mask = 0
+collision_mask = 2
 script = ExtResource("1_ur5ob")
 
 [node name="Timer" type="Timer" parent="."]

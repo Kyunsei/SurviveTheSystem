@@ -1,10 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://d1ek3epe8la3s"]
+[gd_scene load_steps=3 format=3 uid="uid://d1ek3epe8la3s"]
 
 [ext_resource type="Script" path="res://Scripts/world_block.gd" id="1_lna0x"]
 
-[node name="World_block" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u8403"]
+size = Vector2(32, 32)
+
+[node name="World_block" type="StaticBody2D"]
 light_mask = 3
 visibility_layer = 3
+collision_layer = 2
+collision_mask = 0
 script = ExtResource("1_lna0x")
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -21,6 +26,10 @@ offset_left = -2.0
 offset_top = 10.0
 offset_right = 38.0
 offset_bottom = 33.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(16, 16)
+shape = SubResource("RectangleShape2D_u8403")
 
 [connection signal="screen_entered" from="ColorRect/VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
 [connection signal="screen_exited" from="ColorRect/VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

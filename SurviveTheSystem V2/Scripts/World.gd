@@ -8,6 +8,7 @@ var fieldofview = Vector2(0,0) #in tile
 
 
 var block_element_array = [] #1D matrix of the block composing the world
+var block_element_state = [] #1D matrix of the block state composing the world
 
 var world_array = [] #1D matrix of occupation
 
@@ -58,6 +59,7 @@ func Init_World():
 func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
+	block_element_state.resize(world_size*world_size)
 	'for i in range(block_element_array.size()):
 		if i < 2000:
 			block_element_array[i] = 0
@@ -65,10 +67,56 @@ func Init_matrix():
 			block_element_array[i] = 3
 		else: 
 			block_element_array[i] = 3'
-			
+	
+
+	
+		
 	block_element_array.fill(6)
-	world_array.resize(world_size*world_size)
-	world_array.fill(-1)
+	block_element_state.fill(0)
+	var x= 0
+	var y = 0
+	var y2 = 0
+
+
+	x=  100
+	y=  100
+
+	var radius= 50
+	var center = Vector2(radius/2,radius/2)
+	for w in range(-radius,radius*2):
+		for h in range(-radius,radius*2):
+			var distance = center.distance_to(Vector2(w, h))
+			if distance < radius :
+				block_element_state[(x+w)*world_size +y+h ]= 1
+			
+
+	x=  5
+	y=  125
+
+	radius= 35
+	center = Vector2(radius/2,radius/2)
+	for w in range(-radius,radius*2):
+		for h in range(-radius,radius*2):
+			var distance = center.distance_to(Vector2(w, h))
+			if distance < radius :
+				block_element_state[(x+w)*world_size +y+h ]= 1
+	x=  40
+	y=  70
+	radius= 40
+	center = Vector2(radius/2,radius/2)
+	for w in range(-radius,radius*2):
+		for h in range(-radius,radius*2):
+			var distance = center.distance_to(Vector2(w, h))
+			if distance < radius :
+				block_element_state[(x+w)*world_size +y+h ]= 1
+			
+					
+		
+			
+
+	#no more used:
+	#world_array.resize(world_size*world_size)
+	#world_array.fill(-1)
 	
 	
 
