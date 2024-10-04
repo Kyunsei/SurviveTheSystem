@@ -24,7 +24,8 @@ func _process(delta):
 	pass
 	
 func Use_Attack():
-	#$Sprite2D.rotation = carried_by.last_dir.angle()
+	rotation = carried_by.last_dir.angle()
+	position = carried_by.position + Vector2(72,34)*carried_by.position
 	$AnimationPlayer.play("Attack_animation")
 	await $AnimationPlayer.animation_finished
 	#$BareHand_attack/sprite.show()

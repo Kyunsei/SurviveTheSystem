@@ -78,6 +78,8 @@ one_shot = true
 visible = false
 scale = Vector2(16, 16)
 blend_mode = 2
+range_layer_min = -4
+range_layer_max = 4
 texture = SubResource("GradientTexture2D_rwo2g")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
