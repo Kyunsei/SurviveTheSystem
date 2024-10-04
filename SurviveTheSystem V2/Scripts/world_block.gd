@@ -1,9 +1,11 @@
-extends Node2D
+extends StaticBody2D
 
 var x = 0
 var y = 0
 var posindex
 var current_value = 0
+
+var species = "block"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -30,8 +32,14 @@ func _ready():
 		##$outsideline.color = getAdjustedSoilColor()
 
 func BlockUpdate():
-		$ColorRect.color = getAdjustedSoilColor()
+		if World.block_element_state[posindex] == 1:
+			$ColorRect.color = getAdjustedSoilColor()
+			set_collision_layer_value(2,false)
 		#$debug.text = str(posindex)
+		else:
+			$ColorRect.color.a = 0
+			set_collision_layer_value(2,true)
+			
 		pass
 		#$outsideline.color = getAdjustedSoilColor()
 

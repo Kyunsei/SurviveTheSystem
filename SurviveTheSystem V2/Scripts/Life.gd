@@ -337,43 +337,45 @@ func Instantiate_Life_in_pool(folder,N,ID):
 			Life.grass_pool_scene[li].age = randi_range(0,10)
 			Life.grass_pool_scene[li].current_life_cycle = 0# randi_range(0,1)
 			Life.grass_pool_scene[li].PV = Life.grass_pool_scene[li].Genome["maxPV"][0]
-			Life.plant_number += 1
-			Life.grass_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			Life.plant_number += 1	
+			var newpos = PickRandomPlace() * World.tile_size
+			Life.grass_pool_scene[li].global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+
 		if ID == "sheep":	
 			var li = sheep_pool_state.find(0)
 			Life.sheep_pool_scene[li].Activate()
 			Life.sheep_pool_scene[li].age = randi_range(0,20)
 			Life.sheep_pool_scene[li].current_life_cycle = 0#2
 			Life.sheep_number += 1
-			Life.sheep_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			Life.sheep_pool_scene[li].global_position =PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 		if ID == "berry":	
 			var li = berry_pool_state.find(0)
 			Life.berry_pool_scene[li].Activate()
 			Life.berry_pool_scene[li].age = randi_range(12,20)
 			Life.berry_pool_scene[li].current_life_cycle = 0#randi_range(0,3)
 			Life.berry_number += 1
-			Life.berry_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			Life.berry_pool_scene[li].global_position =PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 		if ID == "cat":	
 			var li = cat_pool_state.find(0)
 			Life.cat_pool_scene[li].Activate()
 			Life.cat_pool_scene[li].age = 0#randi_range(0,20)
 			Life.cat_pool_scene[li].current_life_cycle = 0
 			Life.cat_number += 1
-			Life.cat_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			Life.cat_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 		if ID == "stingtree":	
 			var li = stingtree_pool_state.find(0)
 			Life.stingtree_pool_scene[li].Activate()
 			Life.stingtree_pool_scene[li].age = 0#randi_range(0,20)
 			Life.stingtree_pool_scene[li].current_life_cycle = 0
 			Life.stingtree_number += 1
-			Life.stingtree_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			Life.stingtree_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 		if ID == "spidercrab":	
 			var li = spidercrab_pool_state.find(0)
 			Life.spidercrab_pool_scene[li].Activate()
 			Life.spidercrab_pool_scene[li].age = 0#randi_range(0,20)
 			Life.spidercrab_pool_scene[li].current_life_cycle = 0
 			Life.spidercrab_number += 1
-			Life.spidercrab_pool_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			Life.spidercrab_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 		if ID == "crab_leg":	
 			var li = crab_leg_pool_state.find(0)
 			Life.crab_leg_scene[li].Activate()
@@ -658,10 +660,17 @@ func RemoveLife(INDEX):
 	plant_number -= 1
 	
 func PickRandomPlace():
-	var rng = RandomNumberGenerator.new()
-	var random_x = rng.randi_range(0,World.world_size-1)
-	var random_y = rng.randi_range(0,World.world_size-1)
-	return [random_x, random_y]
+	#var rng = RandomNumberGenerator.new()
+	var random_x = randi_range(0,World.world_size-1)
+	var random_y = randi_range(0,World.world_size-1)
+
+	var posindex = random_y*World.world_size + random_x
+	var newpos = Vector2(random_x, random_y)
+	
+	if World.block_element_state[posindex] == 0:
+		newpos = Vector2(World.world_size/2,World.world_size/2)
+	return newpos
+
 
 func PickRandomPlaceWithRange(centerx,centery,range):
 	var rng = RandomNumberGenerator.new()
