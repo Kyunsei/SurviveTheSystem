@@ -1,7 +1,6 @@
-[gd_scene load_steps=13 format=3 uid="uid://e2vhj8gjm240"]
+[gd_scene load_steps=6 format=3 uid="uid://e2vhj8gjm240"]
 
 [ext_resource type="Script" path="res://Scripts/life_cat.gd" id="1_ur5ob"]
-[ext_resource type="PackedScene" uid="uid://bxlj56vbn5rrk" path="res://Scenes/crab_leg_combat.tscn" id="2_sfqep"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gm5t3"]
 
@@ -11,154 +10,6 @@ size = Vector2(64, 64)
 [sub_resource type="Theme" id="Theme_g2d4v"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5qtdw"]
-
-[sub_resource type="Animation" id="Animation_wo23w"]
-resource_name = "Attack_animation"
-length = 0.2
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Object_attack/crab_leg_combat:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector2(0, 0), Vector2(30, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Object_attack/crab_leg_combat:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [-0.523599, -2.61799]
-}
-
-[sub_resource type="Animation" id="Animation_6u5lp"]
-resource_name = "Attack_animationLeft"
-length = 0.2
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Object_attack/crab_leg_combat:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector2(0, -30), Vector2(0, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Object_attack/crab_leg_combat:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [1.0472, -1.0472]
-}
-
-[sub_resource type="Animation" id="Animation_nuff3"]
-resource_name = "Attack_animationTrueUp"
-length = 0.2
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Object_attack/crab_leg_combat:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector2(50, -60), Vector2(-10, -60)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Object_attack/crab_leg_combat:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [2.61799, 0.523599]
-}
-
-[sub_resource type="Animation" id="Animation_c1jiw"]
-resource_name = "Attack_animationUp"
-length = 0.2
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Object_attack/crab_leg_combat:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector2(30, 0), Vector2(30, -30)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Object_attack/crab_leg_combat:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [-2.0944, -4.18879]
-}
-
-[sub_resource type="Animation" id="Animation_4fccq"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Object_attack/crab_leg_combat:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-10, 5)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Object_attack/crab_leg_combat:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [-0.523599]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_8lwty"]
-_data = {
-"Attack_animation": SubResource("Animation_wo23w"),
-"Attack_animationLeft": SubResource("Animation_6u5lp"),
-"Attack_animationTrueUp": SubResource("Animation_nuff3"),
-"Attack_animationUp": SubResource("Animation_c1jiw"),
-"RESET": SubResource("Animation_4fccq")
-}
 
 [node name="Catronaute" type="CharacterBody2D"]
 collision_layer = 0
@@ -256,23 +107,7 @@ grow_vertical = 2
 size_flags_horizontal = 0
 color = Color(0, 0.894118, 0.898039, 1)
 
-[node name="Object_attack" type="Node2D" parent="."]
-visible = false
-light_mask = 0
-
-[node name="crab_leg_combat" parent="Object_attack" instance=ExtResource("2_sfqep")]
-visible = false
-position = Vector2(-10, 5)
-rotation = -0.523599
-scale = Vector2(1, 0.5)
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_8lwty")
-}
-
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="body_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_entered"]
 [connection signal="body_exited" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_exited"]
 [connection signal="timeout" from="BareHand_attack/ActionTimer" to="." method="_on_action_timer_timeout"]
-[connection signal="animation_finished" from="AnimationPlayer" to="Object_attack/crab_leg_combat" method="_on_animation_player_animation_finished"]

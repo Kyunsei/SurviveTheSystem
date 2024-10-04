@@ -102,8 +102,8 @@ func _physics_process(delta):
 
 func _input(event):
 	if isPlayer:
-		var object_attack_vector = Vector2(get_viewport().get_mouse_position() - self.position)
-		object_attack_vector = object_attack_vector.normalized()*60
+		#var object_attack_vector = Vector2(get_viewport().get_mouse_position() - self.position)
+		#object_attack_vector = object_attack_vector.normalized()*60
 		if event.is_action_pressed("use"):
 			#current_action = 3
 			#UseItem()
