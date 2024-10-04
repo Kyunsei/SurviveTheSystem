@@ -12,7 +12,7 @@ var last_dir = Vector2.ZERO
 var rotation_dir = 0
 
 func Build_Genome():
-	Genome["maxPV"]=[10]
+	Genome["maxPV"]=[10000000000000]
 	Genome["maxEnergy"]=[100]
 	Genome["speed"] =[200]
 	Genome["lifespan"]=[1000]
@@ -35,9 +35,9 @@ func init_progressbar():
 
 func Build_Stat():
 	self.current_life_cycle = 0
-	self.PV = 30	
+	self.PV = 300000000	
 	self.energy = 50
-	self.maxPV = 50
+	self.maxPV = 50000000
 	self.maxEnergy = 100
 	self.maxSpeed = 200	
 
@@ -82,12 +82,6 @@ func _physics_process(delta):
 		if Input.is_action_pressed("sprint"):
 			Sprint_Action()
 			isimmobile_1sec = false
-		if item_array.size() > 0:
-			var c = 0
-			for i in item_array:
-				i.position = position + Vector2(c*16,0)
-				c += 1
-		
 		if input_dir.normalized() != Vector2(0,0):
 			last_dir = input_dir 
 			isimmobile_1sec = false
@@ -98,6 +92,13 @@ func _physics_process(delta):
 		var temppos = position + last_dir * Vector2(64,96)
 		$BareHand_attack.rotation =  (last_dir.angle()) 
 		$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
+		if item_array.size() > 0:
+			var c = 0
+			for i in item_array:
+				i.position = position + Vector2(c*16,0)
+				c += 1
+				#i.rotation =  (last_dir.angle()) 
+				i.position =  last_dir * i.size * Vector2(1,1)  +position
 
 func _input(event):
 	if isPlayer:
@@ -217,23 +218,24 @@ var isAttacking: bool = false
 func Attack():
 	action_finished = false
 	if item_array.size() != 0:
-		if item_array[0].species == "crab_leg" :
-			$Object_attack.show()
-			$Object_attack/crab_leg_combat.show()
-			isAttacking = true
-			match(LastOrientation) :
-				"down":
-					$AnimationPlayer.play("Attack_animation")
-				"right":
-					$AnimationPlayer.play("Attack_animationUp")
-				"left":
-					$AnimationPlayer.play("Attack_animationLeft")
-				"up":
-					$AnimationPlayer.play("Attack_animationTrueUp")
-			await $AnimationPlayer.animation_finished
-			isAttacking = false
-			$Object_attack.hide()
-			$Object_attack/crab_leg_combat.hide()
+		item_array[0].Use_Attack()
+		#if item_array[0].species == "crab_leg" :
+			#$Object_attack.show()
+			#$Object_attack/crab_leg_combat.show()
+			#isAttacking = true
+			#match(LastOrientation) :
+				#"down":
+					#$AnimationPlayer.play("Attack_animation")
+				#"right":
+					#$AnimationPlayer.play("Attack_animationUp")
+				#"left":
+					#$AnimationPlayer.play("Attack_animationLeft")
+				#"up":
+					#$AnimationPlayer.play("Attack_animationTrueUp")
+			#await $AnimationPlayer.animation_finished
+			#isAttacking = false
+			#$Object_attack.hide()
+			#$Object_attack/crab_leg_combat.hide()
 	else :
 		BareHand_attack()
 		
@@ -269,25 +271,26 @@ func PickUp():
 			if closestItem.species == "berry":
 				if closestItem.current_life_cycle == 0:
 					closestItem.getPickUP(self)
-					closestItem.z_index = 1
+					closestItem.z_index = 0
 				if closestItem.current_life_cycle == 3:
 					closestItem.LifeDuplicate2(self)
 
 			if closestItem.species == "crab_leg":
 				closestItem.getPickUP(self)
-				closestItem.z_index = 1
+				closestItem.z_index = 0
+
 
 
 			if closestItem.species == "sheep" and closestItem.current_life_cycle < 2:
 				closestItem.getPickUP(self)
-				closestItem.z_index = 1
+				closestItem.z_index = 0
 			if closestItem.species == "grass" :
 				closestItem.getPickUP(self)
-				closestItem.z_index = 1
+				closestItem.z_index = 0
 			if closestItem.species == "stingtree" and  closestItem.current_life_cycle == 0:
 				if closestItem.mother_tree == null:
 					closestItem.getPickUP(self)
-					closestItem.z_index = 1
+					closestItem.z_index = 0
 
 	
 func Drop():
@@ -313,6 +316,7 @@ func BareHand_attack():
 	for i in barehand_array:
 		if i != null:
 			i.getDamaged(10)
+
 
 			
 

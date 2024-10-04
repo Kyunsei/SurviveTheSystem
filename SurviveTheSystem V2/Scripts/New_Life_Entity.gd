@@ -40,7 +40,7 @@ var Genome = {
 #Inter parameters
 var energy = 0  #current level of energy/hunger
 var age = 0 #current age
-var size = Vector2(0,0) #size from sprite
+var size = Vector2(32,32) #size from sprite
 var PV = 0 #current level of health
 var current_life_cycle = 0 #which state of life it is. egg, young, adult, etc..
 var metabolic_cost = 1 #how much energy is consumed by cycle to keep biological function
@@ -366,4 +366,7 @@ func _on_vision_area_entered(area):
 func _on_vision_area_exited(area):
 	if area.get_parent().name == "Player":
 		print("player_leaving")
+
+func Use_Attack():
+	pass
 
