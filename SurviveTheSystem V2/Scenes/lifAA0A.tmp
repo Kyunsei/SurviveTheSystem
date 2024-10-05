@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bkvttykvie6wd"]
+[gd_scene load_steps=9 format=3 uid="uid://bkvttykvie6wd"]
 
 [ext_resource type="Script" path="res://Scripts/life_spidercrab.gd" id="1_3m3wu"]
 [ext_resource type="Texture2D" uid="uid://e1v54i3ffumy" path="res://Art/spider.png" id="2_ge6rd"]
@@ -15,6 +15,9 @@ size = Vector2(128, 128)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5qtdw"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_da7ir"]
+radius = 79.0063
+
 [node name="Spidercrab" type="CharacterBody2D"]
 collision_layer = 0
 collision_mask = 2
@@ -27,12 +30,10 @@ script = ExtResource("1_3m3wu")
 one_shot = true
 
 [node name="Vision" type="Area2D" parent="."]
-visible = false
 collision_layer = 0
 collision_mask = 0
 
 [node name="Collision" type="CollisionShape2D" parent="Vision"]
-visible = false
 shape = SubResource("CapsuleShape2D_gm5t3")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
@@ -117,6 +118,12 @@ grow_vertical = 2
 size_flags_horizontal = 0
 color = Color(0, 0.894118, 0.898039, 1)
 
+[node name="HurtBox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+position = Vector2(67, -67)
+shape = SubResource("CircleShape2D_da7ir")
+
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
@@ -126,3 +133,4 @@ color = Color(0, 0.894118, 0.898039, 1)
 [connection signal="body_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_entered"]
 [connection signal="body_exited" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_exited"]
 [connection signal="timeout" from="BareHand_attack/ActionTimer" to="." method="_on_action_timer_timeout"]
+[connection signal="area_entered" from="HurtBox" to="." method="_on_hurt_box_area_entered"]

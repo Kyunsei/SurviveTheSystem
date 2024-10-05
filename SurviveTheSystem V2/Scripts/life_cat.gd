@@ -95,13 +95,14 @@ func _physics_process(delta):
 		if item_array.size() > 0:
 			var c = 0
 			for i in item_array:
-				if i.species == "crab_leg":
-					i.get_node("Sprite2D").position =  Vector2(0.5,-0.5)*i.get_node("CollisionShape2D").shape.size
+				if i.species == "spidercrab_leg":
+					i.position = position
+					'i.get_node("Sprite2D").position =  Vector2(0.5,-0.5)*i.get_node("CollisionShape2D").shape.size
 					#$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
 					i.get_node("Sprite2D").rotation =  (last_dir.angle())
 					var offset_x = cos(last_dir.angle()) * (i.get_node("CollisionShape2D").shape.size.x/2 +32)
 					var offset_y = sin(last_dir.angle()) * (i.get_node("CollisionShape2D").shape.size.y/2 +32)
-					i.position = position + Vector2(offset_x, offset_y)
+					i.position = position + Vector2(offset_x, offset_y)'
 					#i.look_at(position)
 					#i.position =  position + $Sprite_0.texture.get_size()* Vector2(0.5,-0.5) + last_dir * i.get_node("CollisionShape2D").shape.size* Vector2(1.,0.)
 					#+ last_dir * i.get_node("CollisionShape2D").shape.size* Vector2(1.,0.) + $Sprite_0.texture.get_size()* Vector2(0.25,0.0)
@@ -224,7 +225,7 @@ func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV
 	$Energy_bar.value = self.energy *100 / self.maxEnergy
 
-var isAttacking: bool = false
+
 func Attack():
 	action_finished = false
 	if item_array.size() != 0:
@@ -285,7 +286,7 @@ func PickUp():
 				if closestItem.current_life_cycle == 3:
 					closestItem.LifeDuplicate2(self)
 
-			if closestItem.species == "crab_leg":
+			if closestItem.species == "spidercrab_leg":
 				closestItem.getPickUP(self)
 				closestItem.z_index = 0
 
@@ -325,13 +326,13 @@ func BareHand_attack():
 	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
 		if i != null:
-			i.getDamaged(10)
+			i.getDamaged(1)
 
 
 			
 
 func Die():
-	Drop()
+	DropALL()
 	self.isDead = true
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()

@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="1_pdy0w"]
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="1_s3cg0"]
-[ext_resource type="PackedScene" uid="uid://bxlj56vbn5rrk" path="res://Scenes/crab_leg_combat.tscn" id="3_k3470"]
+[ext_resource type="PackedScene" uid="uid://bxlj56vbn5rrk" path="res://Scenes/sublife_spidercrab_leg.tscn" id="3_k3470"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_lgq21"]
 size = Vector2(100, 100)

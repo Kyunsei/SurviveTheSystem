@@ -2,6 +2,7 @@ extends CharacterBody2D
 class_name LifeEntity
 
 
+
 #OPTIMISATION CPU PERFORMANCE
 var isActive = false
 var pool_index = 0
@@ -27,6 +28,7 @@ var direction = Vector2(0,0)
 var maxPV = 10
 var maxEnergy = 100
 var maxSpeed = 0
+var lifespan =  0
 
 
 #Genome parameters
@@ -199,7 +201,7 @@ func Ageing():
 	
 #diying
 func Die():
-	Drop()
+	DropALL()
 	self.isDead = true
 	pass
 	#NEED to be customized
@@ -235,10 +237,11 @@ func Absorb_life_energy(value):
 	energy += absorbed_energy 
 	self.carried_by.energy	-= absorbed_energy 
 
-func Drop():
+func DropALL():
 	for i in item_array:
 		i.carried_by = null
 		i.z_index = 0
+	item_array = []
 
 
 #GROWTHING
@@ -291,6 +294,8 @@ var InvicibilityTime = 0
 func getDamaged(value):
 	if InvicibilityTime == 0:
 		self.PV -= value
+		if self.PV <= 0:
+			Die()
 		InvicibilityTime = 1 
 		modulate = Color(1, 0.2, 0.2)
 		await get_tree().create_timer(0.5).timeout
@@ -301,8 +306,7 @@ func getDamaged(value):
 
 		self.AdjustBar()
 		self.get_node("HP_bar").show()
-	if self.PV <= 0:
-		Die()
+
 		#position -= Vector2(-10,0)
 
 func Activate():
@@ -370,3 +374,10 @@ func _on_vision_area_exited(area):
 func Use_Attack():
 	pass
 
+
+func _on_hurt_box_area_entered(area):
+	if area.name == "Crab_legArea2D" :
+				print("Crab_leg hit something")
+				getDamaged(10)
+	else :
+		pass

@@ -212,7 +212,8 @@ func LifeDuplicate():
 			if li > -1 and Life.spidercrab_number  < Life.spidercrab_pool_scene.size():
 				self.energy -= 30
 				Life.spidercrab_pool_scene[li].Activate()
-				var crab_leg_combat_scene = Life.crab_leg_combat_scene.instantiate()
+				
+				var crab_leg_combat_scene = Life.spidercrab_leg_scene.instantiate()
 				get_parent().add_child(crab_leg_combat_scene) 
 				crab_leg_combat_scene.position = newpos
 			#	Life.crab_leg_pool_scene[li2].Activate()
@@ -290,6 +291,8 @@ func Die():
 	Drop()
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()
+
+	
 	
 func Activate():
 	set_physics_process(true)
@@ -375,3 +378,4 @@ func _on_vision_body_exited(body):
 			food_array.erase(body)
 	if body.species == "catronaute":
 		food_array.erase(body)
+
