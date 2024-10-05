@@ -292,6 +292,8 @@ var InvicibilityTime = 0
 func getDamaged(value):
 	if InvicibilityTime == 0:
 		self.PV -= value
+		if self.PV <= 0:
+			Die()
 		InvicibilityTime = 1 
 		modulate = Color(1, 0.2, 0.2)
 		await get_tree().create_timer(0.5).timeout
@@ -302,8 +304,7 @@ func getDamaged(value):
 
 		self.AdjustBar()
 		self.get_node("HP_bar").show()
-	if self.PV <= 0:
-		Die()
+
 		#position -= Vector2(-10,0)
 
 func Activate():

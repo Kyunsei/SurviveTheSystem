@@ -197,4 +197,5 @@ shape = SubResource("RectangleShape2D_3mxph")
 
 [connection signal="child_entered_tree" from="CollisionShape2D" to="." method="_on_collision_shape_2d_child_entered_tree"]
 [connection signal="area_entered" from="Crab_legArea2D" to="." method="_on_area_2d_area_entered"]
+[connection signal="area_entered" from="Crab_legArea2D" to="." method="_on_crab_leg_area_2d_area_entered"]
 [connection signal="child_entered_tree" from="Crab_legArea2D/CollisionShape2D" to="." method="_on_collision_shape_2d_child_entered_tree"]

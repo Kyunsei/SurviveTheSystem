@@ -7,6 +7,7 @@ func Activate():
 	set_collision_layer_value(1,1)
 	$Crab_legArea2D/CollisionShape2D.disabled = true
 	#$Crab_legArea2D/CollisionShape2D.shape.size = Vector2(34,72)
+	
 
 func Build_Genome():
 	#set_collision_layer_value(1,1)
@@ -19,7 +20,6 @@ func Build_Genome():
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	$Crab_legArea2D/CollisionShape2D.disabled = true
-
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -68,8 +68,20 @@ func Use_Attack():
 			#$Object_attack/crab_leg_combat.hide()
 
 
+var HealthCounter = 0
+func _on_crab_leg_area_2d_area_entered(area):
+	if area.name == "HurtBox" and HealthCounter <= 2:
+		HealthCounter += 1
+		print(HealthCounter)
+	if HealthCounter >= 3 :
+		Die()
 
-#func _on_area_2d_area_entered(area):
-	#if isAttacking == true:
-				#print("something entered 2d colliion shape while attacking")
-				#getClosestLife()
+func Die():
+	self.isDead = true
+	velocity = Vector2(0,0)
+	Drop()
+	print("should be ded")
+	#self.queue_free()
+	#$Dead_Sprite_0.show()
+	#$Sprite_0.hide()
+	#$Crab_legArea2D/CollisionShape2D.queue_free()

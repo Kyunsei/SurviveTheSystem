@@ -290,6 +290,8 @@ func Die():
 	Drop()
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()
+	$HurtBox/CollisionShape2D.queue_free()
+	
 	
 func Activate():
 	set_physics_process(true)
