@@ -13,9 +13,9 @@ var last_dir = Vector2.ZERO
 var rotation_dir = 0
 
 func Build_Genome():
-	Genome["maxPV"]=[60]
-	Genome["speed"] =[200]
-	Genome["lifespan"]=[5000]
+	Genome["maxPV"]=[60,60]
+	Genome["speed"] =[200,200]
+	Genome["lifespan"]=[5000,5000]
 	#Genome["sprite"] = [preload("res://Art/player_cat.png")]
 	#Genome["dead_sprite"] = [preload("res://Art/poop_star.png")]
 	
@@ -193,6 +193,7 @@ func _on_timer_timeout():
 			Ageing()
 			AdjustBar()
 			LifeDuplicate()
+			Growth()
 
 
 			if self.energy <= 0 or self.age >= Genome["lifespan"][self.current_life_cycle] or self.PV <=0:
@@ -203,8 +204,24 @@ func _on_timer_timeout():
 			Deactivate()
 
 
+func Growth():
+	if current_life_cycle == 0:
+		if self.age > 2 and self.energy > 5:
+			self.current_life_cycle += 1
+			var crab_leg_combat_scene = Life.crab_leg_combat_scene.instantiate()
+			get_parent().add_child(crab_leg_combat_scene) 
+			crab_leg_combat_scene.position = self.position
+			$Sprite_0.scale *= 3
+			$Dead_Sprite_0.scale *=3
+			$Collision_0.scale *=3
+			$HurtBox/CollisionShape2D.scale *=3
+			set_physics_process(true)
+			self.maxSpeed = Genome["speed"][self.current_life_cycle]
+			self.maxPV = Genome["maxPV"][self.current_life_cycle]
+			self.PV = self.maxPV
+
 func LifeDuplicate():
-	if self.age % 1 == 0 and self.energy > 60:
+	if self.age % 1 == 0 and self.energy > 60 and current_life_cycle >= 1:
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
 			var li = Life.spidercrab_pool_state.find(0)
 			#var li2 = Life.crab_leg_pool_state.find(0)		
@@ -212,9 +229,6 @@ func LifeDuplicate():
 			if li > -1 and Life.spidercrab_number  < Life.spidercrab_pool_scene.size():
 				self.energy -= 30
 				Life.spidercrab_pool_scene[li].Activate()
-				var crab_leg_combat_scene = Life.crab_leg_combat_scene.instantiate()
-				get_parent().add_child(crab_leg_combat_scene) 
-				crab_leg_combat_scene.position = newpos
 			#	Life.crab_leg_pool_scene[li2].Activate()
 			#	Life.crab_leg_pool_scene[li2].PV = Genome["maxPV"][0]
 		#		Life.crab_leg_pool_scene[li2].age = 0
