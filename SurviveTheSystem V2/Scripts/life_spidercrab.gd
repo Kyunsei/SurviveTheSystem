@@ -32,6 +32,7 @@ func Build_Stat():
 	self.energy = 100
 	self.maxPV = 60#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
+	self.size = $Sprite_0.texture.get_size()
 
 
 	AdjustBar()
@@ -125,7 +126,7 @@ func _input(event):
 
 
 func Brainy():
-	var center = position + Vector2($Sprite_0.texture.get_width()/2, -$Sprite_0.texture.get_height()/2)
+	var center = position + size/2
 	var food_array_temp = food_array.duplicate()
 
 	if action_finished == true:
@@ -196,6 +197,7 @@ func _on_timer_timeout():
 			Growth()
 
 
+
 			if self.energy <= 0 or self.age >= Genome["lifespan"][self.current_life_cycle] or self.PV <=0:
 				Die()			
 			if current_time_speed != World.speed:
@@ -206,15 +208,14 @@ func _on_timer_timeout():
 
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 2 and self.energy > 5:
+		if self.age > 1 and self.energy > 5:
 			self.current_life_cycle += 1
-			var crab_leg_combat_scene = Life.crab_leg_combat_scene.instantiate()
-			get_parent().add_child(crab_leg_combat_scene) 
-			crab_leg_combat_scene.position = self.position
+			var crab_leg = Life.spidercrab_leg_scene.instantiate()
+			get_parent().add_child(crab_leg) 
+			crab_leg.position = self.position
 			$Sprite_0.scale *= 3
 			$Dead_Sprite_0.scale *=3
 			$Collision_0.scale *=3
-			$HurtBox/CollisionShape2D.scale *=3
 			set_physics_process(true)
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
