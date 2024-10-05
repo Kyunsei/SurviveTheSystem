@@ -36,14 +36,17 @@ visible = false
 shape = SubResource("CapsuleShape2D_gm5t3")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
+scale = Vector2(0.33, 0.33)
 texture = ExtResource("2_ge6rd")
 centered = false
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
+scale = Vector2(0.33, 0.33)
 texture = ExtResource("3_ci0x6")
 centered = false
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
+scale = Vector2(0.33, 0.33)
 shape = SubResource("RectangleShape2D_wmr4f")
 
 [node name="DebugLabel" type="Label" parent="."]
@@ -116,13 +119,3 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 0
 color = Color(0, 0.894118, 0.898039, 1)
-
-[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
-[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
-[connection signal="timeout" from="ActionTimer" to="." method="_on_action_timer_timeout"]
-[connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
-[connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]
-[connection signal="body_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_entered"]
-[connection signal="body_exited" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_exited"]
-[connection signal="timeout" from="BareHand_attack/ActionTimer" to="." method="_on_action_timer_timeout"]
