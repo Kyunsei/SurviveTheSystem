@@ -16,6 +16,7 @@ func Build_Genome():
 	Genome["maxPV"]=[60,60]
 	Genome["speed"] =[200,200]
 	Genome["lifespan"]=[5000,5000]
+	Genome["scale"]=[0.33,1]
 	#Genome["sprite"] = [preload("res://Art/player_cat.png")]
 	#Genome["dead_sprite"] = [preload("res://Art/poop_star.png")]
 	
@@ -32,7 +33,7 @@ func Build_Stat():
 	self.energy = 100
 	self.maxPV = 60#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
-	self.size = $Sprite_0.texture.get_size()
+	self.size = $Sprite_0.texture.get_size()*0.33
 
 
 	AdjustBar()
@@ -40,7 +41,10 @@ func Build_Stat():
 func Build_Phenotype(): 
 	# SPRITE
 	
-		
+	$Sprite_0.scale *= Genome["scale"][self.current_life_cycle]
+	#$Collision_0.shape.size = size
+	$Dead_Sprite_0.scale *= Genome["scale"][self.current_life_cycle]
+	
 	$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
 	#$Sprite_0.offset.x = 0 # -$Sprite_0.texture.get_width()/4
 	
@@ -50,11 +54,12 @@ func Build_Phenotype():
 	$Dead_Sprite_0.hide()
 
 	#Body
-	$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
+	$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #Vector2(width/2,-height/2)
+	$Collision_1.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*1
 
 	#Vision
 	$Vision/Collision.shape.radius = 1500
-	$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
+	$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #Vector2(width/2,-height/2)
 
 
 	init_progressbar()
@@ -145,7 +150,7 @@ func Brainy():
 						action_finished = false
 						$ActionTimer.start(2.)
 					
-				elif center.distance_to(cl.position) < 64 and cl.isDead == false:
+				elif center.distance_to(cl.position) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
 						if cl.species=="catronaute":
 							cl.getDamaged(10)
 						else :
@@ -213,9 +218,13 @@ func Growth():
 			var crab_leg = Life.spidercrab_leg_scene.instantiate()
 			get_parent().add_child(crab_leg) 
 			crab_leg.position = self.position
-			$Sprite_0.scale *= 3
-			$Dead_Sprite_0.scale *=3
-			$Collision_0.scale *=3
+			$Sprite_0.scale = Vector2(1,1)
+			$Dead_Sprite_0.scale = Vector2(1,1)
+			$Collision_0.disabled = true
+			$Collision_1.disabled = false
+			$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle]
+			$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle]
+			size = size*3
 			set_physics_process(true)
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
@@ -317,6 +326,7 @@ func Activate():
 	self.isActive = true
 	self.isDead = false
 	Life.spidercrab_pool_state[self.pool_index] = 1
+	$Collision_1.disabled = true
 	Build_Stat()
 	show()
 	

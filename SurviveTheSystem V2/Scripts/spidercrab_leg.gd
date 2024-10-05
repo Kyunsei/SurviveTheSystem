@@ -2,13 +2,13 @@ extends LifeEntity
 var species = "spidercrab_leg"
 
 
-var hastouchedsomthing = false
+var hastouchedsomething = false
 
 func Build_Stat():
 	self.current_life_cycle = 0
-	self.PV = 50# Genome["maxPV"][self.current_life_cycle]	
+	self.PV = 500# Genome["maxPV"][self.current_life_cycle]	
 	self.energy = 1
-	self.maxPV = 50#Genome["maxPV"][self.current_life_cycle]	
+	self.maxPV = 500#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
 	self.lifespan = 20.
 
@@ -37,9 +37,6 @@ func _on_timer_timeout():
 			Deactivate()
 
 func Use_Attack():
-	pass
-
-
 	$Effect_Area/CollisionShape2D.disabled = false
 	rotation = carried_by.last_dir.angle()
 	#position = carried_by.position.normalized()*60
@@ -47,24 +44,14 @@ func Use_Attack():
 	await $AnimationPlayer.animation_finished
 	$Effect_Area/CollisionShape2D.disabled = true
 
-	if hastouchedsomthing :
-		hastouchedsomthing = false
+	if hastouchedsomething :
+		hastouchedsomething = false
 		self.PV -= 10
 		print(self.PV)
 		if self.PV <= 0:
 			Die()
 
 
-
-'var HealthCounter = 0
-func _on_crab_leg_area_2d_area_entered(area):
-	if area.name == "HurtBox" and HealthCounter <= 2:
-		HealthCounter += 1
-		print(HealthCounter)
-	if HealthCounter >= 3 :
-		Die()'
-
-	
 func Activate():
 	set_collision_layer_value(1,1)
 	self.isActive = true
@@ -114,5 +101,5 @@ func Die():
 func _on_crab_leg_area_2d_body_entered(body):
 	if body.species != "block" and body != carried_by and body != self:
 		body.getDamaged(10)
-		hastouchedsomthing = true
+		hastouchedsomething = true
 

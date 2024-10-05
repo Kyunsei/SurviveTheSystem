@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bkvttykvie6wd"]
+[gd_scene load_steps=9 format=3 uid="uid://bkvttykvie6wd"]
 
 [ext_resource type="Script" path="res://Scripts/life_spidercrab.gd" id="1_3m3wu"]
 [ext_resource type="Texture2D" uid="uid://e1v54i3ffumy" path="res://Art/spider.png" id="2_ge6rd"]
@@ -9,6 +9,9 @@ radius = 500.0
 height = 1000.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wmr4f"]
+size = Vector2(42, 42)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w0i8c"]
 size = Vector2(128, 128)
 
 [sub_resource type="Theme" id="Theme_g2d4v"]
@@ -45,6 +48,9 @@ centered = false
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_wmr4f")
+
+[node name="Collision_1" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_w0i8c")
 
 [node name="DebugLabel" type="Label" parent="."]
 offset_right = 40.0
