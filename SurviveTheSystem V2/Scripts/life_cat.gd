@@ -214,7 +214,7 @@ func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV
 	$Energy_bar.value = self.energy *100 / self.maxEnergy
 
-var isAttacking: bool = false
+
 func Attack():
 	action_finished = false
 	if item_array.size() != 0:
@@ -315,7 +315,7 @@ func BareHand_attack():
 	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
 		if i != null:
-			i.getDamaged(10)
+			i.getDamaged(1)
 
 
 			

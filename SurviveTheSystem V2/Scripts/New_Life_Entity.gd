@@ -2,6 +2,7 @@ extends CharacterBody2D
 class_name LifeEntity
 
 
+
 #OPTIMISATION CPU PERFORMANCE
 var isActive = false
 var pool_index = 0
@@ -370,3 +371,10 @@ func _on_vision_area_exited(area):
 func Use_Attack():
 	pass
 
+
+func _on_hurt_box_area_entered(area):
+	if area.name == "Crab_legArea2D" :
+				print("Crab_leg hit something")
+				getDamaged(10)
+	else :
+		pass

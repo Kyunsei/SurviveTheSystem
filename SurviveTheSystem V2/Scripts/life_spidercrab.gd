@@ -375,3 +375,4 @@ func _on_vision_body_exited(body):
 			food_array.erase(body)
 	if body.species == "catronaute":
 		food_array.erase(body)
+
