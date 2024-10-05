@@ -24,11 +24,13 @@ func _process(delta):
 	pass
 	
 func Use_Attack():
+	pass
 	#size = Vector2(72,34)
-	rotation = carried_by.last_dir.angle()
-	#position = carried_by.position.normalized()*60
-	$AnimationPlayer.play("Attack_animation")
-	await $AnimationPlayer.animation_finished
+	#rotation = carried_by.last_dir.angle()
+	#position = carried_by.position + Vector2(16,32)*carried_by.last_dir
+	#position = carried_by.position +  carried_by.last_dir * $CollisionShape2D.shape.size* Vector2(0.5,0.5)  - Vector2(64,64) * Vector2(-0.25,0)
+#	$AnimationPlayer.play("Attack_animation")
+#	await $AnimationPlayer.animation_finished
 	#$BareHand_attack/sprite.show()
 	#$BareHand_attack/ActionTimer.start(0.2)
 	#for i in barehand_array:

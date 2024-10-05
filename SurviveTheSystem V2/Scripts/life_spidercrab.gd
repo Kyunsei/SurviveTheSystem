@@ -81,8 +81,8 @@ func _physics_process(delta):
 	if item_array.size() > 0:
 		var c = 0
 		for i in item_array:
-			i.position = position + Vector2(48+c*16,-64)
-			c += 1
+				i.position = position + Vector2(48+c*16,-64)
+				c += 1
 	
 	if direction.normalized() != Vector2(0,0):
 		last_dir = direction

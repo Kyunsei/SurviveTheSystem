@@ -95,11 +95,21 @@ func _physics_process(delta):
 		if item_array.size() > 0:
 			var c = 0
 			for i in item_array:
-				i.position = position + Vector2(c*16,0)
-				c += 1
-				#i.rotation =  (last_dir.angle()) 
-				i.position =  last_dir * i.size * Vector2(1,1)  +position
+				if i.species == "crab_leg":
+					i.get_node("Sprite2D").position =  Vector2(0.5,-0.5)*i.get_node("CollisionShape2D").shape.size
+					#$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
+					i.get_node("Sprite2D").rotation =  (last_dir.angle())
+					var offset_x = cos(last_dir.angle()) * (i.get_node("CollisionShape2D").shape.size.x/2 +32)
+					var offset_y = sin(last_dir.angle()) * (i.get_node("CollisionShape2D").shape.size.y/2 +32)
+					i.position = position + Vector2(offset_x, offset_y)
+					#i.look_at(position)
+					#i.position =  position + $Sprite_0.texture.get_size()* Vector2(0.5,-0.5) + last_dir * i.get_node("CollisionShape2D").shape.size* Vector2(1.,0.)
+					#+ last_dir * i.get_node("CollisionShape2D").shape.size* Vector2(1.,0.) + $Sprite_0.texture.get_size()* Vector2(0.25,0.0)
+					#i.get_node("CollisionShape2D").shape.size* Vector2(0.5,0.5) # - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
+				else: 
+					c += 1
 
+					i.position =  last_dir * i.size * Vector2(1,1)  +position
 func _input(event):
 	if isPlayer:
 		#var object_attack_vector = Vector2(get_viewport().get_mouse_position() - self.position)
