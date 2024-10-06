@@ -201,15 +201,15 @@ func Brainy():
 	var danger_array_temp = danger_array.duplicate()
 	var food_array_temp = food_array.duplicate()
 	var friend_array_temp = friend_array.duplicate()
-	
+
 
 	if danger_array_temp.size() > 0 :
 		var cl = getClosestLife(danger_array_temp,1000)
 		if cl != null:
 			var random = randi_range(0,100)
-			var probability = clamp(1.0 - (position.distance_to(cl.position) / 300), 0.0, 1.0) * 100
+			var probability = clamp(1.0 - (position.distance_to(cl.getCenterPos()) / 300), 0.0, 1.0) * 100
 			if random <= probability:
-				getAway(cl.position)
+				getAway(cl.getCenterPos())
 
 
 	if action_finished == true:
@@ -217,10 +217,10 @@ func Brainy():
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
 				#$DebugLabel.text ="feeding"
-				if center.distance_to(cl.position) < 32 and cl.isDead == false:
+				if center.distance_to(cl.getCenterPos()) < 32 and cl.isDead == false:
 						Eat(cl)
 				if cl.isDead == false:
-						getCloser(cl.position)
+						getCloser(cl.getCenterPos())
 				else:
 					AdjustDirection()
 			else:
@@ -230,7 +230,7 @@ func Brainy():
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
 
-				if position.distance_to(cl.position) > 32 :
+				if position.distance_to(cl.getCenterPos()) > 32 :
 					#getCloser(cl.position)
 					goToMiddle(friend_array_temp)
 				else:

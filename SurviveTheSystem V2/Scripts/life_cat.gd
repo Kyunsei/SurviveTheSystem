@@ -69,9 +69,9 @@ func Build_Phenotype():
 	var size_Barehand = Vector2(32,32*3)
 	$BareHand_attack/CollisionShape2D.shape.size = size_Barehand
 	$BareHand_attack/sprite.size = size_Barehand
-	#$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
+	$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
 	$BareHand_attack/sprite2.size = size_Barehand
-	#$BareHand_attack/sprite2.position = -Vector2(0.5,0.5)*size_Barehand
+	$BareHand_attack/sprite2.position = -Vector2(0.5,0.5)*size_Barehand
 
 
 func _physics_process(delta):

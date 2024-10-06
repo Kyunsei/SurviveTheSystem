@@ -139,7 +139,7 @@ func AdjustDirection():
 		velocity = direction * self.maxSpeed * 0.5
 		action_finished = false
 		$ActionTimer.start(0.5)
-		$DebugLabel.text = "Idle"
+		#$DebugLabel.text = "Idle"
 
 
 

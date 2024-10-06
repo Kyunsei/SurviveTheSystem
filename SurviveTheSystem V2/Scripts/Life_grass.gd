@@ -3,7 +3,7 @@ extends LifeEntity
 #var life_scene = load("res://Scenes/life_grass.tscn")
 # Grass script
 
-var species = "spiky_grass"
+var species = "grass"
 
 func Build_Genome():
 	Genome["maxPV"]=[10,10,10]
