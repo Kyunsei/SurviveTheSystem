@@ -264,7 +264,7 @@ func _on_timer_timeout():
 			Metabo_cost()
 			Ageing()
 			AdjustBar()
-			#LifeDuplicate()
+			LifeDuplicate()
 			Growth()
 
 
