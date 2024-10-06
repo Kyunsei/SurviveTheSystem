@@ -162,7 +162,7 @@ func Brainy():
 				'else :
 					get_out_of_soil()'
 
-	elif action_finished == true and isBurrow == false:
+	if action_finished == true and isBurrow == false:
 		if self.energy < 90 and food_array_temp.size()>0:
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
