@@ -370,6 +370,11 @@ func Eat(life):
 		self.energy += life.energy
 		life.energy= 0
 		life.Die()
+	elif life.species == "petal" :
+		self.energy += life.energy
+		life.energy= 0
+		PV += 10
+		life.Die()
 	#$DebugLabel.text = str(age) + " " + str(energy)
 
 func _on_bare_hand_attack_body_entered(body):

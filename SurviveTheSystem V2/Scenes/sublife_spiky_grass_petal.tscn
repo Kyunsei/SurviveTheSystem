@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://kw1jq1g87ypr"]
+
+[ext_resource type="Texture2D" uid="uid://blm537rpfx3gm" path="res://Art/spiky_flower.png" id="1_jw6av"]
+[ext_resource type="Script" path="res://Scenes/petal.gd" id="1_o5caa"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ycm04"]
+size = Vector2(32, 32)
+
+[node name="Petal" type="CharacterBody2D"]
+script = ExtResource("1_o5caa")
+
+[node name="Collision_0" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_ycm04")
+
+[node name="Sprite_0" type="Sprite2D" parent="."]
+texture = ExtResource("1_jw6av")

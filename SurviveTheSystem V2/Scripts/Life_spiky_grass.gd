@@ -86,6 +86,9 @@ func Die():
 	$Sprite_0.hide()
 	$Sprite_2.hide()
 	$Sprite_flower.hide()
+	var petal = Life.petal_scene.instantiate()
+	get_parent().add_child(petal) 
+	petal.position = self.position - Vector2(32,32)
 
 #GROWTHING
 func Growth():
@@ -223,3 +226,7 @@ func _on_vision_area_exited(area):
 func _on_vision_body_entered(body):
 	if body.species == "catronaute":
 		body.getDamaged(5)
+	if body.species == "spidercrab_leg":
+		var petal = Life.petal_scene.instantiate()
+		get_parent().add_child(petal) 
+		petal.position = self.position - Vector2(10,10)
