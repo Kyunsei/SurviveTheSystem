@@ -31,7 +31,7 @@ func init_progressbar():
 func Build_Stat():
 	self.current_life_cycle = 0
 	self.PV = 60# Genome["maxPV"][self.current_life_cycle]	
-	self.energy = 1000
+	self.energy = 80
 	self.maxPV = 60#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
 	self.size = $Sprite_0.texture.get_size()*0.33
