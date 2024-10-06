@@ -181,6 +181,8 @@ func getClosestLife(array,minDist):
 			closest_entity = p
 	return closest_entity
 
+func getCenterPos():
+	return  position + Vector2(size.x/2,-size.y/2)
 #METABO cost
 func Metabo_cost():
 	#energy lost is returned to soil

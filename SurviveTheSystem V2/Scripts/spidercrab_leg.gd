@@ -6,9 +6,9 @@ var hastouchedsomething = false
 
 func Build_Stat():
 	self.current_life_cycle = 0
-	self.PV = 500# Genome["maxPV"][self.current_life_cycle]	
+	self.PV = 50# Genome["maxPV"][self.current_life_cycle]	
 	self.energy = 1
-	self.maxPV = 500#Genome["maxPV"][self.current_life_cycle]	
+	self.maxPV = 50#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
 	self.lifespan = 20.
 	self.size = get_node("Sprite_0").texture.get_size() * $Sprite_0.scale
@@ -49,7 +49,6 @@ func Use_Attack():
 	if hastouchedsomething :
 		hastouchedsomething = false
 		self.PV -= 10
-		print(self.PV)
 		if self.PV <= 0:
 			Die()
 

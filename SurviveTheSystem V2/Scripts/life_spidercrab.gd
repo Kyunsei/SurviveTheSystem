@@ -131,7 +131,7 @@ func _input(event):
 
 
 func Brainy():
-	var center = position + size/2
+	var center = position + Vector2(size.x/2,-size.y/2)
 	var food_array_temp = food_array.duplicate()
 
 	if action_finished == true:
@@ -140,7 +140,7 @@ func Brainy():
 			if cl !=null:
 				$DebugLabel.text ="feeding" 
 				#NEED TO ADJUST DISTANCE ACCORDING TO CENTER NOT CORNER
-				if center.distance_to(cl.position) < (128*3) and cl.isDead == false:
+				if center.distance_to(cl.getCenterPos()) < (128*3) and cl.isDead == false:
 					$DebugLabel.text ="charging"
 					var rdn = randi_range(0,100)
 					if rdn < 25:
@@ -150,14 +150,15 @@ func Brainy():
 						action_finished = false
 						$ActionTimer.start(2.)
 					
-				elif center.distance_to(cl.position) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
+				elif center.distance_to(cl.getCenterPos()) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
 						if cl.species=="catronaute":
+						
 							cl.getDamaged(10)
 						else :
 							Eat(cl)
 							velocity = Vector2(0,0)
 							$DebugLabel.text ="Eat"
-				elif cl.isDead == false and center.distance_to(cl.position) >= 128*3:
+				elif cl.isDead == false and center.distance_to(cl.getCenterPos()) >= 128*3:
 						#ChargeToward(cl.position)
 						getCloser(cl.position)
 						$DebugLabel.text ="getToFood "
@@ -170,8 +171,9 @@ func Brainy():
 	else:
 		var cl = getClosestLife(food_array_temp,1000)
 		if cl !=null:
-			if center.distance_to(cl.position) < 64 and cl.isDead == false:
+			if center.distance_to(cl.getCenterPos()) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
 				if cl.species=="catronaute":
+
 					cl.getDamaged(10)
 				else :
 					Eat(cl)
@@ -222,10 +224,14 @@ func Growth():
 			$Dead_Sprite_0.scale = Vector2(1,1)
 			$Collision_0.disabled = true
 			$Collision_1.disabled = false
-			$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle]
-			$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle]
-			size = size*3
-			set_physics_process(true)
+			$Collision_0.hide()
+			$Collision_1.show()
+			position.x = position.x - $Sprite_0.texture.get_width()/2  + size.x/2 #*Vector2(1,0)
+			position.y = position.y + $Sprite_0.texture.get_height()/2  - size.y/2 #*Vector2(1,0)
+			$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #- ($Sprite_0.texture.get_size()/2 + size/2)*Vector2(1,0)
+			$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #- ($Sprite_0.texture.get_size()/2 + size/2)*Vector2(1,0)
+			size = $Sprite_0.texture.get_size()
+		
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
@@ -327,6 +333,7 @@ func Activate():
 	self.isDead = false
 	Life.spidercrab_pool_state[self.pool_index] = 1
 	$Collision_1.disabled = true
+	$Collision_1.hide()
 	Build_Stat()
 	show()
 	
