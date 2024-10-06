@@ -7,9 +7,10 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3mxph"]
 size = Vector2(34, 72)
 
-[sub_resource type="Animation" id="Animation_ji8hw"]
+[sub_resource type="Animation" id="Animation_36jid"]
 resource_name = "Attack_animation"
-length = 0.2
+length = 0.25
+step = 0.05
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -17,10 +18,10 @@ tracks/0/path = NodePath("Sprite_0:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
-"values": [Vector2(0, 0), Vector2(0, 0)]
+"values": [Vector2(-39, -36), Vector2(36, 1), Vector2(-37, 33), Vector2(0, 0)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -29,62 +30,38 @@ tracks/1/path = NodePath("Sprite_0:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.2),
-"transitions": PackedFloat32Array(1, 1),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
-"values": [0.523599, 2.61799]
+"values": [-1.0472, 1.5708, 4.18879, 0.0]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Collision_0:rotation")
+tracks/2/path = NodePath("Effect_Area/CollisionShape2D:rotation")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
-"values": [0.523599, 1.5708, 2.61799]
+"values": [-1.0472, 1.5708, 4.18879, 0.0]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Collision_0:position")
+tracks/3/path = NodePath("Effect_Area/CollisionShape2D:position")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1),
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
-"values": [Vector2(33, -23), Vector2(36, 17), Vector2(3, 40)]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("Effect_Area/CollisionShape2D:position")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Vector2(33, -23), Vector2(36, 17), Vector2(3, 40)]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("Effect_Area/CollisionShape2D:rotation")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [0.523599, 1.5708, 2.61799]
+"values": [Vector2(-38, -36), Vector2(37, 0), Vector2(-36, 33), Vector2(0, 0)]
 }
 
-[sub_resource type="Animation" id="Animation_rdwnx"]
-length = 0.001
+[sub_resource type="Animation" id="Animation_08kl5"]
+resource_name = "RESET"
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -95,7 +72,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-5, 10)]
+"values": [Vector2(0, 0)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -107,12 +84,12 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [-1.0472]
+"values": [0.0]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Collision_0:rotation")
+tracks/2/path = NodePath("Effect_Area/CollisionShape2D:rotation")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
@@ -124,44 +101,20 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Collision_0:position")
+tracks/3/path = NodePath("Effect_Area/CollisionShape2D:position")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-28, -23)]
-}
-tracks/4/type = "value"
-tracks/4/imported = false
-tracks/4/enabled = true
-tracks/4/path = NodePath("Effect_Area/CollisionShape2D:position")
-tracks/4/interp = 1
-tracks/4/loop_wrap = true
-tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(33, -23)]
-}
-tracks/5/type = "value"
-tracks/5/imported = false
-tracks/5/enabled = true
-tracks/5/path = NodePath("Effect_Area/CollisionShape2D:rotation")
-tracks/5/interp = 1
-tracks/5/loop_wrap = true
-tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [0.523599]
+"values": [Vector2(-38, -36)]
 }
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_3ihf4"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_s4iyh"]
 _data = {
-"Attack_animation": SubResource("Animation_ji8hw"),
-"RESET": SubResource("Animation_rdwnx")
+"Attack_animation": SubResource("Animation_36jid"),
+"RESET": SubResource("Animation_08kl5")
 }
 
 [node name="spidercrab_leg" type="CharacterBody2D"]
@@ -171,40 +124,33 @@ script = ExtResource("1_vnhej")
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
 light_mask = 0
-position = Vector2(-28, -23)
-rotation = -1.0472
+position = Vector2(1, 0)
 shape = SubResource("RectangleShape2D_3mxph")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
-position = Vector2(-5, 10)
-rotation = -1.0472
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_msxlx")
-centered = false
-offset = Vector2(0, -144)
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
-position = Vector2(-5, 10)
-rotation = -1.0472
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_6kwly")
 centered = false
-offset = Vector2(0, -144)
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-"": SubResource("AnimationLibrary_3ihf4")
-}
 
 [node name="Effect_Area" type="Area2D" parent="."]
+visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Effect_Area"]
 light_mask = 0
-position = Vector2(33, -23)
-rotation = 0.523599
+position = Vector2(-38, -36)
+rotation = -1.0472
 shape = SubResource("RectangleShape2D_3mxph")
 
 [node name="Timer" type="Timer" parent="."]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_s4iyh")
+}
 
 [connection signal="body_entered" from="Effect_Area" to="." method="_on_crab_leg_area_2d_body_entered"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

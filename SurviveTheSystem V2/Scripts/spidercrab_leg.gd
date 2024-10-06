@@ -11,7 +11,9 @@ func Build_Stat():
 	self.maxPV = 500#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
 	self.lifespan = 20.
+	self.size = get_node("Sprite_0").texture.get_size() * $Sprite_0.scale
 
+	
 
 
 # Called when the node enters the scene tree for the first time.
@@ -38,7 +40,7 @@ func _on_timer_timeout():
 
 func Use_Attack():
 	$Effect_Area/CollisionShape2D.disabled = false
-	rotation = carried_by.last_dir.angle()
+	#rotation = carried_by.last_dir.angle()
 	#position = carried_by.position.normalized()*60
 	$AnimationPlayer.play("Attack_animation")
 	await $AnimationPlayer.animation_finished
@@ -100,6 +102,6 @@ func Die():
 
 func _on_crab_leg_area_2d_body_entered(body):
 	if body.species != "block" and body != carried_by and body != self:
-		body.getDamaged(10)
+		body.getDamaged(50)
 		hastouchedsomething = true
 

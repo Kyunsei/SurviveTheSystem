@@ -69,9 +69,9 @@ func Build_Phenotype():
 	var size_Barehand = Vector2(32,32*3)
 	$BareHand_attack/CollisionShape2D.shape.size = size_Barehand
 	$BareHand_attack/sprite.size = size_Barehand
-	$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
+	#$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
 	$BareHand_attack/sprite2.size = size_Barehand
-	$BareHand_attack/sprite2.position = -Vector2(0.5,0.5)*size_Barehand
+	#$BareHand_attack/sprite2.position = -Vector2(0.5,0.5)*size_Barehand
 
 
 func _physics_process(delta):
@@ -96,17 +96,8 @@ func _physics_process(delta):
 			var c = 0
 			for i in item_array:
 				if i.species == "spidercrab_leg":
-					i.position = position
-					'i.get_node("Sprite2D").position =  Vector2(0.5,-0.5)*i.get_node("CollisionShape2D").shape.size
-					#$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
-					i.get_node("Sprite2D").rotation =  (last_dir.angle())
-					var offset_x = cos(last_dir.angle()) * (i.get_node("CollisionShape2D").shape.size.x/2 +32)
-					var offset_y = sin(last_dir.angle()) * (i.get_node("CollisionShape2D").shape.size.y/2 +32)
-					i.position = position + Vector2(offset_x, offset_y)'
-					#i.look_at(position)
-					#i.position =  position + $Sprite_0.texture.get_size()* Vector2(0.5,-0.5) + last_dir * i.get_node("CollisionShape2D").shape.size* Vector2(1.,0.)
-					#+ last_dir * i.get_node("CollisionShape2D").shape.size* Vector2(1.,0.) + $Sprite_0.texture.get_size()* Vector2(0.25,0.0)
-					#i.get_node("CollisionShape2D").shape.size* Vector2(0.5,0.5) # - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
+					i.position =  last_dir * Vector2(32+i.size.x/2, 32 + i.size.x/2) + (position + Vector2(16,-32))
+					i.rotation =  (last_dir.angle())
 				else: 
 					c += 1
 
