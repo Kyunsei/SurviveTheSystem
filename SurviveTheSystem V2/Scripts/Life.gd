@@ -8,6 +8,7 @@ var player = null
 var life_size_unit = 32
 var life_scene = preload("res://Scenes/life.tscn") #load scene of block
 var life_grass_scene = load("res://Scenes/life_grass.tscn")
+var life_spiky_grass_scene = load("res://Scenes/life_spiky_grass.tscn")
 var life_sheep_scene = load("res://Scenes/life_sheep.tscn")
 var life_berry_scene = load("res://Scenes/life_berry.tscn")
 var life_cat_scene = load("res://Scenes/life_cat.tscn")
@@ -55,6 +56,9 @@ var cat_pool_state = []
 
 var grass_pool_scene = []
 var grass_pool_state = []
+
+var spiky_grass_pool_scene = []
+var spiky_grass_pool_state = []
 
 var sheep_pool_scene = []
 var sheep_pool_state = []
@@ -253,6 +257,9 @@ func Init_life_pool():
 
 	grass_pool_scene = []
 	grass_pool_state = []
+	
+	spiky_grass_pool_scene = []
+	spiky_grass_pool_state = []
 
 	sheep_pool_scene = []
 	sheep_pool_state = []
@@ -282,6 +289,12 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 				nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 				nl.pool_index = i
 				grass_pool_scene.append(nl)
+			if ID == "spiky_grass":
+				nl = life_spiky_grass_scene.instantiate() #need to write code according to genome ID
+				spiky_grass_pool_state.append(0)
+				#nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+				nl.pool_index = i
+				spiky_grass_pool_scene.append(nl)
 			if ID == "sheep":
 				nl = life_sheep_scene.instantiate() #need to write code according to genome ID
 				sheep_pool_state.append(0)
@@ -340,6 +353,16 @@ func Instantiate_Life_in_pool(folder,N,ID):
 			Life.plant_number += 1	
 			var newpos = PickRandomPlace() * World.tile_size
 			Life.grass_pool_scene[li].global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+		if ID == "spiky_grass":
+			var li = spiky_grass_pool_state.find(0)
+			Life.spiky_grass_pool_scene[li].Activate()
+			#Life.grass_pool_scene[li].energy = 2
+			Life.spiky_grass_pool_scene[li].age = randi_range(0,10)
+			Life.spiky_grass_pool_scene[li].current_life_cycle = 0# randi_range(0,1)
+			Life.spiky_grass_pool_scene[li].PV = Life.spiky_grass_pool_scene[li].Genome["maxPV"][0]
+			#Life.plant_number += 1	
+			var newpos = PickRandomPlace() * World.tile_size
+			Life.spiky_grass_pool_scene[li].global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 
 		if ID == "sheep":	
 			var li = sheep_pool_state.find(0)

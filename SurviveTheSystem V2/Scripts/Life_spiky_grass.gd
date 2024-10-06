@@ -6,25 +6,25 @@ extends LifeEntity
 var species = "spiky_grass"
 
 func Build_Genome():
-	Genome["maxPV"]=[10,10,10]
-	Genome["soil_absorption"] = [2,2,2]
-	Genome["lifespan"]=[20,20,20]#randi_range(15,20)]
+	Genome["maxPV"]=[10,10]
+	Genome["soil_absorption"] = [2,2]
+	Genome["lifespan"]=[20,20]#randi_range(15,20)]
 	Genome["sprite"] = [preload("res://Art/grass_1.png"),preload("res://Art/grass_2.png")]
 	Genome["dead_sprite"] = [preload("res://Art/grass_dead.png")]
 
 func Build_Phenotype(): #go to main
 	#This function should be call when building the pool.
 	
-	# SPRITE
 
 	$Sprite_1.hide()
-
+	$Sprite_flower.hide()
+	$Sprite_2.hide()
 	$Dead_Sprite_0.hide()
-
+	
 		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
-	$Vision/Collision.shape.radius = 150
+	$Vision/Collision.shape.radius = 16
 	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	#ADD Body
@@ -38,11 +38,11 @@ func Build_Phenotype(): #go to main
 	$Collision_1.disabled = true		
 	
 func Build_Stat():
-	self.PV = 10
+
 	self.current_life_cycle = 0
 	self.PV = 10
 	self.energy = 1
-	self.lifespan = 20
+	self.lifespan = 40
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -84,7 +84,8 @@ func Die():
 	$Collision_1.hide()
 	$Sprite_1.hide()
 	$Sprite_0.hide()
-	
+	$Sprite_2.hide()
+	$Sprite_flower.hide()
 
 #GROWTHING
 func Growth():
@@ -98,13 +99,21 @@ func Growth():
 			$Collision_0.disabled = true	
 			$Sprite_1.show()
 			$Sprite_0.hide()
+	if current_life_cycle == 1:
+		if self.age > 4 and self.energy > 2:
+			self.current_life_cycle += 1	
+			$Sprite_2.show()
+			$Sprite_1.hide()
 
+			#$Body/Collision_0.set_deferred("disabled", true)
 
+			#$Body/Collision_1.set_deferred("disabled", false)
+			
 
 
 #Duplication
 func LifeDuplicate():
-	if current_life_cycle == 1  :
+	if current_life_cycle == 1 :
 		if self.energy > 4:
 			
 			
@@ -126,18 +135,18 @@ func LifeDuplicate():
 				Life.plant_number += 1'
 			
 			#Life.grass_pool Technique
-			var li = Life.grass_pool_state.find(0)	
+			var li = Life.spiky_grass_pool_state.find(0)	
 			#+ Life.grass_pool_state.size()*0.05
-			if li > -1 and Life.plant_number  < Life.grass_pool_state.size():
+			if li > -1: # and Life.plant_number  < Life.grass_pool_state.size():
 				self.energy -= 1
-				Life.grass_pool_scene[li].Activate()
-				Life.grass_pool_scene[li].energy = 1
-				Life.grass_pool_scene[li].age = 0
-				Life.grass_pool_scene[li].current_life_cycle = 0
-				Life.grass_pool_scene[li].PV = Genome["maxPV"][0]
+				Life.spiky_grass_pool_scene[li].Activate()
+				Life.spiky_grass_pool_scene[li].energy = 1
+				Life.spiky_grass_pool_scene[li].age = 0
+				Life.spiky_grass_pool_scene[li].current_life_cycle = 0
+				Life.spiky_grass_pool_scene[li].PV = Genome["maxPV"][0]
 
-				Life.plant_number += 1
-				Life.grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
+				
+				Life.spiky_grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
 			else:
 				pass
 				#print("pool empty")
@@ -156,7 +165,7 @@ func LifeDuplicate():
 
 func Activate():
 	self.isActive = true
-	Life.grass_pool_state[self.pool_index] = 1
+	Life.spiky_grass_pool_state[self.pool_index] = 1
 	Build_Stat()
 	set_collision_layer_value(1,1)
 	#Build_Genome()
@@ -172,9 +181,9 @@ func Deactivate():
 	$Timer.stop()
 	set_collision_layer_value(1,0)
 	self.isActive = false
-	Life.grass_pool_state[self.pool_index] = 0
+	Life.spiky_grass_pool_state[self.pool_index] = 0
 	#Life.inactive_grass.append(self)
-	Life.plant_number -= 1
+	#Life.plant_number -= 1
 
 
 
@@ -209,3 +218,8 @@ func _on_vision_area_exited(area):
 
 
 
+
+
+func _on_vision_body_entered(body):
+	if body.species == "catronaute":
+		body.getDamaged(5)

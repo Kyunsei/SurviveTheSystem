@@ -69,7 +69,7 @@ func InitNewGame():
 	Life.Init_life_pool()
 	
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
-
+	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "spiky_grass")
 	Life.Instantiate_emptyLife_pool($Life, 50, "sheep")
 
 	Life.Instantiate_emptyLife_pool($Life, 200, "berry")
@@ -79,6 +79,7 @@ func InitNewGame():
 	Life.Instantiate_emptyLife_pool($Life, 50, "spidercrab")
 	
 	Life.Instantiate_Life_in_pool($Life,100,"grass")
+	Life.Instantiate_Life_in_pool($Life,100,"spiky_grass")
 	Life.Instantiate_Life_in_pool($Life,20,"berry")
 	Life.Instantiate_Life_in_pool($Life,10,"sheep")
 	#Life.Instantiate_Life_in_pool($Life,1,Life.char_selected)
