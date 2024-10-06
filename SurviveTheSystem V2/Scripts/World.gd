@@ -6,6 +6,8 @@ var world_size = 200 #The size in tile of the World
 var tile_size = 32#128 # the size in pixel of each tile
 var fieldofview = Vector2(0,0) #in tile
 
+var debug_mode = true
+
 
 var block_element_array = [] #1D matrix of the block composing the world
 var block_element_state = [] #1D matrix of the block state composing the world

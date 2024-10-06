@@ -59,17 +59,31 @@ offset_bottom = 595.0
 text = "Return"
 
 [node name="CheckBox" type="CheckBox" parent="."]
-offset_left = 919.0
-offset_top = 449.0
-offset_right = 1078.0
-offset_bottom = 487.0
+offset_left = 861.0
+offset_top = 444.0
+offset_right = 1020.0
+offset_bottom = 482.0
 
 [node name="Label" type="Label" parent="."]
-offset_left = 950.0
-offset_top = 458.0
-offset_right = 1070.0
-offset_bottom = 486.0
+offset_left = 892.0
+offset_top = 453.0
+offset_right = 1012.0
+offset_bottom = 481.0
 text = "Skip cutscene"
+
+[node name="CheckBox2" type="CheckBox" parent="."]
+offset_left = 861.0
+offset_top = 416.0
+offset_right = 1020.0
+offset_bottom = 454.0
+button_pressed = true
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 892.0
+offset_top = 421.0
+offset_right = 1012.0
+offset_bottom = 449.0
+text = "Debug Mode"
 
 [connection signal="pressed" from="Button_char_1" to="." method="_on_button_char_1_pressed"]
 [connection signal="pressed" from="Button_char_2" to="." method="_on_button_char_2_pressed"]
@@ -77,3 +91,4 @@ text = "Skip cutscene"
 [connection signal="pressed" from="Button_start" to="." method="_on_button_start_pressed"]
 [connection signal="pressed" from="Button_back" to="." method="_on_button_back_pressed"]
 [connection signal="toggled" from="CheckBox" to="." method="_on_check_box_toggled"]
+[connection signal="toggled" from="CheckBox2" to="." method="_on_check_box_2_toggled"]

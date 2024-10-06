@@ -49,3 +49,8 @@ func _on_check_box_toggled(toggled_on):
 
 func _on_button_char_3_pressed():
 	Life.char_selected = "sheep"
+
+
+func _on_check_box_2_toggled(toggled_on):
+	World.debug_mode = toggled_on
+	print(World.debug_mode)

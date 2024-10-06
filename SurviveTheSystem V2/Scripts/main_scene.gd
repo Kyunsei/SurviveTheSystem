@@ -59,8 +59,14 @@ func _process(delta):
 				CallGameOver()
 
 
+func init_debug_feature():
+	if World.debug_mode:
+		$UI/speedContainer.show()
+		$UI/Debug.show()
+		$UI/Wspeed.show()
 
 func InitNewGame():
+	init_debug_feature()
 	#Init the World
 	World.Init_World()
 	UpdateSimulationSpeed()

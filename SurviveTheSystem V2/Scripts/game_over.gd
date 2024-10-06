@@ -3,7 +3,8 @@ extends Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	if World.debug_mode:
+		$Button4.show()
 	
 
 func SetUp_GameOver_Screen():

@@ -1,0 +1,75 @@
+[gd_scene load_steps=2 format=3 uid="uid://cgchxlrwd55ih"]
+
+[ext_resource type="Script" path="res://Scripts/debug_menu.gd" id="1_uqd87"]
+
+[node name="Debug_Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uqd87")
+
+[node name="ShowButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 35.0
+offset_top = -17.0
+offset_right = 92.0
+offset_bottom = 14.0
+grow_vertical = 2
+rotation = 1.5708
+text = "SHOW"
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 271.0
+offset_bottom = 650.0
+
+[node name="HideButton" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 18.0
+offset_top = -24.0
+offset_right = 64.0
+offset_bottom = 7.0
+grow_horizontal = 0
+grow_vertical = 2
+rotation = 1.5708
+text = "HIDE"
+
+[node name="Spawn" type="Control" parent="Panel"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MenuButton" type="MenuButton" parent="Panel/Spawn"]
+layout_mode = 0
+offset_left = 66.0
+offset_top = 60.0
+offset_right = 161.0
+offset_bottom = 118.0
+text = "kkkk"
+item_count = 6
+popup/item_0/text = "grass"
+popup/item_0/id = 0
+popup/item_1/text = "spiky"
+popup/item_1/id = 1
+popup/item_2/text = "sheep"
+popup/item_2/id = 2
+popup/item_3/text = "spidercrab"
+popup/item_3/id = 3
+popup/item_4/text = "stingtree"
+popup/item_4/id = 4
+popup/item_5/text = "jjj"
+popup/item_5/id = 5
+
+[connection signal="pressed" from="ShowButton" to="." method="_on_show_button_pressed"]
+[connection signal="pressed" from="Panel/HideButton" to="." method="_on_hide_button_pressed"]

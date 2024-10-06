@@ -35,9 +35,9 @@ func init_progressbar():
 
 func Build_Stat():
 	self.current_life_cycle = 0
-	self.PV = 300000000	
+	self.PV = 30
 	self.energy = 50
-	self.maxPV = 50000000
+	self.maxPV = 50
 	self.maxEnergy = 100
 	self.maxSpeed = 200	
 

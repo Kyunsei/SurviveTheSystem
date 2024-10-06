@@ -53,3 +53,7 @@ func _on_button_test_pressed():
 
 func _on_button_4_pressed():
 	get_tree().change_scene_to_file("res://Test/diffusion_scene.tscn") # Replace with function body.
+
+
+func _on_button_5_pressed():
+	get_tree().change_scene_to_file("res://Test/test.tscn") # Replace with function body.
