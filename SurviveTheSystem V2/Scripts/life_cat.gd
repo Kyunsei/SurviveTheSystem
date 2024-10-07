@@ -265,24 +265,17 @@ func Sprint_Action():
 func Dash_Action():
 	if dashing == false :
 		dashing = true
-	#if self.PV > 1 :
-		#input_dir=last_dir
-		action_finished = false
+		action_finished = false #not use here
 		if self.maxSpeed < 300 :
-			velocity = input_dir.normalized()*self.maxSpeed
-			return input_dir
 			self.maxSpeed = 1000
-
+			velocity = last_dir.normalized()*self.maxSpeed
 			await get_tree().create_timer(12).timeout
+			velocity = Vector2.ZERO
 			self.maxSpeed = 200
 			dashing = false
-			action_finished = true
-		#self.PV -= 0.02
+			action_finished = true 
+			AdjustBar() #Ca c'est pour que les bar de HP et faim change si jaja
 
-			AdjustBar()
-	#else :
-		#action_finished = true
-		#self.maxSpeed = 200
 
 func Sprint_Action_Stop():
 	if dashing == true : 
