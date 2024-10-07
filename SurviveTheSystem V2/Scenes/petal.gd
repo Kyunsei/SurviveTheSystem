@@ -5,12 +5,10 @@ var species = "petal"
 
 var counter = 0
 
-func Build_Genome():
-	Genome["maxPV"]=[1000]
-	Genome["soil_absorption"] = [0]
-	Genome["lifespan"]=[300]#randi_range(15,20)]
-	#Genome["sprite"] = [preload("res://Art/berry_1.png"),preload("res://Art/berry_3.png"),preload("res://Art/berry_4.png"),preload("res://Art/berry_5.png")]
-	#Genome["dead_sprite"] = [preload("res://Art/berry_dead.png")]
+func _ready():
+	Activate()
+
+
 
 func Activate():
 
@@ -18,7 +16,6 @@ func Activate():
 	#Life.berry_pool_state[self.pool_index] = 1
 	Build_Stat()
 	set_collision_layer_value(1,1)
-	$Vision.set_collision_mask_value(1,true)
 	#Build_Genome()
 	show()
 	$Timer.wait_time = lifecycletime / World.speed
@@ -27,13 +24,14 @@ func Activate():
 
 func Build_Stat():
 	self.current_life_cycle = 0
-	self.PV = Genome["maxPV"][self.current_life_cycle]
-	self.energy = 1
+	self.PV = 10
+	self.maxPV = 10
 	
 	
 	#diying
 func Die():
 	self.isDead = true
+	$Sprite_0.modulate = Color(0.5, 0.5, 0.5,0.5)
 	if carried_by != null:
 		carried_by.item_array.erase(self)
 		self.carried_by = null
@@ -45,3 +43,15 @@ func getTransported(seed,transporter):
 	transporter.item_array.append(seed)
 	#if transporter.isPlayer == false and transporter.species != "spidercrab" :
 		#seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
+
+
+func _on_timer_timeout():
+	if World.isReady and isActive:
+		if isDead == false:			
+			Ageing()
+			if self.energy <= 0 or self.age >= self.lifespan  or self.PV <=0:
+				Die()			
+			if current_time_speed != World.speed:
+				adapt_time_to_worldspeed()
+		else:
+			Deactivate()

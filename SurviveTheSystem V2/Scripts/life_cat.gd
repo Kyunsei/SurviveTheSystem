@@ -281,6 +281,9 @@ func PickUp():
 				closestItem.getPickUP(self)
 				closestItem.z_index = 0
 
+			if closestItem.species == "petal" and closestItem.isDead == false :
+				closestItem.getPickUP(self)
+				closestItem.z_index = 0
 
 
 			if closestItem.species == "sheep" and closestItem.current_life_cycle < 2:
@@ -317,7 +320,7 @@ func BareHand_attack():
 	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
 		if i != null:
-			i.getDamaged(1)
+			i.getDamaged(10)
 
 
 			
@@ -327,6 +330,7 @@ func Die():
 	self.isDead = true
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()
+	
 	
 func Activate():
 	set_physics_process(true)

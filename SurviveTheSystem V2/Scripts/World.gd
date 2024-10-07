@@ -50,9 +50,10 @@ var diffusion_min_limit = 4. #cannot diffuse lower than 1
 var diffusion_block_limit = 2 #how many block energy move. not implemented.
 var block_diffusion_par = []
 
-func Init_World():
+func Init_World(folder):
 	Init_matrix()
 	Init_shader()
+	build_world_shape(folder)
 	speed = 1.0
 	day = 0
 	isReady = true
@@ -62,37 +63,33 @@ func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
-	'for i in range(block_element_array.size()):
-		if i < 2000:
-			block_element_array[i] = 0
-		elif i < 5000:
-			block_element_array[i] = 3
-		else: 
-			block_element_array[i] = 3'
-	
-
-	
-		
 	block_element_array.fill(6)
 	block_element_state.fill(0)
-	var x= 0
-	var y = 0
-	var y2 = 0
 
+func build_world_shape(folder):
 
-	x=  100
-	y=  100
-
-	var radius= 50
-	var center = Vector2(radius/2,radius/2)
-	for w in range(-radius,radius*2):
-		for h in range(-radius,radius*2):
+	make_and_instatiate_round_island(100,100,25,folder)
+	make_and_instatiate_round_island(140,85,25,folder)
+	make_and_instatiate_round_island(100,70,12,folder)
+	make_and_instatiate_round_island(120,50,20,folder)
+	make_and_instatiate_round_island(80,130,15,folder)				
+	make_and_instatiate_round_island(80,80,5,folder)	
+	make_and_instatiate_round_island(70,70,5,folder)	
+				
+func make_and_instatiate_round_island(x,y,radius,folder):
+	x=  x-radius
+	y=  y-radius
+	var center = Vector2(radius,radius)
+	for w in range(0,radius*2+1):
+		for h in range(0,radius*2+1):
 			var distance = center.distance_to(Vector2(w, h))
 			if distance < radius :
-				block_element_state[(x+w)*world_size +y+h ]= 1
-			
+				block_element_state[(y+w)*world_size +x+h ]= 1
+				World.InstantiateBlock(x+w,y+h,folder)
+			if Vector2(w, h).distance_to(center) >= radius and Vector2(w, h).distance_to(center) < radius +2:
+				World.InstantiateBlock(x+w,y+h,folder)
 
-	x=  5
+	'x=  5
 	y=  125
 
 	radius= 35
@@ -110,16 +107,9 @@ func Init_matrix():
 		for h in range(-radius,radius*2):
 			var distance = center.distance_to(Vector2(w, h))
 			if distance < radius :
-				block_element_state[(x+w)*world_size +y+h ]= 1
+				block_element_state[(x+w)*world_size +y+h ]= 1'
 			
-					
-		
-			
-
-	#no more used:
-	#world_array.resize(world_size*world_size)
-	#world_array.fill(-1)
-	
+				
 	
 
 
@@ -173,6 +163,9 @@ func InstantiateALLBlock(folder):
 			var xpos =  i
 			var ypos =  j
 			World.InstantiateBlock(xpos,ypos,folder)
+
+
+
 
 
 func ActivateAndDesactivateBlockAround(direction,x,y,allblocks):

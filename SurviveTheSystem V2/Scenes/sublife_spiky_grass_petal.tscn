@@ -7,6 +7,7 @@
 size = Vector2(32, 32)
 
 [node name="Petal" type="CharacterBody2D"]
+collision_mask = 0
 script = ExtResource("1_o5caa")
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
@@ -14,3 +15,7 @@ shape = SubResource("RectangleShape2D_ycm04")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
 texture = ExtResource("1_jw6av")
+centered = false
+offset = Vector2(0, -32)
+
+[node name="Timer" type="Timer" parent="."]
