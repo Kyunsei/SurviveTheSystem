@@ -6,6 +6,7 @@ var species = "catronaute"
 var barehand_array = []
 var isimmobile_1sec = false
 var dashing = false
+var worn_out = false
 
 #movmnt
 var input_dir = Vector2.ZERO
@@ -263,18 +264,23 @@ func Sprint_Action():
 		self.maxSpeed = 200
 		
 func Dash_Action():
-	if dashing == false :
+	if dashing == false and worn_out == false :
 		dashing = true
 		action_finished = false #not use here
 		if self.maxSpeed < 300 :
-			self.maxSpeed = 1000
+			worn_out = true
+			self.maxSpeed = 1500
+			$Collision_0.shape.size *= 0.4
 			velocity = last_dir.normalized()*self.maxSpeed
-			await get_tree().create_timer(12).timeout
+			await get_tree().create_timer(0.2).timeout
+			$Collision_0.shape.size *= 2.5
 			velocity = Vector2.ZERO
 			self.maxSpeed = 200
 			dashing = false
 			action_finished = true 
 			AdjustBar() #Ca c'est pour que les bar de HP et faim change si jaja
+			await get_tree().create_timer(1.5).timeout
+			worn_out = false
 
 
 func Sprint_Action_Stop():
