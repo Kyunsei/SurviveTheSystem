@@ -37,6 +37,10 @@ func BlockUpdate():
 			set_collision_layer_value(2,false)
 		#$debug.text = str(posindex)
 		else:
+			if World.block_element_state[posindex- World.world_size] == 1:
+				$Sprite2D.show()
+				#$ColorRect2.color = getAdjustedSoilColor()
+
 			$ColorRect.color.a = 0
 			set_collision_layer_value(2,true)
 			

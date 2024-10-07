@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://d1ek3epe8la3s"]
+[gd_scene load_steps=4 format=3 uid="uid://d1ek3epe8la3s"]
 
 [ext_resource type="Script" path="res://Scripts/world_block.gd" id="1_lna0x"]
+[ext_resource type="Texture2D" uid="uid://dueqquusfcih4" path="res://Art/block2.png" id="2_66sby"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u8403"]
 size = Vector2(32, 32)
@@ -30,6 +31,11 @@ offset_bottom = 33.0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(16, 16)
 shape = SubResource("RectangleShape2D_u8403")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("2_66sby")
+centered = false
 
 [connection signal="screen_entered" from="ColorRect/VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
 [connection signal="screen_exited" from="ColorRect/VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
