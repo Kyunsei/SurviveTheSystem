@@ -88,7 +88,7 @@ func _on_timer_timeout():
 				if carried_by.species == "spidercrab":
 					if current_life_cycle !=0:
 						Metabo_cost()	
-						Absorb_life_energy(5)
+						Absorb_life_energy(carried_by,5)
 					Ageing()
 					Growth()
 				

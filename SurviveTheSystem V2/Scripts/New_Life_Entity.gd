@@ -146,7 +146,7 @@ func AdjustDirection():
 func getCloser(target):
 	var center = position + Vector2(32,-32) #temporaire
 	direction = -(center - target).normalized()
-	velocity = direction * Genome["speed"][self.current_life_cycle]
+	velocity = direction * maxSpeed
 	#$DebugLabel.text = "feeding"
 	
 
@@ -234,10 +234,10 @@ func Absorb_soil_energy(radius):
 
 
 
-func Absorb_life_energy(value):
-	var absorbed_energy = min (self.carried_by.energy, value)	
+func Absorb_life_energy(entity,value):
+	var absorbed_energy = min (entity.energy, value)	
 	energy += absorbed_energy 
-	self.carried_by.energy	-= absorbed_energy 
+	entity.energy	-= absorbed_energy 
 
 func DropALL():
 	for i in item_array:
