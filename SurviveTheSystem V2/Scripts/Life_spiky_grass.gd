@@ -176,6 +176,7 @@ func Activate():
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	self.size = get_node("Collision_0").shape.size
+	$Collision_0.disabled = false
 
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
@@ -183,6 +184,7 @@ func Deactivate():
 	Decomposition()
 	$Timer.stop()
 	set_collision_layer_value(1,0)
+	$Collision_0.disabled = true
 	self.isActive = false
 	Life.spiky_grass_pool_state[self.pool_index] = 0
 	#Life.inactive_grass.append(self)
@@ -237,7 +239,7 @@ func getDamaged(value):
 
 
 func _on_vision_body_entered(body):
-	if body.species == "catronaute":
+	if body.species == "catronaute" and isDead == false and current_life_cycle > 0:
 		body.getDamaged(5)
 	if body.species == "spidercrab_leg":
 		var petal = Life.petal_scene.instantiate()

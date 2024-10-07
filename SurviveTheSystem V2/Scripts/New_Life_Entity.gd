@@ -340,8 +340,8 @@ func Deactivate():
 	#$Body_1/Collision_1.disabled = true		
 	#$Body_0/Collision_0.disabled = false	
 	
-	$Sprite_1.hide()
-	$Dead_Sprite_0.hide()
+
+	#$Dead_Sprite_0.hide()
 	$Sprite_0.show()
 	hide()
 
