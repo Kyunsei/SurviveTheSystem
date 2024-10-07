@@ -5,6 +5,7 @@ var species = "catronaute"
 
 var barehand_array = []
 var isimmobile_1sec = false
+var dashing = false
 
 #movmnt
 var input_dir = Vector2.ZERO
@@ -76,9 +77,13 @@ func Build_Phenotype():
 
 func _physics_process(delta):
 	if isPlayer:
-		input_dir = Player_Control_movement()
+		if dashing == false :
+			input_dir = Player_Control_movement()
 		move_and_collide(velocity *delta)
 
+		if Input.is_action_just_pressed("sprint"):
+				Dash_Action() 
+				isimmobile_1sec = false
 		if Input.is_action_pressed("sprint"):
 			Sprint_Action()
 			isimmobile_1sec = false
@@ -256,10 +261,35 @@ func Sprint_Action():
 	else :
 		action_finished = true
 		self.maxSpeed = 200
+		
+func Dash_Action():
+	if dashing == false :
+		dashing = true
+	#if self.PV > 1 :
+		#input_dir=last_dir
+		action_finished = false
+		if self.maxSpeed < 300 :
+			velocity = input_dir.normalized()*self.maxSpeed
+			return input_dir
+			self.maxSpeed = 1000
+
+			await get_tree().create_timer(12).timeout
+			self.maxSpeed = 200
+			dashing = false
+			action_finished = true
+		#self.PV -= 0.02
+
+			AdjustBar()
+	#else :
+		#action_finished = true
+		#self.maxSpeed = 200
 
 func Sprint_Action_Stop():
-	action_finished = true
-	self.maxSpeed = 200
+	if dashing == true : 
+		pass
+	else :
+		action_finished = true
+		self.maxSpeed = 200
 
 func PickUp():
 	action_finished = false
