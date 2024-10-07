@@ -281,9 +281,24 @@ func Growth():
 	if current_life_cycle == 0:
 		if self.age > 20 and self.energy > 5:
 			self.current_life_cycle += 1
-			var crab_leg = Life.spidercrab_leg_scene.instantiate()
-			get_parent().add_child(crab_leg) 
-			crab_leg.position = self.position
+			var leg_pos = [self.getCenterPos()-Vector2(48,0), self.getCenterPos()-Vector2(-48,0), self.getCenterPos()-Vector2(48,-32), self.getCenterPos()-Vector2(-48,-32)]
+			var leg_rotation = [-1.5707963268,1.5707963268,-1.5707963268,1.5707963268]
+			var leg_flip = [1,0,1,0]
+			for n in range(4) :
+				var crab_leg = Life.spidercrab_leg_scene.instantiate()
+				get_parent().add_child(crab_leg) 
+				crab_leg.position = leg_pos[n]
+				crab_leg.rotation = leg_rotation[n]
+				crab_leg.get_node("Sprite_0").flip_h = leg_flip[n]
+			var claw_pos = [self.getCenterPos()-Vector2(32,-64), self.getCenterPos()-Vector2(-32,-64)]
+			var claw_rotation = [-6.2831853072,0]
+			var claw_flip = [0,1]
+			for n in range(2) :
+				var crab_claw = Life.spidercrab_claw_scene.instantiate()
+				get_parent().add_child(crab_claw) 
+				crab_claw.position = claw_pos[n]
+				crab_claw.rotation = claw_rotation[n]
+				crab_claw.get_node("Sprite_0").flip_h = claw_flip[n]
 			$Sprite_0.scale = Vector2(1,1)
 			$Dead_Sprite_0.scale = Vector2(1,1)
 			$Collision_0.disabled = true

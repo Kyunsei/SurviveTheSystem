@@ -1,5 +1,5 @@
 extends LifeEntity
-var species = "spidercrab_leg"
+var species = "spidercrab_claw"
 
 
 var hastouchedsomething = false
@@ -39,8 +39,8 @@ func _on_timer_timeout():
 			Deactivate()
 
 func Use_Attack():
-	if $Sprite_0.flip_h == true :
-		$Sprite_0.flip_h = 0
+	if $Sprite_0.flip_h == false :
+		$Sprite_0.flip_h = 1
 	$Effect_Area/CollisionShape2D.disabled = false
 	#rotation = carried_by.last_dir.angle()
 	#position = carried_by.position.normalized()*60
@@ -98,11 +98,11 @@ func Die():
 
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()
-	#$Crab_legArea2D/CollisionShape2D.queue_free()
+	#$Crab_clawArea2D/CollisionShape2D.queue_free()
 
 
-func _on_crab_leg_area_2d_body_entered(body):
+
+func _on_effect_area_body_entered(body):
 	if body.species != "block" and body != carried_by and body != self:
-		body.getDamaged(10)
+		body.getDamaged(50)
 		hastouchedsomething = true
-

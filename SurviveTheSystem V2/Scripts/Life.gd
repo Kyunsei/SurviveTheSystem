@@ -15,6 +15,7 @@ var life_cat_scene = load("res://Scenes/life_cat.tscn")
 var life_stingtree_scene = load("res://Scenes/life_stingtree.tscn")
 var life_spidercrab_scene = load("res://Scenes/life_spidercrab.tscn")
 var spidercrab_leg_scene = load("res://Scenes/sublife_spidercrab_leg.tscn")
+var spidercrab_claw_scene = load("res://Scenes/sublife_spidercrab_claw.tscn")
 var petal_scene = load("res://Scenes/sublife_spiky_grass_petal.tscn")
 var life_debug_scene = load("res://Scenes/life_debug.tscn")
 

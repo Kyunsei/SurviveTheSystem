@@ -95,7 +95,7 @@ func _physics_process(delta):
 		if item_array.size() > 0:
 			var c = 0
 			for i in item_array:
-				if i.species == "spidercrab_leg":
+				if i.species == "spidercrab_leg" or "spidercrab_claw":
 					i.position =  last_dir * Vector2(32+i.size.x/2, 32 + i.size.x/2) + (position + Vector2(16,-32))
 					i.rotation =  (last_dir.angle())
 				else: 
@@ -278,6 +278,10 @@ func PickUp():
 					closestItem.LifeDuplicate2(self)
 
 			if closestItem.species == "spidercrab_leg":
+				closestItem.getPickUP(self)
+				closestItem.z_index = 0
+
+			if closestItem.species == "spidercrab_claw":
 				closestItem.getPickUP(self)
 				closestItem.z_index = 0
 
