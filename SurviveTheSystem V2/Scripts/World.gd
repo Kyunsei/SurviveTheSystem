@@ -64,33 +64,42 @@ func Init_matrix():
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
 	block_element_array.fill(6)
-	block_element_state.fill(0)
+	block_element_state.fill(-1)
 
 func build_world_shape(folder):
 
+
+
+
+
+	make_and_instatiate_round_island(52,148,25,folder)	
+	make_and_instatiate_round_island(148,148,25,folder)
+	make_and_instatiate_round_island(124,124,12,folder)
+	make_and_instatiate_round_island(76,124,12,folder)	
 	make_and_instatiate_round_island(100,100,25,folder)
-	#make_and_instatiate_round_island(124,124,12,folder)
-	#make_and_instatiate_round_island(148,148,25,folder)
-	#make_and_instatiate_round_island(76,76,12,folder)
-	#make_and_instatiate_round_island(52,52,25,folder)				
-	#make_and_instatiate_round_island(76,124,12,folder)	
-	#make_and_instatiate_round_island(52,148,25,folder)	
-	#make_and_instatiate_round_island(124,76,12,folder)	
-	#make_and_instatiate_round_island(148,52,25,folder)	
-				
+	make_and_instatiate_round_island(124,76,12,folder)	
+	make_and_instatiate_round_island(76,76,12,folder)
+	make_and_instatiate_round_island(52,52,25,folder)				
+	make_and_instatiate_round_island(148,52,25,folder)		
+					
 func make_and_instatiate_round_island(x,y,radius,folder):
 	x=  x-radius
 	y=  y-radius
 	var center = Vector2(radius,radius)
 	for w in range(0,radius*2+1):
 		for h in range(0,radius*2+1):
-			var distance = center.distance_to(Vector2(w, h))
-			if distance < radius :
-				block_element_state[(y+w)*world_size +x+h ]= 1
-				World.InstantiateBlock(x+w,y+h,folder)
-			if Vector2(w, h).distance_to(center) >= radius and Vector2(w, h).distance_to(center) < radius +2:
-				World.InstantiateBlock(x+w,y+h,folder)
-
+			if block_element_state[(x+w)*world_size +y+h ] == -1 :
+				var distance = center.distance_to(Vector2(w, h))
+				if distance < radius :
+						block_element_state[(x+w)*world_size +y+h ]= 1
+						World.InstantiateBlock(x+w,y+h,folder)
+				if Vector2(w, h).distance_to(center) >= radius and Vector2(w, h).distance_to(center) < radius +2:
+						block_element_state[(x+w)*world_size +y+h ]= 0
+						World.InstantiateBlock(x+w,y+h,folder)
+			else:
+				#merge temporary only
+				block_element_state[(x+w)*world_size +y+h ]= 1
+				folder.get_node(str(x+w)+"_"+str(y+h)).BlockUpdate()
 	'x=  5
 	y=  125
 
@@ -128,12 +137,9 @@ func Init_shader():
 func InstantiateBlock(i,j,folder):
 	if i >= 0 and j >= 0 and i < world_size and j < world_size:
 		var new_block = block_scene.instantiate()
-		#new_block.get_node("outsideline").size = Vector2(tile_size,tile_size)
-		#new_block.get_node("ColorRect").size = Vector2(tile_size-1,tile_size-1)
 		new_block.get_node("ColorRect").size = Vector2(tile_size,tile_size)
 		new_block.position.x = i*tile_size
 		new_block.position.y = j*tile_size
-		#new_block.color = getBlockColor(i,j)
 		new_block.name =str(i)+"_"+str(j)
 		folder.add_child(new_block)
 		new_block.BlockUpdate()

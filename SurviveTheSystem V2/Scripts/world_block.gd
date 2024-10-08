@@ -33,7 +33,7 @@ func BlockUpdate():
 		current_value =  World.block_element_array[posindex]
 		if World.block_element_state[posindex] == 1:
 			$ColorRect.color = getAdjustedSoilColor()
-
+			$CollisionShape2D.disabled = true
 			set_collision_layer_value(2,false)
 		#$debug.text = str(posindex)
 		else:

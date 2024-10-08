@@ -351,6 +351,7 @@ func BareHand_attack():
 	$BareHand_attack/sprite.show()
 	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
+		print(i)
 		if i != null:
 			i.getDamaged(10)
 
