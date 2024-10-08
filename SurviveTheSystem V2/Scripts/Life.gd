@@ -709,8 +709,8 @@ func PickRandomPlace():
 	var random_y = randi_range(0,World.world_size-1)
 
 	var posindex = random_y*World.world_size + random_x
-	var newpos = Vector2(random_x, random_y)
-	if World.block_element_state[posindex] == 0:
+	var newpos = Vector2(random_y, random_x)
+	if World.block_element_state[posindex] != 1:
 		newpos = PickRandomPlace()
 		#newpos = Vector2(randf_range(World.world_size/2-5,World.world_size/2+5),randf_range(World.world_size/2-5,World.world_size/2+5))
 	return newpos

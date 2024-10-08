@@ -71,16 +71,20 @@ func build_world_shape(folder):
 
 
 
-
-	make_and_instatiate_round_island(52,148,25,folder)	
-	make_and_instatiate_round_island(148,148,25,folder)
+	make_and_instatiate_round_island(47,120,12,folder)	
+	
+	make_and_instatiate_round_island(140,140,20,folder)
+	
 	make_and_instatiate_round_island(124,124,12,folder)
-	make_and_instatiate_round_island(76,124,12,folder)	
+	make_and_instatiate_round_island(76,124,12,folder)
 	make_and_instatiate_round_island(100,100,25,folder)
 	make_and_instatiate_round_island(124,76,12,folder)	
 	make_and_instatiate_round_island(76,76,12,folder)
-	make_and_instatiate_round_island(52,52,25,folder)				
-	make_and_instatiate_round_island(148,52,25,folder)		
+	
+	
+	make_and_instatiate_round_island(40,40,40,folder)				
+	make_and_instatiate_round_island(110,60,12,folder)	
+	make_and_instatiate_round_island(115,40,12,folder)			
 					
 func make_and_instatiate_round_island(x,y,radius,folder):
 	x=  x-radius
