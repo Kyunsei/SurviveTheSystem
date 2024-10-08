@@ -75,7 +75,7 @@ func InitNewGame():
 	Life.Init_life_pool()
 	
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
-	Life.Instantiate_emptyLife_pool($Life, 400, "spiky_grass")
+	Life.Instantiate_emptyLife_pool($Life, 100, "spiky_grass")
 	Life.Instantiate_emptyLife_pool($Life, 30, "sheep")
 
 	Life.Instantiate_emptyLife_pool($Life, 100, "berry")
@@ -266,8 +266,8 @@ func _on_spawn_timer_timeout():
 func _on_block_timer_timeout():
 	pass
 	World.BlockLoopGPU() 
-	for b in $Blocks.get_children():
-		b.BlockUpdate()
+	'for b in $Blocks.get_children():
+		b.BlockUpdate()'
 
 	
 signal light_on
