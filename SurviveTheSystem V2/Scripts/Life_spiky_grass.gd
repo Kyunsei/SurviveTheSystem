@@ -80,8 +80,8 @@ func Die():
 	$Dead_Sprite_0.show()
 	$Collision_1.disabled = true		
 	$Collision_0.disabled = false		
-	$Collision_0.show()
-	$Collision_1.hide()
+	#$Collision_0.show()
+	#$Collision_1.hide()
 	$Sprite_1.hide()
 	$Sprite_0.hide()
 	$Sprite_2.hide()
@@ -150,8 +150,8 @@ func LifeDuplicate():
 
 				
 				Life.spiky_grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
-			else:
-				pass
+			#else:
+				#pass
 				#print("pool empty")
 
 
@@ -177,6 +177,7 @@ func Activate():
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	self.size = get_node("Collision_0").shape.size
 	$Collision_0.disabled = false
+	$Vision/Collision.disabled = false
 
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
@@ -185,6 +186,7 @@ func Deactivate():
 	$Timer.stop()
 	set_collision_layer_value(1,0)
 	$Collision_0.disabled = true
+	$Vision/Collision.disabled = true
 	self.isActive = false
 	Life.spiky_grass_pool_state[self.pool_index] = 0
 	#Life.inactive_grass.append(self)
@@ -227,19 +229,24 @@ func getDamaged(value):
 			Die()
 		InvicibilityTime = 1 
 		modulate = Color(1, 0.2, 0.2)
+
 		var petal = Life.petal_scene.instantiate()
 		get_parent().add_child(petal) 
 		petal.position = self.position - Vector2(10,10)
+		
 		await get_tree().create_timer(0.5).timeout
 		InvicibilityTime = 0
 		modulate = Color(1, 1, 1)
+				
+
+		
 
 		
 
 
 
 func _on_vision_body_entered(body):
-	if body.species == "catronaute" and isDead == false and current_life_cycle > 0:
+	if body.species == "catronaute" and self.isDead == false and self.current_life_cycle > 0:
 		body.getDamaged(5)
 	if body.species == "spidercrab_leg":
 		var petal = Life.petal_scene.instantiate()

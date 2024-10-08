@@ -185,7 +185,8 @@ func Activate():
 
 
 	$Collision_0.show()
-	$Collision_0.disabled = false	
+	$Collision_0.disabled = false
+	$Vision/Collision.disabled = false
 	$Dead_Sprite_0.hide()	
 	$Sprite_0.show()
 
@@ -198,6 +199,8 @@ func Deactivate():
 	$Timer.stop()
 	self.isActive = false
 	Life.jellybee_pool_state[self.pool_index] = 0
+	$Vision/Collision.disabled = true
+	$Collision_0.disabled = true
 	#Life.sheep_number -= 1
 	#prepare for new instance
 

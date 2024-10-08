@@ -223,28 +223,14 @@ func AdjustBar():
 
 
 func Attack():
+	#var s = Time.get_ticks_msec()
 	action_finished = false
 	if item_array.size() != 0:
 		item_array[0].Use_Attack()
-		#if item_array[0].species == "crab_leg" :
-			#$Object_attack.show()
-			#$Object_attack/crab_leg_combat.show()
-			#isAttacking = true
-			#match(LastOrientation) :
-				#"down":
-					#$AnimationPlayer.play("Attack_animation")
-				#"right":
-					#$AnimationPlayer.play("Attack_animationUp")
-				#"left":
-					#$AnimationPlayer.play("Attack_animationLeft")
-				#"up":
-					#$AnimationPlayer.play("Attack_animationTrueUp")
-			#await $AnimationPlayer.animation_finished
-			#isAttacking = false
-			#$Object_attack.hide()
-			#$Object_attack/crab_leg_combat.hide()
 	else :
 		BareHand_attack()
+	#var ss = Time.get_ticks_msec()
+	#print(ss-s)
 		
 
 	
@@ -351,7 +337,7 @@ func BareHand_attack():
 	$BareHand_attack/sprite.show()
 	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
-		print(i)
+		#print(i)
 		if i != null:
 			i.getDamaged(10)
 
