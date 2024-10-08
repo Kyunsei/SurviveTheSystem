@@ -19,8 +19,6 @@ offset_bottom = 31.0
 mouse_filter = 1
 color = Color(0.690196, 0.564706, 0.505882, 1)
 
-[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="ColorRect"]
-
 [node name="debug" type="Label" parent="."]
 visible = false
 offset_left = -2.0
@@ -36,6 +34,3 @@ shape = SubResource("RectangleShape2D_u8403")
 visible = false
 texture = ExtResource("2_66sby")
 centered = false
-
-[connection signal="screen_entered" from="ColorRect/VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_entered"]
-[connection signal="screen_exited" from="ColorRect/VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

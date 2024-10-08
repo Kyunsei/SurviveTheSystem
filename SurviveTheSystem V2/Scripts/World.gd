@@ -69,14 +69,14 @@ func Init_matrix():
 func build_world_shape(folder):
 
 	make_and_instatiate_round_island(100,100,25,folder)
-	make_and_instatiate_round_island(124,124,12,folder)
-	make_and_instatiate_round_island(148,148,25,folder)
-	make_and_instatiate_round_island(76,76,12,folder)
-	make_and_instatiate_round_island(52,52,25,folder)				
-	make_and_instatiate_round_island(76,124,12,folder)	
-	make_and_instatiate_round_island(52,148,25,folder)	
-	make_and_instatiate_round_island(124,76,12,folder)	
-	make_and_instatiate_round_island(148,52,25,folder)	
+	#make_and_instatiate_round_island(124,124,12,folder)
+	#make_and_instatiate_round_island(148,148,25,folder)
+	#make_and_instatiate_round_island(76,76,12,folder)
+	#make_and_instatiate_round_island(52,52,25,folder)				
+	#make_and_instatiate_round_island(76,124,12,folder)	
+	#make_and_instatiate_round_island(52,148,25,folder)	
+	#make_and_instatiate_round_island(124,76,12,folder)	
+	#make_and_instatiate_round_island(148,52,25,folder)	
 				
 func make_and_instatiate_round_island(x,y,radius,folder):
 	x=  x-radius
@@ -136,6 +136,7 @@ func InstantiateBlock(i,j,folder):
 		#new_block.color = getBlockColor(i,j)
 		new_block.name =str(i)+"_"+str(j)
 		folder.add_child(new_block)
+		new_block.BlockUpdate()
 
 func getWorldPos(position):
 	var x = int(round(position.x/tile_size))

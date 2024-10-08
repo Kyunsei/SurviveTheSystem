@@ -9,11 +9,12 @@ var species = "block"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	$CollisionShape2D.disabled = false
 	x = int(position.y/World.tile_size)
 	y = int(position.x/World.tile_size)
 	posindex = x*World.world_size + y
 	current_value =  World.block_element_array[posindex]
-	$ColorRect.color = getAdjustedSoilColor()
+	#BlockUpdate()
 	#$outsideline.color = getAdjustedSoilColor()
 	pass # Replace with function body.
 
@@ -34,13 +35,14 @@ func _ready():
 func BlockUpdate():
 		if World.block_element_state[posindex] == 1:
 			$ColorRect.color = getAdjustedSoilColor()
+			$CollisionShape2D.disabled = true
 			set_collision_layer_value(2,false)
 		#$debug.text = str(posindex)
 		else:
 			if World.block_element_state[posindex- World.world_size] == 1:
 				$Sprite2D.show()
 				#$ColorRect2.color = getAdjustedSoilColor()
-
+			#$CollisionShape2D.disabled = true
 			$ColorRect.color.a = 0
 			set_collision_layer_value(2,true)
 			
