@@ -39,6 +39,7 @@ centered = false
 offset = Vector2(0, -32)
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
+position = Vector2(16, -49)
 shape = SubResource("RectangleShape2D_dv5i7")
 
 [node name="DebugLabel" type="Label" parent="."]

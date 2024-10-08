@@ -272,11 +272,11 @@ func Dash_Action():
 			$Collision_0.shape.size *= 0.4
 			velocity = last_dir.normalized()*self.maxSpeed
 			await get_tree().create_timer(0.2).timeout
+			dashing = false
+			action_finished = true 
 			$Collision_0.shape.size *= 2.5
 			velocity = Vector2.ZERO
 			self.maxSpeed = 200
-			dashing = false
-			action_finished = true 
 			AdjustBar() #Ca c'est pour que les bar de HP et faim change si jaja
 			await get_tree().create_timer(1.5).timeout
 			worn_out = false

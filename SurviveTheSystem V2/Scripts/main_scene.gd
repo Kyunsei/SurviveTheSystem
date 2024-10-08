@@ -74,26 +74,26 @@ func InitNewGame():
 	#init Life
 	Life.Init_life_pool()
 	
-	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
-	Life.Instantiate_emptyLife_pool($Life, 100, "spiky_grass")
-	Life.Instantiate_emptyLife_pool($Life, 30, "sheep")
 
-	Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+	#Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
+	#Life.Instantiate_emptyLife_pool($Life, 400, "spiky_grass")
+	#Life.Instantiate_emptyLife_pool($Life, 30, "sheep")
+#
+	#Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+
 	Life.Instantiate_emptyLife_pool($Life, 3, "cat")
-	#Life.Instantiate_emptyLife_pool($Life, 3, "planty")
-	Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
-	Life.Instantiate_emptyLife_pool($Life, 10, "spidercrab")
-	Life.Instantiate_emptyLife_pool($Life, 20, "jellybee")
-	
-	Life.Instantiate_Life_in_pool($Life,100,"grass")
-	Life.Instantiate_Life_in_pool($Life,20,"spiky_grass")
-	Life.Instantiate_Life_in_pool($Life,10,"berry")
-	Life.Instantiate_Life_in_pool($Life,10,"sheep")
-	#Life.Instantiate_Life_in_pool($Life,1,Life.char_selected)
+	#Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
+	#Life.Instantiate_emptyLife_pool($Life, 10, "spidercrab")
+	#Life.Instantiate_emptyLife_pool($Life, 20, "jellybee")
+	#
+	#Life.Instantiate_Life_in_pool($Life,100,"grass")
+	#Life.Instantiate_Life_in_pool($Life,20,"spiky_grass")
+	#Life.Instantiate_Life_in_pool($Life,10,"berry")
+	#Life.Instantiate_Life_in_pool($Life,10,"sheep")
 	Life.Instantiate_Life_in_pool($Life,1,"cat")
-	Life.Instantiate_Life_in_pool($Life, 0, "stingtree")
-	Life.Instantiate_Life_in_pool($Life, 2, "spidercrab")
-	Life.Instantiate_Life_in_pool($Life, 10, "jellybee")
+	#Life.Instantiate_Life_in_pool($Life, 0, "stingtree")
+	#Life.Instantiate_Life_in_pool($Life, 2, "spidercrab")
+	#Life.Instantiate_Life_in_pool($Life, 10, "jellybee")
 
 
 
@@ -266,8 +266,10 @@ func _on_spawn_timer_timeout():
 func _on_block_timer_timeout():
 	pass
 	World.BlockLoopGPU() 
+
 	'for b in $Blocks.get_children():
 		b.BlockUpdate()'
+
 
 	
 signal light_on
