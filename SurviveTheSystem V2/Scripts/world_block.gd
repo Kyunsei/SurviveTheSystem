@@ -2,20 +2,14 @@ extends StaticBody2D
 
 var x = 0
 var y = 0
-var posindex
+var posindex= 0
 var current_value = 0
 
 var species = "block"
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	$CollisionShape2D.disabled = false
-	x = int(position.y/World.tile_size)
-	y = int(position.x/World.tile_size)
-	posindex = x*World.world_size + y
-	current_value =  World.block_element_array[posindex]
-	#BlockUpdate()
-	#$outsideline.color = getAdjustedSoilColor()
+
 	pass # Replace with function body.
 
 
@@ -33,18 +27,23 @@ func _ready():
 		##$outsideline.color = getAdjustedSoilColor()
 
 func BlockUpdate():
+		x = int(position.x/World.tile_size)
+		y = int(position.y/World.tile_size)
+		posindex = x*World.world_size + y
+		current_value =  World.block_element_array[posindex]
 		if World.block_element_state[posindex] == 1:
 			$ColorRect.color = getAdjustedSoilColor()
-			$CollisionShape2D.disabled = true
+
 			set_collision_layer_value(2,false)
 		#$debug.text = str(posindex)
 		else:
-			if World.block_element_state[posindex- World.world_size] == 1:
+			if World.block_element_state[(x)*World.world_size + (y-1)] == 1:
 				$Sprite2D.show()
 				#$ColorRect2.color = getAdjustedSoilColor()
 			#$CollisionShape2D.disabled = true
 			$ColorRect.color.a = 0
 			set_collision_layer_value(2,true)
+			$CollisionShape2D.disabled = false
 			
 		pass
 		#$outsideline.color = getAdjustedSoilColor()
