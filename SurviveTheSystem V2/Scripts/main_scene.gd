@@ -69,6 +69,10 @@ func InitNewGame():
 	init_debug_feature()
 	#Init the World
 	World.Init_World($Blocks)
+	#var s = Time.get_ticks_msec()
+	$World_TileMap.build_world()
+	#var ss = Time.get_ticks_msec()
+	#print("new: " + str(ss-s) + "ms")
 	UpdateSimulationSpeed()
 	
 	#init Life

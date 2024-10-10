@@ -1,4 +1,4 @@
-extends Node
+extends Node2D
 
 'This is the global Script for all the variable and function defining the world'
 
@@ -15,6 +15,7 @@ var block_element_state = [] #1D matrix of the block state composing the world
 var world_array = [] #1D matrix of occupation
 
 var block_scene = preload("res://Scenes/world_block.tscn") #load scene of block
+
 
 #different variable for the "element"
 #var max_element = 100 #max quantities
@@ -53,7 +54,11 @@ var block_diffusion_par = []
 func Init_World(folder):
 	Init_matrix()
 	Init_shader()
-	build_world_shape(folder)
+	'var s = Time.get_ticks_msec()'
+	#build_world_shape(folder)
+	'var ss = Time.get_ticks_msec()
+	print("old: " + str(ss-s) + "ms")'
+	
 	speed = 1.0
 	day = 0
 	isReady = true
@@ -96,13 +101,16 @@ func make_and_instatiate_round_island(x,y,radius,folder):
 				var distance = center.distance_to(Vector2(w, h))
 				if distance < radius :
 						block_element_state[(x+w)*world_size +y+h ]= 1
+						#set_cell(x+w, y+h, 0)
 						World.InstantiateBlock(x+w,y+h,folder)
 				if Vector2(w, h).distance_to(center) >= radius and Vector2(w, h).distance_to(center) < radius +2:
 						block_element_state[(x+w)*world_size +y+h ]= 0
 						World.InstantiateBlock(x+w,y+h,folder)
+						#set_cell(x+w, y+h, 1)
 			else:
 				#merge temporary only
 				block_element_state[(x+w)*world_size +y+h ]= 1
+				#set_cell(x+w, y+h, 2)
 				folder.get_node(str(x+w)+"_"+str(y+h)).BlockUpdate()
 	'x=  5
 	y=  125
