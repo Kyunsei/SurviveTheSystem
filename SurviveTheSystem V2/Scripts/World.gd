@@ -68,7 +68,7 @@ func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
-	block_element_array.fill(6)
+	block_element_array.fill(0)
 	block_element_state.fill(-1)
 
 func build_world_shape(folder):
@@ -311,7 +311,7 @@ func BlockLoopGPU():
 	var compute_list := rd.compute_list_begin()
 	rd.compute_list_bind_compute_pipeline(compute_list, pipeline)
 	rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
-	rd.compute_list_dispatch(compute_list,World.block_element_array.size()/2, 1, 1)
+	rd.compute_list_dispatch(compute_list,World.block_element_array.size()/32, 1, 1)
 	rd.compute_list_end()
 
 	# Submit to GPU and wait for sync

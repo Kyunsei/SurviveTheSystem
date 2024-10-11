@@ -80,7 +80,7 @@ func _physics_process(delta):
 	if isPlayer:
 		if dashing == false :
 			input_dir = Player_Control_movement()
-		move_and_collide(velocity *delta)
+		move_and_slide()
 
 		if Input.is_action_just_pressed("sprint"):
 				Dash_Action() 
@@ -156,6 +156,7 @@ func _input(event):
 				#World.fieldofview = round(get_viewport().get_visible_rect().size * 1/$Camera2D.zoom / World.tile_size)
 
 		if event.is_action_pressed("test1"):
+			print("q")
 			var middle = position  #+ Vector2(size.x/2,-size.y/2)'
 			var center_x = int(middle.x/World.tile_size)
 			var	center_y = int(middle.y/World.tile_size)
@@ -165,13 +166,15 @@ func _input(event):
 					if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
 						var posindex = y*World.world_size + x
 						if posindex < World.block_element_array.size():				
-							World.block_element_array[posindex]	-= 4
+							World.block_element_array[posindex]	-= 5
 							if 	World.block_element_array[posindex]	< 0:
 								World.block_element_array[posindex]	= 0
-			for b in get_parent().get_parent().get_node("Blocks").get_children():
-				b.BlockUpdate()
+							update_tiles_according_soil_value([Vector2i(x,y)])
+			'for b in get_parent().get_parent().get_node("Blocks").get_children():
+				b.BlockUpdate()'
 
 		if event.is_action_pressed("test2"):
+			print("e")
 			var middle = position  #+ Vector2(size.x/2,-size.y/2)'
 			var center_x = int(middle.x/World.tile_size)
 			var	center_y = int(middle.y/World.tile_size)
@@ -181,9 +184,10 @@ func _input(event):
 					if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
 						var posindex = y*World.world_size + x
 						if posindex < World.block_element_array.size():				
-							World.block_element_array[posindex]	+= 4
-			for b in get_parent().get_parent().get_node("Blocks").get_children():
-				b.BlockUpdate()
+							World.block_element_array[posindex]	+= 5
+							update_tiles_according_soil_value([Vector2i(x,y)])
+			'for b in get_parent().get_parent().get_node("Blocks").get_children():
+				b.BlockUpdate()'
 
 
 func _on_timer_timeout():
@@ -255,12 +259,12 @@ func Dash_Action():
 		if self.maxSpeed < 300 :
 			worn_out = true
 			self.maxSpeed = 1500
-			$Collision_0.shape.size *= 0.4
+			#$Collision_0.shape.size *= 0.4
 			velocity = last_dir.normalized()*self.maxSpeed
 			await get_tree().create_timer(0.2).timeout
 			dashing = false
 			action_finished = true 
-			$Collision_0.shape.size *= 2.5
+			#$Collision_0.shape.size *= 2.5
 			velocity = Vector2.ZERO
 			self.maxSpeed = 200
 			AdjustBar() #Ca c'est pour que les bar de HP et faim change si jaja

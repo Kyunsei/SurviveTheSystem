@@ -5,8 +5,8 @@
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gm5t3"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wmr4f"]
-size = Vector2(64, 64)
+[sub_resource type="CircleShape2D" id="CircleShape2D_1osmb"]
+radius = 32.0
 
 [sub_resource type="Theme" id="Theme_g2d4v"]
 
@@ -38,7 +38,7 @@ centered = false
 centered = false
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_wmr4f")
+shape = SubResource("CircleShape2D_1osmb")
 
 [node name="DebugLabel" type="Label" parent="."]
 offset_right = 40.0

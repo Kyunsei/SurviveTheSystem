@@ -197,6 +197,7 @@ func Metabo_cost():
 	if posindex < World.block_element_array.size():
 		World.block_element_array[posindex] += min(energy, metabolic_cost)
 		energy -= min(energy,metabolic_cost)
+		update_tiles_according_soil_value([Vector2i(x,y)])
 #Getting old
 func Ageing():
 	self.age +=1
@@ -231,7 +232,7 @@ func Absorb_soil_energy(radius):
 					var soil_energy = World.block_element_array[posindex]	
 					energy += min(Genome["soil_absorption"][1],soil_energy)
 					World.block_element_array[posindex]	-= min(Genome["soil_absorption"][1],soil_energy)
-
+					update_tiles_according_soil_value([Vector2i(x,y)])
 
 
 func Absorb_life_energy(entity,value):
@@ -285,6 +286,7 @@ func Decomposition():
 	if posindex < World.block_element_array.size():
 		World.block_element_array[posindex] += self.energy
 		energy = 0
+		update_tiles_according_soil_value([Vector2i(x,y)])
 
 func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV 
@@ -347,7 +349,9 @@ func Deactivate():
 
 
 
-
+func update_tiles_according_soil_value(cells):
+	var layer = 0
+	get_parent().get_parent().get_node("World_TileMap").update_tilemap_tile_array_to_new_soil_value(layer, cells)
 
 
 
