@@ -135,10 +135,9 @@ func update_tilemap_tile_array(layer: int, cells):
 		if tile_id != -1:
 			var tile = get_cell_tile_data(layer,cell)
 			var co = get_cell_atlas_coords(layer,cell)
-			if co.x < 3:	
-				set_cell(0, cell, 0, co + Vector2i(1, 0))
-			else:
-				set_cell(0, cell, 0, co - Vector2i(3, 0))
+			
+			set_cell(0, cell, 0,  Vector2i(randi_range(0,3), 0))
+		
 			# Set modulate color for each tile
 			#modulate_tile(cell, new_color)
 			#tile_data.modulate = Color.RED
