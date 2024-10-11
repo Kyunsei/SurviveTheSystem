@@ -20,8 +20,8 @@ texture = ExtResource("2_03gyf")
 
 [node name="World_TileMap" type="TileMap" parent="."]
 tile_set = ExtResource("3_n4anu")
+rendering_quadrant_size = 32
 format = 2
-layer_0/tile_data = PackedInt32Array(589840, 0, 0)
 script = ExtResource("4_34ivu")
 
 [node name="Blocks" type="Node2D" parent="."]
@@ -231,7 +231,7 @@ one_shot = true
 
 [node name="BlockTimer" type="Timer" parent="."]
 process_mode = 1
-wait_time = 5.0
+wait_time = 2.0
 autostart = true
 
 [node name="SpawnWindow" parent="." instance=ExtResource("4_j4k08")]
@@ -252,3 +252,4 @@ blend_mode = 1
 [connection signal="timeout" from="DayTimer" to="." method="_on_day_timer_timeout"]
 [connection signal="timeout" from="NightTimer" to="." method="_on_night_timer_timeout"]
 [connection signal="timeout" from="BlockTimer" to="." method="_on_block_timer_timeout"]
+[connection signal="timeout" from="BlockTimer" to="World_TileMap" method="_on_block_timer_timeout"]
