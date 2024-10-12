@@ -121,6 +121,9 @@ func Growth():
 			
 
 
+
+
+
 #Duplication
 func LifeDuplicate():
 
@@ -144,6 +147,12 @@ func LifeDuplicate():
 				print("jellybee_pool empty")
 
 
+func angry_mode_on(target):
+	if danger_array.has(target) == false:
+		danger_array.append(target)
+		for f in friend_array:
+			f.danger_array = danger_array.duplicate()
+
 
 func Brainy():
 	var center = position + Vector2(32,-32) #temporaire
@@ -151,8 +160,23 @@ func Brainy():
 	var food_array_temp = food_array.duplicate()
 	var friend_array_temp = friend_array.duplicate()
 
+	
+
 	if action_finished == true:
-		if self.energy < 10 and food_array_temp.size()>0:
+		if danger_array_temp.size()>0:
+			var cl = getClosestLife(danger_array_temp,1000)
+			if cl !=null:
+				if cl.isDead == false:
+					getCloser(cl.getCenterPos())
+					if center.distance_to(cl.getCenterPos()) < 32 and cl.isDead == false:				
+							cl.getDamaged(2)
+					else:
+						getCloser(cl.getCenterPos())
+				else:
+					AdjustDirection()
+			
+			
+		elif self.energy < 10 and food_array_temp.size()>0:
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
 				#$DebugLabel.text ="feeding"
@@ -232,6 +256,9 @@ func _on_vision_body_entered(body):
 			#getCloser(body.position)
 		if body.species== "jellybee" and body!= self:
 				friend_array.append(body)
+				if body.danger_array.size() > 0:
+					self.danger_array = body.danger_array
+				
 	
 		#getAway(body.position)
 

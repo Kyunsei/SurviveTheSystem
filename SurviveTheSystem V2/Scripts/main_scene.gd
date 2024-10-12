@@ -101,8 +101,8 @@ func InitNewGame():
 	Life.Instantiate_Life_in_pool($Life,10,"sheep")
 	Life.Instantiate_Life_in_pool($Life,1,"cat")
 	#Life.Instantiate_Life_in_pool($Life, 10, "stingtree")
-	Life.Instantiate_Life_in_pool($Life, 10, "spidercrab")
-	Life.Instantiate_Life_in_pool($Life, 2, "jellybee")
+	Life.Instantiate_Life_in_pool($Life, 2, "spidercrab")
+	Life.Instantiate_Life_in_pool($Life, 10, "jellybee")
 
 
 
