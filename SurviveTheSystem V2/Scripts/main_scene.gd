@@ -78,7 +78,7 @@ func InitNewGame():
 	#init Life
 	Life.Init_life_pool()
 	
-	for i in range(100):
+	for i in range(10):
 		var rock = life_rock_scene.instantiate()
 		add_child(rock)
 		rock.global_position = Life.PickRandomPlace()*World.tile_size

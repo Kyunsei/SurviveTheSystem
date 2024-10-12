@@ -7,15 +7,11 @@
 radius = 17.0
 
 [node name="Rock" type="StaticBody2D"]
-collision_layer = 3
 collision_mask = 3
 script = ExtResource("1_fsttj")
 
 [node name="Collision_rock" type="CollisionShape2D" parent="."]
-position = Vector2(16, -16)
 shape = SubResource("CircleShape2D_bdp63")
 
 [node name="Sprite_rock" type="Sprite2D" parent="."]
 texture = ExtResource("1_aog71")
-centered = false
-offset = Vector2(0, -32)

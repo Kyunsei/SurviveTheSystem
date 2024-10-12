@@ -328,8 +328,11 @@ func Drop():
 	if item_array.size() >0:
 		item_array[0].carried_by = null
 		item_array[0].z_index = 0
-		item_array.remove_at(0)
-
+		if item_array[0].species == "rock" :
+			item_array[0].getDropped(self)
+			item_array.remove_at(0)
+		else :
+			item_array.remove_at(0)
 
 func Throw():
 	pass
@@ -350,8 +353,8 @@ func BareHand_attack():
 			if i.species == "jellybee" :
 				pass
 			elif i.species == "spiky_grass" :
-				self.getDamaged(1)
-				i.getDamaged(1)
+				self.getDamaged(2)
+				i.getDamaged(10)
 			else :
 				i.getDamaged(10)
 
