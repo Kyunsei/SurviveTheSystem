@@ -256,11 +256,3 @@ func _on_vision_body_entered(body):
 
 
 
-func _on_mouse_entered():
-	$DebugLabel.show()
-	$DebugLabel.text = str(energy)
-
-
-
-func _on_mouse_exited():
-	$DebugLabel.hide()
