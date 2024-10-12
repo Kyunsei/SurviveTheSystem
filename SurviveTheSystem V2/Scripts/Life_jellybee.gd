@@ -22,7 +22,7 @@ func Build_Phenotype(): #go to main
 	$Dead_Sprite_0.hide()		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
-	$Vision/Collision.shape.radius = 2000
+	$Vision/Collision.shape.radius = 4000
 	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	#ADD Body
@@ -35,7 +35,7 @@ func Build_Stat():
 	self.maxPV = 10
 	self.PV = 10
 	self.energy = 10
-	self.maxSpeed = 50
+	self.maxSpeed = 150
 	self.lifespan = 2*(90/5)
 	$Sprite_0.modulate = jelly_color
 
@@ -64,6 +64,7 @@ func _on_timer_timeout():
 			Metabo_cost()
 			LifeDuplicate()
 			Ageing()
+			spwan_pollen()
 			#Growth()
 			#AdjustDirection()
 			if self.energy <= 0 or self.age >= lifespan or self.PV <=0:
@@ -79,6 +80,20 @@ func _on_timer_timeout():
 
 
 
+func spwan_pollen():
+	#generate new grass
+	var haspollen = true
+	if energy > 10 and haspollen:
+			var li = Life.spiky_grass_pool_state.find(0)
+			Life.spiky_grass_pool_scene[li].Activate()
+			Life.spiky_grass_pool_scene[li].age = 0
+			Life.spiky_grass_pool_scene[li].energy = 2
+			Life.spiky_grass_pool_scene[li].current_life_cycle = 0# randi_range(0,1)
+			Life.spiky_grass_pool_scene[li].PV = Life.spiky_grass_pool_scene[li].Genome["maxPV"][0]
+			var newpos = position
+			Life.spiky_grass_pool_scene[li].global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			energy -= 2
+	pass
 
 #diying
 func Die():
@@ -143,7 +158,7 @@ func Brainy():
 				#$DebugLabel.text ="feeding"
 				if center.distance_to(cl.getCenterPos()) < 32 and cl.isDead == false:				
 						Absorb_life_energy(cl,10)
-				if cl.isDead == false and cl.energy >= 10:
+				if cl.isDead == false and cl.energy >= 5:
 						getCloser(cl.getCenterPos())
 				else:
 					AdjustDirection()

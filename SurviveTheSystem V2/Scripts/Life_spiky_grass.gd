@@ -52,7 +52,7 @@ func _on_timer_timeout():
 			
 			Absorb_soil_energy(1)
 			Metabo_cost()	
-			LifeDuplicate()
+			#LifeDuplicate()
 			Ageing()
 			Growth()
 
