@@ -256,7 +256,7 @@ func Dash_Action():
 	if dashing == false and worn_out == false :
 		dashing = true
 		action_finished = false #not use here
-		if self.maxSpeed < 300 :
+		if self.maxSpeed < 400 :
 			worn_out = true
 			self.maxSpeed = 1500
 			#$Collision_0.shape.size *= 0.4
@@ -311,9 +311,9 @@ func PickUp():
 			if closestItem.species == "sheep" and closestItem.current_life_cycle < 2:
 				closestItem.getPickUP(self)
 				closestItem.z_index = 0
-			if closestItem.species == "grass" :
-				closestItem.getPickUP(self)
-				closestItem.z_index = 0
+			#if closestItem.species == "grass" :
+				#closestItem.getPickUP(self)
+				#closestItem.z_index = 0
 			if closestItem.species == "stingtree" and  closestItem.current_life_cycle == 0:
 				if closestItem.mother_tree == null:
 					closestItem.getPickUP(self)
@@ -419,5 +419,5 @@ func _on_bare_hand_attack_body_exited(body):
 func _on_action_timer_timeout():
 	$BareHand_attack/sprite.hide()
 	$BareHand_attack/sprite2.hide()
-	passive_healing()
+	#passive_healing()
 	action_finished = true

@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
 [ext_resource type="TileSet" uid="uid://da3qv5bqnia2y" path="res://Scenes/tilemap_world.tres" id="3_n4anu"]
 [ext_resource type="PackedScene" uid="uid://cgax0tyixs3og" path="res://Scenes/pause_menu.tscn" id="3_qkr51"]
-[ext_resource type="Script" path="res://Scenes/World_TileMap.gd" id="4_34ivu"]
+[ext_resource type="Script" path="res://Scripts/World_TileMap.gd" id="4_34ivu"]
 [ext_resource type="PackedScene" uid="uid://m26fd7j0ngbx" path="res://Scenes/spawn_window.tscn" id="4_j4k08"]
 [ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_ytf0d"]
 [ext_resource type="PackedScene" uid="uid://dx8j1h6gp20xq" path="res://Scenes/clock.tscn" id="5_a43f2"]

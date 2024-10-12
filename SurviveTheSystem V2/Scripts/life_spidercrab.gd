@@ -223,6 +223,7 @@ func hide_under_soil():
 	self.maxSpeed = 0
 	velocity = Vector2(0,0)
 	isBurrow = true
+	$Collision_0.disabled = true
 	$DebugLabel.text = "under_soil"
 	if self.current_life_cycle == 0:
 		$ActionTimer.start(5.)
@@ -245,6 +246,7 @@ func getDamaged(value):
 
 func get_out_of_soil():
 	get_node("Sprite_0").show()
+	get_node("Collision_0").disabled = false
 	isBurrow = false
 	self.maxSpeed = Genome["speed"][self.current_life_cycle]
 	$DebugLabel.text = ""
@@ -318,7 +320,7 @@ func Growth():
 			self.PV = self.maxPV
 
 func LifeDuplicate():
-	if self.age % 1 == 0 and self.energy > 60 and current_life_cycle >= 1:
+	if self.age % 70 == 0 and self.energy > 60 and current_life_cycle >= 1:
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
 			var li = Life.spidercrab_pool_state.find(0)
 			#var li2 = Life.crab_leg_pool_state.find(0)		
