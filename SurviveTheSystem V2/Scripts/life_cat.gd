@@ -307,6 +307,10 @@ func PickUp():
 				closestItem.getPickUP(self)
 				closestItem.z_index = 0
 
+			if closestItem.species == "rock"  :
+				closestItem.getPickUP(self)
+				closestItem.z_index = 0
+
 
 			if closestItem.species == "sheep" and closestItem.current_life_cycle < 2:
 				closestItem.getPickUP(self)
@@ -347,6 +351,7 @@ func BareHand_attack():
 				pass
 			elif i.species == "spiky_grass" :
 				self.getDamaged(1)
+				i.getDamaged(1)
 			else :
 				i.getDamaged(10)
 
