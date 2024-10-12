@@ -252,3 +252,15 @@ func _on_vision_body_entered(body):
 		var petal = Life.petal_scene.instantiate()
 		get_parent().add_child(petal) 
 		petal.position = self.position - Vector2(10,10)
+
+
+
+
+func _on_mouse_entered():
+	$DebugLabel.show()
+	$DebugLabel.text = str(energy)
+
+
+
+func _on_mouse_exited():
+	$DebugLabel.hide()

@@ -136,36 +136,24 @@ func Brainy():
 	var food_array_temp = food_array.duplicate()
 	var friend_array_temp = friend_array.duplicate()
 
-
 	if action_finished == true:
 		if self.energy < 10 and food_array_temp.size()>0:
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
 				#$DebugLabel.text ="feeding"
 				if center.distance_to(cl.getCenterPos()) < 32 and cl.isDead == false:
+					if cl.energy >= 10:
 						Absorb_life_energy(cl,10)
+					else:
+						AdjustDirection()
 				if cl.isDead == false:
 						getCloser(cl.getCenterPos())
 				else:
 					AdjustDirection()
 			else:
 				AdjustDirection()
-		elif friend_array_temp.size() > 0:
-			#$DebugLabel.text ="herd"
-			var cl = getClosestLife(food_array_temp,1000)
-			if cl !=null:
-
-				if position.distance_to(cl.getCenterPos()) > 32 :
-					#getCloser(cl.position)
-					goToMiddle(friend_array_temp)
-				else:
-					AdjustDirection()
-			else:
-				AdjustDirection()
 		else:
 			AdjustDirection()
-		
-	
 	
 func Activate():
 	#set_physics_process(true)
