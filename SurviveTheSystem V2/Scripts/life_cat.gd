@@ -342,8 +342,13 @@ func BareHand_attack():
 	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
 		#print(i)
-		if i != null:
-			i.getDamaged(10)
+		if i != null :
+			if i.species == "jellybee" :
+				pass
+			elif i.species == "spiky_grass" :
+				self.getDamaged(1)
+			else :
+				i.getDamaged(10)
 
 
 			
