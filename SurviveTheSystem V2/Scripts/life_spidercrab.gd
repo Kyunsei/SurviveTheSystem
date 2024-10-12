@@ -223,7 +223,7 @@ func hide_under_soil():
 	self.maxSpeed = 0
 	velocity = Vector2(0,0)
 	isBurrow = true
-	$Collision_0.disabled = true
+	get_node("Collision_"+ str(current_life_cycle)).disabled = true
 	$DebugLabel.text = "under_soil"
 	if self.current_life_cycle == 0:
 		$ActionTimer.start(5.)
@@ -238,7 +238,8 @@ func getDamaged(value):
 		await get_tree().create_timer(0.1).timeout
 		InvicibilityTime = 0
 		modulate = Color(1, 1, 1)
-		hide_under_soil()
+		if current_life_cycle == 0:
+			hide_under_soil()
 		
 	if self.has_node("HP_bar"):
 		self.AdjustBar()
@@ -246,7 +247,7 @@ func getDamaged(value):
 
 func get_out_of_soil():
 	get_node("Sprite_0").show()
-	get_node("Collision_0").disabled = false
+	get_node("Collision_"+ str(current_life_cycle)).disabled = false
 	isBurrow = false
 	self.maxSpeed = Genome["speed"][self.current_life_cycle]
 	$DebugLabel.text = ""
