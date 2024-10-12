@@ -1,7 +1,7 @@
 extends Node2D
 
 'This Script is for the main game loop'
-
+var life_rock_scene = load("res://Scenes/rock.tscn")
 var playerindex = 0
 var gameover = false
 
@@ -78,6 +78,11 @@ func InitNewGame():
 	#init Life
 	Life.Init_life_pool()
 	
+	for i in range(100):
+		var rock = life_rock_scene.instantiate()
+		add_child(rock)
+		rock.global_position = Life.PickRandomPlace()*World.tile_size
+		rock.show()
 
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
 	Life.Instantiate_emptyLife_pool($Life, 50, "spiky_grass")
@@ -89,6 +94,7 @@ func InitNewGame():
 	#Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
 	Life.Instantiate_emptyLife_pool($Life, 10, "spidercrab")
 	Life.Instantiate_emptyLife_pool($Life, 30, "jellybee")
+	Life.Instantiate_emptyLife_pool($Life, 100, "rock")
 	
 	Life.Instantiate_Life_in_pool($Life,10,"grass")
 	Life.Instantiate_Life_in_pool($Life,10,"spiky_grass")
@@ -98,6 +104,7 @@ func InitNewGame():
 	#Life.Instantiate_Life_in_pool($Life, 10, "stingtree")
 	Life.Instantiate_Life_in_pool($Life, 2, "spidercrab")
 	Life.Instantiate_Life_in_pool($Life, 20, "jellybee")
+	Life.Instantiate_Life_in_pool($Life, 100, "rock")
 
 
 

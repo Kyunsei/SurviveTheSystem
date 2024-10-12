@@ -19,6 +19,7 @@ var spidercrab_claw_scene = load("res://Scenes/sublife_spidercrab_claw.tscn")
 var petal_scene = load("res://Scenes/sublife_spiky_grass_petal.tscn")
 var life_debug_scene = load("res://Scenes/life_debug.tscn")
 var life_jellybee_scene = load("res://Scenes/life_jellybee.tscn")
+var life_rock_scene = load("res://Scenes/rock.tscn")
 
 var parameters_array = [] 
 var state_array = [] 
@@ -80,6 +81,9 @@ var crab_leg_pool_scene = []
 
 var jellybee_pool_state = []
 var jellybee_pool_scene = []
+
+var rock_pool_state = []
+var rock_pool_scene = []
 
 #test varaible
 var thread_finished = true
@@ -284,11 +288,12 @@ func Init_life_pool():
 	
 	jellybee_pool_scene = []
 	jellybee_pool_state = []
+	
+	rock_pool_scene = []
+	rock_pool_state = []
 
 #THIS ONE IS USED
 func Instantiate_emptyLife_pool(folder, N, ID):
-
-
 	
 	for i in range(0,N):
 			var nl = 0
@@ -328,6 +333,10 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 				nl = life_jellybee_scene.instantiate() #need to write code according to genome ID
 				jellybee_pool_state.append(0)
 				jellybee_pool_scene.append(nl)		
+			if ID == "rock":
+				nl = life_rock_scene.instantiate() #need to write code according to genome ID
+				rock_pool_state.append(0)
+				rock_pool_scene.append(nl)		
 			'if ID == "crab_leg":	
 				nl = crab_leg_combat_scene.instantiate() #need to write code according to genome ID
 				crab_leg_pool_state.append(0)
@@ -391,6 +400,13 @@ func Instantiate_Life_in_pool(folder,N,ID):
 			Life.jellybee_pool_scene[li].current_life_cycle = 0#2
 			#Life.sheep_number += 1
 			Life.jellybee_pool_scene[li].global_position =PickRandomPlace() * World.tile_size
+		if ID == "rock":	
+			var li = rock_pool_state.find(0)
+			Life.rock_pool_scene[li].Activate()
+			Life.rock_pool_scene[li].age = randi_range(0,2)
+			Life.rock_pool_scene[li].current_life_cycle = 0#2
+			#Life.sheep_number += 1
+			Life.rock_pool_scene[li].global_position =PickRandomPlace() * World.tile_size
 		
 		if ID == "berry":	
 			var li = berry_pool_state.find(0)
