@@ -65,7 +65,7 @@ func _on_timer_timeout():
 			Deactivate()
 
 		#Debug part
-		#$DebugLabel.text = str(pool_index)
+		$DebugLabel.text = str(energy)
 
 
 

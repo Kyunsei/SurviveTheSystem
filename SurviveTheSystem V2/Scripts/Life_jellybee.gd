@@ -141,12 +141,9 @@ func Brainy():
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
 				#$DebugLabel.text ="feeding"
-				if center.distance_to(cl.getCenterPos()) < 32 and cl.isDead == false:
-					if cl.energy >= 10:
+				if center.distance_to(cl.getCenterPos()) < 32 and cl.isDead == false:				
 						Absorb_life_energy(cl,10)
-					else:
-						AdjustDirection()
-				if cl.isDead == false:
+				if cl.isDead == false and cl.energy >= 10:
 						getCloser(cl.getCenterPos())
 				else:
 					AdjustDirection()

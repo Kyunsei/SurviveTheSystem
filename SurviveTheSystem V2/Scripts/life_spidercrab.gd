@@ -486,6 +486,9 @@ func _on_vision_body_entered(body):
 			food_array.append(body)
 		elif body.current_life_cycle == 0 and self.current_life_cycle == 0:
 			food_array.append(body)
+	if body.species== "jellybee":
+		if self.current_life_cycle == 0:
+			food_array.append(body)
 	if body.species == "catronaute":
 		if self.current_life_cycle == 1:
 			food_array.append(body)
@@ -501,6 +504,9 @@ func _on_vision_body_exited(body):
 		if body.current_life_cycle > 0 and self.current_life_cycle == 1:
 			food_array.erase(body)
 		elif body.current_life_cycle == 0 and self.current_life_cycle == 0:
+			food_array.erase(body)
+	if body.species== "jellybee":
+		if self.current_life_cycle == 0:
 			food_array.erase(body)
 	if body.species == "catronaute":
 		if self.current_life_cycle == 1:
