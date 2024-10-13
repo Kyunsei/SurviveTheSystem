@@ -43,6 +43,7 @@ func Build_Stat():
 	self.PV = 10
 	self.energy = 1
 	self.lifespan = 40
+	self.age= 0
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -169,6 +170,7 @@ func LifeDuplicate():
 
 
 func Activate():
+	set_physics_process(false)
 	self.isActive = true
 	Life.pool_state[species][pool_index] = 1
 	Life.life_number[species] += 1

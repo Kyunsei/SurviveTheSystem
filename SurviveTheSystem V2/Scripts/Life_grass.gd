@@ -43,6 +43,7 @@ func Build_Stat():
 	self.PV = 10
 	self.energy = 1
 	self.lifespan = 20
+	self.age = 0
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -65,7 +66,7 @@ func _on_timer_timeout():
 			Deactivate()
 
 		#Debug part
-		#$DebugLabel.text = str(pool_index)
+		#$DebugLabel.text = str(energy)
 
 
 
@@ -107,11 +108,13 @@ func LifeDuplicate():
 	if current_life_cycle == 1  :
 		if self.energy > 4:	
 			var life = Life.build_life(species)
+			#$DebugLabel.text = "duplicate"
 			if life != null:
 				self.energy -= 1
 				life.energy = 1
 				life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
 			else:
+				#$DebugLabel.text = "full"
 				pass
 				#print("pool empty")
 
@@ -128,6 +131,7 @@ func LifeDuplicate():
 
 
 func Activate():
+	set_physics_process(false)
 	self.isActive = true
 	Life.pool_state[species][pool_index] = 1
 	Life.life_number[species] += 1
@@ -141,7 +145,7 @@ func Activate():
 
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
-	
+	set_physics_process(false)
 	Decomposition()
 	$Timer.stop()
 	set_collision_layer_value(1,0)

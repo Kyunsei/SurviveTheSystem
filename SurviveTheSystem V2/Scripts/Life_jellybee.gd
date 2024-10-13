@@ -37,6 +37,7 @@ func Build_Stat():
 	self.energy = 10
 	self.maxSpeed = 150
 	self.lifespan = 2*(90/5)
+	self.age= 0
 	$Sprite_0.modulate = jelly_color
 
 

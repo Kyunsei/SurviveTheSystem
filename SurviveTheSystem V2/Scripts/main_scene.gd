@@ -46,7 +46,10 @@ func _process(delta):
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
 		#$UI/Debug.text = str(World.day) + " day \n" +"berry: " +   str(Life.berry_number) + " / " + str(Life.berry_pool_state.size()) + " \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)  + "\n stingtree: " +   str(Life.stingtree_number) + " / " + str(Life.stingtree_pool_state.size()) + " \n" + "crabspider: " +   str(Life.spidercrab_number) + " / " + str(Life.spidercrab_pool_state.size())   
 
-		
+		var text = ""
+		for n in Life.life_number:
+			text = text + "\n" + n + " " + str(Life.life_number[n])
+		$UI/Debug.text = text
 		#20 days
 		if World.day == 20 and gameover == false:
 			if Life.player.isActive == true:
@@ -384,12 +387,13 @@ func _input(event): #gameover fonction
 '
 
 	if event.is_action_pressed("Spawn"):
-		Life.current_batch = Life.grass_pool_scene.size()
+		pass
+		'Life.current_batch = Life.grass_pool_scene.size()
 		Life.new_max_life = Life.max_life + 100
 		$UI/ProgressBar.show()
 		$Life/SpawnTimer.wait_time = Life.min_time_by_batch
 		$Life/SpawnTimer.start(0)
-		get_tree().paused = true
+		get_tree().paused = true'
 
 	if event.is_action_pressed("Esc"):
 		print("Esc")

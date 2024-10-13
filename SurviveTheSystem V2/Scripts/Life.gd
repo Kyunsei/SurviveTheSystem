@@ -146,7 +146,7 @@ func Init_life_pool(folder):
 	for i in life_number:
 		life_number[i] = 0
 		
-	Life.Instantiate_emptyLife_pool(folder, 1400, "grass")
+	Life.Instantiate_emptyLife_pool(folder, 800, "grass")
 	Life.Instantiate_emptyLife_pool(folder, 850, "spiky_grass")
 	Life.Instantiate_emptyLife_pool(folder, 30, "sheep")
 	Life.Instantiate_emptyLife_pool(folder, 30, "berry")
@@ -318,6 +318,7 @@ func Build_life_in_World():
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 				life.global_position = pos  
+				life.age= randi_range(0,10)
 		for n in range(1):
 			var life = build_life("berry")
 			if life != null:

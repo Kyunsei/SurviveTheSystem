@@ -35,7 +35,7 @@ func Build_Stat():
 	self.maxPV = 60#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
 	self.size = $Sprite_0.texture.get_size()*0.33
-
+	self.age= 0
 
 	AdjustBar()
 	
