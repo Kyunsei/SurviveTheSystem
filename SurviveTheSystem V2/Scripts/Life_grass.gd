@@ -105,39 +105,12 @@ func Growth():
 #Duplication
 func LifeDuplicate():
 	if current_life_cycle == 1  :
-		if self.energy > 4:
-			
-			
-			'var genome_ID = 0
-			Life.new_lifes.append(genome_ID)
-			var newpos = PickRandomPlaceWithRange(position,5 * World.tile_size) 
-			Life.new_lifes_position.append(newpos)'
-
-			'var newlife = life_scene.instantiate()
-			newlife.global_position = PickRandomPlaceWithRange(position,5 * World.tile_size) 
-			get_parent().add_child(newlife)'
-			
-			'if Life.inactive_grass.size()>0:
-				self.energy -= 2
-				Life.inactive_grass[0].Activate()
-				Life.inactive_grass[0].energy = 2
-				Life.inactive_grass[0].global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
-				Life.inactive_grass.remove_at(0)	
-				Life.plant_number += 1'
-			
-			#Life.grass_pool Technique
-			var li = Life.grass_pool_state.find(0)	
-			#+ Life.grass_pool_state.size()*0.05
-			if li > -1 and Life.plant_number  < Life.grass_pool_state.size():
+		if self.energy > 4:	
+			var life = Life.build_life(species)
+			if life != null:
 				self.energy -= 1
-				Life.grass_pool_scene[li].Activate()
-				Life.grass_pool_scene[li].energy = 1
-				Life.grass_pool_scene[li].age = 0
-				Life.grass_pool_scene[li].current_life_cycle = 0
-				Life.grass_pool_scene[li].PV = Genome["maxPV"][0]
-
-				Life.plant_number += 1
-				Life.grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
+				life.energy = 1
+				life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
 			else:
 				pass
 				#print("pool empty")
@@ -156,7 +129,8 @@ func LifeDuplicate():
 
 func Activate():
 	self.isActive = true
-	Life.grass_pool_state[self.pool_index] = 1
+	Life.pool_state[species][pool_index] = 1
+	Life.life_number[species] += 1
 	Build_Stat()
 	set_collision_layer_value(1,1)
 	#Build_Genome()
@@ -172,9 +146,9 @@ func Deactivate():
 	$Timer.stop()
 	set_collision_layer_value(1,0)
 	self.isActive = false
-	Life.grass_pool_state[self.pool_index] = 0
-	#Life.inactive_grass.append(self)
-	Life.plant_number -= 1
+	Life.pool_state[species][pool_index] = 0
+	Life.life_number[species] -= 1
+
 
 
 

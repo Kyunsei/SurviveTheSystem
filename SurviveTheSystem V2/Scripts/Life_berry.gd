@@ -182,24 +182,14 @@ func Growth():
 #Duplication
 func LifeDuplicate2(transporter):
 		if self.energy > 10 :
-					
-			#Life.grass_pool Technique
-			var li = Life.berry_pool_state.find(0)	
-			#+ Life.grass_pool_state.size()*0.05
-			if li > -1 and Life.berry_number  < Life.berry_pool_state.size():
-
-				Life.berry_pool_scene[li].Activate()
-				Life.berry_pool_scene[li].energy = 5
-				Life.berry_pool_scene[li].age = 0
-				Life.berry_pool_scene[li].current_life_cycle = 0
-				Life.berry_pool_scene[li].PV = Genome["maxPV"][0]
-
-				Life.berry_number += 1
-				Life.berry_pool_scene[li].global_position = PickRandomPlaceWithRange(position,2 * World.tile_size)
-				
-				getTransported(Life.berry_pool_scene[li],transporter)
-				
-				
+			var life = Life.build_life(species)
+			if life != null:
+				self.energy -= 1
+				life.energy = 5
+				life.global_position = PickRandomPlaceWithRange(position,2 * World.tile_size)
+											
+				getTransported(life,transporter)
+							
 				self.current_life_cycle = 2
 				$PointLight2D.hide()
 				self.energy -= 5
@@ -234,7 +224,8 @@ func Activate():
 	get_parent().get_parent().light_out.connect( _on_light_out)
 	get_parent().get_parent().light_on.connect( _on_light_on)
 	self.isActive = true
-	Life.berry_pool_state[self.pool_index] = 1
+	Life.pool_state[species][pool_index] = 1
+	Life.life_number[species] += 1
 	Build_Stat()
 	set_collision_layer_value(1,1)
 	$Vision.set_collision_mask_value(1,true)
@@ -258,9 +249,8 @@ func Deactivate():
 	set_collision_layer_value(1,0)
 	$Vision.set_collision_mask_value(1,false)
 	self.isActive = false
-	Life.berry_pool_state[self.pool_index] = 0
-	#Life.inactive_grass.append(self)
-	Life.berry_number -= 1
+	Life.pool_state[species][pool_index] = 0
+	Life.life_number[species] -= 1
 
 
 	#prepare for new instance

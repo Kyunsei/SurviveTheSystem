@@ -170,7 +170,8 @@ func LifeDuplicate():
 
 func Activate():
 	self.isActive = true
-	Life.spiky_grass_pool_state[self.pool_index] = 1
+	Life.pool_state[species][pool_index] = 1
+	Life.life_number[species] += 1
 	Build_Stat()
 	set_collision_layer_value(1,1)
 	#Build_Genome()
@@ -190,7 +191,8 @@ func Deactivate():
 	$Collision_0.disabled = true
 	$Vision/Collision.disabled = true
 	self.isActive = false
-	Life.spiky_grass_pool_state[self.pool_index] = 0
+	Life.pool_state[species][pool_index] = 0
+	Life.life_number[species] -= 1
 	#Life.inactive_grass.append(self)
 	#Life.plant_number -= 1
 

@@ -395,7 +395,8 @@ func Activate():
 	set_physics_process(true)
 	self.isActive = true
 	self.isDead = false
-	Life.cat_pool_state[self.pool_index] = 1
+	Life.pool_state["cat"][pool_index] = 1
+	Life.life_number["cat"] += 1
 	Build_Stat()
 	show()
 	
@@ -419,8 +420,8 @@ func Deactivate():
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()
 	self.isActive = false
-	Life.cat_pool_state[self.pool_index] = 0
-	Life.cat_number -= 1
+	Life.pool_state["cat"][pool_index] = 0
+	Life.life_number["cat"] -= 1
 	hide()
 
 func Eat(life):

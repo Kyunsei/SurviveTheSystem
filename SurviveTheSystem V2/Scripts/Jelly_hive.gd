@@ -31,18 +31,13 @@ func spawn_jellybee():
 	if energy >= 10:
 		var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
 			#Lpool Technique
-		var li = Life.jellybee_pool_state.find(0)	
-		#+ Life.grass_pool_state.size()*0.05
-		if li > -1: # and Life.sheep_number  < Life.sheep_pool_scene.size():
+		var life = Life.build_life("jellybee")
+		if life != null:
 			self.energy -= 10
-			Life.jellybee_pool_scene[li].Activate()
-			Life.jellybee_pool_scene[li].energy = 10
-			Life.jellybee_pool_scene[li].age = 0
-			Life.jellybee_pool_scene[li].current_life_cycle = 0
-			Life.jellybee_pool_scene[li].PV = 10
-			Life.jellybee_pool_scene[li].global_position = newpos 
-			Life.jellybee_pool_scene[li].hive = self
-			energy -= 10
+			life.global_position = newpos 
+			life.energy = 10
+			life.hive = self
+
 		else:
 			pass
 			print("jellybee_pool empty")

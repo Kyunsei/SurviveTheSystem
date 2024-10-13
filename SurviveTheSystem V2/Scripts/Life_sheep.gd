@@ -182,17 +182,11 @@ func LifeDuplicate():
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
 			for i in range(0,int(self.energy-10)/10):
 			#Lpool Technique
-				var li = Life.sheep_pool_state.find(0)	
-				#+ Life.grass_pool_state.size()*0.05
-				if li > -1 and Life.sheep_number  < Life.sheep_pool_scene.size():
+				var life = Life.build_life(species)
+				if life != null:
 					self.energy -= 10
-					Life.sheep_pool_scene[li].Activate()
-					Life.sheep_pool_scene[li].energy = 10
-					Life.sheep_pool_scene[li].age = 0
-					Life.sheep_pool_scene[li].current_life_cycle = 0
-					Life.sheep_pool_scene[li].PV = Genome["maxPV"][0]
-					Life.sheep_number += 1
-					Life.sheep_pool_scene[li].global_position = newpos + Vector2(randf_range(0,32),randf_range(0,32))
+					life.energy = 10
+					life.global_position = newpos + Vector2(randf_range(0,32),randf_range(0,32))
 				else:
 					print("sheep_pool empty")
 
@@ -263,7 +257,8 @@ func Activate():
 	#set_physics_process(true)
 	self.isActive = true
 	self.isDead = false
-	Life.sheep_pool_state[self.pool_index] = 1
+	Life.pool_state[species][pool_index] = 1
+	Life.life_number[species] += 1
 	Build_Stat()
 	#Build_Genome()
 	show()
@@ -294,8 +289,8 @@ func Deactivate():
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()
 	self.isActive = false
-	Life.sheep_pool_state[self.pool_index] = 0
-	Life.sheep_number -= 1
+	Life.pool_state[species][pool_index] = 0
+	Life.life_number[species] -= 1
 	#prepare for new instance
 
 	#Build_Stat()	

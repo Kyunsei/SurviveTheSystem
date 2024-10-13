@@ -323,26 +323,11 @@ func Growth():
 func LifeDuplicate():
 	if self.age % 70 == 0 and self.energy > 60 and current_life_cycle >= 1:
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
-			var li = Life.spidercrab_pool_state.find(0)
-			#var li2 = Life.crab_leg_pool_state.find(0)		
-			#+ Life.grass_pool_state.size()*0.05
-			if li > -1 and Life.spidercrab_number  < Life.spidercrab_pool_scene.size():
-				self.energy -= 30
-				Life.spidercrab_pool_scene[li].Activate()				
-				#var crab_leg_combat_scene = Life.spidercrab_leg_scene.instantiate()
-				#get_parent().add_child(crab_leg_combat_scene) 
-				#crab_leg_combat_scene.position = newpos
-
-			#	Life.crab_leg_pool_scene[li2].Activate()
-			#	Life.crab_leg_pool_scene[li2].PV = Genome["maxPV"][0]
-		#		Life.crab_leg_pool_scene[li2].age = 0
-		#		Life.crab_leg_pool_scene[li2].global_position = newpos 
-				Life.spidercrab_pool_scene[li].energy = 30
-				Life.spidercrab_pool_scene[li].age = 0
-				Life.spidercrab_pool_scene[li].current_life_cycle = 0
-				Life.spidercrab_pool_scene[li].PV = Genome["maxPV"][0]
-				Life.spidercrab_number += 1
-				Life.spidercrab_pool_scene[li].global_position = newpos 
+			var life = Life.build_life(species)
+			if life != null:
+				self.energy -= 30			
+				life.energy = 30
+				life.global_position = newpos 
 			else:
 				print("spidercrab_pool empty")
 
@@ -415,7 +400,8 @@ func Activate():
 	set_physics_process(true)
 	self.isActive = true
 	self.isDead = false
-	Life.spidercrab_pool_state[self.pool_index] = 1
+	Life.pool_state[species][pool_index] = 1
+	Life.life_number[species] += 1
 	$Collision_1.disabled = true
 	$Collision_1.hide()
 	Build_Stat()
@@ -441,8 +427,8 @@ func Deactivate():
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()
 	self.isActive = false
-	Life.spidercrab_pool_state[self.pool_index] = 0
-	Life.spidercrab_number -= 1
+	Life.pool_state[species][pool_index] = 0
+	Life.life_number[species] -= 1
 	hide()
 
 func Eat(life):

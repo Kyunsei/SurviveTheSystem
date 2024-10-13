@@ -6,23 +6,24 @@ var c = 0
 var color_list = [Color.DARK_RED,Color.CADET_BLUE,Color.YELLOW_GREEN,Color.BEIGE]
 
 func build_world():
-
+	#iland center: [(47,120),(140,140)
+	#island size: 
+	var island_center = [Vector2i(47,120),Vector2i(140,140),Vector2i(124,124),Vector2i(76,124),Vector2i(100,100),Vector2i(124,76),Vector2i(76,76),Vector2i(40,40),Vector2i(110,60),Vector2i(115,40)]
+	var island_size = [12,20,12,12,25,12,12,40,12,12]
+	var island_energy = [3,4,3,0,3,12,3,7,3,7]
 	var factor = 1
 
-	draw_round_island(47*factor,120*factor,12*factor,3)	
-	
-	draw_round_island(140*factor,140*factor,20*factor,5)
-	
+	for i in range(island_center.size()):
+		draw_round_island(island_center[i].x*factor,island_center[i].y*factor,island_size[i]*factor,island_energy[i])	
+	'draw_round_island(140*factor,140*factor,20*factor,5)
 	draw_round_island(124*factor,124*factor,12*factor,3)
 	draw_round_island(76*factor,124*factor,12*factor,0)
 	draw_round_island(100*factor,100*factor,25*factor,3)
 	draw_round_island(124*factor,76*factor,12*factor,12)	
 	draw_round_island(76*factor,76*factor,12*factor,3)
-	
-	
 	draw_round_island(40*factor,40*factor,40*factor,7)				
 	draw_round_island(110*factor,60*factor,12*factor,3)	
-	draw_round_island(115*factor ,40*factor,12*factor,7)
+	draw_round_island(115*factor ,40*factor,12*factor,7)'
 	
 	update_ALL_tilemap_tile_to_new_soil_value()
 

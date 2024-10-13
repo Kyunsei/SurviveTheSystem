@@ -22,7 +22,7 @@ func Build_Phenotype(): #go to main
 	$Dead_Sprite_0.hide()		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
-	$Vision/Collision.shape.radius = 2000
+	$Vision/Collision.shape.radius = 4000
 	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	#ADD Body
@@ -79,19 +79,15 @@ func _on_timer_timeout():
 		$DebugLabel.text = str(age) + " " + str(energy)
 
 
-
 func spwan_pollen():
 	#generate new grass
 	var haspollen = true
 	if energy > 10 and haspollen:
-			var li = Life.spiky_grass_pool_state.find(0)
-			Life.spiky_grass_pool_scene[li].Activate()
-			Life.spiky_grass_pool_scene[li].age = 0
-			Life.spiky_grass_pool_scene[li].energy = 2
-			Life.spiky_grass_pool_scene[li].current_life_cycle = 0# randi_range(0,1)
-			Life.spiky_grass_pool_scene[li].PV = Life.spiky_grass_pool_scene[li].Genome["maxPV"][0]
+		var life = Life.build_life("spiky_grass")
+		if life != null:
+			life.energy = 2
 			var newpos = position
-			Life.spiky_grass_pool_scene[li].global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			life.global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
 			energy -= 2
 	pass
 
@@ -207,7 +203,8 @@ func Activate():
 	self.isActive = true
 	self.isDead = false
 	set_physics_process(true)
-	Life.jellybee_pool_state[self.pool_index] = 1
+	Life.pool_state[species][pool_index] = 1
+	Life.life_number[species] += 1
 	Build_Stat()
 	#Build_Genome()
 	show()
@@ -233,7 +230,9 @@ func Deactivate():
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()
 	self.isActive = false
-	Life.jellybee_pool_state[self.pool_index] = 0
+	Life.pool_state[species][pool_index] = 0
+	Life.life_number[species] -= 1
+	#Life.jellybee_pool_state[self.pool_index] = 0
 	$Vision/Collision.disabled = true
 	$Collision_0.disabled = true
 	#Life.sheep_number -= 1

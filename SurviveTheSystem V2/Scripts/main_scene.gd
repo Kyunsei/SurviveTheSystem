@@ -44,7 +44,7 @@ func _process(delta):
 			$StarBackground.position = Life.player.position  #background follow player
 			
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
-		$UI/Debug.text = str(World.day) + " day \n" +"berry: " +   str(Life.berry_number) + " / " + str(Life.berry_pool_state.size()) + " \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)  + "\n stingtree: " +   str(Life.stingtree_number) + " / " + str(Life.stingtree_pool_state.size()) + " \n" + "crabspider: " +   str(Life.spidercrab_number) + " / " + str(Life.spidercrab_pool_state.size())   
+		#$UI/Debug.text = str(World.day) + " day \n" +"berry: " +   str(Life.berry_number) + " / " + str(Life.berry_pool_state.size()) + " \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)  + "\n stingtree: " +   str(Life.stingtree_number) + " / " + str(Life.stingtree_pool_state.size()) + " \n" + "crabspider: " +   str(Life.spidercrab_number) + " / " + str(Life.spidercrab_pool_state.size())   
 
 		
 		#20 days
@@ -68,16 +68,21 @@ func init_debug_feature():
 
 func InitNewGame():
 	init_debug_feature()
+	
 	#Init the World
+	Life.Init_life_pool($Life)
 	World.Init_World($Blocks)
-	#var s = Time.get_ticks_msec()
+
+	#FUTURE PROCEDURAL FUNCTIOM
 	$World_TileMap.build_world()
+	Life.Build_life_in_World()
+		
+	#var s = Time.get_ticks_msec()
 	#var ss = Time.get_ticks_msec()
 	#print("new: " + str(ss-s) + "ms")
 	UpdateSimulationSpeed()
 	
-	#init Life
-	Life.Init_life_pool()
+
 	
 	for i in range(10):
 		var rock = life_rock_scene.instantiate()
@@ -92,19 +97,8 @@ func InitNewGame():
 		h.global_position = Life.PickRandomPlace()*World.tile_size
 
 
-	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
-	Life.Instantiate_emptyLife_pool($Life, 450, "spiky_grass")
-	Life.Instantiate_emptyLife_pool($Life, 20, "sheep")
-#
-	Life.Instantiate_emptyLife_pool($Life, 50, "berry")
 
-	Life.Instantiate_emptyLife_pool($Life, 3, "cat")
-	#Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
-	Life.Instantiate_emptyLife_pool($Life, 10, "spidercrab")
-	Life.Instantiate_emptyLife_pool($Life, 30, "jellybee")
-	
-
-	Life.Instantiate_Life_in_pool($Life,1,"grass")
+	'Life.Instantiate_Life_in_pool($Life,1,"grass")
 	Life.Instantiate_Life_in_pool($Life,50,"spiky_grass")
 	Life.Instantiate_Life_in_pool($Life,15,"berry")
 
@@ -116,31 +110,14 @@ func InitNewGame():
 	Life.Instantiate_Life_in_pool($Life,1,"cat")
 	#Life.Instantiate_Life_in_pool($Life, 10, "stingtree")
 	Life.Instantiate_Life_in_pool($Life, 2, "spidercrab")
-	#Life.Instantiate_Life_in_pool($Life, 10, "jellybee")
+	#Life.Instantiate_Life_in_pool($Life, 10, "jellybee")'
 
 
-
-
-	#Life.Init_matrix()
-	#Life.Init_Genome()
-	#Brain.Init_Brain()
-	
-
-	#Life.Instantiate_fullLife_pool($Life, Life.max_life)
-	
-	#init item
-	#Item.Init_Item()
-		
-	
-	#Instantiate Player
-	#Life.player_index = Life.BuildPlayer($Life)
-	#$Life/Player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
-	#$Life/Player.INDEX = Life.player_index
 	if Life.char_selected != "sheep":
-		Life.player = Life.cat_pool_scene[0] #TEMPORAIRE
+		Life.player = Life.pool_scene['cat'][0] #TEMPORAIRE
 		Life.player.isPlayer = true #HERE
 	else:
-		Life.player = Life.sheep_pool_scene[0]
+		Life.player = Life.pool_scene['sheep'][0]
 		Life.player.age = 0
 		Life.player.isPlayer = true 
 	Life.player.get_node("Camera2D").enabled = true

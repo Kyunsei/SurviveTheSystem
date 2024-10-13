@@ -6,7 +6,7 @@ var player_skin_ID = 0
 var player = null
 
 var life_size_unit = 32
-var life_scene = preload("res://Scenes/life.tscn") #load scene of block
+#var life_scene = preload("res://Scenes/life.tscn") #load scene of block
 var life_grass_scene = load("res://Scenes/life_grass.tscn")
 var life_spiky_grass_scene = load("res://Scenes/life_spiky_grass.tscn")
 var life_sheep_scene = load("res://Scenes/life_sheep.tscn")
@@ -54,129 +54,352 @@ var nb_by_batch = 1.
 var min_time_by_batch = .001 #in sec
 
 #variable for pooling
+var life_scene = {
+	'grass': load("res://Scenes/life_grass.tscn"),
+	'spiky_grass': load("res://Scenes/life_spiky_grass.tscn"),
+	'sheep' : load("res://Scenes/life_sheep.tscn"),
+	'berry' : load("res://Scenes/life_berry.tscn"),
+	'cat' : load("res://Scenes/life_cat.tscn"),
+	'stingtree' : load("res://Scenes/life_stingtree.tscn"),
+	'spidercrab' : load("res://Scenes/life_spidercrab.tscn"),
+	'jellybee' : load("res://Scenes/life_jellybee.tscn")
+}
 
-var cat_pool_scene = []
-var cat_pool_state = []
+var life_number = {
+	"cat" : 0,
+	"grass": 0,
+	"spiky_grass":0,
+	"spidercrab": 0,
+	"sheep": 0,
+	"jellybee": 0,
+	"berry": 0
+}
 
-var grass_pool_scene = []
-var grass_pool_state = []
+var pool_state = {
+	"cat" : [],
+	"grass": [],
+	"spiky_grass": [],
+	"spidercrab": [],
+	"sheep": [],
+	"jellybee": [],
+	"berry": []
+}
 
-var spiky_grass_pool_scene = []
-var spiky_grass_pool_state = []
+var pool_scene = {
+	"cat" : [],
+	"grass": [],
+	"spiky_grass": [],
+	"spidercrab": [],
+	"sheep": [],
+	"jellybee": [],
+	"berry": []
+}
 
-var sheep_pool_scene = []
-var sheep_pool_state = []
-
-var berry_pool_scene = []
-var berry_pool_state = []
-
-var stingtree_pool_state = []
-var stingtree_pool_scene = []
-
-var spidercrab_pool_state = []
-var spidercrab_pool_scene = []
-
-var crab_leg_pool_state = []
-var crab_leg_pool_scene = []
-
-var jellybee_pool_state = []
-var jellybee_pool_scene = []
-
-var rock_pool_state = []
-var rock_pool_scene = []
-
-#test varaible
-var thread_finished = true
-
-var stop = false
-
-var action_list = {
-	"0" : "none",
-	"1" : "pick",
-	"2" : "drop",
-	"3" : "use"
-} 
 
 func Calculate_score():
 	score += 1
 
-func Init_matrix():
-	plant_number = 0
-	parameters_array.resize(max_life*par_number)
-	parameters_array.fill(-1)
-	world_matrix.resize(World.world_size*World.world_size)
-	world_matrix.fill(-1)
-	state_array.resize(max_life)
-	state_array.fill(-1)
-
-func Init_Parameter(INDEX,genome_index):
-	var posIndex = world_matrix.find(INDEX)
-	var x = (posIndex % World.world_size) *World.tile_size
-	var y = (floor(posIndex/World.world_size))*World.tile_size
-	
-	parameters_array[INDEX*par_number + 0] = genome_index #G_ID
-	parameters_array[INDEX*par_number + 1] = Genome[genome_index]["PV"][0] #PV
-	parameters_array[INDEX*par_number + 2] = Genome[genome_index]["lifecycle"][0] #ELEMENT
-	parameters_array[INDEX*par_number + 3] = 0 #LIFECYCLE
-	parameters_array[INDEX*par_number + 4] = 0 #DirectionX
-	parameters_array[INDEX*par_number + 5] = 0 #DirectionY
-	parameters_array[INDEX*par_number + 6] = x #PositionX
-	parameters_array[INDEX*par_number + 7] = y #PositionY
-	parameters_array[INDEX*par_number + 8] = 0 #Age
-	
 
 	
-	plant_number+=1
+'func Instantiate_emptyLife_pool_in_Batch(folder,current_batch,nb_by_call):
+	for i in range(current_batch,current_batch + nb_by_call):
+			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
+			grass_pool_state.append(0)
+			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			nl.pool_index = i
+			grass_pool_scene.append(nl)
+			folder.add_child(nl)'
+
+
+func Init_life_pool(folder):
+	'cat_pool_scene = []
+	cat_pool_state = []
+
+	grass_pool_scene = []
+	grass_pool_state = []
 	
-func InstantiateEmptyLife(INDEX,folder):
-	if folder.has_node(str(INDEX))==false:
-			var new_life = life_scene.instantiate()
-			new_life.name =str(INDEX)
-			new_life.INDEX = INDEX
-			folder.add_child(new_life)
+	spiky_grass_pool_scene = []
+	spiky_grass_pool_state = []
+
+	sheep_pool_scene = []
+	sheep_pool_state = []
+
+	berry_pool_scene = []
+	berry_pool_state = []
+
+	stingtree_pool_state = []
+	stingtree_pool_scene = []
+
+	spidercrab_pool_state = []
+	spidercrab_pool_scene = []
+	
+	crab_leg_pool_state = []
+	crab_leg_pool_scene = []
+	
+	jellybee_pool_scene = []
+	jellybee_pool_state = []'
+	
+	for i in pool_scene:
+		pool_scene[i] = []
+	for i in pool_state:
+		pool_state[i] = []
+	for i in life_number:
+		life_number[i] = 0
+	Life.Instantiate_emptyLife_pool(folder, 400, "grass")
+	Life.Instantiate_emptyLife_pool(folder, 450, "spiky_grass")
+	Life.Instantiate_emptyLife_pool(folder, 20, "sheep")
+	Life.Instantiate_emptyLife_pool(folder, 50, "berry")
+	Life.Instantiate_emptyLife_pool(folder, 3, "cat")
+	#Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
+	Life.Instantiate_emptyLife_pool(folder, 10, "spidercrab")
+	Life.Instantiate_emptyLife_pool(folder, 30, "jellybee")
+	
+	
+
+
+
+#THIS ONE IS USED
+func Instantiate_emptyLife_pool(folder, N, ID):
+	print(ID)
+	for i in range(0,N):
+		var nl = life_scene[ID].instantiate()
+		nl.position = Vector2(-100,-100)
+		pool_state[ID].append(0)
+		pool_scene[ID].append(nl)
+		nl.pool_index = i	
+		folder.add_child(nl)
+	print(pool_state[ID])
+	'var nl = 0
+			if ID == "grass":
+				nl = life_grass_scene.instantiate() #need to write code according to genome ID
+				grass_pool_state.append(0)
+				nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+				nl.pool_index = i
+				grass_pool_scene.append(nl)
+			if ID == "spiky_grass":
+				nl = life_spiky_grass_scene.instantiate() #need to write code according to genome ID
+				spiky_grass_pool_state.append(0)
+				#nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+				nl.pool_index = i
+				spiky_grass_pool_scene.append(nl)
+			if ID == "sheep":
+				nl = life_sheep_scene.instantiate() #need to write code according to genome ID
+				sheep_pool_state.append(0)
+				sheep_pool_scene.append(nl)
+			if ID == "berry":	
+				nl = life_berry_scene.instantiate() #need to write code according to genome ID
+				berry_pool_state.append(0)
+				berry_pool_scene.append(nl)
+			if ID == "cat":	
+				nl = life_cat_scene.instantiate() #need to write code according to genome ID
+				cat_pool_state.append(0)
+				cat_pool_scene.append(nl)
+			if ID == "stingtree":	
+				nl = life_stingtree_scene.instantiate() #need to write code according to genome ID
+				stingtree_pool_state.append(0)
+				stingtree_pool_scene.append(nl)
+			if ID == "spidercrab":	
+				nl = life_spidercrab_scene.instantiate() #need to write code according to genome ID
+				spidercrab_pool_state.append(0)
+				spidercrab_pool_scene.append(nl)	
+			if ID == "jellybee":
+				nl = life_jellybee_scene.instantiate() #need to write code according to genome ID
+				jellybee_pool_state.append(0)
+				jellybee_pool_scene.append(nl)'		
+
+			
+	
+#THIS ONE TOOO			
+'func Extend_emptyLife_pool(folder, N):
+	var old_size = Life.grass_pool_state.size()
+	for i in range(0,N):
+		
+			#var nl = temp_lifes[i].instantiate()
+			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
+			grass_pool_state.append(0)
+			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			nl.pool_index = i + old_size
+			grass_pool_scene.append(nl)
+			folder.add_child(nl)
+			#nl.Activate()'
+
+#THIS ONE is USE
+'func Instantiate_Life_in_pool(folder,N,ID):
+	for i in range(0,N):
+		if ID == "grass":
+			var li = grass_pool_state.find(0)
+			Life.grass_pool_scene[li].Activate()
+			#Life.grass_pool_scene[li].energy = 2
+			Life.grass_pool_scene[li].age = randi_range(0,10)
+			Life.grass_pool_scene[li].current_life_cycle = 0# randi_range(0,1)
+			Life.grass_pool_scene[li].PV = Life.grass_pool_scene[li].Genome["maxPV"][0]
+			Life.plant_number += 1	
+			var newpos = PickRandomPlace() * World.tile_size
+			Life.grass_pool_scene[li].global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+		if ID == "spiky_grass":
+			var li = spiky_grass_pool_state.find(0)
+			Life.spiky_grass_pool_scene[li].Activate()
+			#Life.grass_pool_scene[li].energy = 2
+			Life.spiky_grass_pool_scene[li].age = randi_range(0,10)
+			Life.spiky_grass_pool_scene[li].current_life_cycle = 0# randi_range(0,1)
+			Life.spiky_grass_pool_scene[li].PV = Life.spiky_grass_pool_scene[li].Genome["maxPV"][0]
+			#Life.plant_number += 1	
+			var newpos = PickRandomPlace() * World.tile_size
+			Life.spiky_grass_pool_scene[li].global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+
+		if ID == "sheep":	
+			var li = sheep_pool_state.find(0)
+			Life.sheep_pool_scene[li].Activate()
+			Life.sheep_pool_scene[li].age = randi_range(0,20)
+			Life.sheep_pool_scene[li].current_life_cycle = 0#2
+			Life.sheep_number += 1
+			Life.sheep_pool_scene[li].global_position =PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+		if ID == "jellybee":	
+			var li = jellybee_pool_state.find(0)
+			Life.jellybee_pool_scene[li].Activate()
+			Life.jellybee_pool_scene[li].age = randi_range(0,2)
+			Life.jellybee_pool_scene[li].current_life_cycle = 0#2
+			#Life.sheep_number += 1
+			Life.jellybee_pool_scene[li].global_position =PickRandomPlace() * World.tile_size
+
+		if ID == "berry":	
+			var li = berry_pool_state.find(0)
+			Life.berry_pool_scene[li].Activate()
+			Life.berry_pool_scene[li].age = randi_range(12,20)
+			Life.berry_pool_scene[li].current_life_cycle = 0#randi_range(0,3)
+			Life.berry_number += 1
+			Life.berry_pool_scene[li].global_position =PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+		if ID == "cat":	
+			var li = cat_pool_state.find(0)
+			Life.cat_pool_scene[li].Activate()
+			Life.cat_pool_scene[li].age = 0#randi_range(0,20)
+			Life.cat_pool_scene[li].current_life_cycle = 0
+			Life.cat_number += 1
+			Life.cat_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+		if ID == "stingtree":	
+			var li = stingtree_pool_state.find(0)
+			Life.stingtree_pool_scene[li].Activate()
+			Life.stingtree_pool_scene[li].age = 0#randi_range(0,20)
+			Life.stingtree_pool_scene[li].current_life_cycle = 0
+			Life.stingtree_number += 1
+			Life.stingtree_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+		if ID == "spidercrab":	
+			var li = spidercrab_pool_state.find(0)
+			Life.spidercrab_pool_scene[li].Activate()
+			Life.spidercrab_pool_scene[li].age = 0#randi_range(0,20)
+			Life.spidercrab_pool_scene[li].current_life_cycle = 0
+			Life.spidercrab_number += 1
+			Life.spidercrab_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))'
+
+
+func build_life(ID):
+	var life = null
+	var li = pool_state[ID].find(0)
+	if li != -1:
+			life = Life.pool_scene[ID][li]
+			life.pool_index = li
+			life.Activate()
+	return life
+
+
+func Build_life_in_World():
+	var island_center = [Vector2i(47,120),Vector2i(140,140),Vector2i(124,124),Vector2i(76,124),Vector2i(100,100),Vector2i(124,76),Vector2i(76,76),Vector2i(40,40),Vector2i(110,60),Vector2i(115,40)]
+	var island_size = [12,20,12,12,25,12,12,40,12,12]
+	var island_energy = [3,4,3,0,3,12,3,7,3,7]
+	
+	build_life("cat")
+
+
+
+	for i in range(island_size.size()):
+		for n in range(10):
+			var life = build_life("grass")
+			if life != null:
+				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
+				life.global_position = pos  
+		for n in range(1):
+			var life = build_life("berry")
+			if life != null:
+				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
+				life.global_position = pos 
+		for n in range(2):
+			var life = build_life("sheep")
+			if life != null:
+				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
+				life.global_position = pos 
+	
+	for i in [0,9]:
+		for n in range(10):
+			var life = build_life("spiky_grass")
+			if life != null:
+				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
+				life.global_position = pos  			
+	
+	for n in range(2):
+			var life = build_life("spidercrab")
+			if life != null:
+				var pos = PickRandomPlaceWithRange(island_center[7].x,island_center[7].y,island_size[7])
+				life.global_position = pos
+		
+			
+#Vector2(100,100) #
+func PickRandomPlace():
+	#var rng = RandomNumberGenerator.new()
+	var random_x = randi_range(0,World.world_size-1)
+	var random_y = randi_range(0,World.world_size-1)
+
+	var posindex = random_y*World.world_size + random_x
+	var newpos = Vector2(random_x, random_y)
+	if World.block_element_state[posindex] != 1:
+		newpos = PickRandomPlace()
+		#newpos = Vector2(randf_range(World.world_size/2-5,World.world_size/2+5),randf_range(World.world_size/2-5,World.world_size/2+5))
+	return newpos
+
+func PickRandomPlaceWithRange(x,y,range):	
+	var random_x = randi_range(max(0,x-range),min((World.world_size) ,x+range))
+	var random_y = randi_range(max(0,y-range),min((World.world_size) ,y+range))
+	var newpos = Vector2(random_x*World.tile_size, random_y*World.tile_size)
+	if World.block_element_state[int(random_y)*World.world_size + int(random_x)] != 1:
+		#newpos = PickRandomPlaceWithRange(position,range)
+		newpos = PickRandomPlaceWithRange(x,y,range)  #+ Vector2(randi_range(0,8),randi_range(0,8))
+		#newpos = Vector2(x*World.tile_size,y*World.tile_size)
+		return newpos
 	else:
-		print("already instantiated")
-		#new_life.name =str(INDEX)
-		#new_life.INDEX = INDEX
-	
-func InstantiateLife(INDEX,folder):
-	var posIndex = world_matrix.find(INDEX)
-	var x = parameters_array[INDEX*par_number + 6]
-	var y = parameters_array[INDEX*par_number + 7]
-	state_array[INDEX] = 1
-	var genome_index = parameters_array[INDEX*par_number + 0]
-	if folder.has_node(str(INDEX))==false:
+		return newpos
 
-		#if isOnScreen(Life.Life_Matrix_PositionX[index],Life.Life_Matrix_PositionY[index]):
-		if x >= 0 and y >= 0 and x < World.world_size*World.tile_size and y < World.world_size*World.tile_size :
-				var new_life = life_scene.instantiate()
-				new_life.position = Vector2(x,y)
-				new_life.name =str(INDEX)
-				new_life.INDEX = INDEX
-				folder.add_child(new_life)
-	else:
-		var new_life2 = folder.get_node(str(INDEX))
-		new_life2.position = Vector2(x,y)
-		new_life2.show()
-		#new_life.name =str(INDEX)
-		#new_life.INDEX = INDEX
+
+'func Instantiate_fullLife_pool(folder, N):
+	for i in range(0,N):
+			#var nl = temp_lifes[i].instantiate()
+			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
+			grass_pool_state.append(1)
+			nl.position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
+			nl.pool_index = i
+			nl.age = randi_range(0,20)
+			plant_number += 1
+			#inactive_grass.append(nl)
+			grass_pool_scene.append(nl)
+
+
+			folder.add_child(nl)
+			nl.Activate()'
+
+'func setFinished():
+	thread_finished = true'
 
 
 
-
-
-
-func deleteLoopCPU():
+'func deleteLoopCPU():
 	var temp = state_array.duplicate()
 	var l = 0
 	while l != -1:
 		l = temp.find(0)
 		temp[l] += 1
 		if l >= 0:
-			RemoveLife(l)
+			RemoveLife(l)'
 
 
-func LifeLoopCPU(folder):
+'func LifeLoopCPU(folder):
 	#var s1 = Time.get_ticks_msec() 
 	#this function is the main loop for life entities, will be move to GPU
 	var temp = state_array.duplicate()
@@ -217,10 +440,10 @@ func LifeLoopCPU(folder):
 	#print(state_array)
 	#print("hello?")
 	#thread_finished = true
-	#call_deferred("setFinished")
+	#call_deferred("setFinished")'
 
 
-func InstantiateNewLifeBatchCPU(folder):
+'func InstantiateNewLifeBatchCPU(folder):
 	#var s1 = Time.get_ticks_msec() 
 	var temp = state_array.duplicate()
 	new_lifes = []
@@ -229,9 +452,9 @@ func InstantiateNewLifeBatchCPU(folder):
 	for i in range(10):
 		l = temp.find(5)
 		temp[l] += 1
-		InstantiateLife(l,folder)
+		InstantiateLife(l,folder)'
 	
-func Instantiate_NewLife_in_Batch(folder,current_batch,nb_by_call,temp_lifes,temp_lifes_position):
+'func Instantiate_NewLife_in_Batch(folder,current_batch,nb_by_call,temp_lifes,temp_lifes_position):
 	for i in range(current_batch,current_batch + nb_by_call):
 		if i < temp_lifes.size():
 			#var nl = temp_lifes[i].instantiate()
@@ -239,236 +462,77 @@ func Instantiate_NewLife_in_Batch(folder,current_batch,nb_by_call,temp_lifes,tem
 			nl.position = temp_lifes_position[i]
 			#nl.Activate() #test for pooling
 			folder.add_child(nl)
-			Life.plant_number += 1
-	
-func Instantiate_emptyLife_pool_in_Batch(folder,current_batch,nb_by_call):
-	for i in range(current_batch,current_batch + nb_by_call):
-			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
-			grass_pool_state.append(0)
-			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-			nl.pool_index = i
-			grass_pool_scene.append(nl)
-			folder.add_child(nl)
+			Life.plant_number += 1'
 
 
-func Init_life_pool():
-	
+
+'func Init_matrix():
 	plant_number = 0
-	sheep_number = 0
-	spidercrab_number = 0
-	berry_number = 0
-	player_number = 0
-	cat_number = 0
-	stingtree_number = 0
-	crab_leg_number = 0
+	parameters_array.resize(max_life*par_number)
+	parameters_array.fill(-1)
+	world_matrix.resize(World.world_size*World.world_size)
+	world_matrix.fill(-1)
+	state_array.resize(max_life)
+	state_array.fill(-1)'
+
+'func Init_Parameter(INDEX,genome_index):
+	var posIndex = world_matrix.find(INDEX)
+	var x = (posIndex % World.world_size) *World.tile_size
+	var y = (floor(posIndex/World.world_size))*World.tile_size
 	
-	cat_pool_scene = []
-	cat_pool_state = []
-
-	grass_pool_scene = []
-	grass_pool_state = []
+	parameters_array[INDEX*par_number + 0] = genome_index #G_ID
+	parameters_array[INDEX*par_number + 1] = Genome[genome_index]["PV"][0] #PV
+	parameters_array[INDEX*par_number + 2] = Genome[genome_index]["lifecycle"][0] #ELEMENT
+	parameters_array[INDEX*par_number + 3] = 0 #LIFECYCLE
+	parameters_array[INDEX*par_number + 4] = 0 #DirectionX
+	parameters_array[INDEX*par_number + 5] = 0 #DirectionY
+	parameters_array[INDEX*par_number + 6] = x #PositionX
+	parameters_array[INDEX*par_number + 7] = y #PositionY
+	parameters_array[INDEX*par_number + 8] = 0 #Age
 	
-	spiky_grass_pool_scene = []
-	spiky_grass_pool_state = []
 
-	sheep_pool_scene = []
-	sheep_pool_state = []
-
-	berry_pool_scene = []
-	berry_pool_state = []
-
-	stingtree_pool_state = []
-	stingtree_pool_scene = []
-
-	spidercrab_pool_state = []
-	spidercrab_pool_scene = []
 	
-	crab_leg_pool_state = []
-	crab_leg_pool_scene = []
+	plant_number+=1'
 	
-	jellybee_pool_scene = []
-	jellybee_pool_state = []
+'func InstantiateEmptyLife(INDEX,folder):
+	if folder.has_node(str(INDEX))==false:
+			var new_life = life_scene.instantiate()
+			new_life.name =str(INDEX)
+			new_life.INDEX = INDEX
+			folder.add_child(new_life)
+	else:
+		print("already instantiated")
+		#new_life.name =str(INDEX)
+		#new_life.INDEX = INDEX'
 	
-	rock_pool_scene = []
-	rock_pool_state = []
+'func InstantiateLife(INDEX,folder):
+	var posIndex = world_matrix.find(INDEX)
+	var x = parameters_array[INDEX*par_number + 6]
+	var y = parameters_array[INDEX*par_number + 7]
+	state_array[INDEX] = 1
+	var genome_index = parameters_array[INDEX*par_number + 0]
+	if folder.has_node(str(INDEX))==false:
 
-#THIS ONE IS USED
-func Instantiate_emptyLife_pool(folder, N, ID):
-	
-	for i in range(0,N):
-			var nl = 0
-			if ID == "grass":
-				nl = life_grass_scene.instantiate() #need to write code according to genome ID
-				grass_pool_state.append(0)
-				nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-				nl.pool_index = i
-				grass_pool_scene.append(nl)
-			if ID == "spiky_grass":
-				nl = life_spiky_grass_scene.instantiate() #need to write code according to genome ID
-				spiky_grass_pool_state.append(0)
-				#nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-				nl.pool_index = i
-				spiky_grass_pool_scene.append(nl)
-			if ID == "sheep":
-				nl = life_sheep_scene.instantiate() #need to write code according to genome ID
-				sheep_pool_state.append(0)
-				sheep_pool_scene.append(nl)
-			if ID == "berry":	
-				nl = life_berry_scene.instantiate() #need to write code according to genome ID
-				berry_pool_state.append(0)
-				berry_pool_scene.append(nl)
-			if ID == "cat":	
-				nl = life_cat_scene.instantiate() #need to write code according to genome ID
-				cat_pool_state.append(0)
-				cat_pool_scene.append(nl)
-			if ID == "stingtree":	
-				nl = life_stingtree_scene.instantiate() #need to write code according to genome ID
-				stingtree_pool_state.append(0)
-				stingtree_pool_scene.append(nl)
-			if ID == "spidercrab":	
-				nl = life_spidercrab_scene.instantiate() #need to write code according to genome ID
-				spidercrab_pool_state.append(0)
-				spidercrab_pool_scene.append(nl)	
-			if ID == "jellybee":
-				nl = life_jellybee_scene.instantiate() #need to write code according to genome ID
-				jellybee_pool_state.append(0)
-				jellybee_pool_scene.append(nl)		
-			if ID == "rock":
-				nl = life_rock_scene.instantiate() #need to write code according to genome ID
-				rock_pool_state.append(0)
-				rock_pool_scene.append(nl)		
-			'if ID == "crab_leg":	
-				nl = crab_leg_combat_scene.instantiate() #need to write code according to genome ID
-				crab_leg_pool_state.append(0)
-				crab_leg_pool_scene.append(nl)'			
-			
-			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-			nl.pool_index = i	
-			folder.add_child(nl)
-			#nl.Activate()
-			
-	
-#THIS ONE TOOO			
-func Extend_emptyLife_pool(folder, N):
-	var old_size = Life.grass_pool_state.size()
-	for i in range(0,N):
-		
-			#var nl = temp_lifes[i].instantiate()
-			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
-			grass_pool_state.append(0)
-			nl.position = Vector2(-100,-100)#Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-			nl.pool_index = i + old_size
-			grass_pool_scene.append(nl)
-			folder.add_child(nl)
-			#nl.Activate()
-
-#THIS ONE is USE
-func Instantiate_Life_in_pool(folder,N,ID):
-	for i in range(0,N):
-		if ID == "grass":
-			var li = grass_pool_state.find(0)
-			Life.grass_pool_scene[li].Activate()
-			#Life.grass_pool_scene[li].energy = 2
-			Life.grass_pool_scene[li].age = randi_range(0,10)
-			Life.grass_pool_scene[li].current_life_cycle = 0# randi_range(0,1)
-			Life.grass_pool_scene[li].PV = Life.grass_pool_scene[li].Genome["maxPV"][0]
-			Life.plant_number += 1	
-			var newpos = PickRandomPlace() * World.tile_size
-			Life.grass_pool_scene[li].global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-		if ID == "spiky_grass":
-			var li = spiky_grass_pool_state.find(0)
-			Life.spiky_grass_pool_scene[li].Activate()
-			#Life.grass_pool_scene[li].energy = 2
-			Life.spiky_grass_pool_scene[li].age = randi_range(0,10)
-			Life.spiky_grass_pool_scene[li].current_life_cycle = 0# randi_range(0,1)
-			Life.spiky_grass_pool_scene[li].PV = Life.spiky_grass_pool_scene[li].Genome["maxPV"][0]
-			#Life.plant_number += 1	
-			var newpos = PickRandomPlace() * World.tile_size
-			Life.spiky_grass_pool_scene[li].global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-
-		if ID == "sheep":	
-			var li = sheep_pool_state.find(0)
-			Life.sheep_pool_scene[li].Activate()
-			Life.sheep_pool_scene[li].age = randi_range(0,20)
-			Life.sheep_pool_scene[li].current_life_cycle = 0#2
-			Life.sheep_number += 1
-			Life.sheep_pool_scene[li].global_position =PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-		if ID == "jellybee":	
-			var li = jellybee_pool_state.find(0)
-			Life.jellybee_pool_scene[li].Activate()
-			Life.jellybee_pool_scene[li].age = randi_range(0,2)
-			Life.jellybee_pool_scene[li].current_life_cycle = 0#2
-			#Life.sheep_number += 1
-			Life.jellybee_pool_scene[li].global_position =PickRandomPlace() * World.tile_size
-		if ID == "rock":	
-			var li = rock_pool_state.find(0)
-			Life.rock_pool_scene[li].Activate()
-			Life.rock_pool_scene[li].age = randi_range(0,2)
-			Life.rock_pool_scene[li].current_life_cycle = 0#2
-			#Life.sheep_number += 1
-			Life.rock_pool_scene[li].global_position =PickRandomPlace() * World.tile_size
-		
-		if ID == "berry":	
-			var li = berry_pool_state.find(0)
-			Life.berry_pool_scene[li].Activate()
-			Life.berry_pool_scene[li].age = randi_range(12,20)
-			Life.berry_pool_scene[li].current_life_cycle = 0#randi_range(0,3)
-			Life.berry_number += 1
-			Life.berry_pool_scene[li].global_position =PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-		if ID == "cat":	
-			var li = cat_pool_state.find(0)
-			Life.cat_pool_scene[li].Activate()
-			Life.cat_pool_scene[li].age = 0#randi_range(0,20)
-			Life.cat_pool_scene[li].current_life_cycle = 0
-			Life.cat_number += 1
-			Life.cat_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-		if ID == "stingtree":	
-			var li = stingtree_pool_state.find(0)
-			Life.stingtree_pool_scene[li].Activate()
-			Life.stingtree_pool_scene[li].age = 0#randi_range(0,20)
-			Life.stingtree_pool_scene[li].current_life_cycle = 0
-			Life.stingtree_number += 1
-			Life.stingtree_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-		if ID == "spidercrab":	
-			var li = spidercrab_pool_state.find(0)
-			Life.spidercrab_pool_scene[li].Activate()
-			Life.spidercrab_pool_scene[li].age = 0#randi_range(0,20)
-			Life.spidercrab_pool_scene[li].current_life_cycle = 0
-			Life.spidercrab_number += 1
-			Life.spidercrab_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-		'if ID == "crab_leg":	
-			var li = crab_leg_pool_state.find(0)
-			Life.crab_leg_scene[li].Activate()
-			Life.crab_leg_scene[li].age = 0#randi_range(0,20)
-			Life.crab_leg_scene[li].current_life_cycle = 0
-			#Life.crab_leg_number += 1
-			Life.crab_leg_scene[li].global_position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))'
+		#if isOnScreen(Life.Life_Matrix_PositionX[index],Life.Life_Matrix_PositionY[index]):
+		if x >= 0 and y >= 0 and x < World.world_size*World.tile_size and y < World.world_size*World.tile_size :
+				var new_life = life_scene.instantiate()
+				new_life.position = Vector2(x,y)
+				new_life.name =str(INDEX)
+				new_life.INDEX = INDEX
+				folder.add_child(new_life)
+	else:
+		var new_life2 = folder.get_node(str(INDEX))
+		new_life2.position = Vector2(x,y)
+		new_life2.show()
+		#new_life.name =str(INDEX)
+		#new_life.INDEX = INDEX'
 
 
-func Instantiate_fullLife_pool(folder, N):
-	for i in range(0,N):
-			#var nl = temp_lifes[i].instantiate()
-			var nl = life_grass_scene.instantiate() #need to write code according to genome ID
-			grass_pool_state.append(1)
-			nl.position = Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-			nl.pool_index = i
-			nl.age = randi_range(0,20)
-			plant_number += 1
-			#inactive_grass.append(nl)
-			grass_pool_scene.append(nl)
+###################################################################
+#TO delete?
+##########################################################3
 
-
-			folder.add_child(nl)
-			nl.Activate()
-
-func setFinished():
-	thread_finished = true
-
-
-
-
-
-func Metabocost2(INDEX):
+'func Metabocost2(INDEX):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var current_cycle = parameters_array[INDEX*par_number+3]
 	var value = 1 * Genome[genome_index]["metabospeed"][current_cycle]
@@ -620,20 +684,11 @@ func Duplicate(INDEX):
 	x = int(x/World.tile_size)
 	y = int(y/World.tile_size)
 
-	'var posIndex = world_matrix.find(INDEX)
-	var x = (posIndex % World.world_size) 
-	var y = (floor(posIndex/World.world_size))'
 	if Genome[genome_index]["childnumber"][current_cycle] > 0 :
 	#if current_cycle+1 >=  Genome[genome_index]["lifecycle"].size():
 		if parameters_array[INDEX*par_number+2] > Genome[genome_index]["lifecycle"][0]*2*Genome[genome_index]["childnumber"][current_cycle]:
 			if parameters_array[INDEX*par_number+8] >= Genome[genome_index]["lifecycle_time"][0]: # *2 because give energy to new life
-				'print("----------")
-				print(INDEX)
-				var debug = ""
-				for i in range(-2,10):
-					debug = debug + " " + str(parameters_array[INDEX*par_number+i])
-				print(debug)
-				print(x,0,y)'
+
 
 				for i in range(Genome[genome_index]["childnumber"][current_cycle]):
 					var newpos = PickRandomPlaceWithRange(y,x,10)
@@ -644,9 +699,6 @@ func Duplicate(INDEX):
 							parameters_array[INDEX*par_number+8] = 0
 						else:
 							print("life array FULL")
-						'if genome_index == 1 :
-							print("Varum dont know how to code : by bugsheep who cant grow anymore")'
-
 
 
 func BuildLifeAtRandomplace(genome_index,cycle,folder):
@@ -710,40 +762,19 @@ func BuildPlayer(folder):
 
 func RemoveLife(INDEX):
 	var posindex = world_matrix.find(INDEX)
-	'if folder.has_node(str(INDEX)):
-		folder.get_node(str(INDEX)).hide()'
 	world_matrix[posindex] = -1
 	state_array[INDEX] = -1
 	Brain.state_array[INDEX] = -1
-	'for p in range(par_number):
-		parameters_array[INDEX*par_number+p]=-1'
 	plant_number -= 1
 	
-func PickRandomPlace():
-	#var rng = RandomNumberGenerator.new()
-	var random_x = randi_range(0,World.world_size-1)
-	var random_y = randi_range(0,World.world_size-1)
 
-	var posindex = random_y*World.world_size + random_x
-	var newpos = Vector2(random_x, random_y)
-	if World.block_element_state[posindex] != 1:
-		newpos = PickRandomPlace()
-		#newpos = Vector2(randf_range(World.world_size/2-5,World.world_size/2+5),randf_range(World.world_size/2-5,World.world_size/2+5))
-	return newpos
-
-
-func PickRandomPlaceWithRange(centerx,centery,range):
-	var rng = RandomNumberGenerator.new()
-	var random_x = rng.randi_range(max(0,centerx-range),min(World.world_size-1,centerx+range))
-	var random_y = rng.randi_range(max(0,centery-range),min(World.world_size-1,centery+range))
-	return [random_x, random_y]
 
 func TakeFruit(INDEX,INDEX2,folder):
 	var genome_index = parameters_array[INDEX*par_number+0]
 	var current_cycle = parameters_array[INDEX*par_number+3]
 	parameters_array[INDEX*par_number+2] -= Genome[genome_index]["lifecycle"][0] *2
 	BuildLife(0,0,genome_index,folder)
-	parameters_array[INDEX*par_number+8] = 0
+	parameters_array[INDEX*par_number+8] = 0'
 
 
 
