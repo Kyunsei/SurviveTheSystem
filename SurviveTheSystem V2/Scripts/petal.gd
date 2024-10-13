@@ -24,8 +24,9 @@ func Activate():
 
 func Build_Stat():
 	self.current_life_cycle = 0
-	self.PV = 10
-	self.maxPV = 10
+	self.PV = 100
+	self.maxPV = 100
+	self.lifespan = 10
 	
 	
 	#diying
@@ -49,7 +50,7 @@ func _on_timer_timeout():
 	if World.isReady and isActive:
 		if isDead == false:			
 			Ageing()
-			if self.energy <= 0 or self.age >= self.lifespan  or self.PV <=0:
+			if self.age >= self.lifespan  or self.PV <=0:
 				Die()			
 			if current_time_speed != World.speed:
 				adapt_time_to_worldspeed()

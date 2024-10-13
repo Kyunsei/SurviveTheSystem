@@ -7,6 +7,8 @@ var barehand_array = []
 var isimmobile_1sec = false
 var dashing = false
 var worn_out = false
+var is_sprinting = false
+var stamina = 100
 
 #movmnt
 var input_dir = Vector2.ZERO
@@ -15,6 +17,7 @@ var rotation_dir = 0
 
 func Build_Genome():
 	Genome["maxPV"]=[10000000000000]
+	Genome["stamina"]=[100]
 	Genome["maxEnergy"]=[100]
 	Genome["speed"] =[200]
 	Genome["lifespan"]=[1000]
@@ -29,10 +32,16 @@ func passive_healing():
 		AdjustBar()
 		isimmobile_1sec = false
 
+func stamina_regeneration():
+	if self.stamina < 100 and dashing == false and is_sprinting == false :
+		self.stamina += 5
+		AdjustBar()
+
 
 func init_progressbar():
 	$HP_bar.modulate = Color(1, 0, 0)
 	$Energy_bar.modulate = Color(0, 1, 0)
+	$Energy_bar.modulate = Color(0, 1, 1)
 	#get("custom_styles/fg").bg_color = Color(1, 0, 0)
 
 func Build_Stat():
@@ -41,8 +50,8 @@ func Build_Stat():
 	self.energy = 50
 	self.maxPV = 50
 	self.maxEnergy = 100
-	self.maxSpeed = 200	
-
+	self.maxSpeed = 200
+	self.stamina = 100
 	AdjustBar()
 	
 func Build_Phenotype(): 
@@ -224,6 +233,7 @@ func getDamaged(value):
 func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV
 	$Energy_bar.value = self.energy *100 / self.maxEnergy
+	$Stamina_bar.value = self.stamina *100 / 100
 
 
 func Attack():
@@ -239,13 +249,14 @@ func Attack():
 
 	
 func Sprint_Action():
-	if self.PV > 1 :
+	if self.stamina > 1 :
+		is_sprinting = true
 		action_finished = false
 		if self.maxSpeed < 300 :
 			self.maxSpeed = 300
 
 		await get_tree().create_timer(0.2).timeout
-		self.PV -= 0.02
+		self.stamina -= 1
 
 		AdjustBar()
 	else :
@@ -256,7 +267,8 @@ func Dash_Action():
 	if dashing == false and worn_out == false :
 		dashing = true
 		action_finished = false #not use here
-		if self.maxSpeed < 400 :
+		if self.maxSpeed < 400 and self.stamina >= 10 :
+			self.stamina -= 10
 			worn_out = true
 			self.maxSpeed = 1500
 			#$Collision_0.shape.size *= 0.4
@@ -276,6 +288,7 @@ func Sprint_Action_Stop():
 	if dashing == true : 
 		pass
 	else :
+		is_sprinting = false
 		action_finished = true
 		self.maxSpeed = 200
 
@@ -355,9 +368,9 @@ func BareHand_attack():
 
 			elif i.species == "spiky_grass" :
 				self.getDamaged(2)
-				i.getDamaged(10)
+				i.getDamaged(1)
 			else :
-				i.getDamaged(10)
+				i.getDamaged(1)
 
 
 			
@@ -434,4 +447,5 @@ func _on_action_timer_timeout():
 	$BareHand_attack/sprite.hide()
 	$BareHand_attack/sprite2.hide()
 	#passive_healing()
+	stamina_regeneration()
 	action_finished = true
