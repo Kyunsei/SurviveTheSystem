@@ -68,7 +68,7 @@ func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
-	block_element_array.fill(0)
+	block_element_array.fill(6)
 	block_element_state.fill(-1)
 
 func build_world_shape(folder):

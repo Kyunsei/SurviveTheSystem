@@ -10,7 +10,7 @@ func build_world():
 	#island size: 
 	var island_center = [Vector2i(47,120),Vector2i(140,140),Vector2i(124,124),Vector2i(76,124),Vector2i(100,100),Vector2i(124,76),Vector2i(76,76),Vector2i(40,40),Vector2i(110,60),Vector2i(115,40)]
 	var island_size = [12,20,12,12,25,12,12,40,12,12]
-	var island_energy = [3,4,3,0,3,12,3,7,3,7]
+	var island_energy = [6,4,6,3,3,12,6,7,6,7]
 	var factor = 1
 
 	for i in range(island_center.size()):

@@ -145,10 +145,11 @@ func Init_life_pool(folder):
 		pool_state[i] = []
 	for i in life_number:
 		life_number[i] = 0
-	Life.Instantiate_emptyLife_pool(folder, 400, "grass")
-	Life.Instantiate_emptyLife_pool(folder, 450, "spiky_grass")
-	Life.Instantiate_emptyLife_pool(folder, 20, "sheep")
-	Life.Instantiate_emptyLife_pool(folder, 50, "berry")
+		
+	Life.Instantiate_emptyLife_pool(folder, 1400, "grass")
+	Life.Instantiate_emptyLife_pool(folder, 850, "spiky_grass")
+	Life.Instantiate_emptyLife_pool(folder, 30, "sheep")
+	Life.Instantiate_emptyLife_pool(folder, 30, "berry")
 	Life.Instantiate_emptyLife_pool(folder, 3, "cat")
 	#Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
 	Life.Instantiate_emptyLife_pool(folder, 10, "spidercrab")
@@ -160,7 +161,7 @@ func Init_life_pool(folder):
 
 #THIS ONE IS USED
 func Instantiate_emptyLife_pool(folder, N, ID):
-	print(ID)
+
 	for i in range(0,N):
 		var nl = life_scene[ID].instantiate()
 		nl.position = Vector2(-100,-100)
@@ -168,7 +169,7 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 		pool_scene[ID].append(nl)
 		nl.pool_index = i	
 		folder.add_child(nl)
-	print(pool_state[ID])
+
 	'var nl = 0
 			if ID == "grass":
 				nl = life_grass_scene.instantiate() #need to write code according to genome ID
@@ -322,18 +323,24 @@ func Build_life_in_World():
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 				life.global_position = pos 
+				life.age = 20
+				life.energy = 30
 		for n in range(2):
 			var life = build_life("sheep")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 				life.global_position = pos 
+				life.age = 40
+				life.energy = 50
 	
-	for i in [0,9]:
+	for i in [0,3,9]:
 		for n in range(10):
 			var life = build_life("spiky_grass")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
-				life.global_position = pos  			
+				life.global_position = pos 
+				life.age = 5
+				life.energy = 15 			
 	
 	for n in range(2):
 			var life = build_life("spidercrab")
