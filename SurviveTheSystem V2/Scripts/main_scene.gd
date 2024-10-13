@@ -2,6 +2,7 @@ extends Node2D
 
 'This Script is for the main game loop'
 var life_rock_scene = load("res://Scenes/rock.tscn")
+var jellyhive_scene = load("res://Scenes/jelly_hive.tscn")
 var playerindex = 0
 var gameover = false
 
@@ -83,9 +84,16 @@ func InitNewGame():
 		add_child(rock)
 		rock.global_position = Life.PickRandomPlace()*World.tile_size
 		rock.show()
+		
+	
+	for i in range(2):
+		var h = jellyhive_scene.instantiate()
+		add_child(h)
+		h.global_position = Life.PickRandomPlace()*World.tile_size
+
 
 	Life.Instantiate_emptyLife_pool($Life, Life.max_life, "grass")
-	Life.Instantiate_emptyLife_pool($Life, 150, "spiky_grass")
+	Life.Instantiate_emptyLife_pool($Life, 450, "spiky_grass")
 	Life.Instantiate_emptyLife_pool($Life, 20, "sheep")
 #
 	Life.Instantiate_emptyLife_pool($Life, 50, "berry")
@@ -93,22 +101,22 @@ func InitNewGame():
 	Life.Instantiate_emptyLife_pool($Life, 3, "cat")
 	#Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
 	Life.Instantiate_emptyLife_pool($Life, 10, "spidercrab")
-	Life.Instantiate_emptyLife_pool($Life, 40, "jellybee")
+	Life.Instantiate_emptyLife_pool($Life, 10, "jellybee")
 	
 
 	Life.Instantiate_Life_in_pool($Life,1,"grass")
 	Life.Instantiate_Life_in_pool($Life,50,"spiky_grass")
-	Life.Instantiate_Life_in_pool($Life,5,"berry")
+	Life.Instantiate_Life_in_pool($Life,15,"berry")
 
-	Life.Instantiate_Life_in_pool($Life,10,"grass")
-	Life.Instantiate_Life_in_pool($Life,20,"spiky_grass")
+	Life.Instantiate_Life_in_pool($Life,40,"grass")
+	Life.Instantiate_Life_in_pool($Life,40,"spiky_grass")
 	Life.Instantiate_Life_in_pool($Life,15,"berry")
 
 	Life.Instantiate_Life_in_pool($Life,10,"sheep")
 	Life.Instantiate_Life_in_pool($Life,1,"cat")
 	#Life.Instantiate_Life_in_pool($Life, 10, "stingtree")
 	Life.Instantiate_Life_in_pool($Life, 2, "spidercrab")
-	Life.Instantiate_Life_in_pool($Life, 10, "jellybee")
+	#Life.Instantiate_Life_in_pool($Life, 10, "jellybee")
 
 
 

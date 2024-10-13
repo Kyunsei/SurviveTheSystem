@@ -43,6 +43,7 @@ position = Vector2(16, -49)
 shape = SubResource("RectangleShape2D_dv5i7")
 
 [node name="DebugLabel" type="Label" parent="."]
+visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 

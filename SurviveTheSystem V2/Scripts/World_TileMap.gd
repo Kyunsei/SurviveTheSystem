@@ -11,7 +11,7 @@ func build_world():
 
 	draw_round_island(47*factor,120*factor,12*factor,3)	
 	
-	draw_round_island(140*factor,140*factor,20*factor,7)
+	draw_round_island(140*factor,140*factor,20*factor,5)
 	
 	draw_round_island(124*factor,124*factor,12*factor,3)
 	draw_round_island(76*factor,124*factor,12*factor,0)
@@ -20,7 +20,7 @@ func build_world():
 	draw_round_island(76*factor,76*factor,12*factor,3)
 	
 	
-	draw_round_island(40*factor,40*factor,40*factor,0)				
+	draw_round_island(40*factor,40*factor,40*factor,7)				
 	draw_round_island(110*factor,60*factor,12*factor,3)	
 	draw_round_island(115*factor ,40*factor,12*factor,7)
 	

@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://bpk13twi1ueal"]
+
+[ext_resource type="Script" path="res://Scripts/Jelly_hive.gd" id="1_j3ssc"]
+[ext_resource type="Texture2D" uid="uid://bb3i85tiy02hb" path="res://Art/jelly_hive.png" id="2_122po"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_e6eyv"]
+radius = 29.0689
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bfl28"]
+radius = 300.0
+
+[node name="Jelly_hive" type="CharacterBody2D"]
+collision_layer = 3
+collision_mask = 2
+script = ExtResource("1_j3ssc")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_122po")
+centered = false
+offset = Vector2(0, -64)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(35, -28)
+shape = SubResource("CircleShape2D_e6eyv")
+
+[node name="Label" type="Label" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Vision" type="Area2D" parent="."]
+visible = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Vision"]
+position = Vector2(36, -28)
+shape = SubResource("CircleShape2D_bfl28")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
+[connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]

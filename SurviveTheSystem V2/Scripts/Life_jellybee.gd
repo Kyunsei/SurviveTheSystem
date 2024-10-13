@@ -11,7 +11,7 @@ var danger_array = []
 var friend_array = []
 
 var jelly_color = Color(randf_range(0,1),randf_range(0,1),randf_range(0,1),1) 
-
+var hive = null
 
 
 var input_dir = Vector2(0,0)
@@ -22,7 +22,7 @@ func Build_Phenotype(): #go to main
 	$Dead_Sprite_0.hide()		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
-	$Vision/Collision.shape.radius = 4000
+	$Vision/Collision.shape.radius = 2000
 	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	#ADD Body
@@ -62,7 +62,7 @@ func _on_timer_timeout():
 		if isDead == false:
 			
 			Metabo_cost()
-			LifeDuplicate()
+			#LifeDuplicate()
 			Ageing()
 			spwan_pollen()
 			#Growth()
@@ -154,6 +154,8 @@ func angry_mode_on(target):
 			f.danger_array = danger_array.duplicate()
 
 
+
+
 func Brainy():
 	var center = position + Vector2(32,-32) #temporaire
 	var danger_array_temp = danger_array.duplicate()
@@ -176,16 +178,25 @@ func Brainy():
 					AdjustDirection()
 			
 			
-		elif self.energy < 10 and food_array_temp.size()>0:
+		elif self.energy <= 10 and food_array_temp.size()>0:
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
 				#$DebugLabel.text ="feeding"
 				if center.distance_to(cl.getCenterPos()) < 32 and cl.isDead == false:				
-						Absorb_life_energy(cl,10)
+						Absorb_life_energy(cl,3)
 				if cl.isDead == false and cl.energy >= 5:
 						getCloser(cl.getCenterPos())
 				else:
 					AdjustDirection()
+			else:
+				AdjustDirection()
+		elif self.energy >10:
+			if hive != null:
+				if center.distance_to(hive.getCenterPos()) < 32 and hive.isDead == false:				
+						hive.energy += min(8,energy)
+						energy -= min(8,energy)
+				else:
+					getCloser(hive.getCenterPos()) 
 			else:
 				AdjustDirection()
 		else:

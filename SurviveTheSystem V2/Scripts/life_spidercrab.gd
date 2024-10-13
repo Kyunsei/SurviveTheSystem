@@ -171,8 +171,8 @@ func Brainy():
 				if center.distance_to(cl.getCenterPos()) < (128*3) and cl.isDead == false:
 					$DebugLabel.text ="charging"
 					var rdn = randi_range(0,100)
-					if rdn < 25:
-						ChargeToward(cl.position)
+					if rdn < 50:
+						ChargeToward(cl.getCenterPos())
 					else:
 						velocity = Vector2(0,0)
 						action_finished = false
@@ -211,7 +211,7 @@ func Brainy():
 		velocity = Vector2(0,0)'	
 
 func ChargeToward(target):
-	var center = position + Vector2($Sprite_0.texture.get_width()/2, -$Sprite_0.texture.get_height()/2)
+	var center = getCenterPos()
 	if action_finished == true:
 		action_finished = false
 		$ActionTimer.start(0.5)

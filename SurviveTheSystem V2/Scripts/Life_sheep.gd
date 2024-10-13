@@ -77,7 +77,7 @@ func Build_Stat():
 	self.PV = Genome["maxPV"][self.current_life_cycle]
 	self.energy = 10
 	self.maxSpeed = Genome["speed"][self.current_life_cycle]
-
+	size = Vector2(32,32)
 
 func _physics_process(delta):
 	if isPlayer:
@@ -157,6 +157,7 @@ func Growth():
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
+			size = Vector2(32,32)
 	if current_life_cycle == 1:
 		if self.age > 40 and self.energy > 20:
 			self.current_life_cycle += 1
@@ -169,6 +170,7 @@ func Growth():
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
+			size = Vector2(64,64)
 
 			
 

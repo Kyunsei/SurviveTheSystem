@@ -104,7 +104,9 @@ func Growth():
 			$Sprite_0.hide()
 	if current_life_cycle == 1:
 		if self.age > 4 and self.energy > 2:
-			self.current_life_cycle += 1	
+			self.current_life_cycle += 1
+			$Collision_1.disabled = true	
+			$Collision_1.disabled = false		
 			$Sprite_2.show()
 			$Sprite_1.hide()
 
