@@ -33,9 +33,10 @@ func passive_healing():
 		isimmobile_1sec = false
 
 func stamina_regeneration():
-	if self.stamina < 100 and dashing == false and is_sprinting == false :
+	if self.stamina < 100 :
 		self.stamina += 5
 		AdjustBar()
+		isimmobile_1sec = false
 
 
 func init_progressbar():
@@ -89,33 +90,41 @@ func _physics_process(delta):
 	if isPlayer:
 		if dashing == false :
 			input_dir = Player_Control_movement()
-		move_and_slide()
-
+			
 		if Input.is_action_just_pressed("sprint"):
 				Dash_Action() 
 				isimmobile_1sec = false
 		if Input.is_action_pressed("sprint"):
 			Sprint_Action()
 			isimmobile_1sec = false
+
+		'else :
+			#if isimmobile_1sec == false and action_finished == true:'
+
+		if  is_sprinting == false and action_finished == true:
+			action_finished = false
+			$RegenTimer.start(0.5)
+			#isimmobile_1sec = true
+				
 		if input_dir.normalized() != Vector2(0,0):
 			last_dir = input_dir 
-			isimmobile_1sec = false
-		else :
-			if isimmobile_1sec == false and action_finished == true:
-				$BareHand_attack/ActionTimer.start(1)
-				isimmobile_1sec = true
-		var temppos = position + last_dir * Vector2(64,96)
-		$BareHand_attack.rotation =  (last_dir.angle()) 
-		$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
-		if item_array.size() > 0:
-			var c = 0
-			for i in item_array:
-				if i.species == "spidercrab_leg" or i.species == "spidercrab_claw":
-					i.position =  last_dir * Vector2(32+i.size.x/2, 32 + i.size.x/2) + (position + Vector2(16,-32))
-					i.rotation =  (last_dir.angle())
-				else: 
-					c += 1
-					i.position =  last_dir * i.size * Vector2(1,1)  +position
+			isimmobile_1sec = false	
+				
+	move_and_slide()
+	
+	var temppos = position + last_dir * Vector2(64,96)
+	$BareHand_attack.rotation =  (last_dir.angle()) 
+	$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
+	if item_array.size() > 0:
+		var c = 0
+		for i in item_array:
+			if i.species == "spidercrab_leg" or i.species == "spidercrab_claw":
+				i.position =  last_dir * Vector2(32+i.size.x/2, 32 + i.size.x/2) + (position + Vector2(16,-32))
+				i.rotation =  (last_dir.angle())
+			else: 
+				c += 1
+				i.position =  last_dir * i.size * Vector2(1,1)  +position
+	
 func _input(event):
 	if isPlayer:
 		#var object_attack_vector = Vector2(get_viewport().get_mouse_position() - self.position)
@@ -264,10 +273,10 @@ func Sprint_Action():
 		self.maxSpeed = 200
 		
 func Dash_Action():
-	if dashing == false and worn_out == false :
+	if dashing == false and worn_out == false and self.stamina >= 10:
 		dashing = true
 		action_finished = false #not use here
-		if self.maxSpeed < 400 and self.stamina >= 10 :
+		if self.maxSpeed < 400  :
 			self.stamina -= 10
 			worn_out = true
 			self.maxSpeed = 1500
@@ -447,5 +456,10 @@ func _on_action_timer_timeout():
 	$BareHand_attack/sprite.hide()
 	$BareHand_attack/sprite2.hide()
 	#passive_healing()
-	stamina_regeneration()
+	action_finished = true
+
+
+func _on_regen_timer_timeout():
+	if is_sprinting == false:
+		stamina_regeneration()
 	action_finished = true

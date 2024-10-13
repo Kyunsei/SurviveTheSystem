@@ -118,7 +118,10 @@ grow_vertical = 2
 size_flags_horizontal = 0
 color = Color(0, 0.894118, 0.898039, 1)
 
+[node name="RegenTimer" type="Timer" parent="."]
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="body_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_entered"]
 [connection signal="body_exited" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_exited"]
 [connection signal="timeout" from="BareHand_attack/ActionTimer" to="." method="_on_action_timer_timeout"]
+[connection signal="timeout" from="RegenTimer" to="." method="_on_regen_timer_timeout"]
