@@ -14,6 +14,7 @@ var repro_counter = 0
 
 var input_dir = Vector2(0,0)
 
+#@onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
 
 
 
@@ -92,11 +93,10 @@ func _physics_process(delta):
 		
 	move_and_slide()	
 	
-	'global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
-	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)'
+
 	if item_array.size() > 0:
 		for i in item_array:
-			i.position = position+Vector2(0,-32)	
+			i.position = position+Vector2(0,-32)
 		
 func _on_timer_timeout():
 	

@@ -3,19 +3,34 @@ class_name getcloser_state
 
 
 var direction: Vector2
+var next_path_position: Vector2 
 
 var target: Node2D
 var life_entity: LifeEntity
 
+var timer: float
+var previous_pos: Vector2
+
 func Enter():
+	timer = 3.
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()
+		'if target:
+			life_entity.navigation_agent.target_position = target.getCenterPos()'
 		
 
 func Exit():
 	pass
 	
 func Update(delta: float):
+	#check if stuck every 3 second
+	if timer <= 0:
+		if 	life_entity.food_array.has(target):
+			life_entity.food_array.erase(target)
+		target = null
+		#life_entity.navigation_agent.target_position = target.getCenterPos()
+		timer = 3.
+	timer -= delta
 	pass
 	
 func Physics_Update(delta: float):
@@ -24,15 +39,23 @@ func Physics_Update(delta: float):
 			Transitioned.emit(self,"avoid_state")
 			
 		elif target:
-			direction = -(life_entity.getCenterPos() - target.getCenterPos())
-			life_entity.velocity = direction.normalized() * life_entity.maxSpeed
-		
-			if direction.length()<16:
-				life_entity.Eat(target)
-				life_entity.velocity = Vector2.ZERO
-				if target.isDead:
-					target = null
-					Transitioned.emit(self,"idle_state")
+			if target.isDead:
+				target = null
+				Transitioned.emit(self,"idle_state")
+			else:	
+				#next_path_position = life_entity.navigation_agent.get_next_path_position()
+				#direction = next_path_position - life_entity.getCenterPos()
+				direction = -(life_entity.getCenterPos() - target.getCenterPos())
+				#print(next_path_position)
+				life_entity.velocity = direction.normalized() * life_entity.maxSpeed
+				
+				
+				if life_entity.getCenterPos().distance_to(target.getCenterPos())<16:
+					life_entity.Eat(target)
+					life_entity.velocity = Vector2.ZERO
+					if target.isDead:
+						target = null
+						Transitioned.emit(self,"idle_state")
 
 
 				'get_parent().get_parent().velocity = Vector2.ZERO

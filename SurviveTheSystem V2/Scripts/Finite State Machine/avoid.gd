@@ -21,7 +21,7 @@ func Update(delta: float):
 func Physics_Update(delta: float):
 	if life_entity and target:
 		direction = (life_entity.getCenterPos()  - target.getCenterPos())
-		life_entity.velocity = direction.normalized() * life_entity.maxSpeed *1.5
+		life_entity.velocity = direction.normalized() * life_entity.maxSpeed *2.
 		if direction.length() >  World.tile_size*10:
 				Transitioned.emit(self,"idle_state")
 		
