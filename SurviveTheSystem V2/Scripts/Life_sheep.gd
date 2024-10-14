@@ -80,6 +80,7 @@ func Build_Stat():
 	size = Vector2(32,32)
 	self.age= 0
 	self.maxEnergy = 50.
+	self.lifespan = 7*(World.one_day_length/lifecycletime)
 
 func _physics_process(delta):
 	'if isPlayer:
