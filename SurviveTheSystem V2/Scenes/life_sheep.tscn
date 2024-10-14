@@ -1,6 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dfy55q0tpbtav"]
+[gd_scene load_steps=9 format=3 uid="uid://dfy55q0tpbtav"]
 
 [ext_resource type="Script" path="res://Scripts/Life_sheep.gd" id="1_ftmai"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/brainy.gd" id="2_7k25x"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="3_hk7l5"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="4_8o44k"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="5_feg8t"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ld3jv"]
 
@@ -53,12 +57,24 @@ shape = SubResource("RectangleShape2D_dv5i7")
 shape = SubResource("RectangleShape2D_dldvs")
 
 [node name="DebugLabel" type="Label" parent="."]
-visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
 enabled = false
+
+[node name="Brainy" type="Node2D" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("2_7k25x")
+initial_state = NodePath("getcloser_state")
+
+[node name="idle_state" type="Node" parent="Brainy"]
+script = ExtResource("3_hk7l5")
+
+[node name="getcloser_state" type="Node" parent="Brainy"]
+script = ExtResource("4_8o44k")
+
+[node name="avoid_state" type="Node" parent="Brainy"]
+script = ExtResource("5_feg8t")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="ActionTimer" to="." method="_on_action_timer_timeout"]

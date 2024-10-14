@@ -87,7 +87,7 @@ func InitNewGame():
 	
 
 	
-	for i in range(10):
+	'for i in range(10):
 		var rock = life_rock_scene.instantiate()
 		add_child(rock)
 		rock.global_position = Life.PickRandomPlace()*World.tile_size
@@ -97,7 +97,7 @@ func InitNewGame():
 	for i in range(2):
 		var h = jellyhive_scene.instantiate()
 		add_child(h)
-		h.global_position = Life.PickRandomPlace()*World.tile_size
+		h.global_position = Life.PickRandomPlace()*World.tile_size'
 
 
 

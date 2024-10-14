@@ -379,7 +379,7 @@ func BareHand_attack():
 				self.getDamaged(2)
 				i.getDamaged(1)
 			else :
-				i.getDamaged(1)
+				i.getDamaged(10)
 
 
 			

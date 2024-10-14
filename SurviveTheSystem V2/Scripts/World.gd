@@ -30,6 +30,8 @@ var isNight = false
 var daytime = 30. *60 / 20 * 2/3
 var nighttime = 30. *60 / 20 * 1/3
 
+var one_day_length = daytime + nighttime
+
 var isReady = false
 
 var life_instance_thread = []

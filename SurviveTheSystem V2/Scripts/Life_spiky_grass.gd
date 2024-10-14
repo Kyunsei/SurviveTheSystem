@@ -51,7 +51,7 @@ func _on_timer_timeout():
 	if World.isReady and isActive:
 		if isDead == false:
 			
-			Absorb_soil_energy(1)
+			Absorb_soil_energy(1,1)
 			Metabo_cost()	
 			#LifeDuplicate()
 			Ageing()

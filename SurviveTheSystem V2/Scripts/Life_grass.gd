@@ -41,9 +41,10 @@ func Build_Stat():
 	self.PV = 10
 	self.current_life_cycle = 0
 	self.PV = 10
-	self.energy = 1
-	self.lifespan = 20
+	self.energy = 2.
+	self.lifespan = 1*(90/5)
 	self.age = 0
+	self.maxEnergy = 5.
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -51,11 +52,11 @@ func _on_timer_timeout():
 	if World.isReady and isActive:
 		if isDead == false:
 			
-			Absorb_soil_energy(1)
-			Metabo_cost()	
+			Absorb_soil_energy(2,0)
 			LifeDuplicate()
 			Ageing()
 			Growth()
+			Metabo_cost()	
 
 			if self.energy <= 0 or self.age >= lifespan or self.PV <=0:
 				Die()
@@ -65,8 +66,8 @@ func _on_timer_timeout():
 		else:
 			Deactivate()
 
-		#Debug part
-		#$DebugLabel.text = str(energy)
+		#Debug partw
+		#$DebugLabel.text =  "%.2f" % energy
 
 
 
@@ -106,12 +107,12 @@ func Growth():
 #Duplication
 func LifeDuplicate():
 	if current_life_cycle == 1  :
-		if self.energy > 4:	
+		if self.energy > 3:	
 			var life = Life.build_life(species)
 			#$DebugLabel.text = "duplicate"
 			if life != null:
-				self.energy -= 1
-				life.energy = 1
+				self.energy -= 2
+				life.energy = 2
 				life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
 			else:
 				#$DebugLabel.text = "full"

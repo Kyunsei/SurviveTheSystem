@@ -26,7 +26,7 @@ var direction = Vector2(0,0)
 
 #Internal parameters
 var maxPV = 10
-var maxEnergy = 100
+var maxEnergy = 100.
 var maxSpeed = 0
 var lifespan =  0
 
@@ -46,6 +46,10 @@ var size = Vector2(32,32) #size from sprite
 var PV = 0 #current level of health
 var current_life_cycle = 0 #which state of life it is. egg, young, adult, etc..
 var metabolic_cost = 1 #how much energy is consumed by cycle to keep biological function
+
+
+#FACILTATE CALCULUS
+var nb_of_soil_block_by_radius = [1,5,13,29,49,81]
 
 func _ready():
 	set_physics_process(false)
@@ -75,7 +79,7 @@ func _on_timer_timeout():
 	if World.isReady and isActive:
 		if isDead == false:
 			
-			Absorb_soil_energy(0)
+			Absorb_soil_energy(0,0)
 			Metabo_cost()	
 			LifeDuplicate()
 			Ageing()
@@ -220,19 +224,24 @@ func Die():
 		energy += min(Genome["soil_absorption"][current_life_cycle],soil_energy)
 		World.block_element_array[posindex]	-= min(Genome["soil_absorption"][current_life_cycle],soil_energy)
 '
-func Absorb_soil_energy(radius):
+func Absorb_soil_energy(value,radius):
+	if radius > nb_of_soil_block_by_radius.size():
+		print("too many block absorbed, please uptade the variable in new_life script")
+		radius = nb_of_soil_block_by_radius.size()
 	var middle = position + Vector2(size.x/2,0)#-size.y/2)
 	var center_x = int(middle.x/World.tile_size)
 	var	center_y = int(middle.y/World.tile_size)
+	var value_max_absorbed_by_tile = clamp((maxEnergy - energy) / nb_of_soil_block_by_radius[radius], 0, value)
 	for x in range(center_x - radius, center_x + radius + 1):
 		for y in range(center_y - radius, center_y + radius + 1):
 			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
 				var posindex = y*World.world_size + x
 				if posindex < World.block_element_array.size():
 					var soil_energy = World.block_element_array[posindex]	
-					energy += min(Genome["soil_absorption"][1],soil_energy)
-					World.block_element_array[posindex]	-= min(Genome["soil_absorption"][1],soil_energy)
+					energy += min(value_max_absorbed_by_tile,soil_energy)
+					World.block_element_array[posindex]	-= min(value_max_absorbed_by_tile,soil_energy)
 					update_tiles_according_soil_value([Vector2i(x,y)])
+
 
 
 func Absorb_life_energy(entity,value):

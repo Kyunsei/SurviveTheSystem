@@ -10,7 +10,7 @@ var food_array = []
 var danger_array = []
 var friend_array = []
 
-
+var repro_counter = 0
 
 var input_dir = Vector2(0,0)
 
@@ -20,7 +20,7 @@ var input_dir = Vector2(0,0)
 func Build_Genome():
 	Genome["maxPV"]=[15,10,20]
 	Genome["speed"] =[0,200,100]
-	Genome["lifespan"]=[100,300,600]
+	Genome["lifespan"]=[7*(World.one_day_length/lifecycletime),7*(World.one_day_length/lifecycletime),7*(World.one_day_length/lifecycletime)]
 	Genome["sprite"] = [preload("res://Art/sheep1.png"),preload("res://Art/sheep2.png"),preload("res://Art/sheep3.png")]
 	Genome["dead_sprite"] = [preload("res://Art/sheep_dead1.png"),preload("res://Art/sheep_dead2.png"),preload("res://Art/sheep_dead3.png")]
 
@@ -58,7 +58,7 @@ func Build_Phenotype(): #go to main
 		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
-	$Vision/Collision.shape.radius = 200
+	$Vision/Collision.shape.radius = 600
 	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	#ADD Body
@@ -75,22 +75,24 @@ func Build_Stat():
 	Build_Genome()
 	self.current_life_cycle = 0
 	self.PV = Genome["maxPV"][self.current_life_cycle]
-	self.energy = 10
+	self.energy = 5
 	self.maxSpeed = Genome["speed"][self.current_life_cycle]
 	size = Vector2(32,32)
 	self.age= 0
+	self.maxEnergy = 50.
 
 func _physics_process(delta):
-	if isPlayer:
+	'if isPlayer:
 		input_dir = Player_Control_movement()	
 	if isDead == false:
 		Brainy()
 	else:
-		velocity = Vector2(0,0)
+		velocity = Vector2(0,0)'
 		
-	var collision = move_and_collide(velocity *delta)	
-	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
-	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
+	move_and_slide()	
+	
+	'global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
+	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)'
 	if item_array.size() > 0:
 		for i in item_array:
 			i.position = position+Vector2(0,-32)	
@@ -124,6 +126,7 @@ func _on_timer_timeout():
 
 #diying
 func Die():
+	$Brainy.Desactivate()
 	for i in item_array:
 		i.carried_by = null
 		i.z_index = 0
@@ -150,7 +153,7 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 20 and self.energy > 8:
+		if self.age > 1.5*(World.one_day_length/lifecycletime) and self.energy > 4:
 			self.current_life_cycle += 1
 			$Sprite_1.show()
 			$Sprite_0.hide()
@@ -158,9 +161,12 @@ func Growth():
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
-			size = Vector2(32,32)
+			self.maxEnergy = 20
+			self.size = Vector2(32,32)
+			$Brainy.Activate()
+
 	if current_life_cycle == 1:
-		if self.age > 40 and self.energy > 20:
+		if self.age > 3.5*(World.one_day_length/lifecycletime) and self.energy > 10:
 			self.current_life_cycle += 1
 			$Sprite_2.show()
 			$Sprite_1.hide()
@@ -171,6 +177,7 @@ func Growth():
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
+			self.maxEnergy = 50
 			size = Vector2(64,64)
 
 			
@@ -178,18 +185,22 @@ func Growth():
 
 #Duplication
 func LifeDuplicate():
+	
 	if current_life_cycle == 2 :
-		if self.age % 50 == 0 and self.energy > 40:
+		if self.age > 5*(World.one_day_length/lifecycletime)  and self.energy > 40 and repro_counter <= 0:
+			repro_counter = 2*(World.one_day_length/lifecycletime)
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
-			for i in range(0,int(self.energy-10)/10):
+			for i in range(0,int(self.energy-20)/5):
 			#Lpool Technique
 				var life = Life.build_life(species)
 				if life != null:
-					self.energy -= 10
-					life.energy = 10
+					self.energy -= 5
+					life.energy = 5
 					life.global_position = newpos + Vector2(randf_range(0,32),randf_range(0,32))
 				else:
 					print("sheep_pool empty")
+		else:
+			repro_counter -= 1
 
 
 
@@ -222,18 +233,18 @@ func Brainy():
 					AdjustDirection()
 			else:
 				AdjustDirection()
-		elif friend_array_temp.size() > 0:
-			#$DebugLabel.text ="herd"
-			var cl = getClosestLife(food_array_temp,1000)
-			if cl !=null:
-
-				if position.distance_to(cl.getCenterPos()) > 32 :
-					#getCloser(cl.position)
-					goToMiddle(friend_array_temp)
-				else:
-					AdjustDirection()
-			else:
-				AdjustDirection()
+		#elif friend_array_temp.size() > 0:
+			##$DebugLabel.text ="herd"
+			#var cl = getClosestLife(food_array_temp,1000)
+			#if cl !=null:
+#
+				#if position.distance_to(cl.getCenterPos()) > 32 :
+					##getCloser(cl.position)
+					#goToMiddle(friend_array_temp)
+				#else:
+					#AdjustDirection()
+			#else:
+				#AdjustDirection()
 		else:
 			AdjustDirection()
 		'elif friend_array_temp.size() > 0:
@@ -289,6 +300,7 @@ func Deactivate():
 	set_collision_layer_value(1,false)
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()
+	$Brainy.Desactivate()
 	self.isActive = false
 	Life.pool_state[species][pool_index] = 0
 	Life.life_number[species] -= 1
@@ -309,7 +321,7 @@ func Eat(life):
 	self.energy += life.energy
 	life.energy= 0
 	life.Die()
-	#$DebugLabel.text = str(age) + " " + str(energy)
+	$DebugLabel.text = str(age) + " " + str(energy)
 
 func _on_vision_area_entered(area):
 	if area.get_parent().name == "Player":
