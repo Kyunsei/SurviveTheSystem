@@ -29,7 +29,7 @@ func build_world():
 	draw_round_island(115*factor ,40*factor,12*factor,7)'
 	
 	update_ALL_tilemap_tile_to_new_soil_value()
-
+	draw_navigation()
 
 func draw_round_island(x,y,radius,energy):
 	x=  x-radius
@@ -100,10 +100,27 @@ func split_array_into_four(arr):
 
 
 
+
+func draw_navigation():
+	'var size = 200#World.tile_size*World.tile_size
+
+	var bounding_outline = PackedVector2Array([Vector2(0, 0), Vector2(0,size), Vector2(size, size), Vector2(size, 0)])
+	new_navigation_mesh.add_outline(bounding_outline)'
+	var new_navigation_mesh = $NavigationRegion2D.navigation_polygon # NavigationPolygon.new()
+	$NavigationRegion2D.bake_navigation_polygon(true)
+
+	#NavigationServer2D.bake_from_source_geometry_data(new_navigation_mesh, NavigationMeshSourceGeometryData2D.new());
+	#$NavigationRegion2D.navigation_polygon = new_navigation_mesh
+
+
 func _on_block_timer_timeout():
 	pass
 	World.BlockLoopGPU() 
 	update_ALL_tilemap_tile_to_new_soil_value()
+	
+	
+	
+
 	
 	
 	

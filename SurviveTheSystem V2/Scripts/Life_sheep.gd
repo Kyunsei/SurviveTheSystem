@@ -14,9 +14,9 @@ var repro_counter = 0
 
 var input_dir = Vector2(0,0)
 
-#@onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
+@onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
 
-
+var vision_distance: int 
 
 func Build_Genome():
 	Genome["maxPV"]=[15,10,20]
@@ -82,6 +82,7 @@ func Build_Stat():
 	self.age= 0
 	self.maxEnergy = 50.
 	self.lifespan = 7*(World.one_day_length/lifecycletime)
+	self.vision_distance = 600
 
 func _physics_process(delta):
 	'if isPlayer:

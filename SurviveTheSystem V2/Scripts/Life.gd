@@ -294,7 +294,7 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 
 
 func build_life(ID):
-	var life = null
+	var life: LifeEntity
 	var li = pool_state[ID].find(0)
 	if li != -1:
 			life = Life.pool_scene[ID][li]
@@ -316,13 +316,13 @@ func Build_life_in_World():
 
 
 	for i in range(island_size.size()):
-		for n in range(40):
+		for n in range(20):
 			var life = build_life("grass")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 				life.global_position = pos  
 				life.age= randi_range(0,10)
-		for n in range(2):
+		for n in range(1):
 			var life = build_life("sheep")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])

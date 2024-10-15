@@ -281,10 +281,12 @@ func Dash_Action():
 			worn_out = true
 			self.maxSpeed = 1500
 			#$Collision_0.shape.size *= 0.4
+			set_collision_mask_value(2,false)
 			velocity = last_dir.normalized()*self.maxSpeed
 			await get_tree().create_timer(0.2).timeout
 			dashing = false
 			action_finished = true 
+			set_collision_mask_value(2,true)
 			#$Collision_0.shape.size *= 2.5
 			velocity = Vector2.ZERO
 			self.maxSpeed = 200

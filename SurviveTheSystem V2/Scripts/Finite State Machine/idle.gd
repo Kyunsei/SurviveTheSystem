@@ -61,9 +61,11 @@ func check_Food():
 		var alive_array = life_entity.food_array.filter(func(obj): return obj.isDead == false)
 		if alive_array.size() > 0:
 			alive_array.sort_custom(compare_by_distance)
-			#if life_entity.getCenterPos().distance_to(alive_danger[0].getCenterPos()) < 100:
-			get_parent().get_node("getcloser_state").target = alive_array[0]
-			return true
+			if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
+				get_parent().get_node("getcloser_state").target = alive_array[0]
+				return true
+			else:
+				return false
 		return false
 	return false
 

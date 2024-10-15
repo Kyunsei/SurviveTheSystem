@@ -108,7 +108,7 @@ func Growth():
 func LifeDuplicate():
 	if current_life_cycle == 1  :
 		if self.energy > 3:	
-			var life = Life.build_life(species)
+			var life: LifeEntity = Life.build_life(species)
 			#$DebugLabel.text = "duplicate"
 			if life != null:
 				self.energy -= 2
@@ -132,7 +132,7 @@ func LifeDuplicate():
 
 
 func Activate():
-	set_physics_process(false)
+	#set_physics_process(false)
 	self.isActive = true
 	Life.pool_state[species][pool_index] = 1
 	Life.life_number[species] += 1

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bvgtrefdtlsul"]
+[gd_scene load_steps=10 format=3 uid="uid://bvgtrefdtlsul"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_0faxq"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
@@ -9,6 +9,15 @@
 [ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_ytf0d"]
 [ext_resource type="PackedScene" uid="uid://dx8j1h6gp20xq" path="res://Scenes/clock.tscn" id="5_a43f2"]
 
+[sub_resource type="NavigationPolygon" id="NavigationPolygon_pf8xm"]
+vertices = PackedVector2Array(5555, 218, 5428, 5305, 20, 4860, 83, 27)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
+outlines = Array[PackedVector2Array]([PackedVector2Array(68, 11, 5572, 203, 5444, 5323, 4, 4875)])
+source_geometry_mode = 1
+source_geometry_group_name = &"navigation"
+cell_size = 32.0
+agent_radius = 32.0
+
 [node name="MainScene" type="Node2D"]
 process_mode = 1
 script = ExtResource("1_0faxq")
@@ -18,11 +27,14 @@ position = Vector2(18, -82)
 scale = Vector2(0.469708, 0.469708)
 texture = ExtResource("2_03gyf")
 
-[node name="World_TileMap" type="TileMap" parent="."]
+[node name="World_TileMap" type="TileMap" parent="." groups=["navigation"]]
 tile_set = ExtResource("3_n4anu")
 rendering_quadrant_size = 32
 format = 2
 script = ExtResource("4_34ivu")
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="World_TileMap"]
+navigation_polygon = SubResource("NavigationPolygon_pf8xm")
 
 [node name="Blocks" type="Node2D" parent="."]
 process_mode = 1

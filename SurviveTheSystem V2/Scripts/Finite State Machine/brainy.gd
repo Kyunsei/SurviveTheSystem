@@ -5,6 +5,10 @@ var states : Dictionary = {}
 
 @export var initial_state : State 
 # Called when the node enters the scene tree for the first time.
+func _ready():
+	set_physics_process(false)
+	set_process(false)
+
 func Activate():
 	set_physics_process(true)
 	set_process(true)

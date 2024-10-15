@@ -65,6 +65,10 @@ offset_bottom = 23.0
 [node name="Camera2D" type="Camera2D" parent="."]
 enabled = false
 
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 64.0
+target_desired_distance = 16.0
+
 [node name="Brainy" type="Node2D" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("2_7k25x")
 initial_state = NodePath("getcloser_state")
