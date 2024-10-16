@@ -4,7 +4,7 @@ class_name avoid_state
 var direction: Vector2
 
 var target: Node2D
-var life_entity: LifeEntity
+
 
 
 func Enter():

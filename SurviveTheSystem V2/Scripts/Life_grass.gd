@@ -5,6 +5,8 @@ extends LifeEntity
 
 var species = "grass"
 
+var timer_count : int = 0
+
 func Build_Genome():
 	Genome["maxPV"]=[10,10,10]
 	Genome["soil_absorption"] = [2,2,2]
@@ -107,17 +109,21 @@ func Growth():
 #Duplication
 func LifeDuplicate():
 	if current_life_cycle == 1  :
-		if self.energy > 3:	
-			var life: LifeEntity = Life.build_life(species)
-			#$DebugLabel.text = "duplicate"
-			if life != null:
-				self.energy -= 2
-				life.energy = 2
-				life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
-			else:
-				#$DebugLabel.text = "full"
-				pass
-				#print("pool empty")
+		if timer_count <= 0:
+			if self.energy > 4:	
+				timer_count = 3
+				var life: LifeEntity = Life.build_life(species)
+				#$DebugLabel.text = "duplicate"
+				if life != null:
+					self.energy -= 2
+					life.energy = 2
+					life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
+				else:
+					pass
+		else:
+			timer_count -= 1		#$DebugLabel.text = "full"
+			pass
+					#print("pool empty")
 
 
 			

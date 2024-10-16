@@ -5,9 +5,6 @@ class_name idle_state
 var direction: Vector2i
 var wander_time : float
 
-var life_entity: LifeEntity
-
-
 func choose_direction_and_time():
 	direction = Vector2(randi_range(-1,1),randi_range(-1,1))
 	wander_time = randf_range(0.2,1.)
@@ -40,32 +37,33 @@ func Physics_Update(delta: float):
 			else:
 				pass
 				
-		
-	
 
 
 func check_Danger():
+	var danger_entity: LifeEntity
 	if life_entity.danger_array.size() > 0:
 		var alive_danger = life_entity.danger_array.filter(func(obj): return obj.isDead == false)
 		if alive_danger.size() > 0:
-			alive_danger.sort_custom(compare_by_distance)
-			if life_entity.getCenterPos().distance_to(alive_danger[0].getCenterPos()) < World.tile_size*6:
-				get_parent().get_node("avoid_state").target = alive_danger[0]
-				return true
-			return false
+			danger_entity = getClosestLife(alive_danger)
+			if life_entity.getCenterPos().distance_to(danger_entity.getCenterPos()) < World.tile_size*6:
+				get_parent().get_node("avoid_state").target = danger_entity
+			return true
 		return false
-	return false
+	return false	
 				
 func check_Food():
 	if life_entity.food_array.size() > 0:
+		#var s = Time.get_ticks_msec()
+
 		var alive_array = life_entity.food_array.filter(func(obj): return obj.isDead == false)
+		#var ss = Time.get_ticks_msec()
+		#print("filter: " + str(ss-s) + "ms")
 		if alive_array.size() > 0:
-			alive_array.sort_custom(compare_by_distance)
-			if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
-				get_parent().get_node("getcloser_state").target = alive_array[0]
-				return true
-			else:
-				return false
+			get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)	
+			'if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
+				get_parent().get_node("avoid_state").target =  alive_array[0]'
+			return true
+		
 		return false
 	return false
 
@@ -76,3 +74,13 @@ func check_Hungry():
 		return false
 
 
+func getClosestLife(array):
+	var closest_entity: LifeEntity = null
+	var min_distance: float = 10000
+	var calc_distance: float = 0
+	for p in array:
+		calc_distance = life_entity.position.distance_to(p.position)
+		if calc_distance <= min_distance:
+			min_distance = calc_distance
+			closest_entity = p
+	return closest_entity
