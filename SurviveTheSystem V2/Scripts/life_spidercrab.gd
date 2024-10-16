@@ -4,8 +4,14 @@ var species = "spidercrab"
 
 
 var barehand_array = []
-var food_array = []
-var danger_array = []
+
+@onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
+
+var vision_array = {
+	"food": [],
+	"danger": []
+}
+
 
 var isBurrow = false
 #movmnt
@@ -71,13 +77,13 @@ func _physics_process(delta):
 	if isPlayer and isDead == false:
 		input_dir = Player_Control_movement()
 
-	else:
+	'else:
 		if isDead == false :
-			Brainy()
+			Brainy()'
 
 	move_and_collide(velocity *delta)
-	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
-	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
+	#global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
+	#global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
 	if item_array.size() > 0:
 		var c = 0
 		for i in item_array:
@@ -87,41 +93,9 @@ func _physics_process(delta):
 	if direction.normalized() != Vector2(0,0):
 		last_dir = direction
 
-func _input(event):
-	if isPlayer:
-		if event.is_action_pressed("use"):
-			#current_action = 3
-			#UseItem()
-			#Life.stop=true
-			#Life.Instantiate_NewLife_in_Batch(get_parent(),0,20,Life.new_lifes)
-			#attaque(input_dir)
-			print("use is pressed")
-		if event.is_action_pressed("interact"):
-			PickUp()
-
-		if event.is_action_pressed("drop"):
-			Drop()
-
-		if event.is_action_pressed("eat"):
-			Eat_Action()
-			#Eat()
-		if event.is_action_pressed("attack"):
-			Attack()
-		if event.is_action_pressed("throw"):
-			print( "throw is pressed")
-			#Throw()
-		'else:
-			current_action = 2'
-		if event.is_action_pressed("zoom_in"):
-			$Camera2D.zoom.x += 0.25
-			$Camera2D.zoom.y += 0.25
-
-		if event.is_action_pressed("zoom_out"):
-			$Camera2D.zoom.x -= 0.25
-			$Camera2D.zoom.y -= 0.25
 
 
-func Brainy():
+'func Brainy():
 	var center = position + Vector2(size.x/2,-size.y/2)
 	var food_array_temp = food_array.duplicate()
 	var danger_array_temp = danger_array.duplicate()
@@ -158,11 +132,10 @@ func Brainy():
 									cl.getDamaged(10)
 								else :
 									Eat(cl)
-									velocity = Vector2(0,0)
-				'else :
-					get_out_of_soil()'
+									velocity = Vector2(0,0)'
+				
 
-	if action_finished == true and isBurrow == false:
+'if action_finished == true and isBurrow == false:
 		if self.energy < 90 and food_array_temp.size()>0:
 			var cl = getClosestLife(food_array_temp,1000)
 			if cl !=null:
@@ -205,8 +178,8 @@ func Brainy():
 				else :
 					Eat(cl)
 					velocity = Vector2(0,0)
-					$DebugLabel.text ="Eat"
-		'#AdjustDirection()
+					$DebugLabel.text ="Eat"'
+'#AdjustDirection()
 		print("here?")
 		velocity = Vector2(0,0)'	
 
@@ -313,7 +286,7 @@ func Growth():
 			$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #- ($Sprite_0.texture.get_size()/2 + size/2)*Vector2(1,0)
 			$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #- ($Sprite_0.texture.get_size()/2 + size/2)*Vector2(1,0)
 			size = $Sprite_0.texture.get_size()
-			danger_array = []
+			vision_array["danger"] = []
 			maxSpeed = 190
 		
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
@@ -397,9 +370,11 @@ func Die():
 	
 	
 func Activate():
+
 	set_physics_process(true)
 	self.isActive = true
 	self.isDead = false
+	$Brainy.Activate()
 	Life.pool_state[species][pool_index] = 1
 	Life.life_number[species] += 1
 	$Collision_1.disabled = true
@@ -422,6 +397,7 @@ func Activate():
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	set_physics_process(false)
+	$Brainy.Desactivate()
 	Decomposition()
 	set_collision_layer_value(1,false)
 	$Vision.set_collision_mask_value(1,false)
@@ -469,34 +445,23 @@ func _on_mouse_exited():
 func _on_vision_body_entered(body):
 	if body.species== "sheep":
 		if body.current_life_cycle > 0 and self.current_life_cycle == 1:
-			food_array.append(body)
+			vision_array["food"].append(body)
 		elif body.current_life_cycle == 0 and self.current_life_cycle == 0:
-			food_array.append(body)
+			vision_array["food"].append(body)
 	if body.species== "jellybee":
 		if self.current_life_cycle == 0:
-			food_array.append(body)
+			vision_array["food"].append(body)
 	if body.species == "catronaute":
 		if self.current_life_cycle == 1:
-			food_array.append(body)
+			vision_array["food"].append(body)
 		else:
-			danger_array.append(body)
+			vision_array["danger"].append(body)
 
 		#getAway(body.position)
 
 
 func _on_vision_body_exited(body):
-
-	if body.species== "sheep" :
-		if body.current_life_cycle > 0 and self.current_life_cycle == 1:
-			food_array.erase(body)
-		elif body.current_life_cycle == 0 and self.current_life_cycle == 0:
-			food_array.erase(body)
-	if body.species== "jellybee":
-		if self.current_life_cycle == 0:
-			food_array.erase(body)
-	if body.species == "catronaute":
-		if self.current_life_cycle == 1:
-			food_array.erase(body)
-		else:
-			danger_array.erase(body)
+	for n in vision_array:
+		if vision_array[n].has(body):
+			vision_array[n].erase(body)
 

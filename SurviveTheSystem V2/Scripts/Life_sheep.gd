@@ -6,9 +6,12 @@ var species = "sheep"
 
 
 
-var food_array = []
-var danger_array = []
-var friend_array = []
+
+var vision_array = {
+	"food": [],
+	"danger": [],
+	"friend": []
+}
 
 var repro_counter = 0
 
@@ -94,7 +97,6 @@ func _physics_process(delta):
 		
 	move_and_slide()	
 	
-
 	if item_array.size() > 0:
 		for i in item_array:
 			i.position = position+Vector2(0,-32)
@@ -206,7 +208,7 @@ func LifeDuplicate():
 
 
 
-func Brainy():
+'func Brainy():
 	var center = position + Vector2(32,-32) #temporaire
 	var danger_array_temp = danger_array.duplicate()
 	var food_array_temp = food_array.duplicate()
@@ -248,23 +250,9 @@ func Brainy():
 			#else:
 				#AdjustDirection()
 		else:
-			AdjustDirection()
-		'elif friend_array_temp.size() > 0:
-		var cl = getClosestLife(friend_array_temp,1000)
-		if position.distance_to(cl.position) > 96 :
-			getCloser(cl.position)'		
+			AdjustDirection()'		
 
 
-'func getClosestLife(array, 1000):
-	var closest_entity = array[0]
-	var min_distance = 1000
-	var calc_distance = 500
-	for p in array:
-		calc_distance = position.distance_to(p.position)
-		if calc_distance <= min_distance:
-			min_distance = calc_distance
-			closest_entity = p
-	return closest_entity'
 	
 	
 func Activate():
@@ -336,57 +324,30 @@ func _on_vision_area_exited(area):
 
 
 func _on_vision_body_entered(body):
-	if body.name != "PlayerBody":
 		if body.species== "grass":
 			#print(position.distance_to(body.position))
-			food_array.append(body)
+			vision_array["food"].append(body)
 			#Eat(body)
 			#getCloser(body.position)
 		if body.species== "sheep" and body!= self:
 			if item_array.size() > 0 :
 				if item_array[0].species == "berry" :
-					danger_array.append(body)
+					vision_array["danger"].append(body)
 			elif body.item_array.size() > 0 :
 				if body.item_array[0].species == "berry" :
-					danger_array.append(body)
+					vision_array["danger"].append(body)
 			else :
 			#getAway(body.position)
-				friend_array.append(body)
+				vision_array["friend"].append(body)
 		if body.species == "catronaute" or body.species == "spidercrab" :
-			danger_array.append(body)
-	else:
-		danger_array.append(body.get_parent())
-
-		#getAway(body.position)
-
-
+			vision_array["danger"].append(body)
 
 
 
 func _on_vision_body_exited(body):
-	if body.name != "PlayerBody":
-		if body.species== "grass":
-			#print(position.distance_to(body.position))
-			food_array.erase(body)
-			#Eat(body)
-			#getCloser(body.position)
-		if body.species== "sheep" and body!= self:
-			#getAway(body.position)
-			if item_array.size() > 0 :
-				if item_array[0].species == "berry" :
-					danger_array.erase(body)
-			elif body.item_array.size() > 0 :
-				if body.item_array[0].species == "berry" :
-					danger_array.erase(body)
-			else :
-			#getAway(body.position)
-				friend_array.erase(body)
-		if body.species == "catronaute" or body.species == "spidercrab":
-			danger_array.erase(body)
-	else:
-		danger_array.erase(body.get_parent())
-		#getAway(body.position)
-
+	for n in vision_array:
+		if vision_array[n].has(body):
+			vision_array[n].erase(body)
 
 func _on_action_timer_timeout():
 	action_finished = true

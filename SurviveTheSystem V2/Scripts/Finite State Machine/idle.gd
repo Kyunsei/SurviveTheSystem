@@ -41,21 +41,22 @@ func Physics_Update(delta: float):
 
 func check_Danger():
 	var danger_entity: LifeEntity
-	if life_entity.danger_array.size() > 0:
-		var alive_danger = life_entity.danger_array.filter(func(obj): return obj.isDead == false)
+	if life_entity.vision_array["danger"].size() > 0:
+		var alive_danger = life_entity.vision_array["danger"].filter(func(obj): return obj.isDead == false)
 		if alive_danger.size() > 0:
 			danger_entity = getClosestLife(alive_danger)
 			if life_entity.getCenterPos().distance_to(danger_entity.getCenterPos()) < World.tile_size*6:
 				get_parent().get_node("avoid_state").target = danger_entity
-			return true
+				return true
+			return false
 		return false
 	return false	
 				
 func check_Food():
-	if life_entity.food_array.size() > 0:
+	if life_entity.vision_array["food"].size() > 0:
 		#var s = Time.get_ticks_msec()
 
-		var alive_array = life_entity.food_array.filter(func(obj): return obj.isDead == false)
+		var alive_array = life_entity.vision_array["food"].filter(func(obj): return obj.isDead == false)
 		#var ss = Time.get_ticks_msec()
 		#print("filter: " + str(ss-s) + "ms")
 		if alive_array.size() > 0:

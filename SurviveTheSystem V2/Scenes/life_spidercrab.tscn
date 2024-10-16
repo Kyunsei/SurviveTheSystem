@@ -1,8 +1,12 @@
-[gd_scene load_steps=8 format=3 uid="uid://bkvttykvie6wd"]
+[gd_scene load_steps=12 format=3 uid="uid://bkvttykvie6wd"]
 
 [ext_resource type="Script" path="res://Scripts/life_spidercrab.gd" id="1_3m3wu"]
 [ext_resource type="Texture2D" uid="uid://e1v54i3ffumy" path="res://Art/spider.png" id="2_ge6rd"]
 [ext_resource type="Texture2D" uid="uid://fq5gixmohyml" path="res://Art/spider_dead.png" id="3_ci0x6"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/brainy.gd" id="4_hi2ya"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="5_gys1n"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="6_e468h"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="7_p6dui"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chh8i"]
 
@@ -78,6 +82,22 @@ step = 1.0
 value = 50.0
 fill_mode = 3
 show_percentage = false
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 64.0
+
+[node name="Brainy" type="Node2D" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("4_hi2ya")
+initial_state = NodePath("idle_state")
+
+[node name="idle_state" type="Node" parent="Brainy"]
+script = ExtResource("5_gys1n")
+
+[node name="getcloser_state" type="Node" parent="Brainy"]
+script = ExtResource("6_e468h")
+
+[node name="avoid_state" type="Node" parent="Brainy"]
+script = ExtResource("7_p6dui")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="ActionTimer" to="." method="_on_action_timer_timeout"]

@@ -310,7 +310,7 @@ func Build_life_in_World():
 	var island_energy = [3,4,3,0,3,12,3,7,3,7]
 	
 	build_life("cat")
-	var life2 = build_life("sheep")
+	var life2 = build_life("spidercrab")
 	life2.position = Vector2(100*32,100*32)
 	life2.age = (90 + 44)/5
 

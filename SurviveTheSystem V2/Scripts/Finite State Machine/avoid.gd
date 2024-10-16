@@ -5,6 +5,7 @@ var direction: Vector2
 
 var target: Node2D
 
+@export var detection_distance: int = World.tile_size*10
 
 
 func Enter():
@@ -22,7 +23,7 @@ func Physics_Update(delta: float):
 	if life_entity and target:
 		direction = (life_entity.getCenterPos()  - target.getCenterPos())
 		life_entity.velocity = direction.normalized() * life_entity.maxSpeed *2.
-		if direction.length() >  World.tile_size*10:
+		if direction.length() >  detection_distance:
 				Transitioned.emit(self,"idle_state")
 		
 	'if life_entity:

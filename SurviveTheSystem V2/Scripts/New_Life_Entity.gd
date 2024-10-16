@@ -9,7 +9,7 @@ var pool_index = 0
 
 
 #PHYSIC LAW
-var lifecycletime = 5. #30. #in second
+var lifecycletime = 10. #30. #in second
 var current_time_speed = World.speed
 
 #LifeRule

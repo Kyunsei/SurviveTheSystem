@@ -10,6 +10,9 @@ var target: Node2D
 var timer: float
 var previous_pos: Vector2
 
+@export var eating_distance: int = 16
+
+
 func Enter():
 	timer = 3.
 	if get_parent().get_parent():
@@ -75,17 +78,18 @@ func Physics_Update(delta: float):
 			
 func check_Danger():
 	var danger_entity: LifeEntity
-	if life_entity.danger_array.size() > 0:
-		var alive_danger = life_entity.danger_array.filter(func(obj): return obj.isDead == false)
+	if life_entity.vision_array["danger"].size() > 0:
+		var alive_danger = life_entity.vision_array["danger"].filter(func(obj): return obj.isDead == false)
 		if alive_danger.size() > 0:
 			danger_entity = getClosestLife(alive_danger)
 			if life_entity.getCenterPos().distance_to(danger_entity.getCenterPos()) < World.tile_size*6:
 				get_parent().get_node("avoid_state").target = danger_entity
-			return true
+				return true
+			return false
 		return false
-	return false	
+	return false
 
 func remove_target():
-	if 	life_entity.food_array.has(target):
-			life_entity.food_array.erase(target)
+	if 	life_entity.vision_array["food"].has(target):
+			life_entity.vision_array["food"].erase(target)
 			target = null
