@@ -49,7 +49,7 @@ var diffusion_speed = 2.5 #in sec
 var diffusion_quantity_style = false # false = factor true = number
 var diffusion_factor = 0.5
 var diffusion_number = 1.
-var diffusion_min_limit = 4. #cannot diffuse lower than 1
+var diffusion_min_limit = 0.#4. #cannot diffuse lower than 1
 var diffusion_block_limit = 2 #how many block energy move. not implemented.
 var block_diffusion_par = []
 
@@ -70,8 +70,8 @@ func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
-	block_element_array.fill(6)
-	block_element_state.fill(-1)
+	block_element_array.fill(0)
+	block_element_state.fill(0)
 
 func build_world_shape(folder):
 
@@ -99,7 +99,7 @@ func make_and_instatiate_round_island(x,y,radius,folder):
 	var center = Vector2(radius,radius)
 	for w in range(0,radius*2+1):
 		for h in range(0,radius*2+1):
-			if block_element_state[(x+w)*world_size +y+h ] == -1 :
+			if block_element_state[(x+w)*world_size +y+h ] == 0 :
 				var distance = center.distance_to(Vector2(w, h))
 				if distance < radius :
 						block_element_state[(x+w)*world_size +y+h ]= 1
@@ -305,8 +305,11 @@ func BlockLoopGPU():
 	var BlockArraybuffer_par = init_buffer(World.block_diffusion_par)
 	var Blockuniform1 = init_uniform(BlockArraybuffer_par,2)
 	
+	var BlockArraybuffer1 = init_buffer(World.block_element_state)
+	var Blockuniform2 = init_uniform(BlockArraybuffer1,3)
+	
 	#bind them
-	var uniform_set := rd.uniform_set_create([Blockuniform,Blockuniform0,Blockuniform1], shader, 0) # the last parameter (the 0) needs to match the "set" in our shader file
+	var uniform_set := rd.uniform_set_create([Blockuniform,Blockuniform0,Blockuniform1,Blockuniform2], shader, 0) # the last parameter (the 0) needs to match the "set" in our shader file
 
 	# Create a compute pipeline
 	var pipeline := rd.compute_pipeline_create(shader)
