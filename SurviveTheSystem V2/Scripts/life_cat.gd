@@ -37,7 +37,7 @@ func stamina_regeneration():
 		pass
 	elif self.stamina < 100 : 
 		self.stamina += 5
-		print("gained 5 stamina")
+		#print("gained 5 stamina") #to know if you've regenerated stamina
 		AdjustBar()
 		isimmobile_1sec = false
 
