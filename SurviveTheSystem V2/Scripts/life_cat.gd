@@ -264,8 +264,9 @@ func Sprint_Action():
 		if self.maxSpeed < 300 :
 			self.maxSpeed = 300
 
-		await get_tree().create_timer(0.2).timeout
-		self.stamina -= 1
+		if Input.is_action_pressed("up") or Input.is_action_pressed("down") or Input.is_action_pressed("left") or Input.is_action_pressed("right") :
+			await get_tree().create_timer(0.2).timeout
+			self.stamina -= 1
 
 		AdjustBar()
 	else :
