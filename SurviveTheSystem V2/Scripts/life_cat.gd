@@ -33,8 +33,11 @@ func passive_healing():
 		isimmobile_1sec = false
 
 func stamina_regeneration():
-	if self.stamina < 100 :
+	if is_sprinting == true :
+		pass
+	elif self.stamina < 100 : 
 		self.stamina += 5
+		#print("gained 5 stamina") #to know if you've regenerated stamina
 		AdjustBar()
 		isimmobile_1sec = false
 
@@ -100,16 +103,11 @@ func _physics_process(delta):
 
 		'else :
 			#if isimmobile_1sec == false and action_finished == true:'
-
-		if  is_sprinting == false and action_finished == true:
-			action_finished = false
-			$RegenTimer.start(0.5)
-			#isimmobile_1sec = true
 				
 		if input_dir.normalized() != Vector2(0,0):
 			last_dir = input_dir 
 			isimmobile_1sec = false	
-				
+			
 	move_and_slide()
 	
 	var temppos = position + last_dir * Vector2(64,96)
@@ -151,6 +149,8 @@ func _input(event):
 		if event.is_action_released("sprint"):
 			Sprint_Action_Stop()
 			isimmobile_1sec = false
+			if is_sprinting == false :
+				$RegenTimer.start(0.5)
 		if event.is_action_pressed("attack"):
 			Attack()
 			isimmobile_1sec = false
@@ -264,8 +264,9 @@ func Sprint_Action():
 		if self.maxSpeed < 300 :
 			self.maxSpeed = 300
 
-		await get_tree().create_timer(0.2).timeout
-		self.stamina -= 1
+		if Input.is_action_pressed("up") or Input.is_action_pressed("down") or Input.is_action_pressed("left") or Input.is_action_pressed("right") :
+			await get_tree().create_timer(0.2).timeout
+			self.stamina -= 1
 
 		AdjustBar()
 	else :
@@ -297,6 +298,7 @@ func Dash_Action():
 
 func Sprint_Action_Stop():
 	if dashing == true : 
+		is_sprinting = false
 		pass
 	else :
 		is_sprinting = false
@@ -339,7 +341,7 @@ func PickUp():
 			if closestItem.species == "sheep" and closestItem.current_life_cycle < 2:
 				closestItem.getPickUP(self)
 				closestItem.z_index = 0
-			#if closestItem.species == "grass" :
+			#if closestItem.species == "grass" : #used to be used to grab grass
 				#closestItem.getPickUP(self)
 				#closestItem.z_index = 0
 			if closestItem.species == "stingtree" and  closestItem.current_life_cycle == 0:
@@ -463,6 +465,5 @@ func _on_action_timer_timeout():
 
 
 func _on_regen_timer_timeout():
-	if is_sprinting == false:
-		stamina_regeneration()
+	stamina_regeneration()
 	action_finished = true
