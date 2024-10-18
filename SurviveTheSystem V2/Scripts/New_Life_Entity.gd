@@ -198,7 +198,7 @@ func Metabo_cost():
 	var posindex = y*World.world_size + x
 	#	posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
 	#if posindex >= 0:
-	if posindex < World.block_element_array.size():
+	if posindex < World.block_element_array.size() and posindex >= 0:
 		World.block_element_array[posindex] += min(energy, metabolic_cost)
 		energy -= min(energy,metabolic_cost)
 		update_tiles_according_soil_value([Vector2i(x,y)])
@@ -292,10 +292,12 @@ func Decomposition():
 	var posindex = y*World.world_size + x
 	#	posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
 	#if posindex >= 0:
-	if posindex < World.block_element_array.size():
+	if posindex < World.block_element_array.size() and posindex >= 0:
 		World.block_element_array[posindex] += self.energy
 		energy = 0
 		update_tiles_according_soil_value([Vector2i(x,y)])
+	else:
+		print(energy,0, age)
 
 func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV 

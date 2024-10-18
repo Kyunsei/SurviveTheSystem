@@ -214,8 +214,8 @@ func _on_timer_timeout():
 			$Timer.wait_time = lifecycletime / World.speed
 		if isDead == false:
 
-			Metabo_cost()
-			Ageing()
+			#Metabo_cost()
+			#Ageing()
 			AdjustBar()
 
 

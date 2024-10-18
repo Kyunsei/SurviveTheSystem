@@ -30,13 +30,10 @@ func Exit():
 	
 func Update(delta: float):
 	#check if stuck every 3 second
-	'if timer <= 0:
-		if 	life_entity.food_array.has(target):
-			life_entity.food_array.erase(target)
-		target = null
-		#life_entity.navigation_agent.target_position = target.getCenterPos()
+	if timer <= 0:
+		remove_target()
 		timer = 3.
-	timer -= delta'
+	timer -= delta
 	pass
 	
 func Physics_Update(delta: float):

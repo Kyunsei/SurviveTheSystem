@@ -16,7 +16,6 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(68, 11, 5572, 203, 5444
 source_geometry_mode = 1
 source_geometry_group_name = &"navigation"
 cell_size = 32.0
-agent_radius = 32.0
 
 [node name="MainScene" type="Node2D"]
 process_mode = 1

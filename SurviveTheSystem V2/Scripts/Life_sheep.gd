@@ -83,9 +83,9 @@ func Build_Stat():
 	self.maxSpeed = Genome["speed"][self.current_life_cycle]
 	size = Vector2(32,32)
 	self.age= 0
-	self.maxEnergy = 50.
+	self.maxEnergy = 30.
 	self.lifespan = 7*(World.one_day_length/lifecycletime)
-	self.vision_distance = 600
+	self.vision_distance = 500
 
 func _physics_process(delta):
 	'if isPlayer:
@@ -94,7 +94,7 @@ func _physics_process(delta):
 		Brainy()
 	else:
 		velocity = Vector2(0,0)'
-		
+	velocity = velocity * World.speed 
 	move_and_slide()	
 	
 	if item_array.size() > 0:
@@ -157,7 +157,7 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 1.5*(World.one_day_length/lifecycletime) and self.energy > 4:
+		if self.age > 0.5*(World.one_day_length/lifecycletime) and self.energy > 4:
 			self.current_life_cycle += 1
 			$Sprite_1.show()
 			$Sprite_0.hide()
@@ -165,12 +165,12 @@ func Growth():
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
-			self.maxEnergy = 20
+			self.maxEnergy = 10
 			self.size = Vector2(32,32)
 			$Brainy.Activate()
 
 	if current_life_cycle == 1:
-		if self.age > 3.5*(World.one_day_length/lifecycletime) and self.energy > 10:
+		if self.age > 1.5*(World.one_day_length/lifecycletime) and self.energy > 8:
 			self.current_life_cycle += 1
 			$Sprite_2.show()
 			$Sprite_1.hide()
@@ -181,7 +181,7 @@ func Growth():
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
-			self.maxEnergy = 50
+			self.maxEnergy = 20
 			size = Vector2(64,64)
 
 			
@@ -191,10 +191,10 @@ func Growth():
 func LifeDuplicate():
 	
 	if current_life_cycle == 2 :
-		if self.age > 5*(World.one_day_length/lifecycletime)  and self.energy > 40 and repro_counter <= 0:
+		if self.age > 2.5*(World.one_day_length/lifecycletime)  and self.energy > 10 and repro_counter <= 0:
 			repro_counter = 2*(World.one_day_length/lifecycletime)
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
-			for i in range(0,int(self.energy-20)/5):
+			for i in range(0,int(self.energy-5)/5):
 			#Lpool Technique
 				var life = Life.build_life(species)
 				if life != null:

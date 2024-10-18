@@ -146,7 +146,7 @@ func Init_life_pool(folder):
 	for i in life_number:
 		life_number[i] = 0
 		
-	Life.Instantiate_emptyLife_pool(folder, 1000, "grass")
+	Life.Instantiate_emptyLife_pool(folder, 1500, "grass")
 	Life.Instantiate_emptyLife_pool(folder, 850, "spiky_grass")
 	Life.Instantiate_emptyLife_pool(folder, 100, "sheep")
 	Life.Instantiate_emptyLife_pool(folder, 30, "berry")
@@ -304,33 +304,33 @@ func build_life(ID):
 
 
 func Build_life_in_World():
-	var island_center = [Vector2i(47,120),Vector2i(140,140),Vector2i(124,124),Vector2i(76,124),Vector2i(100,100),Vector2i(124,76),Vector2i(76,76),Vector2i(40,40),Vector2i(110,60),Vector2i(115,40)]
-	var island_size = [12,20,12,12,25,12,12,40,12,12]
-	island_size = [12,20,12,12,25,12,12,12,12,12]
-	var island_energy = [3,4,3,0,3,12,3,7,3,7]
+	var island_center = [Vector2i(100,100),Vector2i(140,140),Vector2i(60,60),Vector2i(60,140),Vector2i(140,60)]
+	var island_size = [20,20,20,20,20]
+	var island_energy = [5,5,5,5,5]
 	
 	build_life("cat")
-	var life2 = build_life("spidercrab")
+	'var life2 = build_life("spidercrab")
 	life2.position = Vector2(100*32,100*32)
-	life2.age = (90 + 44)/5
+	life2.age = (90 + 44)/5'
 
 
 	for i in range(island_size.size()):
-		for n in range(20):
+		for n in range(40):
 			var life = build_life("grass")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 				life.global_position = pos  
-				life.age= randi_range(0,10)
-				life.energy = randi_range(2,life.maxEnergy)
-		for n in range(2):
-			var life = build_life("sheep")
-			if life != null:
-				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
-				life.global_position = pos  
-				life.age= randi_range(0,life.lifespan)
-				life.energy = randi_range(5,life.maxEnergy)
-				
+				life.age= 0 #randi_range(0,10)
+				life.energy = 1#randi_range(2,life.maxEnergy)
+
+		for n in range(i):
+				var life = build_life("sheep")
+				if life != null:
+					var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
+					life.global_position = pos  
+					life.age= 0 #randi_range(0,life.lifespan)
+					life.energy = 5 #randi_range(5,life.maxEnergy)
+					
 		'for n in range(1):
 			var life = build_life("berry")
 			if life != null:
