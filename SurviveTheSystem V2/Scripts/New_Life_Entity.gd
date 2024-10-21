@@ -45,7 +45,7 @@ var age = 0 #current age
 var size = Vector2(32,32) #size from sprite
 var PV = 0 #current level of health
 var current_life_cycle = 0 #which state of life it is. egg, young, adult, etc..
-var metabolic_cost = 1 #how much energy is consumed by cycle to keep biological function
+var metabolic_cost = 1. #how much energy is consumed by cycle to keep biological function
 
 
 #FACILTATE CALCULUS
@@ -227,19 +227,19 @@ func Die():
 func Absorb_soil_energy(value,radius):
 	if radius > nb_of_soil_block_by_radius.size():
 		print("too many block absorbed, please uptade the variable in new_life script")
-		radius = nb_of_soil_block_by_radius.size()
+		radius = nb_of_soil_block_by_radius.size()-1
 	var middle = position + Vector2(size.x/2,0)#-size.y/2)
 	var center_x = int(middle.x/World.tile_size)
 	var	center_y = int(middle.y/World.tile_size)
-	var value_max_absorbed_by_tile = clamp((maxEnergy - energy) / nb_of_soil_block_by_radius[radius], 0, value)
+	#var value_max_absorbed_by_tile = clamp((maxEnergy - energy) / nb_of_soil_block_by_radius[radius], 0, value)
 	for x in range(center_x - radius, center_x + radius + 1):
 		for y in range(center_y - radius, center_y + radius + 1):
 			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
 				var posindex = y*World.world_size + x
 				if posindex < World.block_element_array.size():
 					var soil_energy = World.block_element_array[posindex]	
-					energy += min(value_max_absorbed_by_tile,soil_energy)
-					World.block_element_array[posindex]	-= min(value_max_absorbed_by_tile,soil_energy)
+					energy += min(value,soil_energy)
+					World.block_element_array[posindex]	-= min(value,soil_energy)
 					update_tiles_according_soil_value([Vector2i(x,y)])
 
 

@@ -304,26 +304,26 @@ func build_life(ID):
 
 
 func Build_life_in_World():
-	var island_center = [Vector2i(100,100),Vector2i(140,140),Vector2i(60,60),Vector2i(60,140),Vector2i(140,60)]
+	var island_center = [Vector2i(68,68),Vector2i(132,68),Vector2i(100,100),Vector2i(68,132),Vector2i(132,132)]
 	var island_size = [20,20,20,20,20]
-	var island_energy = [5,5,5,5,5]
+	#var island_energy = [5,5,5,5,5]
 	
 	build_life("cat")
-	'var life2 = build_life("spidercrab")
-	life2.position = Vector2(100*32,100*32)
-	life2.age = (90 + 44)/5'
+	#var life2 = build_life("grass")
+	#life2.position = Vector2(100*32,100*32)
+	#life2.age = (90 + 44)/5'
 
 
 	for i in range(island_size.size()):
-		for n in range(40):
+		for n in range(40*i):
 			var life = build_life("grass")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 				life.global_position = pos  
 				life.age= 0 #randi_range(0,10)
-				life.energy = 1#randi_range(2,life.maxEnergy)
+				life.energy = 0#randi_range(2,life.maxEnergy)
 
-		for n in range(i):
+		for n in range(0):
 				var life = build_life("sheep")
 				if life != null:
 					var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])

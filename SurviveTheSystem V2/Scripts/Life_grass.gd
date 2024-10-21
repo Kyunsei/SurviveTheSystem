@@ -43,22 +43,26 @@ func Build_Stat():
 	self.PV = 10
 	self.current_life_cycle = 0
 	self.PV = 10
-	self.energy = 2.
-	self.lifespan = 1*(90/5)
+	self.energy = 5.
+	self.lifespan = 1.5*(World.one_day_length/lifecycletime)
 	self.age = 0
-	self.maxEnergy = 5.
-	
+	self.maxEnergy = 50.
+
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
 		$Timer.wait_time = lifecycletime / World.speed
 	if World.isReady and isActive:
 		if isDead == false:
-			
-			Absorb_soil_energy(2,0)
+
+
+			if self.energy < self.maxEnergy:
+				Absorb_soil_energy(1,4)
+			Metabo_cost()
+				
+			Growth()
 			LifeDuplicate()
 			Ageing()
-			Growth()
-			Metabo_cost()	
+			
 
 			if self.energy <= 0 or self.age >= lifespan or self.PV <=0:
 				Die()
@@ -69,7 +73,7 @@ func _on_timer_timeout():
 			Deactivate()
 
 		#Debug partw
-		#$DebugLabel.text =  "%.2f" % energy
+		#$DebugLabel.text =  "%.4f" % energy
 
 
 
@@ -93,7 +97,7 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 2 and self.energy > 2:
+		if self.age >= 2 and self.energy > 2: #5
 			self.current_life_cycle += 1
 			
 			$Collision_0.hide()
@@ -110,13 +114,13 @@ func Growth():
 func LifeDuplicate():
 	if current_life_cycle == 1  :
 		if timer_count <= 0:
-			if self.energy > 4:	
-				timer_count = 3
+			if self.energy > 30:	
+				timer_count = 2
 				var life: LifeEntity = Life.build_life(species)
 				#$DebugLabel.text = "duplicate"
 				if life != null:
-					self.energy -= 2
-					life.energy = 2
+					self.energy -= 20
+					life.energy = 20
 					life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
 				else:
 					pass

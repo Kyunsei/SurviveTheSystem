@@ -8,9 +8,9 @@ var color_list = [Color.DARK_RED,Color.CADET_BLUE,Color.YELLOW_GREEN,Color.BEIGE
 func build_world():
 	#iland center: [(47,120),(140,140)
 	#island size: 
-	var island_center = [Vector2i(100,100),Vector2i(140,140),Vector2i(60,60),Vector2i(60,140),Vector2i(140,60)]
+	var island_center = [Vector2i(68,68),Vector2i(132,68),Vector2i(100,100),Vector2i(68,132),Vector2i(132,132)]
 	var island_size = [20,20,20,20,20]
-	var island_energy = [1.3,1.3,1.3,1.3,1.3]
+	var island_energy = [0,1,2,4,8]
 	var factor = 1
 
 	for i in range(island_center.size()):
@@ -78,11 +78,11 @@ func set_tile_according_to_soil_value(coord: Vector2i):
 	var posindex = coord.y*World.world_size + coord.x
 	if World.block_element_array[posindex] == 0 :
 		set_cell(layer, coord, 0, Vector2i(3,0))
-	elif World.block_element_array[posindex] <= 5 and World.block_element_array[posindex] != 0:
+	elif World.block_element_array[posindex] <= 2 and World.block_element_array[posindex] != 0:
 		set_cell(layer, coord, 0, Vector2i(2,0))
-	elif World.block_element_array[posindex] <= 10 and World.block_element_array[posindex] > 5 :
+	elif World.block_element_array[posindex] <= 4 and World.block_element_array[posindex] > 2 :
 		set_cell(layer, coord, 0, Vector2i(1,0))
-	elif World.block_element_array[posindex] > 10 :
+	elif World.block_element_array[posindex] > 4 :
 		set_cell(layer, coord, 0, Vector2i(0,0))
 		
 func split_array_into_four(arr):

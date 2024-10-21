@@ -49,7 +49,7 @@ var diffusion_speed = 2.5 #in sec
 var diffusion_quantity_style = false # false = factor true = number
 var diffusion_factor = 0.5
 var diffusion_number = 1.
-var diffusion_min_limit = 0. #cannot diffuse lower than 1
+var diffusion_min_limit = 1. #cannot diffuse lower than 1
 var diffusion_block_limit = 2 #how many block energy move. not implemented.
 var block_diffusion_par = []
 
