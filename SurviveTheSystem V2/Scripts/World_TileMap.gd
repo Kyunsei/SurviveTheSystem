@@ -31,6 +31,7 @@ func build_world():
 func draw_round_island(x,y,radius,energy):
 	x=  x-radius
 	y=  y-radius
+	var randomlist = [0,0,0,1,0,1]
 	var center = Vector2(radius,radius)
 	for w in range(0,radius*2+1):
 		for h in range(0,radius*2+1):
@@ -39,7 +40,7 @@ func draw_round_island(x,y,radius,energy):
 				var distance = center.distance_to(Vector2(w, h))
 				if distance < radius :
 						World.block_element_state[(y+h)*World.world_size +x+w ]= 1
-						World.block_element_array[(y+h)*World.world_size +x+w  ]= energy
+						World.block_element_array[(y+h)*World.world_size +x+w  ]= randomlist[randi_range(0,5)]*energy
 						set_cell(0, Vector2i(x+w, y+h), 0, Vector2i(0, 0))
 				if Vector2(w, h).distance_to(center) >= radius and Vector2(w, h).distance_to(center) < radius +2:
 						World.block_element_state[(y+h)*World.world_size +x+w ]= 0
@@ -112,8 +113,8 @@ func draw_navigation():
 
 func _on_block_timer_timeout():
 	pass
-	World.BlockLoopGPU() 
-	update_ALL_tilemap_tile_to_new_soil_value()
+	#World.BlockLoopGPU() 
+	#update_ALL_tilemap_tile_to_new_soil_value()
 	
 	
 	

@@ -240,7 +240,7 @@ func Activate():
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	
-	Decomposition()
+	Decomposition(1)
 	$Timer.stop()
 	set_collision_layer_value(1,0)
 	$Vision.set_collision_mask_value(1,false)

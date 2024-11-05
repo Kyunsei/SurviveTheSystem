@@ -43,7 +43,7 @@ func Build_Stat():
 	self.PV = 10
 	self.current_life_cycle = 0
 	self.PV = 10
-	self.energy = 5.
+	self.energy = 0.
 	self.lifespan = 1.5*(World.one_day_length/lifecycletime)
 	self.age = 0
 	self.maxEnergy = 50.
@@ -54,10 +54,9 @@ func _on_timer_timeout():
 	if World.isReady and isActive:
 		if isDead == false:
 
-
 			if self.energy < self.maxEnergy:
-				Absorb_soil_energy(1,4)
-			Metabo_cost()
+				Absorb_soil_energy(1,1)
+			#Metabo_cost()
 				
 			Growth()
 			LifeDuplicate()
@@ -114,16 +113,19 @@ func Growth():
 func LifeDuplicate():
 	if current_life_cycle == 1  :
 		if timer_count <= 0:
-			if self.energy > 30:	
-				timer_count = 2
-				var life: LifeEntity = Life.build_life(species)
-				#$DebugLabel.text = "duplicate"
-				if life != null:
-					self.energy -= 20
-					life.energy = 20
-					life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
-				else:
-					pass
+			if self.energy > 4:	
+				var newpos = PickRandomPlaceWithRange(position,4 * World.tile_size)
+				var middle = newpos + Vector2(32/2,0)
+				var posindex = int(middle.y/World.tile_size)*World.world_size + int(middle.x/World.tile_size)
+				if World.block_element_array[posindex]>= 0:
+					timer_count = 2
+					var life: LifeEntity = Life.build_life(species)
+					if life != null:
+						self.energy -= 0#20
+						life.energy = 0#20
+						life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
+					else:
+						pass
 		else:
 			timer_count -= 1		#$DebugLabel.text = "full"
 			pass
@@ -157,7 +159,7 @@ func Activate():
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	set_physics_process(false)
-	Decomposition()
+	Decomposition(0)
 	$Timer.stop()
 	set_collision_layer_value(1,0)
 	self.isActive = false

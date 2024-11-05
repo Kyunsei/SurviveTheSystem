@@ -285,19 +285,31 @@ func LifeDuplicate():
 		Life.plant_number += 1'
 
 			
-func Decomposition():
+func Decomposition(radius):
+	if radius > nb_of_soil_block_by_radius.size():
+		print("too many block absorbed, please uptade the variable in new_life script")
+		radius = nb_of_soil_block_by_radius.size()-1
 	var middle = position + Vector2(size.x/2,0)#-size.y/2)
-	var x = int(middle.x/World.tile_size)
-	var	y = int(middle.y/World.tile_size)
-	var posindex = y*World.world_size + x
-	#	posindex = min(World.block_element_array.size()-1,posindex)	#temp to fix edge bug
-	#if posindex >= 0:
-	if posindex < World.block_element_array.size() and posindex >= 0:
-		World.block_element_array[posindex] += self.energy
-		energy = 0
-		update_tiles_according_soil_value([Vector2i(x,y)])
-	else:
-		print(energy,0, age)
+	var center_x = int(middle.x/World.tile_size)
+	var	center_y = int(middle.y/World.tile_size)
+	var value = self.energy/float(nb_of_soil_block_by_radius[radius])
+
+		#var value_max_absorbed_by_tile = clamp((maxEnergy - energy) / nb_of_soil_block_by_radius[radius], 0, value)
+	for x in range(center_x - radius, center_x + radius + 1):
+		for y in range(center_y - radius, center_y + radius + 1):
+			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+				var posindex = y*World.world_size + x
+				if posindex < World.block_element_array.size() and posindex >= 0:
+					if World.block_element_state[posindex] == 1:
+						World.block_element_array[posindex] += value
+						self.energy -= value 
+						update_tiles_according_soil_value([Vector2i(x,y)])
+					else:
+						posindex =center_y*World.world_size + center_x
+						World.block_element_array[posindex] += value
+						self.energy -= value 
+
+
 
 func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV 
@@ -336,7 +348,7 @@ func Activate():
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	
-	Decomposition()
+	Decomposition(0)
 	$Timer.stop()
 	self.isActive = false
 	Life.grass_pool_state[self.pool_index] = 0 #HERE
