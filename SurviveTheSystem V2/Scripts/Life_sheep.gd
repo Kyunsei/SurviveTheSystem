@@ -84,7 +84,7 @@ func Build_Stat():
 	size = Vector2(32,32)
 	self.age= 0
 	self.maxEnergy = 30.
-	self.lifespan = 7*(World.one_day_length/lifecycletime)
+	self.lifespan = 4*(World.one_day_length/lifecycletime)
 	self.vision_distance = 500
 
 func _physics_process(delta):
@@ -96,6 +96,8 @@ func _physics_process(delta):
 		velocity = Vector2(0,0)'
 	velocity = velocity * World.speed 
 	move_and_slide()	
+	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
+	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
 	
 	if item_array.size() > 0:
 		for i in item_array:
@@ -109,6 +111,8 @@ func _on_timer_timeout():
 		if isDead == false:
 			if self.current_life_cycle !=0:
 				pass
+				Metabo_cost()
+				Metabo_cost()
 				Metabo_cost()
 				#self.energy += 20	
 			LifeDuplicate()
@@ -200,7 +204,7 @@ func LifeDuplicate():
 				if life != null:
 					self.energy -= 5
 					life.energy = 5
-					life.global_position = newpos + Vector2(randf_range(0,32),randf_range(0,32))
+					life.global_position = PickRandomPlaceWithRange(position,1 * World.tile_size)
 				else:
 					print("sheep_pool empty")
 		else:

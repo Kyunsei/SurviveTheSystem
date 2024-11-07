@@ -26,16 +26,17 @@ func Update(delta: float):
 	
 func Physics_Update(delta: float):
 	if life_entity:
-		life_entity.velocity = direction * get_parent().get_parent().maxSpeed * 0.5
-		
-		if check_Danger():
-			Transitioned.emit(self,"avoid_state")
-		
-		elif check_Hungry():
-			if check_Food():
-				Transitioned.emit(self,"getcloser_state")
-			else:
-				pass
+		if life_entity.isActive and life_entity.isDead == false:
+			life_entity.velocity = direction * get_parent().get_parent().maxSpeed * 0.5
+			
+			if check_Danger():
+				Transitioned.emit(self,"avoid_state")
+			
+			elif check_Hungry():
+				if check_Food():
+					Transitioned.emit(self,"getcloser_state")
+				else:
+					pass
 				
 
 

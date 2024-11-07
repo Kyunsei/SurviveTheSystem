@@ -10,11 +10,17 @@ func build_world():
 	#island size: 
 	var island_center = [Vector2i(68,68),Vector2i(132,68),Vector2i(100,100),Vector2i(68,132),Vector2i(132,132)]
 	var island_size = [20,20,20,20,20]
-	var island_energy = [0,1,2,4,8]
+	var island_energy = [1,2,0,0,0]
 	var factor = 1
 
 	for i in range(island_center.size()):
-		draw_round_island(island_center[i].x*factor,island_center[i].y*factor,island_size[i]*factor,island_energy[i])	
+		draw_round_island(island_center[i].x*factor,island_center[i].y*factor,island_size[i]*factor,island_energy[i])
+
+		if i > 1:
+			var rnd = randi_range(10,20)
+			for p in range(rnd):
+				draw_energy_patch((island_center[i].x + randi_range(-island_size[i],island_size[i]))*factor,(island_center[i].y + randi_range(-island_size[i],island_size[i]))*factor,randi_range(2,3)*factor,randi_range(5,10))	
+			
 	'draw_round_island(140*factor,140*factor,20*factor,5)
 	draw_round_island(124*factor,124*factor,12*factor,3)
 	draw_round_island(76*factor,124*factor,12*factor,0)
@@ -31,7 +37,7 @@ func build_world():
 func draw_round_island(x,y,radius,energy):
 	x=  x-radius
 	y=  y-radius
-	var randomlist = [0,0,0,1,0,1]
+	#var randomlist = [0,0,0,1,0,1]
 	var center = Vector2(radius,radius)
 	for w in range(0,radius*2+1):
 		for h in range(0,radius*2+1):
@@ -40,7 +46,7 @@ func draw_round_island(x,y,radius,energy):
 				var distance = center.distance_to(Vector2(w, h))
 				if distance < radius :
 						World.block_element_state[(y+h)*World.world_size +x+w ]= 1
-						World.block_element_array[(y+h)*World.world_size +x+w  ]= randomlist[randi_range(0,5)]*energy
+						World.block_element_array[(y+h)*World.world_size +x+w  ]= energy#randomlist[randi_range(0,5)]*energy
 						set_cell(0, Vector2i(x+w, y+h), 0, Vector2i(0, 0))
 				if Vector2(w, h).distance_to(center) >= radius and Vector2(w, h).distance_to(center) < radius +2:
 						World.block_element_state[(y+h)*World.world_size +x+w ]= 0
@@ -49,6 +55,21 @@ func draw_round_island(x,y,radius,energy):
 						else:
 							set_cell(0, Vector2i(x+w, y+h), 0, Vector2i(0, 2))
 
+func draw_energy_patch(x,y,radius,energy):
+	x=  x-radius
+	y=  y-radius
+	var center = Vector2(radius,radius)
+	for w in range(0,radius*2+1):
+		for h in range(0,radius*2+1):
+			#if World.block_element_state[(x+w)*World.world_size +y+h ] == -1 :
+	
+			if World.block_element_state[(y+h)*World.world_size +x+w ]== 1:
+					var distance = center.distance_to(Vector2(w, h))
+					if distance < radius :							
+							World.block_element_array[(y+h)*World.world_size +x+w ]= energy
+							#set_cell(0, Vector2i(x+w, y+h), 0, Vector2i(0, 0))
+							#set_tile_according_to_soil_value(Vector2i(x+w, y+h))
+	
 
 func update_ALL_tilemap_tile_to_new_soil_value():
 	var layer = 0

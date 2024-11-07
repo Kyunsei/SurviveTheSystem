@@ -305,6 +305,12 @@ func Decomposition(radius):
 						self.energy -= value 
 						update_tiles_according_soil_value([Vector2i(x,y)])
 					else:
+						if position.x > World.world_size*World.tile_size or position.x < 0 :
+							return
+							print("energy lost, IDK why. something die outside world size")
+						if position.y > World.world_size*World.tile_size or position.y < 0 :
+							print("energy lost, IDK why. something die outside world size")
+							return		
 						posindex =center_y*World.world_size + center_x
 						World.block_element_array[posindex] += value
 						self.energy -= value 
@@ -384,7 +390,8 @@ func PickRandomPlaceWithRange(position,range):
 	var newpos = Vector2(random_x, random_y)
 	if World.block_element_state[int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)] != 1:
 		#newpos = PickRandomPlaceWithRange(position,range)
-		return position  #+ Vector2(randi_range(0,8),randi_range(0,8))
+		#newpos = PickRandomPlaceWithRange(position,range)
+		return PickRandomPlaceWithRange(position,range)  #+ Vector2(randi_range(0,8),randi_range(0,8))
 	else:
 		return newpos
 

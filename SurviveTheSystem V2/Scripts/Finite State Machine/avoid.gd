@@ -4,6 +4,10 @@ class_name avoid_state
 var direction: Vector2
 
 var target: Node2D
+var previous_position: Vector2 
+var timer: float = 0
+var escaping_void: bool = false
+
 
 @export var detection_distance: int = World.tile_size*10
 
@@ -17,14 +21,35 @@ func Exit():
 	pass
 	
 func Update(delta: float):
-	pass
+	if escaping_void:
+		if timer > 0:
+			timer -= delta
+		else:
+			escaping_void = false
 	
 func Physics_Update(delta: float):
 	if life_entity and target:
-		direction = (life_entity.getCenterPos()  - target.getCenterPos())
-		life_entity.velocity = direction.normalized() * life_entity.maxSpeed *2.
-		if direction.length() >  detection_distance:
-				Transitioned.emit(self,"idle_state")
+		if life_entity.isActive and life_entity.isDead == false:
+			if escaping_void == false:
+				direction = (life_entity.getCenterPos()  - target.getCenterPos())
+				#check if void 
+				#print(life_entity.position)
+				#print(life_entity.position + direction.normalized() *detection_distance)
+				'if life_entity.position + direction *detection_distance:
+						print("void")'
+				life_entity.velocity = direction.normalized() * life_entity.maxSpeed *2.
+				if previous_position == life_entity.position:
+					timer = 0.3
+					escaping_void = true
+					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) )* life_entity.maxSpeed *2.
+				previous_position = life_entity.position
+				if direction.length() >  detection_distance:
+						Transitioned.emit(self,"idle_state")
+			else:
+				if previous_position == life_entity.position:
+					timer = 0.3
+					escaping_void = true
+					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) )* life_entity.maxSpeed *2.
 		
 	'if life_entity:
 		if life_entity.danger_array.size()>0:

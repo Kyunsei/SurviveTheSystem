@@ -38,40 +38,41 @@ func Update(delta: float):
 	
 func Physics_Update(delta: float):
 	if life_entity:
-		if check_Danger():
-			#print("danger")
-			Transitioned.emit(self,"avoid_state")
-			
-		elif target:
-			if target.isDead:
-				#print("target dead")
-				remove_target()
-				Transitioned.emit(self,"idle_state")
-			else:
-				if life_entity.navigation_agent.is_target_reachable():
-					#print("going to food")
-					next_path_position = life_entity.navigation_agent.get_next_path_position()
-					direction = next_path_position - life_entity.getCenterPos()
-					life_entity.velocity = direction.normalized() * life_entity.maxSpeed
-								
-					if life_entity.getCenterPos().distance_to(target.getCenterPos())<16:
-						#print("Eating")
-						life_entity.Eat(target)
-						life_entity.velocity = Vector2.ZERO
-						remove_target()
-						Transitioned.emit(self,"idle_state")
-					elif target.isDead:
-						#print("food was dead")
-						remove_target()
-						Transitioned.emit(self,"idle_state")
-				else:
-					remove_target()
-
+		if life_entity.isActive and life_entity.isDead == false:
+			if check_Danger():
+				#print("danger")
+				Transitioned.emit(self,"avoid_state")
 				
-		else:
-			#print("food become too far /obstacle")
-			Transitioned.emit(self,"idle_state")
-			
+			elif target:
+				if target.isDead:
+					#print("target dead")
+					remove_target()
+					Transitioned.emit(self,"idle_state")
+				else:
+					if life_entity.navigation_agent.is_target_reachable():
+						#print("going to food")
+						next_path_position = life_entity.navigation_agent.get_next_path_position()
+						direction = next_path_position - life_entity.getCenterPos()
+						life_entity.velocity = direction.normalized() * life_entity.maxSpeed
+									
+						if life_entity.getCenterPos().distance_to(target.getCenterPos())<16:
+							#print("Eating")
+							life_entity.Eat(target)
+							life_entity.velocity = Vector2.ZERO
+							remove_target()
+							Transitioned.emit(self,"idle_state")
+						elif target.isDead:
+							#print("food was dead")
+							remove_target()
+							Transitioned.emit(self,"idle_state")
+					else:
+						remove_target()
+
+					
+			else:
+				#print("food become too far /obstacle")
+				Transitioned.emit(self,"idle_state")
+				
 			
 func check_Danger():
 	var danger_entity: LifeEntity
