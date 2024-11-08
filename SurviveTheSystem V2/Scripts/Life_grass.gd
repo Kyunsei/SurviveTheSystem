@@ -118,7 +118,7 @@ func LifeDuplicate():
 				var middle = newpos + Vector2(32/2,0)
 				var posindex = int(middle.y/World.tile_size)*World.world_size + int(middle.x/World.tile_size)
 				if World.block_element_array[posindex]>= 0:
-					timer_count = 2
+					timer_count = 1
 					var life: LifeEntity = Life.build_life(species)
 					if life != null:
 						self.energy -= 0#20

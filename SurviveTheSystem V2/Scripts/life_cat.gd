@@ -49,6 +49,7 @@ func init_progressbar():
 	#get("custom_styles/fg").bg_color = Color(1, 0, 0)
 
 func Build_Stat():
+	self.lifecycletime = 2. #5 times more quick #in second
 	self.current_life_cycle = 0
 	self.PV = 30
 	self.energy = 50
@@ -214,7 +215,7 @@ func _on_timer_timeout():
 			$Timer.wait_time = lifecycletime / World.speed
 		if isDead == false:
 
-			#Metabo_cost()
+			Metabo_cost()
 			#Ageing()
 			AdjustBar()
 

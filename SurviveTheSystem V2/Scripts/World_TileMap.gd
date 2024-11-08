@@ -134,8 +134,8 @@ func draw_navigation():
 
 func _on_block_timer_timeout():
 	pass
-	#World.BlockLoopGPU() 
-	#update_ALL_tilemap_tile_to_new_soil_value()
+	World.BlockLoopGPU() 
+	update_ALL_tilemap_tile_to_new_soil_value()
 	
 	
 	

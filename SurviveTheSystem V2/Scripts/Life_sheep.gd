@@ -23,8 +23,8 @@ var vision_distance: int
 
 func Build_Genome():
 	Genome["maxPV"]=[15,10,20]
-	Genome["speed"] =[0,200,100]
-	Genome["lifespan"]=[7*(World.one_day_length/lifecycletime),7*(World.one_day_length/lifecycletime),7*(World.one_day_length/lifecycletime)]
+	Genome["speed"] =[0,150,100]
+	Genome["lifespan"]=[5*(World.one_day_length/lifecycletime),5*(World.one_day_length/lifecycletime),5*(World.one_day_length/lifecycletime)]
 	Genome["sprite"] = [preload("res://Art/sheep1.png"),preload("res://Art/sheep2.png"),preload("res://Art/sheep3.png")]
 	Genome["dead_sprite"] = [preload("res://Art/sheep_dead1.png"),preload("res://Art/sheep_dead2.png"),preload("res://Art/sheep_dead3.png")]
 
@@ -114,6 +114,8 @@ func _on_timer_timeout():
 				Metabo_cost()
 				Metabo_cost()
 				Metabo_cost()
+				Metabo_cost()
+				Metabo_cost()
 				#self.energy += 20	
 			LifeDuplicate()
 			Ageing()
@@ -174,7 +176,7 @@ func Growth():
 			$Brainy.Activate()
 
 	if current_life_cycle == 1:
-		if self.age > 1.5*(World.one_day_length/lifecycletime) and self.energy > 8:
+		if self.age > 2.5*(World.one_day_length/lifecycletime) and self.energy > 8:
 			self.current_life_cycle += 1
 			$Sprite_2.show()
 			$Sprite_1.hide()
@@ -195,10 +197,10 @@ func Growth():
 func LifeDuplicate():
 	
 	if current_life_cycle == 2 :
-		if self.age > 2.5*(World.one_day_length/lifecycletime)  and self.energy > 10 and repro_counter <= 0:
+		if self.age > 3.5*(World.one_day_length/lifecycletime)  and self.energy > 10 and repro_counter <= 0:
 			repro_counter = 2*(World.one_day_length/lifecycletime)
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
-			for i in range(0,int(self.energy-5)/5):
+			for i in range(0,min(3,int(self.energy-5)/5)):
 			#Lpool Technique
 				var life = Life.build_life(species)
 				if life != null:

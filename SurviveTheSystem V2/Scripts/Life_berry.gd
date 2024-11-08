@@ -70,8 +70,10 @@ func Build_Stat():
 	self.PV = Genome["maxPV"][0]
 	self.current_life_cycle = 0
 	self.PV = Genome["maxPV"][self.current_life_cycle]
-	self.energy = 5
+	self.energy = 10
+	self.maxEnergy = 15
 	self.age= 0
+	self.lifespan= 15 * (World.one_day_length/lifecycletime)
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -80,20 +82,22 @@ func _on_timer_timeout():
 		if isDead == false:
 			if carried_by == null :
 				if current_life_cycle !=0:
-					Metabo_cost()	
-					Absorb_soil_energy(2,2)
-				Ageing()
+					#Metabo_cost()	
+					if self.energy < self.maxEnergy:
+						Absorb_soil_energy(2,3)
+
 				Growth()
+				Ageing()
 			#elif carried_by.species == "spidercrab": 
 			else :
 				if carried_by.species == "spidercrab":
 					if current_life_cycle !=0:
-						Metabo_cost()	
-						Absorb_life_energy(carried_by,5)
-					Ageing()
+						#Metabo_cost()	
+						if self.energy < self.maxEnergy:
+							Absorb_life_energy(carried_by,5)
 					Growth()
-				
-			if self.energy <= 0 or self.age >= Genome["lifespan"][current_life_cycle] or self.PV <=0:
+					Ageing()
+			if self.energy <= 0 or self.age >= self.lifespan or self.PV <=0:
 					Die()
 				
 			if current_time_speed != World.speed:
@@ -102,7 +106,7 @@ func _on_timer_timeout():
 			Deactivate()
 
 		#Debug part
-		#$DebugLabel.text = str(self.energy)
+		$DebugLabel.text = str(self.energy)
 
 
 
@@ -136,7 +140,7 @@ func Growth():
 	if current_life_cycle == 0:
 		if World.isNight == true:
 			$PointLight2D.show()
-		if self.age > 5 and self.energy > 2:
+		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy > 2:
 			self.current_life_cycle += 1	
 			$Collision_0.hide()
 			$Collision_1.show()
@@ -148,7 +152,7 @@ func Growth():
 			self.PV = self.maxPV
 	if current_life_cycle == 1:
 		$PointLight2D.hide()
-		if self.age > 10 and self.energy > 5:
+		if self.age > 3*(World.one_day_length/lifecycletime) and self.energy > 5:
 			self.current_life_cycle += 1	
 			$Collision_1.hide()
 			$Collision_2.show()
@@ -160,7 +164,7 @@ func Growth():
 			self.PV = self.maxPV
 	if current_life_cycle == 2:
 		$PointLight2D.hide()
-		if self.age > 20 and self.energy > 10 and self.counter == 0:
+		if self.age > 4*(World.one_day_length/lifecycletime) and self.energy > 10 and self.counter == 0:
 			self.current_life_cycle += 1	
 			$Collision_2.hide()
 			$Collision_3.show()
@@ -173,7 +177,7 @@ func Growth():
 			
 		
 		self.counter +=1
-		if self.counter == 10:
+		if self.counter >= 0.5*(World.one_day_length/lifecycletime):
 			self.counter = 0
 	if current_life_cycle == 3:
 		if World.isNight == true:
@@ -182,18 +186,18 @@ func Growth():
 
 #Duplication
 func LifeDuplicate2(transporter):
-		if self.energy > 10 :
+		if self.energy > 15 :
 			var life = Life.build_life(species)
 			if life != null:
-				self.energy -= 1
-				life.energy = 5
+				self.energy -= 10
+				life.energy = 10
 				life.global_position = PickRandomPlaceWithRange(position,2 * World.tile_size)
 											
 				getTransported(life,transporter)
 							
 				self.current_life_cycle = 2
 				$PointLight2D.hide()
-				self.energy -= 5
+
 				$Collision_3.hide()
 				$Collision_2.show()
 				$Collision_2.disabled = false		

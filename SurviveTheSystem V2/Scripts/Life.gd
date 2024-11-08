@@ -324,22 +324,29 @@ func Build_life_in_World():
 				life.age= 1 #randi_range(0,10)
 				life.energy = 0#randi_range(2,life.maxEnergy)
 
-		for n in range(3):
+		for n in range(5):
 				var life = build_life("sheep")
 				if life != null:
 					var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 					life.global_position = pos  
-					life.age= 10 #randi_range(0,life.lifespan)
+					life.age= randi_range(0,life.lifespan)
 					life.energy = 5 #randi_range(5,life.maxEnergy)
 					
-		for n in range(0):
+		for n in range(3):
 			var life = build_life("berry")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 				life.global_position = pos 
-				life.age = 20
+				life.age = randi_range(0,life.lifespan)
 				life.energy = 20
-
+				
+		for n in range(1):
+			var life = build_life("spidercrab")
+			if life != null:
+				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
+				life.global_position = pos 
+				life.age = 0
+				life.energy = 20
 	
 	for i in [3,4]:
 		for n in range(0):
