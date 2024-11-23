@@ -450,7 +450,7 @@ func _on_vision_body_entered(body):
 	if body.species== "sheep":
 		if body.current_life_cycle > 0 and self.current_life_cycle == 1:
 			vision_array["food"].append(body)
-		elif body.current_life_cycle == 0 and self.current_life_cycle == 0:
+		elif body.current_life_cycle < 2 and self.current_life_cycle == 0:
 			vision_array["food"].append(body)
 	if body.species== "jellybee":
 		if self.current_life_cycle == 0:

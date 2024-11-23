@@ -8,11 +8,13 @@ var previous_position: Vector2
 var timer: float = 0
 var escaping_void: bool = false
 
-
+@export var idle_type_state = "idle_state"
+@export var dodge_speed: float = 4
 @export var detection_distance: int = World.tile_size*10
 
 
 func Enter():
+	print("Im avoiding stuff!")
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()
 		
@@ -41,15 +43,15 @@ func Physics_Update(delta: float):
 				if previous_position == life_entity.position:
 					timer = 0.3
 					escaping_void = true
-					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) )* life_entity.maxSpeed *2.
+					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) )* life_entity.maxSpeed *dodge_speed
 				previous_position = life_entity.position
 				if direction.length() >  detection_distance:
-						Transitioned.emit(self,"idle_state")
+						Transitioned.emit(self,idle_type_state)
 			else:
 				if previous_position == life_entity.position:
 					timer = 0.3
 					escaping_void = true
-					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) )* life_entity.maxSpeed *2.
+					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) )* life_entity.maxSpeed *dodge_speed
 		
 	'if life_entity:
 		if life_entity.danger_array.size()>0:

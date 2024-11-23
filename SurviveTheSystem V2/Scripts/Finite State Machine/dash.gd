@@ -1,5 +1,5 @@
 extends State
-class_name getcloser_state
+class_name dash_state
 
 
 var direction: Vector2
@@ -11,69 +11,50 @@ var timer: float
 var previous_pos: Vector2
 
 @export var eating_distance: int = 16
-
+@export var speed_multiplicator: int = 1
 
 func Enter():
-	timer = 3.
-	if get_parent().get_parent():
+	print("DECHE STATE")
+	if get_parent().get_parent(): 
 		life_entity = get_parent().get_parent()
-		if target:
-			life_entity.navigation_agent.target_position = target.getCenterPos()
-			if not life_entity.navigation_agent.is_target_reachable():
-				#print("too far /obstacle")
-				remove_target()
-				Transitioned.emit(self,"idle_state")
-		
 
 func Exit():
 	pass
 	
-func Update(delta: float):
-	#check if stuck every 3 second
-	if timer <= 0:
-		remove_target()
-		timer = 3.
-	timer -= delta
+func Update(_delta: float):
 	pass
 	
-func Physics_Update(delta: float):
+func Physics_Update(_delta: float):
+	#if "food" in range :
+		#Get speed, get rotation.body.target
+		#change color delta -= 1 second
+		#go in straight line after delta == 0
+	
 	if life_entity:
 		if life_entity.isActive and life_entity.isDead == false:
 			if check_Danger():
-				#print("danger")
 				Transitioned.emit(self,"avoid_state")
-				
 			elif target:
 				if target.isDead:
-					#print("target dead")
 					remove_target()
-					Transitioned.emit(self,"idle_state")
-				else:
-					if life_entity.navigation_agent.is_target_reachable():
-						#print("going to food")
-						next_path_position = life_entity.navigation_agent.get_next_path_position()
-						direction = next_path_position - life_entity.getCenterPos()
-						life_entity.velocity = direction.normalized() * life_entity.maxSpeed
-									
+					Transitioned.emit(self,"idle_spidercrab_state")
+				else :
+					ChargeToward(target)
+					if self :
 						if life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance:
-							#print("Eating")
 							life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							remove_target()
-							Transitioned.emit(self,"idle_state")
+							Transitioned.emit(self,"idle_spidercrab_state")
 						elif target.isDead:
-							#print("food was dead")
 							remove_target()
-							Transitioned.emit(self,"idle_state")
+							Transitioned.emit(self,"idle_spidercrab_state")
 					else:
 						remove_target()
 
-					
-			else:
-				#print("food become too far /obstacle")
-				Transitioned.emit(self,"idle_state")
-				
-			
+
+
+
 func check_Danger():
 	var danger_entity: LifeEntity
 	if life_entity.vision_array["danger"].size() > 0:
@@ -91,3 +72,8 @@ func remove_target():
 	if 	life_entity.vision_array["food"].has(target):
 			life_entity.vision_array["food"].erase(target)
 			target = null
+
+func ChargeToward(food_source):
+	var center = life_entity.getCenterPos()
+	var direction = -(center - food_source.getCenterPos()).normalized()
+	life_entity.velocity = direction * life_entity.maxSpeed*speed_multiplicator			
