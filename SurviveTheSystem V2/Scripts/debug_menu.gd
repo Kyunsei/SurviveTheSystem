@@ -62,7 +62,11 @@ func init_value_world():
 
 
 func _on_line_edit_wspeed_text_submitted(new_text):
-	World.speed = float(new_text)
+	if float(new_text) >= 0.1:
+		World.speed = float(new_text)
+	else:
+		World.speed = 0.1
+		print("minimum world speed : 0.1")
 	get_parent().get_parent().UpdateSimulationSpeed()
 	$Panel/World_Debug/option/world/world_speed/LineEdit_wspeed.release_focus() 
 
