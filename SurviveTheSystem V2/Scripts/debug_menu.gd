@@ -64,23 +64,25 @@ func init_value_world():
 func _on_line_edit_wspeed_text_submitted(new_text):
 	World.speed = float(new_text)
 	get_parent().get_parent().UpdateSimulationSpeed()
+	$Panel/World_Debug/option/world/world_speed/LineEdit_wspeed.release_focus() 
 
 
 func _on_line_edit_speed_text_submitted(new_text):
 	World.diffusion_speed = float(new_text)
 	get_parent().get_parent().UpdateSimulationSpeed()
-
+	$Panel/World_Debug/option/energy_diffusion/speed/LineEdit_speed.release_focus() 
 
 func _on_line_edit_factor_text_submitted(new_text):
 	World.diffusion_factor = float(new_text)
-
+	$Panel/World_Debug/option/energy_diffusion/factor/LineEdit_factor.release_focus() 
 
 func _on_line_edit_min_text_submitted(new_text):
 	World.diffusion_min_limit = float(new_text)
-
+	$Panel/World_Debug/option/energy_diffusion/minvalue/LineEdit_min.release_focus() 
 
 func _on_line_edit_spawnenergy_text_submitted(new_text):
 	energy_spawn_value = int(new_text)
+	$Panel/World_Debug/option/spawn_energy/edit_energy/LineEdit_spawnenergy.release_focus() 
 
 func _on_check_box_toggled(toggled_on):
 	energy_spawn_isActivate = toggled_on
@@ -99,7 +101,7 @@ func _on_check_box_info_toggled(toggled_on):
 
 func _on_lineedit_radius_text_submitted(new_text):
 	energy_spawn_radius = int(new_text)
-
+	$Panel/World_Debug/option/spawn_energy/radius/LineEdit_radius.release_focus() 
 
 func _input(event):
 	
