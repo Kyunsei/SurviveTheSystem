@@ -200,3 +200,15 @@ func _on_vision_area_exited(area):
 
 
 
+
+
+func _on_mouse_entered():
+	$DebugLabel.show()
+	Life.player.mouse_target = self
+
+
+
+func _on_mouse_exited():
+	$DebugLabel.hide()
+	if Life.player.mouse_target == self:
+		Life.player.mouse_target = null

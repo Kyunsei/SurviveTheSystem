@@ -430,17 +430,21 @@ func _on_action_timer_timeout():
 	if isBurrow == true and current_life_cycle == 0:
 		get_out_of_soil()
 
-
+	
 func _on_mouse_entered():
 	AdjustBar()
 	$HP_bar.show()
 	$Energy_bar.show()
-
+	$DebugLabel.show()
+	Life.player.mouse_target = self
 
 func _on_mouse_exited():
 	$HP_bar.hide()
 	$Energy_bar.hide()
-	
+	$DebugLabel.hide()
+	if Life.player.mouse_target == self:
+		Life.player.mouse_target = null
+
 
 func _on_vision_body_entered(body):
 	if body.species== "sheep":
@@ -464,4 +468,5 @@ func _on_vision_body_exited(body):
 	for n in vision_array:
 		if vision_array[n].has(body):
 			vision_array[n].erase(body)
+
 

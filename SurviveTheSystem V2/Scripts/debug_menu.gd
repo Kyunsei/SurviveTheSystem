@@ -7,6 +7,8 @@ var energy_spawn_radius: int
 var alife_spawn_isActivate: bool = false
 var alife_info_isActivate:bool = false
 
+var alife_taget: LifeEntity
+
 
 var species_selected : int
 # Called when the node enters the scene tree for the first time.
@@ -22,7 +24,9 @@ func _process(delta):
 			text = text + "\n" + n + " " + str(Life.life_number[n]) +"/" + str(Life.pool_scene[n].size())
 
 		$Panel/Alife_Debug/Option/info_all_alife.text = text
-
+		
+	if alife_taget != null:
+		$Panel/Alife_Debug/Option/info/info_alife.text = "species/pool_ID: " + str(alife_taget.species) + " / "+  str(alife_taget.pool_index) + "\n"+ "PV: " + str(alife_taget.PV) + "/" + str(alife_taget.maxPV)  + "\n" + "E: " + "%0.2f" % alife_taget.energy + "/" + str(alife_taget.maxEnergy)  + "\n" + "age: " + str(alife_taget.age) + "/" + str(alife_taget.lifespan)  + "\n"
 
 func _on_show_button_pressed():
 	$Panel.show()
@@ -81,16 +85,16 @@ func _on_line_edit_spawnenergy_text_submitted(new_text):
 func _on_check_box_toggled(toggled_on):
 	energy_spawn_isActivate = toggled_on
 	alife_spawn_isActivate = false
-	alife_info_isActivate = false 
+	#alife_info_isActivate = false 
 	
 func _on_check_boxalifespawn_toggled(toggled_on):
 	alife_spawn_isActivate = toggled_on
 	energy_spawn_isActivate = false
-	alife_info_isActivate = false
+	#alife_info_isActivate = false
 
 func _on_check_box_info_toggled(toggled_on):
-	alife_spawn_isActivate = false
-	energy_spawn_isActivate = false
+	#alife_spawn_isActivate = false
+	#energy_spawn_isActivate = false
 	alife_info_isActivate = toggled_on
 
 func _on_lineedit_radius_text_submitted(new_text):
@@ -109,6 +113,8 @@ func _input(event):
 					var life = Life.build_life(Life.pool_scene.keys()[species_selected])
 					if life != null:
 						life.global_position = mouse_position
+				if alife_info_isActivate:
+					alife_taget = Life.player.mouse_target
 
 
 

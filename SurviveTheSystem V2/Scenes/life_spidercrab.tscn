@@ -99,6 +99,8 @@ script = ExtResource("6_e468h")
 [node name="avoid_state" type="Node" parent="Brainy"]
 script = ExtResource("7_p6dui")
 
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="ActionTimer" to="." method="_on_action_timer_timeout"]
 [connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]

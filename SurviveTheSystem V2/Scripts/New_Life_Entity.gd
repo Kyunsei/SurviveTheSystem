@@ -51,6 +51,10 @@ var metabolic_cost = 1. #how much energy is consumed by cycle to keep biological
 #FACILTATE CALCULUS
 var nb_of_soil_block_by_radius = [1,5,13,29,49,81]
 
+
+#for debug only
+var mouse_target: LifeEntity
+
 func _ready():
 	set_physics_process(false)
 	Build_Stat()

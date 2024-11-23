@@ -358,3 +358,15 @@ func _on_vision_body_exited(body):
 func _on_action_timer_timeout():
 	action_finished = true
 
+
+
+func _on_mouse_entered():
+	$DebugLabel.show()
+	Life.player.mouse_target = self
+
+
+
+func _on_mouse_exited():
+	$DebugLabel.hide()
+	if Life.player.mouse_target == self:
+		Life.player.mouse_target = null
