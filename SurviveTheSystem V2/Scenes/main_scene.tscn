@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bvgtrefdtlsul"]
+[gd_scene load_steps=11 format=3 uid="uid://bvgtrefdtlsul"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_0faxq"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://m26fd7j0ngbx" path="res://Scenes/spawn_window.tscn" id="4_j4k08"]
 [ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_ytf0d"]
 [ext_resource type="PackedScene" uid="uid://dx8j1h6gp20xq" path="res://Scenes/clock.tscn" id="5_a43f2"]
+[ext_resource type="PackedScene" uid="uid://cgchxlrwd55ih" path="res://Scenes/debug_menu.tscn" id="8_2wg6p"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_pf8xm"]
 vertices = PackedVector2Array(5555, 218, 5428, 5305, 20, 4860, 83, 27)
@@ -187,7 +188,7 @@ grow_horizontal = 2
 text = "Loading_grass"
 
 [node name="Pause_menu" parent="UI" instance=ExtResource("3_qkr51")]
-process_mode = 2
+process_mode = 3
 visible = false
 
 [node name="GameOver" parent="UI" instance=ExtResource("4_ytf0d")]
@@ -220,15 +221,20 @@ mouse_filter = 2
 color = Color(0.203922, 0.47451, 0.792157, 0.419608)
 
 [node name="Clock" parent="UI" instance=ExtResource("5_a43f2")]
-anchors_preset = 0
-anchor_right = 0.0
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
 anchor_bottom = 0.0
-offset_left = 0.0
+offset_left = -102.0
 offset_top = 0.0
-offset_right = 0.0
+offset_right = -102.0
 offset_bottom = 0.0
-grow_horizontal = 1
 grow_vertical = 1
+
+[node name="Debug_Menu" parent="UI" instance=ExtResource("8_2wg6p")]
+process_mode = 3
+visible = false
+mouse_filter = 2
 
 [node name="DayTimer" type="Timer" parent="."]
 process_mode = 1

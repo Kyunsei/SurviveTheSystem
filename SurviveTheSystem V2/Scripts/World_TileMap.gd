@@ -93,7 +93,8 @@ func update_tilemap_tile_array_to_new_soil_value(layer, cells):
 				if co.y < 1: #border
 					set_tile_according_to_soil_value(cell)
 				#set_cell(0, cell, 0, Vector2i(0,co.y) + Vector2i(randi_range(0,3), 0))
-		
+
+
 
 func set_tile_according_to_soil_value(coord: Vector2i):
 	var layer = 0
@@ -106,6 +107,51 @@ func set_tile_according_to_soil_value(coord: Vector2i):
 		set_cell(layer, coord, 0, Vector2i(1,0))
 	elif World.block_element_array[posindex] > 4 :
 		set_cell(layer, coord, 0, Vector2i(0,0))
+
+func draw_new_tiles_according_to_soil_value(layer, cells):
+	for cell in cells:
+		var tile_id = get_cell_source_id(layer,cell)
+		var tile = get_cell_tile_data(layer,cell)
+		var co = get_cell_atlas_coords(layer,cell)
+		#if tile_id != -1:
+		var posindex = cell.y*World.world_size + cell.x
+		print(World.block_element_array[posindex])
+		
+		if World.block_element_array[posindex] >= 0:
+			World.block_element_state[posindex] = 1
+			set_tile_according_to_soil_value(cell)
+			
+			if get_cell_source_id(layer,cell+Vector2i(0,1)) != -1: #below cell exist
+				if get_cell_atlas_coords(layer,cell+Vector2i(0,1)).y > 0: #below cell free
+					set_cell(layer, cell+Vector2i(0,1), 0, Vector2i(0,1))
+			else:
+				set_cell(layer, cell+Vector2i(0,1), 0, Vector2i(0,1))
+
+			if get_cell_source_id(layer,cell-Vector2i(0,1)) == -1: #above cell do not exist
+				set_cell(layer, cell-Vector2i(0,1), 0, Vector2i(0,2))
+			if get_cell_source_id(layer,cell-Vector2i(1,0)) == -1: #left cell do not exist
+				set_cell(layer, cell-Vector2i(1,0), 0, Vector2i(0,2))
+			if get_cell_source_id(layer,cell+Vector2i(1,0)) == -1: #right cell do not exist
+				set_cell(layer, cell+Vector2i(1,0), 0, Vector2i(0,2))
+		else:
+			World.block_element_state[posindex] = 0
+			if get_cell_source_id(layer,cell+Vector2i(0,-1)) != -1: 
+				if get_cell_atlas_coords(layer,cell+Vector2i(0,-1)).y == 0: #above cell occupied
+					set_cell(layer, cell, 0, Vector2i(0,1))
+					
+				else:
+					set_cell(layer, cell, 0, Vector2i(0,2))
+			else:
+				set_cell(layer, cell, 0, Vector2i(0,2))
+			if get_cell_atlas_coords(layer,cell+Vector2i(0,1)) == Vector2i(0,1):
+				set_cell(layer, cell+Vector2i(0,1), 0, Vector2i(0,2))
+
+		
+
+				#set_cell(0, cell, 0, Vector2i(0,co.y) + Vector2i(randi_range(0,3), 0))
+						
+
+
 		
 func split_array_into_four(arr):
 	var length = arr.size()

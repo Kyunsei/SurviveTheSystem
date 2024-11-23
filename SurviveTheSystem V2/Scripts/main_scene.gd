@@ -65,9 +65,10 @@ func _process(delta):
 
 func init_debug_feature():
 	if World.debug_mode:
-		$UI/speedContainer.show()
+		#$UI/speedContainer.show()
 		$UI/Debug.show()
-		$UI/Wspeed.show()
+		#$UI/Wspeed.show()
+		$UI/Debug_Menu.show()
 
 func InitNewGame():
 	init_debug_feature()
@@ -313,7 +314,7 @@ func CallGameOver():
 	#gameover = true
 	get_tree().paused = true
 
-func _on_speed_1_pressed():	
+'func _on_speed_1_pressed():	
 	World.speed = 1
 	UpdateSimulationSpeed() # Replace with function body.
 	world_speed_changed.emit()
@@ -337,7 +338,7 @@ func _on_speed_100_pressed():
 	world_speed_changed.emit()
 	emit_signal("world_speed_changed")
 
-	UpdateSimulationSpeed() # Replace with function body.
+	UpdateSimulationSpeed() # Replace with function body.'
 
  # Replace with function body.
 

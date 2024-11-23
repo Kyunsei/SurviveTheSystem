@@ -46,11 +46,11 @@ var shader := rd.shader_create_from_spirv(shader_spirv)
 
 #Diffusion Control
 var diffusion_speed = 2.5 #in sec
-var diffusion_quantity_style = false # false = factor true = number
+var diffusion_quantity_style = false # false = factor true = number #not implemented.
 var diffusion_factor = 0.5
-var diffusion_number = 1.
+var diffusion_number = 1. #not implemented.
 var diffusion_min_limit = 1. #cannot diffuse lower than 1
-var diffusion_block_limit = 2 #how many block energy move. not implemented.
+var diffusion_block_limit = 2 #how many block energy move. #not implemented.
 var block_diffusion_par = []
 
 func Init_World(folder):
