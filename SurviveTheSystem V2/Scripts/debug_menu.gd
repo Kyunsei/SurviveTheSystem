@@ -4,7 +4,11 @@ extends Control
 var energy_spawn_value: int
 var energy_spawn_isActivate: bool = false
 var energy_spawn_radius: int
+var alife_spawn_isActivate: bool = false
+var alife_info_isActivate:bool = false
 
+
+var species_selected : int
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	init_value_world()
@@ -12,7 +16,12 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	pass
+	if Life.player != null: #kindof waiting to init
+		var text = ""
+		for n in Life.life_number:
+			text = text + "\n" + n + " " + str(Life.life_number[n]) +"/" + str(Life.pool_scene[n].size())
+
+		$Panel/Alife_Debug/Option/info_all_alife.text = text
 
 
 func _on_show_button_pressed():
@@ -71,23 +80,38 @@ func _on_line_edit_spawnenergy_text_submitted(new_text):
 
 func _on_check_box_toggled(toggled_on):
 	energy_spawn_isActivate = toggled_on
+	alife_spawn_isActivate = false
+	alife_info_isActivate = false 
+	
+func _on_check_boxalifespawn_toggled(toggled_on):
+	alife_spawn_isActivate = toggled_on
+	energy_spawn_isActivate = false
+	alife_info_isActivate = false
 
+func _on_check_box_info_toggled(toggled_on):
+	alife_spawn_isActivate = false
+	energy_spawn_isActivate = false
+	alife_info_isActivate = toggled_on
 
 func _on_lineedit_radius_text_submitted(new_text):
 	energy_spawn_radius = int(new_text)
 
 
 func _input(event):
-	if energy_spawn_isActivate:
+	
 		# Mouse in viewport coordinates.
 		if event is InputEventMouseButton and event.pressed:
 			if event.button_index == MOUSE_BUTTON_RIGHT:
-				#if Life.player != null:
-				#var mouse_position = event.position / get_viewport().get_camera_2d().zoom + Life.player.position - get_viewport().get_visible_rect().size / 2			
-				#adjust_soil(mouse_position, energy_spawn_value , energy_spawn_radius)
 				var mouse_position =get_viewport().get_camera_2d().get_global_mouse_position()
-				#print(mouse_position)
-				draw_block(mouse_position,energy_spawn_value, energy_spawn_radius)
+				if energy_spawn_isActivate:
+					draw_block(mouse_position,energy_spawn_value, energy_spawn_radius)
+				if alife_spawn_isActivate:
+					var life = Life.build_life(Life.pool_scene.keys()[species_selected])
+					if life != null:
+						life.global_position = mouse_position
+
+
+
 
 func draw_block(mouse_position, value, radius):
 			var center_x = int(mouse_position.x/World.tile_size)
@@ -103,3 +127,25 @@ func draw_block(mouse_position, value, radius):
 							#get_parent().get_parent().get_node("World_TileMap").update_ALL_tilemap_tile_to_new_soil_value()
 							#get_parent().get_parent().get_node("World_TileMap").update_tilemap_tile_array_to_new_soil_value(0, [Vector2i(x,y)])
 						
+
+
+
+
+
+
+
+func _on_check_box_hunger_toggled(toggled_on):
+	if toggled_on:
+		Life.player.metabolic_cost = 0
+		
+	else:
+		Life.player.metabolic_cost = 1
+
+
+func _on_bs_1_pressed():
+	species_selected = clamp(0,species_selected-1, Life.pool_scene.keys().size()-1 )
+	$Panel/Alife_Debug/Option/Spawner/species_select/Label2.text = Life.pool_scene.keys()[species_selected]
+
+func _on_bs_2_pressed():
+	species_selected = clamp(0,species_selected+1, Life.pool_scene.keys().size()-1 )
+	$Panel/Alife_Debug/Option/Spawner/species_select/Label2.text = Life.pool_scene.keys()[species_selected]
