@@ -146,7 +146,9 @@ func Init_life_pool(folder):
 	for i in life_number:
 		life_number[i] = 0
 		
+
 	Life.Instantiate_emptyLife_pool(folder, 2500, "grass")
+
 	Life.Instantiate_emptyLife_pool(folder, 850, "spiky_grass")
 	Life.Instantiate_emptyLife_pool(folder, 100, "sheep")
 	Life.Instantiate_emptyLife_pool(folder, 30, "berry")
@@ -304,6 +306,7 @@ func build_life(ID):
 
 
 func Build_life_in_World():
+
 	var island_center = [Vector2i(68,68),Vector2i(132,68),Vector2i(100,100),Vector2i(68,132),Vector2i(132,132)]
 	var island_size = [20,20,20,20,20]
 	#var island_energy = [5,5,5,5,5]
@@ -317,22 +320,27 @@ func Build_life_in_World():
 	for i in range(island_size.size()):
 	#for i in range(3):
 		for n in range(0):
+
 			var life = build_life("grass")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 				life.global_position = pos  
+
 				life.age= 1 #randi_range(0,10)
 				life.energy = 0#randi_range(2,life.maxEnergy)
 
 		for n in range(0):
+
 				var life = build_life("sheep")
 				if life != null:
 					var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])
 					life.global_position = pos  
+
 					life.age= randi_range(0,life.lifespan)
 					life.energy = 5 #randi_range(5,life.maxEnergy)
 					
 		for n in range(0):
+
 			var life = build_life("berry")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])

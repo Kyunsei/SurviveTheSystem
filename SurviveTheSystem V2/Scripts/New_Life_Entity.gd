@@ -294,6 +294,7 @@ func Decomposition(radius):
 		print("too many block absorbed, please uptade the variable in new_life script")
 		radius = nb_of_soil_block_by_radius.size()-1
 	var middle = position + Vector2(size.x/2,0)#-size.y/2)
+
 	var center_x = int(middle.x/World.tile_size)
 	var	center_y = int(middle.y/World.tile_size)
 	var value = self.energy/float(nb_of_soil_block_by_radius[radius])
@@ -318,6 +319,7 @@ func Decomposition(radius):
 						posindex =center_y*World.world_size + center_x
 						World.block_element_array[posindex] += value
 						self.energy -= value 
+
 
 
 

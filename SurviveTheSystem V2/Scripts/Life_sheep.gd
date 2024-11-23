@@ -84,7 +84,9 @@ func Build_Stat():
 	size = Vector2(32,32)
 	self.age= 0
 	self.maxEnergy = 30.
+
 	self.lifespan = 4*(World.one_day_length/lifecycletime)
+
 	self.vision_distance = 500
 
 func _physics_process(delta):
@@ -176,7 +178,9 @@ func Growth():
 			$Brainy.Activate()
 
 	if current_life_cycle == 1:
+
 		if self.age > 2.5*(World.one_day_length/lifecycletime) and self.energy > 8:
+
 			self.current_life_cycle += 1
 			$Sprite_2.show()
 			$Sprite_1.hide()
@@ -197,10 +201,12 @@ func Growth():
 func LifeDuplicate():
 	
 	if current_life_cycle == 2 :
+
 		if self.age > 3.5*(World.one_day_length/lifecycletime)  and self.energy > 10 and repro_counter <= 0:
 			repro_counter = 2*(World.one_day_length/lifecycletime)
 			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
 			for i in range(0,min(3,int(self.energy-5)/5)):
+
 			#Lpool Technique
 				var life = Life.build_life(species)
 				if life != null:
