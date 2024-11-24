@@ -11,19 +11,38 @@ var timer: float
 var previous_pos: Vector2
 
 @export var eating_distance: int = 16
-@export var speed_multiplicator: int = 1
+@export var speed_multiplicator: int = 8
+
+@export var charge_duration: float = .3
+@export var charging_time: float = 1.
+
+var timer_dash_count : float = 0
+var timer_dash_prep_count : float = 0
+var charge_direction : Vector2 
+var isDashing: bool = false
 
 func Enter():
 	print("DECHE STATE")
 	if get_parent().get_parent(): 
 		life_entity = get_parent().get_parent()
-
+		timer_dash_prep_count = charging_time
+		life_entity.velocity = Vector2.ZERO
 func Exit():
-	pass
+	life_entity.get_node("Sprite_0").modulate =  Color(1,1,1,1) 
+	isDashing = false
 	
 func Update(_delta: float):
-	pass
-	
+	if not isDashing:
+		Charge_preparation(_delta)
+	else:
+		if timer_dash_count > 0:
+			timer_dash_count -= _delta
+			if timer_dash_count <= 0:
+				print("here")
+				isDashing = false
+				life_entity.velocity = Vector2.ZERO
+				Transitioned.emit(self,"idle_spidercrab_state")
+		
 func Physics_Update(_delta: float):
 	#if "food" in range :
 		#Get speed, get rotation.body.target
@@ -32,15 +51,15 @@ func Physics_Update(_delta: float):
 	
 	if life_entity:
 		if life_entity.isActive and life_entity.isDead == false:
-			if check_Danger():
+			if check_Danger() and not isDashing:
 				Transitioned.emit(self,"avoid_state")
 			elif target:
 				if target.isDead:
 					remove_target()
 					Transitioned.emit(self,"idle_spidercrab_state")
 				else :
-					ChargeToward(target)
-					if self :
+						'if not isDashing:
+						ChargeToward(target)'
 						if life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance:
 							life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
@@ -49,8 +68,8 @@ func Physics_Update(_delta: float):
 						elif target.isDead:
 							remove_target()
 							Transitioned.emit(self,"idle_spidercrab_state")
-					else:
-						remove_target()
+						'else:
+						remove_target()'
 
 
 
@@ -74,6 +93,20 @@ func remove_target():
 			target = null
 
 func ChargeToward(food_source):
+	isDashing = true
 	var center = life_entity.getCenterPos()
-	var direction = -(center - food_source.getCenterPos()).normalized()
-	life_entity.velocity = direction * life_entity.maxSpeed*speed_multiplicator			
+	charge_direction = -(center - food_source.getCenterPos()).normalized()
+	life_entity.velocity = charge_direction * life_entity.maxSpeed*speed_multiplicator	
+	timer_dash_count = charge_duration	
+
+func Charge_preparation(_delta):
+	if timer_dash_prep_count > 0:
+		timer_dash_prep_count -= _delta
+		life_entity.get_node("Sprite_0").modulate = Color(1,0,0,1) 
+	else:
+		life_entity.get_node("Sprite_0").modulate =  Color(1,1,1,1) 
+
+		if target:
+			ChargeToward(target)
+		else:
+			Transitioned.emit(self,"idle_spidercrab_state")
