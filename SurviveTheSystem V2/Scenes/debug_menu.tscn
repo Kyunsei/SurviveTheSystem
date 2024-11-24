@@ -222,42 +222,52 @@ layout_mode = 2
 text = ">"
 
 [node name="age_select" type="HBoxContainer" parent="Panel/Alife_Debug/Option/Spawner"]
-visible = false
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Panel/Alife_Debug/Option/Spawner/age_select"]
 layout_mode = 2
 text = "age: "
 
-[node name="Button" type="Button" parent="Panel/Alife_Debug/Option/Spawner/age_select"]
+[node name="LineEdit_age" type="LineEdit" parent="Panel/Alife_Debug/Option/Spawner/age_select"]
+layout_mode = 2
+
+[node name="ba_1" type="Button" parent="Panel/Alife_Debug/Option/Spawner/age_select"]
+visible = false
 layout_mode = 2
 text = "<"
 
 [node name="Label2" type="Label" parent="Panel/Alife_Debug/Option/Spawner/age_select"]
+visible = false
 layout_mode = 2
 text = "placeholder"
 
-[node name="Button2" type="Button" parent="Panel/Alife_Debug/Option/Spawner/age_select"]
+[node name="ba_2" type="Button" parent="Panel/Alife_Debug/Option/Spawner/age_select"]
+visible = false
 layout_mode = 2
 text = ">"
 
 [node name="energy_select" type="HBoxContainer" parent="Panel/Alife_Debug/Option/Spawner"]
-visible = false
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Panel/Alife_Debug/Option/Spawner/energy_select"]
 layout_mode = 2
 text = "energy: "
 
-[node name="Button" type="Button" parent="Panel/Alife_Debug/Option/Spawner/energy_select"]
+[node name="LineEdit_energy" type="LineEdit" parent="Panel/Alife_Debug/Option/Spawner/energy_select"]
+layout_mode = 2
+
+[node name="be_1" type="Button" parent="Panel/Alife_Debug/Option/Spawner/energy_select"]
+visible = false
 layout_mode = 2
 text = "<"
 
 [node name="Label2" type="Label" parent="Panel/Alife_Debug/Option/Spawner/energy_select"]
+visible = false
 layout_mode = 2
 text = "placeholder"
 
-[node name="Button2" type="Button" parent="Panel/Alife_Debug/Option/Spawner/energy_select"]
+[node name="be_2" type="Button" parent="Panel/Alife_Debug/Option/Spawner/energy_select"]
+visible = false
 layout_mode = 2
 text = ">"
 
@@ -364,6 +374,12 @@ text = "A-Life"
 [connection signal="toggled" from="Panel/World_Debug/option/spawn_energy/mouse/CheckBox" to="." method="_on_check_box_toggled"]
 [connection signal="pressed" from="Panel/Alife_Debug/Option/Spawner/species_select/bs1" to="." method="_on_bs_1_pressed"]
 [connection signal="pressed" from="Panel/Alife_Debug/Option/Spawner/species_select/bs2" to="." method="_on_bs_2_pressed"]
+[connection signal="text_submitted" from="Panel/Alife_Debug/Option/Spawner/age_select/LineEdit_age" to="." method="_on_line_edit_age_text_submitted"]
+[connection signal="pressed" from="Panel/Alife_Debug/Option/Spawner/age_select/ba_1" to="." method="_on_ba_1_pressed"]
+[connection signal="pressed" from="Panel/Alife_Debug/Option/Spawner/age_select/ba_2" to="." method="_on_ba_2_pressed"]
+[connection signal="text_submitted" from="Panel/Alife_Debug/Option/Spawner/energy_select/LineEdit_energy" to="." method="_on_line_edit_energy_text_submitted"]
+[connection signal="pressed" from="Panel/Alife_Debug/Option/Spawner/energy_select/be_1" to="." method="_on_be_1_pressed"]
+[connection signal="pressed" from="Panel/Alife_Debug/Option/Spawner/energy_select/be_2" to="." method="_on_be_2_pressed"]
 [connection signal="toggled" from="Panel/Alife_Debug/Option/mouse/CheckBoxalifespawn" to="." method="_on_check_boxalifespawn_toggled"]
 [connection signal="toggled" from="Panel/Alife_Debug/Option/info/mouse_info/CheckBoxInfo" to="." method="_on_check_box_info_toggled"]
 [connection signal="toggled" from="Panel/Alife_Debug/Option/HBoxContainer/CheckBox_hunger" to="." method="_on_check_box_hunger_toggled"]

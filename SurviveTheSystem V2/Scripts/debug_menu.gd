@@ -11,6 +11,8 @@ var alife_taget: LifeEntity
 
 
 var species_selected : int
+var age_selected : int
+var energy_selected : int
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	init_value_world()
@@ -119,6 +121,8 @@ func _input(event):
 					var life = Life.build_life(Life.pool_scene.keys()[species_selected])
 					if life != null:
 						life.global_position = mouse_position
+						life.energy = energy_selected
+						life.age = age_selected
 				if alife_info_isActivate:
 					alife_taget = Life.player.mouse_target
 
@@ -161,3 +165,33 @@ func _on_bs_1_pressed():
 func _on_bs_2_pressed():
 	species_selected = clamp(0,species_selected+1, Life.pool_scene.keys().size()-1 )
 	$Panel/Alife_Debug/Option/Spawner/species_select/Label2.text = Life.pool_scene.keys()[species_selected]
+
+
+func _on_ba_1_pressed():
+	age_selected = max(0,age_selected-1)
+	$Panel/Alife_Debug/Option/Spawner/age_select/Label2.text = str(age_selected)
+
+
+func _on_ba_2_pressed():
+	age_selected = max(0,age_selected+1)
+	$Panel/Alife_Debug/Option/Spawner/age_select/Label2.text = str(age_selected) # Replace with function body.
+
+
+func _on_be_1_pressed():
+	energy_selected = max(0,energy_selected+1)
+	$Panel/Alife_Debug/Option/Spawner/energy_select/Label2.text = str(energy_selected) # Replace with function body.
+
+
+func _on_be_2_pressed():
+	energy_selected = max(0,energy_selected+1)
+	$Panel/Alife_Debug/Option/Spawner/energy_select/Label2.text = str(energy_selected) # Replace with function body.
+
+
+func _on_line_edit_energy_text_submitted(new_text):
+	energy_selected = int(new_text)
+	$Panel/Alife_Debug/Option/Spawner/energy_select/LineEdit_energy.release_focus()  # Replace with function body.
+
+
+func _on_line_edit_age_text_submitted(new_text):
+	age_selected = int(new_text)
+	$Panel/Alife_Debug/Option/Spawner/age_select/LineEdit_age.release_focus()  # Replace with function body.
