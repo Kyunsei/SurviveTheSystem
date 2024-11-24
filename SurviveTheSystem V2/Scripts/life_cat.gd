@@ -279,6 +279,7 @@ func Sprint_Action():
 func Dash_Action():
 	if dashing == false: # and worn_out == false and self.stamina >= 10:
 		dashing = true
+		var initial_position = position
 		action_finished = false #not use here
 		if self.maxSpeed < 400  :
 			#self.stamina -= 10
@@ -289,15 +290,29 @@ func Dash_Action():
 			velocity = last_dir.normalized()*self.maxSpeed
 			await get_tree().create_timer(0.2).timeout
 			dashing = false
+			
 			action_finished = true 
 			set_collision_mask_value(2,true)
 			#$Collision_0.shape.size *= 2.5
 			velocity = Vector2.ZERO
 			self.maxSpeed = 200
+			if getsoiltype(position)== 0:
+				await get_tree().create_timer(0.1).timeout
+				self.PV -= 20
+				position = initial_position
+				if PV <= 0:
+					Die()
 			AdjustBar() #Ca c'est pour que les bar de HP et faim change si jaja
+			
 			await get_tree().create_timer(1.5).timeout
 			worn_out = false
 
+func getsoiltype(pos):
+	var x = int(pos.x/World.tile_size)
+	var y = int(pos.y/World.tile_size)
+	var posindex = y*World.world_size + x
+	return World.block_element_state[posindex]
+				
 
 func Sprint_Action_Stop():
 	if dashing == true : 
