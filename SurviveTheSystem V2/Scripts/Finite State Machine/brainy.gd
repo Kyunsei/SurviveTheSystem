@@ -3,6 +3,8 @@ extends Node
 var current_state: State
 var states : Dictionary = {}
 
+var initialised: bool = false
+
 @export var initial_state : State 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -12,11 +14,14 @@ func _ready():
 func Activate():
 	set_physics_process(true)
 	set_process(true)
-	for child in get_children():
-		if child is State:
-			states[child.name.to_lower()] = child
-			child.Transitioned.connect(on_child_transition)
 	
+	if not initialised:
+		for child in get_children():
+			if child is State:
+				states[child.name.to_lower()] = child
+				child.Transitioned.connect(on_child_transition)
+		initialised = true
+		
 	if initial_state:
 		initial_state.Enter()
 		current_state = initial_state

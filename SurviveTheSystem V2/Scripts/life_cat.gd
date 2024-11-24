@@ -269,7 +269,7 @@ func Sprint_Action():
 
 		if Input.is_action_pressed("up") or Input.is_action_pressed("down") or Input.is_action_pressed("left") or Input.is_action_pressed("right") :
 			await get_tree().create_timer(0.2).timeout
-			self.stamina -= 1
+			#self.stamina -= 1
 
 		AdjustBar()
 	else :
@@ -277,11 +277,11 @@ func Sprint_Action():
 		self.maxSpeed = 200
 		
 func Dash_Action():
-	if dashing == false and worn_out == false and self.stamina >= 10:
+	if dashing == false: # and worn_out == false and self.stamina >= 10:
 		dashing = true
 		action_finished = false #not use here
 		if self.maxSpeed < 400  :
-			self.stamina -= 10
+			#self.stamina -= 10
 			worn_out = true
 			self.maxSpeed = 1500
 			#$Collision_0.shape.size *= 0.4

@@ -286,7 +286,13 @@ func Growth():
 			$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #- ($Sprite_0.texture.get_size()/2 + size/2)*Vector2(1,0)
 			$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #- ($Sprite_0.texture.get_size()/2 + size/2)*Vector2(1,0)
 			size = $Sprite_0.texture.get_size()
+			
+			vision_array["food"] = []
 			vision_array["danger"] = []
+			$Vision/Collision.disabled = true
+			$Vision/Collision.disabled = false
+			
+			
 			maxSpeed = 190
 		
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
