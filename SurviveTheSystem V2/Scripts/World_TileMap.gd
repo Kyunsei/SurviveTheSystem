@@ -15,8 +15,12 @@ func build_world():
 
 	var factor = 1
 	draw_round_island(150,90,5,0)
-	draw_round_island(155,82,4,0)
+	draw_round_island(155,81,4,0)
 	draw_round_island(152,68,6,0)
+	
+	draw_round_island(64,145,12,0)
+	
+	
 	for i in range(island_center.size()):
 		draw_round_island(island_center[i].x*factor,island_center[i].y*factor,island_size[i]*factor,island_energy[i])
 
