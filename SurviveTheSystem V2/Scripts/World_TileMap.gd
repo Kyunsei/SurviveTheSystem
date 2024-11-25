@@ -9,12 +9,14 @@ func build_world():
 	#iland center: [(47,120),(140,140)
 	#island size: 
 
-	var island_center = [Vector2i(38,38),Vector2i(162,38),Vector2i(100,100),Vector2i(38,162),Vector2i(162,162)]
-	var island_size = [20,20,40,20,20]
-	var island_energy = [1,2,0,0,0]
+	var island_center = [Vector2i(62,62),Vector2i(38,38),Vector2i(162,38),Vector2i(100,100),Vector2i(38,162),Vector2i(162,162),Vector2i(140,140)]
+	var island_size = [7,20,20,40,20,20,8]
+	var island_energy = [0,1,2,0,0,0,0]
 
 	var factor = 1
-
+	draw_round_island(150,90,5,0)
+	draw_round_island(155,82,4,0)
+	draw_round_island(152,68,6,0)
 	for i in range(island_center.size()):
 		draw_round_island(island_center[i].x*factor,island_center[i].y*factor,island_size[i]*factor,island_energy[i])
 
