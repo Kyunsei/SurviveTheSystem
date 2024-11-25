@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bkvttykvie6wd"]
+[gd_scene load_steps=14 format=3 uid="uid://bkvttykvie6wd"]
 
 [ext_resource type="Script" path="res://Scripts/life_spidercrab.gd" id="1_3m3wu"]
 [ext_resource type="Texture2D" uid="uid://e1v54i3ffumy" path="res://Art/spider.png" id="2_ge6rd"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="6_e468h"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="7_p6dui"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/dash.gd" id="8_bo4wv"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="9_n34vj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chh8i"]
 
@@ -54,7 +55,6 @@ shape = SubResource("RectangleShape2D_wmr4f")
 shape = SubResource("RectangleShape2D_w0i8c")
 
 [node name="DebugLabel" type="Label" parent="."]
-visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 
@@ -89,13 +89,16 @@ path_desired_distance = 64.0
 
 [node name="Brainy" type="Node2D" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("4_hi2ya")
-initial_state = NodePath("idle_spidercrab_state")
+initial_state = NodePath("idle_state")
 
 [node name="idle_spidercrab_state" type="Node" parent="Brainy"]
 script = ExtResource("5_c3own")
 
 [node name="getcloser_state" type="Node" parent="Brainy"]
 script = ExtResource("6_e468h")
+minimun_distance = 320
+maximun_distance = 500
+next_state = "dash_state"
 
 [node name="avoid_state" type="Node" parent="Brainy"]
 script = ExtResource("7_p6dui")
@@ -103,6 +106,9 @@ idle_type_state = "idle_spidercrab_state"
 
 [node name="dash_state" type="Node" parent="Brainy"]
 script = ExtResource("8_bo4wv")
+
+[node name="idle_state" type="Node" parent="Brainy"]
+script = ExtResource("9_n34vj")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

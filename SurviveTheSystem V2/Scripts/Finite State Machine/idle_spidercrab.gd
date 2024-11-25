@@ -12,11 +12,12 @@ func choose_direction_and_time():
 	
 
 func Enter():
+
 	print("Im a cute spidercrab idling!")
 	if get_parent().get_parent():
 		life_entity = 	get_parent().get_parent()
 	choose_direction_and_time()
-	
+	life_entity.get_node("DebugLabel").text = "crab idle"
 func Exit():
 	pass
 	
@@ -36,7 +37,7 @@ func Physics_Update(delta: float):
 			
 			elif check_Hungry():
 				if check_Food():
-					Transitioned.emit(self,"dash_state")
+					Transitioned.emit(self,"getcloser_state")
 				else:
 					pass
 				
@@ -62,7 +63,8 @@ func check_Food():
 		#var ss = Time.get_ticks_msec()
 		#print("filter: " + str(ss-s) + "ms")
 		if alive_array.size() > 0:
-			get_parent().get_node("dash_state").target = getClosestLife(alive_array)	
+			get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
+			#get_parent().get_node("dash_state").target = getClosestLife(alive_array)		
 			'if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
 				get_parent().get_node("avoid_state").target =  alive_array[0]'
 			return true

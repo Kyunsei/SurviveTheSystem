@@ -103,7 +103,8 @@ C: eat
 
 -----DEBUG-------
 mouse wheel: zoom in/out
-Q/E : add/remove energy"
+Q/E : add/remove energy
+T: teleport"
 
 [node name="speedContainer" type="HBoxContainer" parent="UI"]
 visible = false

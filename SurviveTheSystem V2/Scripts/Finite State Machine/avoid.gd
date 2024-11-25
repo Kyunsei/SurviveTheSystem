@@ -14,10 +14,9 @@ var escaping_void: bool = false
 
 
 func Enter():
-	print("Im avoiding stuff!")
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()
-		
+		life_entity.get_node("DebugLabel").text = "avoid"
 	
 func Exit():
 	pass

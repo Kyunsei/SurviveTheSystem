@@ -22,11 +22,11 @@ var charge_direction : Vector2
 var isDashing: bool = false
 
 func Enter():
-	print("DECHE STATE")
 	if get_parent().get_parent(): 
 		life_entity = get_parent().get_parent()
 		timer_dash_prep_count = charging_time
 		life_entity.velocity = Vector2.ZERO
+		life_entity.get_node("DebugLabel").text = "dash"
 func Exit():
 	life_entity.get_node("Sprite_0").modulate =  Color(1,1,1,1) 
 	isDashing = false
@@ -38,10 +38,9 @@ func Update(_delta: float):
 		if timer_dash_count > 0:
 			timer_dash_count -= _delta
 			if timer_dash_count <= 0:
-				print("here")
 				isDashing = false
 				life_entity.velocity = Vector2.ZERO
-				Transitioned.emit(self,"idle_spidercrab_state")
+				Transitioned.emit(self,"idle_state")
 		
 func Physics_Update(_delta: float):
 	#if "food" in range :
@@ -56,7 +55,7 @@ func Physics_Update(_delta: float):
 			elif target:
 				if target.isDead:
 					remove_target()
-					Transitioned.emit(self,"idle_spidercrab_state")
+					Transitioned.emit(self,"idle_state")
 				else :
 						'if not isDashing:
 						ChargeToward(target)'
@@ -64,10 +63,10 @@ func Physics_Update(_delta: float):
 							life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							remove_target()
-							Transitioned.emit(self,"idle_spidercrab_state")
+							Transitioned.emit(self,"idle_state")
 						elif target.isDead:
 							remove_target()
-							Transitioned.emit(self,"idle_spidercrab_state")
+							Transitioned.emit(self,"idle_state")
 						'else:
 						remove_target()'
 
@@ -109,4 +108,4 @@ func Charge_preparation(_delta):
 		if target:
 			ChargeToward(target)
 		else:
-			Transitioned.emit(self,"idle_spidercrab_state")
+			Transitioned.emit(self,"idle_state")
