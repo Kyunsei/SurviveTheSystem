@@ -18,6 +18,7 @@ var isDead = false
 #control
 var isPlayer = false
 var action_finished = true
+var LastOrientation = "down"
 
 #INVENTAIRE
 var item_array = [] 
@@ -99,6 +100,7 @@ func Player_Control_movement():
 		var input_dir = Vector2.ZERO
 		var rotation_dir = 0
 		if Input.is_action_pressed("left") :
+			
 			input_dir.x -= 1
 			rotation_dir = -1	
 			LastOrientation = "left"
@@ -120,7 +122,7 @@ func Player_Control_movement():
 		position.y = clamp(position.y, 0, World.world_size*World.tile_size)
 		return input_dir
 		
-var LastOrientation = "down"
+
 
 
 func _physics_process(delta):

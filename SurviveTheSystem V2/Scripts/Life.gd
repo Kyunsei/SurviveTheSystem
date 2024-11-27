@@ -87,6 +87,8 @@ var pool_state = {
 
 var pool_scene = {
 	"cat" : [],
+	"tree_character" : [],
+	"slime" : [],
 	"grass": [],
 	"spiky_grass": [],
 	"spidercrab": [],

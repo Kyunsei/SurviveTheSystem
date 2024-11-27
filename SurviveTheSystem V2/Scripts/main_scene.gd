@@ -114,7 +114,7 @@ func InitNewGame():
 	#Life.Instantiate_Life_in_pool($Life, 10, "jellybee")'
 
 
-	if Life.char_selected != "sheep":
+	if Life.char_selected != "scoobyDoo":
 		Life.player = Life.pool_scene['cat'][0] #TEMPORAIRE
 		Life.player.isPlayer = true #HERE
 	else:

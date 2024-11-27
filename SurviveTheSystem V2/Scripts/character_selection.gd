@@ -48,7 +48,7 @@ func _on_check_box_toggled(toggled_on):
 
 
 func _on_button_char_3_pressed():
-	Life.char_selected = "sheep"
+	Life.char_selected = "slime"
 
 
 func _on_check_box_2_toggled(toggled_on):

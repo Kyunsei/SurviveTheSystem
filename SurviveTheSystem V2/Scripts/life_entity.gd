@@ -221,7 +221,7 @@ func Interact(entity):
 
 
 'func entity_eating_target():
-	if self.hitbox overlap with is_in_group("Life").hitbox
+	if self.hitbox overlap with is_in_gron("Life").hitbox
 		if interact_with !=null:
 			var contact_index = interact_with.INDEX
 			if Life.state_array[contact_index] > 0:

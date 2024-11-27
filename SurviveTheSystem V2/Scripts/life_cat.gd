@@ -23,7 +23,7 @@ func Build_Genome():
 	Genome["lifespan"]=[1000]
 	Genome["sprite"] = [preload("res://Art/player_cat.png")]
 	Genome["dead_sprite"] = [preload("res://Art/poop_star.png")]
-	
+	Genome["slime_sprite"] = [preload("res://Art/slime_down_1.png")]
 	Genome["planty_sprite"] = [preload("res://Art/player_bulbi.png")] #TEMPORAIRE
 
 func passive_healing():
@@ -64,6 +64,9 @@ func Build_Phenotype():
 	$Sprite_0.texture = Genome["sprite"][0]
 	if Life.char_selected == "planty":
 		$Sprite_0.texture = Genome["planty_sprite"][0] #TEMPORAIRE
+	if Life.char_selected == "slime":
+		$Sprite_0.texture = Genome["slime_sprite"][0] #TEMPORAIRE
+		$Sprite_0.scale = Vector2(4,4)
 		
 	$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
 	$Sprite_0.offset.x = -$Sprite_0.texture.get_width()/4
@@ -110,6 +113,7 @@ func _physics_process(delta):
 			isimmobile_1sec = false	
 			
 	move_and_slide()
+	
 	
 	var temppos = position + last_dir * Vector2(64,96)
 	$BareHand_attack.rotation =  (last_dir.angle()) 
