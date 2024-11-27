@@ -23,7 +23,7 @@ func Build_Genome():
 	Genome["lifespan"]=[1000]
 	Genome["sprite"] = [preload("res://Art/player_cat.png")]
 	Genome["dead_sprite"] = [preload("res://Art/poop_star.png")]
-	Genome["slime_sprite"] = [preload("res://Art/slime_down_1.png")]
+	Genome["slime_sprite"] = [preload("res://Art/slime_down_1.png"),preload("res://Art/slime_right_1.png"),preload("res://Art/slime_up_1.png"),preload("res://Art/slime_left_1.png")]
 	Genome["planty_sprite"] = [preload("res://Art/player_bulbi.png")] #TEMPORAIRE
 
 func passive_healing():
@@ -92,7 +92,40 @@ func Build_Phenotype():
 	$BareHand_attack/sprite2.size = size_Barehand
 	$BareHand_attack/sprite2.position = -Vector2(0.5,0.5)*size_Barehand
 
-
+func Player_Control_movement():
+		var input_dir = Vector2.ZERO
+		var rotation_dir = 0
+		if Input.is_action_pressed("left") :
+			
+			input_dir.x -= 1
+			rotation_dir = -1	
+			LastOrientation = "left"
+			if Life.char_selected == "slime":
+				$Sprite_0.texture = Genome["slime_sprite"][3] 
+		if Input.is_action_pressed("right"):
+			input_dir.x += 1
+			rotation_dir = 1
+			LastOrientation = "right"
+			if Life.char_selected == "slime":
+				$Sprite_0.texture = Genome["slime_sprite"][1] 
+		if Input.is_action_pressed("up"):
+			input_dir.y -= 1
+			rotation_dir = -1
+			LastOrientation = "up"
+			if Life.char_selected == "slime":
+				$Sprite_0.texture = Genome["slime_sprite"][2] 
+		if Input.is_action_pressed("down"):
+			input_dir.y += 1
+			rotation_dir = 1
+			LastOrientation = "down"
+			if Life.char_selected == "slime":
+				$Sprite_0.texture = Genome["slime_sprite"][0] 
+				
+		velocity = input_dir.normalized() * self.maxSpeed
+		position.x = clamp(position.x, 0, World.world_size*World.tile_size)
+		position.y = clamp(position.y, 0, World.world_size*World.tile_size)
+		return input_dir
+		
 func _physics_process(delta):
 	if isPlayer:
 		if dashing == false :
