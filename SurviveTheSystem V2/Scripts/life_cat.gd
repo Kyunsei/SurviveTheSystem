@@ -68,8 +68,8 @@ func Build_Phenotype():
 		$Sprite_0.texture = Genome["slime_sprite"][0] #TEMPORAIRE
 		$Sprite_0.scale = Vector2(4,4)
 		
-	$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
-	$Sprite_0.offset.x = -$Sprite_0.texture.get_width()/4
+	#$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
+	#$Sprite_0.offset.x = -$Sprite_0.texture.get_width()/4
 	
 	$Dead_Sprite_0.texture = Genome["dead_sprite"][0]
 	$Dead_Sprite_0.offset.y = -$Dead_Sprite_0.texture.get_height()
@@ -78,19 +78,19 @@ func Build_Phenotype():
 
 	#ADD Body
 
-	$Collision_0.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
+	#$Collision_0.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
 	init_progressbar()
 	
 	self.size = $Sprite_0.texture.get_size()
 	
 	#attack
-	var size_Barehand = Vector2(32,32*3)
-	$BareHand_attack/CollisionShape2D.shape.size = size_Barehand
-	$BareHand_attack/sprite.size = size_Barehand
-	$BareHand_attack/sprite.position = -Vector2(0.5,0.5)*size_Barehand
-	$BareHand_attack/sprite2.size = size_Barehand
-	$BareHand_attack/sprite2.position = -Vector2(0.5,0.5)*size_Barehand
+	#var size_Barehand = Vector2(32,32*3)
+	#$BareHand_attack/CollisionShape2D.shape.size = size_Barehand
+	#$BareHand_attack/CollisionShape2D/sprite.size = size_Barehand
+	#$BareHand_attack/CollisionShape2D/sprite.position = -Vector2(1,0.5)*size_Barehand
+	#$BareHand_attack/CollisionShape2D/sprite2.size = size_Barehand
+	#$BareHand_attack/CollisionShape2D/sprite2.position = -Vector2(1,0.5)*size_Barehand
 
 func Player_Control_movement():
 		var input_dir = Vector2.ZERO
@@ -150,7 +150,7 @@ func _physics_process(delta):
 	
 	var temppos = position + last_dir * Vector2(64,96)
 	$BareHand_attack.rotation =  (last_dir.angle()) 
-	$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(1.5,0.5)  - $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
+	#$BareHand_attack.position =  last_dir * $BareHand_attack/CollisionShape2D.shape.size* Vector2(3,3)  + Vector2(32,-32)#- $Sprite_0.texture.get_size() * Vector2(-0.25,0.5)
 	if item_array.size() > 0:
 		var c = 0
 		for i in item_array:
@@ -291,7 +291,6 @@ func getDamaged(value):
 func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV
 	$Energy_bar.value = self.energy *100 / self.maxEnergy
-	$Stamina_bar.value = self.stamina *100 / 100
 
 
 func Attack():
@@ -372,7 +371,7 @@ func Sprint_Action_Stop():
 
 func PickUp():
 	action_finished = false
-	$BareHand_attack/sprite2.show()
+	$BareHand_attack/CollisionShape2D/sprite2.show()
 	$BareHand_attack/ActionTimer.start(0.2)
 	var closestItem = getClosestLife(barehand_array,$Vision/Collision.shape.radius+100)
 	if closestItem != null:
@@ -436,7 +435,7 @@ func Eat_Action():
 
 
 func BareHand_attack():
-	$BareHand_attack/sprite.show()
+	$BareHand_attack/CollisionShape2D/sprite.show()
 	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
 		#print(i)
@@ -523,8 +522,8 @@ func _on_bare_hand_attack_body_exited(body):
 
 
 func _on_action_timer_timeout():
-	$BareHand_attack/sprite.hide()
-	$BareHand_attack/sprite2.hide()
+	$BareHand_attack/CollisionShape2D/sprite.hide()
+	$BareHand_attack/CollisionShape2D/sprite2.hide()
 	#passive_healing()
 	action_finished = true
 

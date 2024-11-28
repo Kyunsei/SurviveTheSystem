@@ -6,11 +6,12 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gm5t3"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1osmb"]
-radius = 32.0
+radius = 16.0
 
 [sub_resource type="Theme" id="Theme_g2d4v"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5qtdw"]
+size = Vector2(32, 96)
 
 [sub_resource type="Gradient" id="Gradient_q0a1l"]
 offsets = PackedFloat32Array(0.168831, 0.649351)
@@ -37,29 +38,34 @@ collision_layer = 0
 collision_mask = 0
 
 [node name="Collision" type="CollisionShape2D" parent="Vision"]
+position = Vector2(32, -32)
 shape = SubResource("CapsuleShape2D_gm5t3")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
 texture = ExtResource("2_j3d6h")
 centered = false
+offset = Vector2(0, -64)
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
 centered = false
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
+position = Vector2(32, -16)
 shape = SubResource("CircleShape2D_1osmb")
 
 [node name="DebugLabel" type="Label" parent="."]
-offset_right = 40.0
+offset_left = 12.0
+offset_right = 52.0
 offset_bottom = 23.0
 
 [node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(32, -32)
 enabled = false
 
 [node name="HP_bar" type="ProgressBar" parent="."]
-offset_left = -48.0
+offset_left = -32.0
 offset_top = -63.0
-offset_right = -38.0
+offset_right = -22.0
 offset_bottom = -1.0
 theme = SubResource("Theme_g2d4v")
 step = 1.0
@@ -68,35 +74,24 @@ fill_mode = 3
 show_percentage = false
 
 [node name="Energy_bar" type="ProgressBar" parent="."]
-offset_left = -34.0
+offset_left = -16.0
 offset_top = -64.0
-offset_right = -23.0
+offset_right = -5.0
 offset_bottom = -1.0
 step = 1.0
 value = 50.0
 fill_mode = 3
 show_percentage = false
 
-[node name="Stamina_bar" type="ProgressBar" parent="."]
-offset_left = -67.0
-offset_top = -63.0
-offset_right = -56.0
-step = 1.0
-value = 50.0
-fill_mode = 3
-show_percentage = false
-
 [node name="BareHand_attack" type="Area2D" parent="."]
+position = Vector2(32, -32)
 collision_layer = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BareHand_attack"]
+position = Vector2(48, 0)
 shape = SubResource("RectangleShape2D_5qtdw")
 
-[node name="ActionTimer" type="Timer" parent="BareHand_attack"]
-wait_time = 0.2
-one_shot = true
-
-[node name="sprite" type="ColorRect" parent="BareHand_attack"]
+[node name="sprite" type="ColorRect" parent="BareHand_attack/CollisionShape2D"]
 visible = false
 anchors_preset = 8
 anchor_left = 0.5
@@ -104,14 +99,14 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -16.0
-offset_top = -16.0
+offset_top = -48.0
 offset_right = 16.0
-offset_bottom = 16.0
+offset_bottom = 48.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 0
 
-[node name="sprite2" type="ColorRect" parent="BareHand_attack"]
+[node name="sprite2" type="ColorRect" parent="BareHand_attack/CollisionShape2D"]
 visible = false
 anchors_preset = 8
 anchor_left = 0.5
@@ -119,18 +114,22 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -16.0
-offset_top = -16.0
+offset_top = -48.0
 offset_right = 16.0
-offset_bottom = 16.0
+offset_bottom = 48.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 0
 color = Color(0, 0.894118, 0.898039, 1)
 
+[node name="ActionTimer" type="Timer" parent="BareHand_attack"]
+wait_time = 0.2
+one_shot = true
+
 [node name="RegenTimer" type="Timer" parent="."]
 
 [node name="PointLight2D2" type="PointLight2D" parent="."]
-position = Vector2(15, -32)
+position = Vector2(32, -32)
 scale = Vector2(4, 4)
 blend_mode = 2
 range_layer_min = -4
