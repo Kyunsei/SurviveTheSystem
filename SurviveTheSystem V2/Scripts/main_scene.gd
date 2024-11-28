@@ -3,6 +3,7 @@ extends Node2D
 'This Script is for the main game loop'
 var life_rock_scene = load("res://Scenes/rock.tscn")
 var jellyhive_scene = load("res://Scenes/jelly_hive.tscn")
+var rocket_scene = load("res://Scenes/rocket.tscn")
 var playerindex = 0
 var gameover = false
 
@@ -50,8 +51,11 @@ func _process(delta):
 		#20 days
 		if World.day == 20 and gameover == false:
 			if Life.player.isActive == true:
+				var rocket = rocket_scene.instantiate()
+				rocket.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+				add_child(rocket)
 				gameover = true
-				CallGameOver()
+				#CallGameOver()
 				
 
 		#dead player
@@ -307,6 +311,7 @@ func _notification(what):
 		get_tree().quit() # default behavior'
 
 func CallGameOver():
+
 	$UI/GameOver.SetUp_GameOver_Screen()
 	$UI/GameOver.show()
 	#gameover = true

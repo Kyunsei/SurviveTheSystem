@@ -359,7 +359,7 @@ func Build_life_in_World():
 				life.energy = 20
 	
 	for i in [3,4]:
-		for n in range(0):
+		for n in range(5):
 			var life = build_life("spiky_grass")
 			if life != null:
 				var pos = PickRandomPlaceWithRange(island_center[i].x,island_center[i].y,island_size[i])

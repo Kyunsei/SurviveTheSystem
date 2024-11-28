@@ -417,6 +417,7 @@ func Eat(life):
 	self.energy += life.energy
 	life.energy= 0
 	life.Die()
+	life.cause_of_death = deathtype.EATEN
 
 
 func _on_bare_hand_attack_body_entered(body):

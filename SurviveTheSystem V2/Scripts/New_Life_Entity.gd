@@ -48,6 +48,18 @@ var PV = 0 #current level of health
 var current_life_cycle = 0 #which state of life it is. egg, young, adult, etc..
 var metabolic_cost = 1. #how much energy is consumed by cycle to keep biological function
 
+#Enum
+
+enum deathtype {
+	NONE,
+	VOID,      
+	HUNGER,  
+	DAMMAGE,
+	AGE,
+	EATEN  	
+}
+
+var cause_of_death = deathtype.NONE
 
 #FACILTATE CALCULUS
 var nb_of_soil_block_by_radius = [1,5,13,29,49,81]

@@ -1,6 +1,10 @@
 extends Control
 
 
+var gameover_type
+
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	if World.debug_mode:
@@ -9,22 +13,31 @@ func _ready():
 
 func SetUp_GameOver_Screen():
 	print("call")
-	$Button.text = "Continue to Survive"
-	$Label.text = "Number of grass alive : "+str(Life.plant_number) +"\nNumber of crab-spider alive : " +str(Life.spidercrab_number)+ "\nNumber of sheep alive : "+str(Life.sheep_number) +"\nNumber of berry bush alive : " +str(Life.berry_number)+"\nNumber of Player alive : " +str(Life.player_number)
+	$Label.text =  " You're Dead =( "
+	match Life.player.cause_of_death:
+		Life.player.deathtype.VOID:
+			$Label.text = $Label.text + "\n You felt into the void"
+		Life.player.deathtype.AGE:
+			$Label.text = $Label.text + "\n Too old now"	
+		Life.player.deathtype.DAMMAGE:
+			$Label.text = $Label.text + "\n You got killed"
+		Life.player.deathtype.EATEN:
+			$Label.text = $Label.text + "\n You got eaten"
+		Life.player.deathtype.HUNGER:
+			$Label.text = $Label.text + "\n You starved to death"
+	#$Button.text = "Continue to Survive"
+	#$Label.text = "Number of grass alive : "+str(Life.plant_number) +"\nNumber of crab-spider alive : " +str(Life.spidercrab_number)+ "\nNumber of sheep alive : "+str(Life.sheep_number) +"\nNumber of berry bush alive : " +str(Life.berry_number)+"\nNumber of Player alive : " +str(Life.player_number)
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
 
 
 func _on_button_pressed(): #Continue to Survive
-	print("here")
 	if 	Life.player.isActive:
-		print("player alive")
 		get_tree().paused = false
 		#get_parent().get_parent().gameover = false
 		hide()
 	else:
-		print("player dead")
 		$Button.text = "Player dead"
 	
 

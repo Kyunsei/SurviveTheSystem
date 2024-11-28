@@ -260,7 +260,14 @@ func _on_timer_timeout():
 			AdjustBar()
 
 
-			if self.energy <= 0 or self.age >= Genome["lifespan"][self.current_life_cycle] or self.PV <=0:
+			if self.energy <= 0:
+				cause_of_death = deathtype.HUNGER
+				Die()
+			if self.age >= Genome["lifespan"][self.current_life_cycle]:
+				cause_of_death = deathtype.AGE
+				Die()
+			if self.PV <=0:
+				cause_of_death = deathtype.NONE
 				Die()			
 			if current_time_speed != World.speed:
 				adapt_time_to_worldspeed()
@@ -279,6 +286,7 @@ func getDamaged(value):
 		$Sprite_0.modulate = Color(1, 1, 1)
 	if self.PV <= 0:
 		Die()
+		cause_of_death = deathtype.DAMMAGE
 
 func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV
@@ -340,6 +348,7 @@ func Dash_Action():
 				position = initial_position
 				if PV <= 0:
 					Die()
+					cause_of_death = deathtype.VOID
 			AdjustBar() #Ca c'est pour que les bar de HP et faim change si jaja
 			
 			await get_tree().create_timer(1.5).timeout

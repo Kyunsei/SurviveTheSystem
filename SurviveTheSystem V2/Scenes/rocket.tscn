@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3 uid="uid://0gpovpik50vi"]
+
+[ext_resource type="Script" path="res://Scenes/rocket.gd" id="1_jtc8l"]
+[ext_resource type="Texture2D" uid="uid://b3tm1t5c11jto" path="res://icon.svg" id="2_ok1cm"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bqmys"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5gbvd"]
+size = Vector2(141, 140)
+
+[node name="Rocket" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_jtc8l")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_ok1cm")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_bqmys")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(0.5, 2)
+shape = SubResource("RectangleShape2D_5gbvd")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 255.0
+offset_top = -97.0
+offset_right = 295.0
+offset_bottom = -57.0
+
+[node name="Button_YES" type="Button" parent="Control"]
+offset_left = -97.0
+offset_top = 37.0
+offset_right = -61.0
+offset_bottom = 68.0
+text = "YES"
+
+[node name="Button_NO" type="Button" parent="Control"]
+offset_left = 92.0
+offset_top = 34.0
+offset_right = 126.0
+offset_bottom = 65.0
+text = "NO"
+
+[node name="Label" type="Label" parent="Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -122.5
+offset_right = 122.5
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Do you want to leave the place?"
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="pressed" from="Control/Button_YES" to="." method="_on_button_yes_pressed"]
+[connection signal="pressed" from="Control/Button_NO" to="." method="_on_button_no_pressed"]

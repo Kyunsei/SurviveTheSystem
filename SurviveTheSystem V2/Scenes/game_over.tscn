@@ -9,6 +9,7 @@ anchors_preset = 0
 script = ExtResource("1_1aeeu")
 
 [node name="ColorRect" type="ColorRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,19 +20,22 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.556863, 0.556863, 0.556863, 1)
 
-[node name="Label" type="Label" parent="."]
-layout_mode = 0
-offset_left = 77.0
-offset_top = 12.0
-offset_right = 117.0
-offset_bottom = 35.0
-
 [node name="Label2" type="Label" parent="."]
 layout_mode = 0
 offset_left = 528.0
 offset_top = 88.0
 offset_right = 568.0
 offset_bottom = 111.0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+offset_left = 329.0
+offset_top = 264.0
+offset_right = 834.0
+offset_bottom = 426.0
+theme_override_font_sizes/font_size = 40
+text = "PLAXE"
+horizontal_alignment = 1
 
 [node name="Label3" type="Label" parent="."]
 layout_mode = 0
@@ -47,6 +51,7 @@ offset_bottom = 156.0
 [node name="img3" type="Sprite2D" parent="."]
 
 [node name="Button" type="Button" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 447.0
 offset_top = 198.0
@@ -57,17 +62,17 @@ text = "Continue to Survive"
 [node name="Button2" type="Button" parent="."]
 layout_mode = 0
 offset_left = 323.0
-offset_top = 370.0
+offset_top = 451.0
 offset_right = 497.0
-offset_bottom = 426.0
+offset_bottom = 507.0
 text = "Return to main menu"
 
 [node name="Button3" type="Button" parent="."]
 layout_mode = 0
 offset_left = 671.0
-offset_top = 370.0
+offset_top = 451.0
 offset_right = 834.0
-offset_bottom = 425.0
+offset_bottom = 506.0
 text = "Close Game"
 
 [node name="Button4" type="Button" parent="."]
