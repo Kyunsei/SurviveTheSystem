@@ -321,7 +321,7 @@ func Build_life_in_World():
 
 	for i in range(island_size.size()):
 	#for i in range(3):
-		for n in range(100):
+		for n in range(0):
 
 			var life = build_life("grass")
 			if life != null:

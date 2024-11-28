@@ -5,6 +5,24 @@ extends TileMap
 var c = 0
 var color_list = [Color.DARK_RED,Color.CADET_BLUE,Color.YELLOW_GREEN,Color.BEIGE]
 
+func instantiate_the_tiles_function():
+	var c = 0
+	for i in range(World.world_size):
+		for j in range(World.world_size):
+			if get_cell_atlas_coords(0, Vector2i(i, j)) != Vector2i(- 1,-1):
+				pass
+				if World.block_element_array[j*World.world_size + i] > 3:
+				#if get_cell_atlas_coords(0, Vector2i(i, j)) == Vector2i(0,0):
+					pass
+					if c < 800:
+						var nl = Life.build_life("grass")
+						if nl:
+							nl.global_position = Vector2i(i, j) * World.tile_size
+							c = c + 1
+		
+				
+			
+
 func build_world():
 	#iland center: [(47,120),(140,140)
 	#island size: 
@@ -42,6 +60,7 @@ func build_world():
 	update_ALL_tilemap_tile_to_new_soil_value()
 	draw_navigation()
 
+
 func draw_round_island(x,y,radius,energy):
 	x=  x-radius
 	y=  y-radius
@@ -50,12 +69,12 @@ func draw_round_island(x,y,radius,energy):
 	for w in range(0,radius*2+1):
 		for h in range(0,radius*2+1):
 			#if World.block_element_state[(x+w)*World.world_size +y+h ] == -1 :
-			if get_cell_atlas_coords(0, Vector2i(x+w, y+h)) != Vector2i(0, 0):
+			if get_cell_atlas_coords(0, Vector2i(x+w, y+h)) != Vector2i(3, 0):
 				var distance = center.distance_to(Vector2(w, h))
 				if distance < radius :
 						World.block_element_state[(y+h)*World.world_size +x+w ]= 1
 						World.block_element_array[(y+h)*World.world_size +x+w  ]= energy#randomlist[randi_range(0,5)]*energy
-						set_cell(0, Vector2i(x+w, y+h), 0, Vector2i(0, 0))
+						set_cell(0, Vector2i(x+w, y+h), 0, Vector2i(3, 0))
 				if Vector2(w, h).distance_to(center) >= radius and Vector2(w, h).distance_to(center) < radius +2:
 						World.block_element_state[(y+h)*World.world_size +x+w ]= 0
 						if center.distance_to(Vector2(w, h-1))< radius:
@@ -115,7 +134,6 @@ func set_tile_according_to_soil_value(coord: Vector2i):
 	elif World.block_element_array[posindex] <= 4 and World.block_element_array[posindex] > 2 :
 		set_cell(layer, coord, 0, Vector2i(1,0))
 	elif World.block_element_array[posindex] > 4 :
-
 		set_cell(layer, coord, 0, Vector2i(0,0))
 
 func draw_new_tiles_according_to_soil_value(layer, cells):

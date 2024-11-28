@@ -195,3 +195,12 @@ func _on_line_edit_energy_text_submitted(new_text):
 func _on_line_edit_age_text_submitted(new_text):
 	age_selected = int(new_text)
 	$Panel/Alife_Debug/Option/Spawner/age_select/LineEdit_age.release_focus()  # Replace with function body.
+
+
+func _on_check_box_hitbox_toggled(toggled_on):
+	if toggled_on:
+		Life.player.set_collision_mask_value(2,false)
+		print("hitbox desactivated")
+	else:
+		Life.player.set_collision_mask_value(2,true)
+		print("hitbox activated")

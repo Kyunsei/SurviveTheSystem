@@ -83,6 +83,7 @@ func InitNewGame():
 	#print("new: " + str(ss-s) + "ms")
 	UpdateSimulationSpeed()
 	
+	$World_TileMap.instantiate_the_tiles_function()
 
 	
 	'for i in range(10):
