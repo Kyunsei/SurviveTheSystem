@@ -55,7 +55,7 @@ offset_top = 584.0
 offset_right = 734.0
 offset_bottom = 602.896
 theme_override_font_sizes/font_size = 30
-text = "quit"
+text = "Quit"
 
 [connection signal="pressed" from="Button_menu" to="." method="_on_button_menu_pressed"]
 [connection signal="pressed" from="Button_quit" to="." method="_on_button_quit_pressed"]

@@ -19,6 +19,7 @@ func _ready():
 	match end_type:
 		ending.BAD:
 			$Label_endType.text = "BAD ENDING =("
+			$Label_endType.set("theme_override_colors/font_color", Color(1, 0, 0))
 		ending.GOOD:
 			$Label_endType.text = "GOOD ENDING =)"
 

@@ -13,6 +13,7 @@ func _ready():
 	if Life.life_number[species] <= 0:
 		$Label.text =  "EXCTINCT"
 		get_parent().get_parent().end_type = get_parent().get_parent().ending.BAD
+		$Label.set("theme_override_colors/font_color", Color(1, 0, 0))
 	else:
 		$Label.text =  str(Life.life_number[species]) + " / " + str(Life.pool_scene[species].size())
 
