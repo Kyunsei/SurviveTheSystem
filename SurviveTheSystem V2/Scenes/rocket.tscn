@@ -34,6 +34,7 @@ offset_right = 295.0
 offset_bottom = -57.0
 
 [node name="Button_YES" type="Button" parent="Control"]
+layout_mode = 0
 offset_left = -97.0
 offset_top = 37.0
 offset_right = -61.0
@@ -41,6 +42,7 @@ offset_bottom = 68.0
 text = "YES"
 
 [node name="Button_NO" type="Button" parent="Control"]
+layout_mode = 0
 offset_left = 92.0
 offset_top = 34.0
 offset_right = 126.0

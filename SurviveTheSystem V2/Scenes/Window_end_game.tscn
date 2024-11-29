@@ -1,0 +1,60 @@
+[gd_scene load_steps=2 format=3 uid="uid://mnuq5n7sap8y"]
+
+[ext_resource type="Script" path="res://EndGame.gd" id="1_0nibf"]
+
+[node name="EndGame" type="CanvasLayer"]
+script = ExtResource("1_0nibf")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0196078, 0.12549, 0.188235, 1)
+
+[node name="Label" type="Label" parent="."]
+offset_left = 711.0
+offset_top = 58.0
+offset_right = 1064.0
+offset_bottom = 113.0
+theme_override_font_sizes/font_size = 40
+text = "You Escaped Alive!"
+
+[node name="Label_endType" type="Label" parent="."]
+offset_left = 121.0
+offset_top = 376.0
+offset_right = 474.0
+offset_bottom = 431.0
+theme_override_font_sizes/font_size = 40
+text = "GOOD ENDING"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchors_preset = -1
+anchor_right = 0.035
+anchor_bottom = 0.062
+offset_left = 709.0
+offset_top = 148.0
+offset_right = 1024.68
+offset_bottom = 526.824
+
+[node name="Button_menu" type="Button" parent="."]
+offset_left = 327.0
+offset_top = 586.0
+offset_right = 534.0
+offset_bottom = 636.0
+theme_override_font_sizes/font_size = 30
+text = "Back to menu"
+
+[node name="Button_quit" type="Button" parent="."]
+anchors_preset = -1
+anchor_bottom = 0.048
+offset_left = 668.0
+offset_top = 584.0
+offset_right = 734.0
+offset_bottom = 602.896
+theme_override_font_sizes/font_size = 30
+text = "quit"
+
+[connection signal="pressed" from="Button_menu" to="." method="_on_button_menu_pressed"]
+[connection signal="pressed" from="Button_quit" to="." method="_on_button_quit_pressed"]

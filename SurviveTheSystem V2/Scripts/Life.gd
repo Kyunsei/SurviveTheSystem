@@ -73,6 +73,7 @@ var life_number = {
 	"sheep": 0,
 	"jellybee": 0,
 	"berry": 0
+	#"stingtree":0
 }
 
 var pool_state = {
