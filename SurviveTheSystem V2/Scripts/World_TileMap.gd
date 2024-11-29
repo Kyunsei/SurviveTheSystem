@@ -14,7 +14,7 @@ func instantiate_the_tiles_function():
 				if World.block_element_array[j*World.world_size + i] > 3:
 				#if get_cell_atlas_coords(0, Vector2i(i, j)) == Vector2i(0,0):
 					pass
-					if c < 800:
+					if c < 80:
 						var nl = Life.build_life("grass")
 						if nl:
 							nl.global_position = Vector2i(i, j) * World.tile_size

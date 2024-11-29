@@ -2,14 +2,25 @@ extends CanvasLayer
 
 var life_stat = load("res://Scenes/life_stat_end.tscn")
 
+var end_type : ending = ending.GOOD
+
+enum ending {
+	GOOD,
+	BAD
+}
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	for l in Life.life_scene:
+	for l in Life.life_number:
 		var ls = life_stat.instantiate()
 		ls.species = l
 		$VBoxContainer.add_child((ls))
-		print(l)
 		
+	match end_type:
+		ending.BAD:
+			$Label_endType.text = "BAD ENDING =("
+		ending.GOOD:
+			$Label_endType.text = "GOOD ENDING =)"
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

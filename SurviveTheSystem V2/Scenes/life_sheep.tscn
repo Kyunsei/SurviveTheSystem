@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://dfy55q0tpbtav"]
+[gd_scene load_steps=10 format=3 uid="uid://dfy55q0tpbtav"]
 
 [ext_resource type="Script" path="res://Scripts/Life_sheep.gd" id="1_ftmai"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/brainy.gd" id="2_7k25x"]
+[ext_resource type="Texture2D" uid="uid://ba3ghrf00sjvg" path="res://Art/sheep1.png" id="2_boq77"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="3_hk7l5"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="4_8o44k"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="5_feg8t"]
@@ -36,6 +37,7 @@ collision_mask = 0
 shape = SubResource("CapsuleShape2D_ld3jv")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
+texture = ExtResource("2_boq77")
 centered = false
 
 [node name="Sprite_1" type="Sprite2D" parent="."]

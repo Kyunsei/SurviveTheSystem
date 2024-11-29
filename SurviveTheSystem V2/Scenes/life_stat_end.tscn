@@ -3,7 +3,8 @@
 [ext_resource type="Script" path="res://Scenes/life_stat_end.gd" id="1_f3nx4"]
 [ext_resource type="Texture2D" uid="uid://dpd222h8h31km" path="res://Art/berry_1.png" id="2_mrb7w"]
 
-[node name="LifeStat_END" type="ColorRect"]
+[node name="LifeStat_END" type="Control"]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -14,23 +15,22 @@ grow_vertical = 2
 script = ExtResource("1_f3nx4")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-1, 14.5)
+position = Vector2(40, 31)
 texture = ExtResource("2_mrb7w")
-centered = false
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
 layout_mode = 2
-offset_left = 52.0
-offset_top = 22.5
-offset_right = 194.0
-offset_bottom = 42.5
+offset_left = 122.0
+offset_top = 23.0
+offset_right = 264.0
+offset_bottom = 43.0
 value = 100.0
 show_percentage = false
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 2
-offset_left = 206.0
-offset_top = 21.5
-offset_right = 242.0
-offset_bottom = 44.5
+offset_left = 276.0
+offset_top = 22.0
+offset_right = 312.0
+offset_bottom = 45.0
 text = "TEST"

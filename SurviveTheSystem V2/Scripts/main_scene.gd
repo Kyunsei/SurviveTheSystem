@@ -49,7 +49,7 @@ func _process(delta):
 
 	
 		#20 days
-		if World.day == 20 and gameover == false:
+		if World.day == 0 and gameover == false:
 			if Life.player.isActive == true:
 				var rocket = rocket_scene.instantiate()
 				rocket.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
