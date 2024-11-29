@@ -155,11 +155,11 @@ func _physics_process(delta):
 		var c = 0
 		for i in item_array:
 			if i.species == "spidercrab_leg" or i.species == "spidercrab_claw":
-				i.position =  last_dir * Vector2(32+i.size.x/2, 32 + i.size.x/2) + (position + Vector2(16,-32))
-				i.rotation =  (last_dir.angle())
+				i.position =  position + Vector2(16,-16)+ last_dir*Vector2(64,64)
+				#i.rotation =  (last_dir.angle())
 			else: 
 				c += 1
-				i.position =  last_dir * i.size * Vector2(1,1)  +position
+				i.position =  last_dir * i.size * Vector2(1,1)  +position + Vector2(16,-16)
 	
 func _input(event):
 	if isPlayer:
