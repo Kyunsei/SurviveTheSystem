@@ -41,7 +41,7 @@ text = "A Slime !"
 
 [node name="Sprite2D" type="Sprite2D" parent="Button_char_3"]
 position = Vector2(134, -38)
-scale = Vector2(4, 4)
+scale = Vector2(2, 2)
 texture = ExtResource("4_xtf5w")
 
 [node name="Button_start" type="Button" parent="."]

@@ -67,7 +67,7 @@ func Build_Phenotype():
 		$Sprite_0.texture = Genome["planty_sprite"][0] #TEMPORAIRE
 	if Life.char_selected == "slime":
 		$Sprite_0.texture = Genome["slime_sprite"][0] #TEMPORAIRE
-		$Sprite_0.scale = Vector2(4,4)
+		$Sprite_0.scale = Vector2(1,1)
 		
 	#$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
 	#$Sprite_0.offset.x = -$Sprite_0.texture.get_width()/4
@@ -161,7 +161,7 @@ func _physics_process(delta):
 				i.rotation =  (last_dir.angle())
 			else: 
 				c += 1
-				i.position =  last_dir * $Sprite_0.texture.get_size() * Vector2(1,1)  + (position + $Sprite_0.texture.get_size()/4* Vector2(1,-1))
+				i.position =  last_dir * $Sprite_0.texture.get_size() * Vector2(1,1)/2  + (position + $Sprite_0.texture.get_size()/4* Vector2(1,-1))
 	
 func _input(event):
 	if isPlayer:
