@@ -31,6 +31,7 @@ func SetUp_GameOver_Screen():
 		Life.player.deathtype.HUNGER:
 			$Label.text = $Label.text + "\n You starved to death"
 			GameSystem.achievement_dic["hunger_death"] = 1
+	GameSystem.Save_achievement()
 	#$Button.text = "Continue to Survive"
 	#$Label.text = "Number of grass alive : "+str(Life.plant_number) +"\nNumber of crab-spider alive : " +str(Life.spidercrab_number)+ "\nNumber of sheep alive : "+str(Life.sheep_number) +"\nNumber of berry bush alive : " +str(Life.berry_number)+"\nNumber of Player alive : " +str(Life.player_number)
 # Called every frame. 'delta' is the elapsed time since the previous frame.
