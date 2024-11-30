@@ -74,8 +74,8 @@ var life_number = {
 	"sc_boss": 0,
 	"sheep": 0,
 	"jellybee": 0,
-	"berry": 0
-	#"stingtree":0
+	"berry": 0,
+	"stingtree":0
 }
 
 var pool_state = {
@@ -86,7 +86,8 @@ var pool_state = {
 	"sc_boss":[],
 	"sheep": [],
 	"jellybee": [],
-	"berry": []
+	"berry": [],
+	"stingtree":[]
 }
 
 var pool_scene = {
@@ -98,7 +99,8 @@ var pool_scene = {
 	"sc_boss":[],
 	"sheep": [],
 	"jellybee": [],
-	"berry": []
+	"berry": [],
+	"stingtree":[]
 }
 
 
@@ -132,9 +134,9 @@ func Init_life_pool(folder):
 
 	Life.Instantiate_emptyLife_pool(folder, 850, "spiky_grass")
 	Life.Instantiate_emptyLife_pool(folder, 100, "sheep")
-	Life.Instantiate_emptyLife_pool(folder, 30, "berry")
+	Life.Instantiate_emptyLife_pool(folder, 100, "berry")
 	Life.Instantiate_emptyLife_pool(folder, 3, "cat")
-	#Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
+	Life.Instantiate_emptyLife_pool(folder, 100, "stingtree")
 	Life.Instantiate_emptyLife_pool(folder, 10, "spidercrab")
 	Life.Instantiate_emptyLife_pool(folder, 2, "sc_boss")
 	Life.Instantiate_emptyLife_pool(folder, 30, "jellybee")
@@ -277,13 +279,14 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 			Life.spidercrab_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))'
 
 
-func build_life(ID):
+func build_life(ID, newposition: Vector2 = Vector2(0,0)):
 	var life: LifeEntity
 	var li = pool_state[ID].find(0)
 	if li != -1:
 			life = Life.pool_scene[ID][li]
 			life.pool_index = li
 			life.Activate()
+			life.position = newposition
 	return life
 
 

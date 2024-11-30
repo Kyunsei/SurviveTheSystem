@@ -6,20 +6,40 @@ var c = 0
 var color_list = [Color.DARK_RED,Color.CADET_BLUE,Color.YELLOW_GREEN,Color.BEIGE]
 
 func instantiate_the_tiles_function():
-	var c = 0
-	for i in range(World.world_size):
-		for j in range(World.world_size):
-			if get_cell_atlas_coords(0, Vector2i(i, j)) != Vector2i(- 1,-1):
-				pass
-				if World.block_element_array[j*World.world_size + i] > 3:
-				#if get_cell_atlas_coords(0, Vector2i(i, j)) == Vector2i(0,0):
-					pass
-					if c < 80:
-						var nl = Life.build_life("grass")
-						if nl:
-							nl.global_position = Vector2i(i, j) * World.tile_size
-							c = c + 1
-		
+	var tiles = get_used_cells_by_id(0, 0, Vector2i(0, 0))
+	for t in tiles:
+		World.block_element_array[t.y*World.world_size + t.x] = 20
+		World.block_element_state[t.y*World.world_size + t.x] = 1
+					
+	tiles = get_used_cells_by_id(0, 0, Vector2i(3, 0))
+	for t in tiles:
+		World.block_element_array[t.y*World.world_size + t.x] = 0
+		World.block_element_state[t.y*World.world_size + t.x] = 1
+
+	
+	tiles = get_used_cells_by_id(1, 1, Vector2i(1, 1)) #grass
+	for t in tiles:
+		var nl = Life.build_life("grass", t* World.tile_size)
+	tiles = get_used_cells_by_id(1, 1, Vector2i(1, 0)) #sheep
+	for t in tiles:
+		var nl = Life.build_life("sheep", t* World.tile_size)
+	tiles = get_used_cells_by_id(1, 1, Vector2i(2, 0)) #berry
+	for t in tiles:
+		var nl = Life.build_life("berry", t* World.tile_size)
+	tiles = get_used_cells_by_id(1, 1, Vector2i(3, 0)) #jelly
+	for t in tiles:
+		var nl = Life.build_life("jellybee", t* World.tile_size)
+	tiles = get_used_cells_by_id(1, 1, Vector2i(4, 0))
+	for t in tiles:
+		var nl = Life.build_life("stingtree", t* World.tile_size)
+	tiles = get_used_cells_by_id(1, 1, Vector2i(2, 1))
+	for t in tiles:
+		var nl = Life.build_life("spiky_grass", t* World.tile_size)
+		tiles = get_used_cells_by_id(1, 1, Vector2i(3, 1))
+	for t in tiles:
+		var nl = Life.build_life("spidercrab", t* World.tile_size)
+	set_layer_enabled ( 1, false )	
+
 				
 			
 

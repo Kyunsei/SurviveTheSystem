@@ -156,19 +156,17 @@ func LifeDuplicate():
 			#+ Life.grass_pool_state.size()*0.05
 			var number = randi_range(30,40)
 			for i in range(0,number):
-				var li = Life.stingtree_pool_state.find(0)	
-				if li > -1 and Life.stingtree_number  < Life.stingtree_pool_state.size():
+				var li = Life.build_life("stingtree")	
+				if li :
 					
 					hasFruit = true
 
-					Life.stingtree_pool_scene[li].Activate()
-					Life.stingtree_pool_scene[li].energy = 1
-					Life.stingtree_pool_scene[li].age = 0
-					Life.stingtree_pool_scene[li].current_life_cycle = 0
-					Life.stingtree_pool_scene[li].PV = Genome["maxPV"][0]
-
-					Life.stingtree_number += 1
-					Life.stingtree_pool_scene[li].start_as_fruit(self)
+					li.Activate()
+					li.energy = 1
+					li.age = 0
+					li.current_life_cycle = 0
+					li.PV = Genome["maxPV"][0]
+					li.start_as_fruit(self)
 					#Life.stingtree_pool_scene[li].global_position = PickRandomPlaceWithRange(position,8 * World.tile_size)
 					
 
@@ -226,7 +224,8 @@ func fall():
 
 func Activate():
 	self.isActive = true
-	Life.stingtree_pool_state[self.pool_index] = 1
+	Life.pool_state[species][pool_index] = 0
+	Life.life_number[species] -= 1
 	Build_Stat()
 	set_collision_layer_value(1,1)
 	$Vision.set_collision_mask_value(1,true)
@@ -245,9 +244,8 @@ func Deactivate():
 	set_collision_layer_value(1,0)
 	$Vision.set_collision_mask_value(1,false)
 	self.isActive = false
-	Life.stingtree_pool_state[self.pool_index] = 0
-	#Life.inactive_grass.append(self)
-	Life.stingtree_number -= 1
+	Life.pool_state[species][pool_index] = 0
+	Life.life_number[species] -= 1
 
 
 	#prepare for new instance

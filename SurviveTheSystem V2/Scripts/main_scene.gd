@@ -79,15 +79,17 @@ func InitNewGame():
 	World.Init_World($Blocks)
 
 	#FUTURE PROCEDURAL FUNCTIOM
-	$World_TileMap.build_world()
-	Life.Build_life_in_World()
+	$World_TileMap.instantiate_the_tiles_function()
+	
+	#$World_TileMap.build_world()
+	#Life.Build_life_in_World()
 		
 	#var s = Time.get_ticks_msec()
 	#var ss = Time.get_ticks_msec()
 	#print("new: " + str(ss-s) + "ms")
 	UpdateSimulationSpeed()
 	
-	$World_TileMap.instantiate_the_tiles_function()
+
 
 	
 	'for i in range(10):
@@ -120,17 +122,25 @@ func InitNewGame():
 
 
 	if Life.char_selected != "scoobyDoo":
-		Life.player = Life.pool_scene['cat'][0] #TEMPORAIRE
-		Life.player.isPlayer = true #HERE
+		var pl = Life.build_life("cat")
+		if pl:
+			Life.player = pl
+		else:
+			Life.player = Life.pool_scene['cat'][0]
 	else:
-		Life.player = Life.pool_scene['sheep'][0]
-		Life.player.age = 0
-		Life.player.isPlayer = true 
+		var pl = Life.build_life("sheep")
+		if pl:
+			Life.player = pl
+		else:
+			Life.player = Life.pool_scene['sheep'][0]
+			
+	Life.player.age = 0
+	Life.player.isPlayer = true 
 	Life.player.get_node("Camera2D").enabled = true
 	
 
 	#player.get_node("Camera2D").enabled = true 
-	Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+	Life.player.global_position = Vector2(100*World.tile_size,100*World.tile_size) #Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	var playerworldpos = World.getWorldPos(Life.player.global_position)
 	#World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,1)
 	#World.InstantiateALLBlock($Blocks)
