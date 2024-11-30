@@ -1,7 +1,7 @@
 extends LifeEntity
 
 var species = "sc_boss"
-
+var target :LifeEntity
 
 var vision_array = {
 	"food": [],
@@ -15,6 +15,22 @@ var input_dir = Vector2.ZERO
 var last_dir = Vector2.ZERO
 var rotation_dir = 0
 
+func Activate():
+	print("Im a mean boss and I activated just now")
+	set_physics_process(true)
+	self.isActive = true
+	self.isDead = false
+	Life.pool_state[species][pool_index] = 1
+	Life.life_number[species] += 1
+	$Collision_front.disabled = false
+	$Collision_front.show()
+	$Collision_back.disabled = false
+	$Collision_back.show()
+	#$Brainy.Activate()
+	Build_Stat()
+	show()
+	
+	set_collision_layer_value(1,true)
 
 func Build_Stat():
 	self.current_life_cycle = 0
@@ -23,12 +39,21 @@ func Build_Stat():
 	self.maxPV = 60#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
 	self.age= 0
+	self.size = $Sprite_mainbody.texture.get_size()
 
 
 
 func _physics_process(delta):
 	if isPlayer and isDead == false:
 		input_dir = Player_Control_movement()
+
+	if target :
+		var direction = target.getCenterPos() - self.position
+		if direction.length()<500 and direction.length()>128:
+			self.velocity = direction.normalized()*maxSpeed
+			rotation = velocity.angle()
+		else :
+			self.velocity = Vector2()
 
 	move_and_collide(velocity *delta)
 	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
@@ -79,28 +104,12 @@ func _on_timer_timeout():
 func Die():
 	self.isDead = true
 	velocity = Vector2(0,0)
+	$Brainy.Deactivate()
 	$Sprite_mainbody.hide()
 	
 
 	
 	
-func Activate():
-	print("Im a mean boss and I activated just now")
-	set_physics_process(true)
-	self.isActive = true
-	self.isDead = false
-	Life.pool_state[species][pool_index] = 1
-	Life.life_number[species] += 1
-	$Collision_front.disabled = false
-	$Collision_front.show()
-	$Collision_back.disabled = false
-	$Collision_back.show()
-	Build_Stat()
-	show()
-	
-	set_collision_layer_value(1,true)
-
-
 
 func Deactivate():	
 	set_physics_process(false)
@@ -109,7 +118,9 @@ func Deactivate():
 	self.isActive = false
 	Life.pool_state[species][pool_index] = 0
 	Life.life_number[species] -= 1
+
 	hide()
+	
 
 func Eat(life):
 	self.energy += life.energy
@@ -117,3 +128,9 @@ func Eat(life):
 	life.Die()
 	life.cause_of_death = deathtype.EATEN
 
+
+
+
+func _on_vision_body_entered(body):
+	if body.species == "catronaute" :
+		target = body

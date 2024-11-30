@@ -1,18 +1,23 @@
-[gd_scene load_steps=11 format=3 uid="uid://dbrkbo21hsu0x"]
+[gd_scene load_steps=17 format=3 uid="uid://dbrkbo21hsu0x"]
 
 [ext_resource type="Script" path="res://Scripts/spidercrab_boss_prototype.gd" id="1_cooma"]
-[ext_resource type="Texture2D" uid="uid://lbbsg1obmej1" path="res://Art/Spider_down_1.png" id="1_xj375"]
 [ext_resource type="Texture2D" uid="uid://d4ken0m8v5kmw" path="res://Art/crab_claw.png" id="2_5i7c0"]
+[ext_resource type="Texture2D" uid="uid://c0l0p4s6l782" path="res://Art/Spider_right_1.png" id="2_fdibr"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/brainy.gd" id="4_isbqm"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="5_x8eas"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="6_0qxhs"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/dash.gd" id="7_dj0sa"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="8_0uwn0"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_mvdwf"]
-size = Vector2(32, 24)
+size = Vector2(96, 128)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1n314"]
-size = Vector2(28, 8)
+size = Vector2(32, 112)
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vavt8"]
-radius = 30.0
-height = 115.0
+radius = 240.0
+height = 750.0
 
 [sub_resource type="Animation" id="Animation_70fai"]
 length = 0.001
@@ -26,7 +31,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(-12, 0)]
+"values": [Vector2(96, 64)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -38,7 +43,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [0.0]
+"values": [-1.5708]
 }
 
 [sub_resource type="Animation" id="Animation_iptgu"]
@@ -54,7 +59,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.2),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(-12, 0), Vector2(-12, 20)]
+"values": [Vector2(0, 12), Vector2(24, 8)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -66,7 +71,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.2),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [0.0, -0.698132]
+"values": [-1.5708, -2.79253]
 }
 
 [sub_resource type="Animation" id="Animation_badhj"]
@@ -104,33 +109,38 @@ _data = {
 "reset": SubResource("Animation_badhj")
 }
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_acp5y"]
+radius = 126.306
+
 [node name="spidercrab_boss_prototype" type="CharacterBody2D"]
-scale = Vector2(4, 4)
+position = Vector2(0, -64)
 collision_mask = 2
 script = ExtResource("1_cooma")
 
 [node name="Sprite_mainbody" type="Sprite2D" parent="."]
-texture = ExtResource("1_xj375")
+texture = ExtResource("2_fdibr")
+centered = false
+offset = Vector2(-64, -64)
 
 [node name="Collision_front" type="CollisionShape2D" parent="."]
-position = Vector2(0, 4)
+position = Vector2(16, 0)
 shape = SubResource("RectangleShape2D_mvdwf")
 
 [node name="Collision_back" type="CollisionShape2D" parent="."]
-position = Vector2(0, -12)
+position = Vector2(-48, 2)
 shape = SubResource("RectangleShape2D_1n314")
 
 [node name="claw" type="Area2D" parent="."]
-position = Vector2(-12, 0)
-scale = Vector2(2, 2)
+position = Vector2(96, 64)
+rotation = -1.5708
 
 [node name="Sprite_claw" type="Sprite2D" parent="claw"]
-position = Vector2(-4, 11)
-scale = Vector2(0.2, 0.2)
+position = Vector2(-14, -6)
+scale = Vector2(1.5, 1.5)
 texture = ExtResource("2_5i7c0")
 
 [node name="Collision_claw" type="CollisionShape2D" parent="claw"]
-position = Vector2(-4, 11)
+position = Vector2(-15, 17)
 scale = Vector2(0.2, 0.2)
 shape = SubResource("CapsuleShape2D_vavt8")
 
@@ -138,3 +148,39 @@ shape = SubResource("CapsuleShape2D_vavt8")
 libraries = {
 "": SubResource("AnimationLibrary_vqo64")
 }
+
+[node name="DebugLabel" type="Label" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Brainy" type="Node2D" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("4_isbqm")
+initial_state = NodePath("getcloser_state")
+
+[node name="getcloser_state" type="Node" parent="Brainy"]
+script = ExtResource("5_x8eas")
+minimun_distance = 320
+maximun_distance = 500
+next_state = "dash_state"
+
+[node name="avoid_state" type="Node" parent="Brainy"]
+script = ExtResource("6_0qxhs")
+idle_type_state = "idle_spidercrab_state"
+
+[node name="dash_state" type="Node" parent="Brainy"]
+script = ExtResource("7_dj0sa")
+
+[node name="idle_state" type="Node" parent="Brainy"]
+script = ExtResource("8_0uwn0")
+
+[node name="Vision" type="Area2D" parent="."]
+visible = false
+
+[node name="Collision" type="CollisionShape2D" parent="Vision"]
+shape = SubResource("CircleShape2D_acp5y")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
+[connection signal="tree_entered" from="Vision/Collision" to="." method="_on_collision_tree_entered"]
