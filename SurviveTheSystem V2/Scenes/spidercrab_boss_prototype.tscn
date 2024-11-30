@@ -1,0 +1,140 @@
+[gd_scene load_steps=11 format=3 uid="uid://dbrkbo21hsu0x"]
+
+[ext_resource type="Script" path="res://Scripts/spidercrab_boss_prototype.gd" id="1_cooma"]
+[ext_resource type="Texture2D" uid="uid://lbbsg1obmej1" path="res://Art/Spider_down_1.png" id="1_xj375"]
+[ext_resource type="Texture2D" uid="uid://d4ken0m8v5kmw" path="res://Art/crab_claw.png" id="2_5i7c0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mvdwf"]
+size = Vector2(32, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1n314"]
+size = Vector2(28, 8)
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vavt8"]
+radius = 30.0
+height = 115.0
+
+[sub_resource type="Animation" id="Animation_70fai"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-12, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_iptgu"]
+resource_name = "heavy_attack"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-12, 0), Vector2(-12, 20)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -0.698132]
+}
+
+[sub_resource type="Animation" id="Animation_badhj"]
+resource_name = "reset"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-12, 20), Vector2(-8, 11)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [-0.698132, -0.698132]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vqo64"]
+_data = {
+"RESET": SubResource("Animation_70fai"),
+"heavy_attack": SubResource("Animation_iptgu"),
+"reset": SubResource("Animation_badhj")
+}
+
+[node name="spidercrab_boss_prototype" type="CharacterBody2D"]
+scale = Vector2(4, 4)
+collision_mask = 2
+script = ExtResource("1_cooma")
+
+[node name="Sprite_mainbody" type="Sprite2D" parent="."]
+texture = ExtResource("1_xj375")
+
+[node name="Collision_front" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4)
+shape = SubResource("RectangleShape2D_mvdwf")
+
+[node name="Collision_back" type="CollisionShape2D" parent="."]
+position = Vector2(0, -12)
+shape = SubResource("RectangleShape2D_1n314")
+
+[node name="claw" type="Area2D" parent="."]
+position = Vector2(-12, 0)
+scale = Vector2(2, 2)
+
+[node name="Sprite_claw" type="Sprite2D" parent="claw"]
+position = Vector2(-4, 11)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_5i7c0")
+
+[node name="Collision_claw" type="CollisionShape2D" parent="claw"]
+position = Vector2(-4, 11)
+scale = Vector2(0.2, 0.2)
+shape = SubResource("CapsuleShape2D_vavt8")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="claw"]
+libraries = {
+"": SubResource("AnimationLibrary_vqo64")
+}

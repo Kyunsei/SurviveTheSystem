@@ -62,6 +62,7 @@ var life_scene = {
 	'cat' : load("res://Scenes/life_cat.tscn"),
 	'stingtree' : load("res://Scenes/life_stingtree.tscn"),
 	'spidercrab' : load("res://Scenes/life_spidercrab.tscn"),
+	'sc_boss' : load("res://Scenes/spidercrab_boss_prototype.tscn"),
 	'jellybee' : load("res://Scenes/life_jellybee.tscn")
 }
 
@@ -70,6 +71,7 @@ var life_number = {
 	"grass": 0,
 	"spiky_grass":0,
 	"spidercrab": 0,
+	"sc_boss": 0,
 	"sheep": 0,
 	"jellybee": 0,
 	"berry": 0
@@ -81,6 +83,7 @@ var pool_state = {
 	"grass": [],
 	"spiky_grass": [],
 	"spidercrab": [],
+	"sc_boss":[],
 	"sheep": [],
 	"jellybee": [],
 	"berry": []
@@ -88,11 +91,11 @@ var pool_state = {
 
 var pool_scene = {
 	"cat" : [],
-	"tree_character" : [],
 	"slime" : [],
 	"grass": [],
 	"spiky_grass": [],
 	"spidercrab": [],
+	"sc_boss":[],
 	"sheep": [],
 	"jellybee": [],
 	"berry": []
@@ -115,33 +118,8 @@ func Calculate_score():
 
 
 func Init_life_pool(folder):
-	'cat_pool_scene = []
-	cat_pool_state = []
 
-	grass_pool_scene = []
-	grass_pool_state = []
-	
-	spiky_grass_pool_scene = []
-	spiky_grass_pool_state = []
 
-	sheep_pool_scene = []
-	sheep_pool_state = []
-
-	berry_pool_scene = []
-	berry_pool_state = []
-
-	stingtree_pool_state = []
-	stingtree_pool_scene = []
-
-	spidercrab_pool_state = []
-	spidercrab_pool_scene = []
-	
-	crab_leg_pool_state = []
-	crab_leg_pool_scene = []
-	
-	jellybee_pool_scene = []
-	jellybee_pool_state = []'
-	
 	for i in pool_scene:
 		pool_scene[i] = []
 	for i in pool_state:
@@ -158,6 +136,7 @@ func Init_life_pool(folder):
 	Life.Instantiate_emptyLife_pool(folder, 3, "cat")
 	#Life.Instantiate_emptyLife_pool($Life, 300, "stingtree")
 	Life.Instantiate_emptyLife_pool(folder, 10, "spidercrab")
+	Life.Instantiate_emptyLife_pool(folder, 2, "sc_boss")
 	Life.Instantiate_emptyLife_pool(folder, 30, "jellybee")
 	
 	

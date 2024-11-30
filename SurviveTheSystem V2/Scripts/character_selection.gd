@@ -16,7 +16,7 @@ func _process(delta):
 func _on_button_char_1_pressed():
 	print("text button 1 is pressed")
 	#Life.player_skin_ID = 0
-	if GameSystem.achievement_dic["hunger_death"] == 1 and GameSystem.achievement_dic["fall_death"] == 1 and GameSystem.achievement_dic["eat_death"] == 1 and GameSystem.achievement_dic["dammage_death"] == 1 and GameSystem.achievement_dic["age_death"] == 1:
+	if World.achievement_dic["hunger_death"] == 1 and World.achievement_dic["fall_death"] == 1 and World.achievement_dic["eat_death"] == 1 and World.achievement_dic["dammage_death"] == 1 and World.achievement_dic["age_death"] == 1:
 		Life.char_selected = "planty"
 	else:
 		$Button_char_1.text = "Locked. Die from 5 different cause to unlock"
