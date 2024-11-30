@@ -17,10 +17,11 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-World="*res://Scripts/World.gd"
-Life="*res://Scripts/Life.gd"
+World="*res://Scripts/Global/World.gd"
+Life="*res://Scripts/Global/Life.gd"
 Item="*res://Scripts/item.gd"
 Brain="*res://Scripts/brain.gd"
+GameSystem="*res://Scripts/Global/GameSystem.gd"
 
 [display]
 

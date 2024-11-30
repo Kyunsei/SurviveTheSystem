@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://d3aec6fgytj66"]
 
-[ext_resource type="Script" path="res://Scenes/life_stat_end.gd" id="1_f3nx4"]
+[ext_resource type="Script" path="res://Scripts/life_stat_end.gd" id="1_f3nx4"]
 [ext_resource type="Texture2D" uid="uid://dpd222h8h31km" path="res://Art/berry_1.png" id="2_mrb7w"]
 
 [node name="LifeStat_END" type="Control"]

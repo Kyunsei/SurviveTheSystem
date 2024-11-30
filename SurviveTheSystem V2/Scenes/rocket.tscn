@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://0gpovpik50vi"]
 
-[ext_resource type="Script" path="res://Scenes/rocket.gd" id="1_jtc8l"]
+[ext_resource type="Script" path="res://Scripts/rocket.gd" id="1_jtc8l"]
 [ext_resource type="Texture2D" uid="uid://cc7g1ertd6q6r" path="res://Art/rocket.png" id="2_d4wn4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bqmys"]

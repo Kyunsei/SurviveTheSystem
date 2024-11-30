@@ -3,7 +3,7 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	if World.achievement_dic["hunger_death"] == 1 and World.achievement_dic["fall_death"] == 1 and World.achievement_dic["eat_death"] == 1 and World.achievement_dic["dammage_death"] == 1 and World.achievement_dic["age_death"] == 1:
+	if GameSystem.achievement_dic["hunger_death"] == 1 and GameSystem.achievement_dic["fall_death"] == 1 and GameSystem.achievement_dic["eat_death"] == 1 and GameSystem.achievement_dic["dammage_death"] == 1 and GameSystem.achievement_dic["age_death"] == 1:
 			$Lock_label.hide()
 
 
