@@ -120,14 +120,11 @@ func draw_energy_patch(x,y,radius,energy):
 
 func update_ALL_tilemap_tile_to_new_soil_value():
 	var layer = 0
-	var cells = split_array_into_four(get_used_cells(layer))
-	update_tilemap_tile_array_to_new_soil_value(layer, cells[0])
-	await get_tree().create_timer(0.1).timeout
-	update_tilemap_tile_array_to_new_soil_value(layer, cells[1])
-	await get_tree().create_timer(0.1).timeout
-	update_tilemap_tile_array_to_new_soil_value(layer, cells[2])
-	await get_tree().create_timer(0.1).timeout
-	update_tilemap_tile_array_to_new_soil_value(layer, cells[3])
+	var cells = split_array_into_x(get_used_cells(layer),20)
+	for i in range(cells.size()):
+		update_tilemap_tile_array_to_new_soil_value(layer, cells[i])
+		await get_tree().create_timer(0.1).timeout
+
 
 
 func update_tilemap_tile_array_to_new_soil_value(layer, cells):
@@ -201,15 +198,16 @@ func draw_new_tiles_according_to_soil_value(layer, cells):
 
 
 		
-func split_array_into_four(arr):
+func split_array_into_x(arr,x):
 	var length = arr.size()
-	var split_size = ceil(length / 4.0)
+	var split_size = ceil(length / x)
+	var arr_final =[]
 	# Slice the array into four sub-arrays
-	var array_1 = arr.slice(0, split_size)
-	var array_2 = arr.slice(split_size, split_size*2)
-	var array_3 = arr.slice(split_size * 2 , split_size*3)
-	var array_4 = arr.slice(split_size * 3 , split_size*4)
-	return [array_1, array_2, array_3, array_4]
+	for i in range(x):
+		var array = arr.slice(split_size*i, split_size+split_size*i)
+		arr_final.append(array)
+
+	return arr_final
 
 
 
@@ -229,7 +227,7 @@ func draw_navigation():
 func _on_block_timer_timeout():
 	pass
 	World.BlockLoopGPU() 
-	update_ALL_tilemap_tile_to_new_soil_value()
+	'update_ALL_tilemap_tile_to_new_soil_value()'
 	
 	
 	

@@ -140,7 +140,7 @@ func InitNewGame():
 	
 
 	#player.get_node("Camera2D").enabled = true 
-	Life.player.global_position = Vector2(100*World.tile_size,100*World.tile_size) #Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+	Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	var playerworldpos = World.getWorldPos(Life.player.global_position)
 	#World.InstantiateBlockAroundPlayer2(playerworldpos.x,playerworldpos.y,$Blocks,1)
 	#World.InstantiateALLBlock($Blocks)
