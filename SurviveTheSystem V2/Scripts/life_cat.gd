@@ -57,6 +57,7 @@ func Build_Stat():
 	self.maxEnergy = 100
 	self.maxSpeed = 200
 	self.stamina = 100
+	self.lifespan = 300 
 	AdjustBar()
 	
 func Build_Phenotype(): 
@@ -257,14 +258,15 @@ func _on_timer_timeout():
 
 			Metabo_cost()
 
-			#Ageing()
+			Ageing()
+			print(age)
 			AdjustBar()
 
 
 			if self.energy <= 0:
 				cause_of_death = deathtype.HUNGER
 				Die()
-			if self.age >= Genome["lifespan"][self.current_life_cycle]:
+			if self.age >= lifespan:
 				cause_of_death = deathtype.AGE
 				Die()
 			if self.PV <=0:

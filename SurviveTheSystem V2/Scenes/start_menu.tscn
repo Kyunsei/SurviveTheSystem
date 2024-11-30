@@ -50,10 +50,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "play"
 
-[node name="Button5" type="Button" parent="Button_VBox"]
+[node name="AchievButton" type="Button" parent="Button_VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
-text = "DEBUG"
+text = "Achievment"
 
 [node name="Button_TEST" type="Button" parent="Button_VBox"]
 layout_mode = 2
@@ -82,6 +82,7 @@ theme_override_font_sizes/font_size = 25
 text = "Developped by Kyunsei and Bulbi"
 
 [node name="DebugLabel" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 offset_left = 39.0
 offset_top = 224.0
@@ -113,6 +114,7 @@ text = "Field of View: "
 horizontal_alignment = 2
 
 [node name="DebugValue" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 0
 offset_left = 198.0
 offset_top = 225.0
@@ -133,7 +135,7 @@ layout_mode = 2
 layout_mode = 2
 
 [connection signal="pressed" from="Button_VBox/PlayButton" to="." method="_on_play_button_pressed"]
-[connection signal="pressed" from="Button_VBox/Button5" to="." method="_on_button_5_pressed"]
+[connection signal="pressed" from="Button_VBox/AchievButton" to="." method="_on_achiev_button_pressed"]
 [connection signal="pressed" from="Button_VBox/Button_TEST" to="." method="_on_button_test_pressed"]
 [connection signal="pressed" from="Button_VBox/Button4" to="." method="_on_button_4_pressed"]
 [connection signal="text_changed" from="DebugValue/worldsize" to="." method="_on_worldsize_text_changed"]

@@ -85,6 +85,14 @@ offset_right = 1012.0
 offset_bottom = 449.0
 text = "Debug Mode"
 
+[node name="Lock_label" type="Label" parent="."]
+offset_left = 259.0
+offset_top = 179.0
+offset_right = 410.0
+offset_bottom = 202.0
+theme_override_font_sizes/font_size = 30
+text = "Locked"
+
 [connection signal="pressed" from="Button_char_1" to="." method="_on_button_char_1_pressed"]
 [connection signal="pressed" from="Button_char_2" to="." method="_on_button_char_2_pressed"]
 [connection signal="pressed" from="Button_char_3" to="." method="_on_button_char_3_pressed"]

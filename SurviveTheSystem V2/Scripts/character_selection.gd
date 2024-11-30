@@ -3,7 +3,9 @@ extends Node2D
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	if World.achievement_dic["hunger_death"] == 1 and World.achievement_dic["fall_death"] == 1 and World.achievement_dic["eat_death"] == 1 and World.achievement_dic["dammage_death"] == 1 and World.achievement_dic["age_death"] == 1:
+			$Lock_label.hide()
+
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -14,7 +16,10 @@ func _process(delta):
 func _on_button_char_1_pressed():
 	print("text button 1 is pressed")
 	#Life.player_skin_ID = 0
-	Life.char_selected = "planty"
+	if World.achievement_dic["hunger_death"] == 1 and World.achievement_dic["fall_death"] == 1 and World.achievement_dic["eat_death"] == 1 and World.achievement_dic["dammage_death"] == 1 and World.achievement_dic["age_death"] == 1:
+		Life.char_selected = "planty"
+	else:
+		$Button_char_1.text = "Locked. Die from 5 different cause to unlock"
 	pass # Replace with function body.
 
 

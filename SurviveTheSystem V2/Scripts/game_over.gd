@@ -9,7 +9,8 @@ var gameover_type
 func _ready():
 	if World.debug_mode:
 		$Button4.show()
-	
+
+
 
 func SetUp_GameOver_Screen():
 	print("call")
@@ -17,14 +18,19 @@ func SetUp_GameOver_Screen():
 	match Life.player.cause_of_death:
 		Life.player.deathtype.VOID:
 			$Label.text = $Label.text + "\n You felt into the void"
+			World.achievement_dic["fall_death"] = 1
 		Life.player.deathtype.AGE:
-			$Label.text = $Label.text + "\n Too old now"	
+			$Label.text = $Label.text + "\n Too old now"
+			World.achievement_dic["age_death"] = 1	
 		Life.player.deathtype.DAMMAGE:
 			$Label.text = $Label.text + "\n You got killed"
+			World.achievement_dic["dammage_death"] = 1			
 		Life.player.deathtype.EATEN:
 			$Label.text = $Label.text + "\n You got eaten"
+			World.achievement_dic["eat_death"] = 1
 		Life.player.deathtype.HUNGER:
 			$Label.text = $Label.text + "\n You starved to death"
+			World.achievement_dic["hunger_death"] = 1
 	#$Button.text = "Continue to Survive"
 	#$Label.text = "Number of grass alive : "+str(Life.plant_number) +"\nNumber of crab-spider alive : " +str(Life.spidercrab_number)+ "\nNumber of sheep alive : "+str(Life.sheep_number) +"\nNumber of berry bush alive : " +str(Life.berry_number)+"\nNumber of Player alive : " +str(Life.player_number)
 # Called every frame. 'delta' is the elapsed time since the previous frame.

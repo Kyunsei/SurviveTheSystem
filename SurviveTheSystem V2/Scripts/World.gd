@@ -55,6 +55,20 @@ var diffusion_block_limit = 2 #how many block energy move. #not implemented.
 
 var block_diffusion_par = []
 
+#add some value for saving . maybe not the best place
+var achievement_dic = {
+	"hunger_death": 0,
+	"age_death": 0,
+	"fall_death": 0,
+	"dammage_death": 0,
+	"eat_death": 0,
+}
+
+var char_unlock = {
+	"cat": 1,
+	"planty": 0
+}
+
 func Init_World(folder):
 	Init_matrix()
 	Init_shader()
