@@ -117,7 +117,7 @@ position = Vector2(0, -64)
 collision_mask = 2
 script = ExtResource("1_cooma")
 
-[node name="Sprite_mainbody" type="Sprite2D" parent="."]
+[node name="Sprite_0" type="Sprite2D" parent="."]
 texture = ExtResource("2_fdibr")
 centered = false
 offset = Vector2(-64, -64)

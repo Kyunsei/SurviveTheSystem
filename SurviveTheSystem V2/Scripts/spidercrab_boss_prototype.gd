@@ -39,7 +39,7 @@ func Build_Stat():
 	self.maxPV = 60#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
 	self.age= 0
-	self.size = $Sprite_mainbody.texture.get_size()
+	self.size = $Sprite_0.texture.get_size()
 
 
 
@@ -105,7 +105,7 @@ func Die():
 	self.isDead = true
 	velocity = Vector2(0,0)
 	$Brainy.Deactivate()
-	$Sprite_mainbody.hide()
+	$Sprite_0.hide()
 	
 
 	
