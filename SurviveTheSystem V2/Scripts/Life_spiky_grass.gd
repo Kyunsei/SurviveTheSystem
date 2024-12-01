@@ -228,7 +228,7 @@ func _on_vision_area_exited(area):
 		'$Sprite_0.modulate = Color(1, 1, 1)
 		$Sprite_1.modulate = Color(1, 1, 1)'
 
-func getDamaged(value):
+func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
 		self.PV -= value
 		if self.PV <= 0:

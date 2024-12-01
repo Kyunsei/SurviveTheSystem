@@ -1,7 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://e2vhj8gjm240"]
+[gd_scene load_steps=10 format=3 uid="uid://e2vhj8gjm240"]
 
 [ext_resource type="Script" path="res://Scripts/life_cat.gd" id="1_ur5ob"]
 [ext_resource type="Texture2D" uid="uid://cg8jna1y730qc" path="res://Art/player_cat.png" id="2_j3d6h"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_228d0"]
+radius = 18.0
+height = 58.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gm5t3"]
 
@@ -27,13 +31,18 @@ collision_layer = 0
 collision_mask = 2
 script = ExtResource("1_ur5ob")
 
+[node name="Area_damageable" type="Area2D" parent="." groups=["damageable"]]
+
+[node name="Collision_damageable" type="CollisionShape2D" parent="Area_damageable" groups=["damageable"]]
+position = Vector2(32, -30)
+shape = SubResource("CapsuleShape2D_228d0")
+
 [node name="Timer" type="Timer" parent="."]
 
 [node name="ActionTimer" type="Timer" parent="."]
 one_shot = true
 
 [node name="Vision" type="Area2D" parent="."]
-visible = false
 collision_layer = 0
 collision_mask = 0
 
@@ -90,6 +99,7 @@ collision_layer = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BareHand_attack"]
 position = Vector2(48, 0)
 shape = SubResource("RectangleShape2D_5qtdw")
+disabled = true
 
 [node name="sprite" type="ColorRect" parent="BareHand_attack/CollisionShape2D"]
 visible = false
@@ -137,6 +147,7 @@ range_layer_max = 4
 texture = SubResource("GradientTexture2D_ij8ey")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="area_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_area_entered"]
 [connection signal="body_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_entered"]
 [connection signal="body_exited" from="BareHand_attack" to="." method="_on_bare_hand_attack_body_exited"]
 [connection signal="timeout" from="BareHand_attack/ActionTimer" to="." method="_on_action_timer_timeout"]

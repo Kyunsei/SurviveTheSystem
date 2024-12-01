@@ -181,7 +181,7 @@ func _on_timer_timeout():
 			Deactivate()
 
 
-func getDamaged(value):
+func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
 		self.PV -= value
 		AdjustBar()

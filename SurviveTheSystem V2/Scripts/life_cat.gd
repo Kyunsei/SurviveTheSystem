@@ -276,7 +276,7 @@ func _on_timer_timeout():
 			Deactivate()
 
 
-func getDamaged(value):
+func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
 		self.PV -= value
 		AdjustBar()
@@ -436,6 +436,7 @@ func Eat_Action():
 
 
 func BareHand_attack():
+	$BareHand_attack/CollisionShape2D.disabled = false
 	$BareHand_attack/CollisionShape2D/sprite.show()
 	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
@@ -510,11 +511,13 @@ func Eat(life):
 		life.Die()
 	#$DebugLabel.text = str(age) + " " + str(energy)
 
+#Sacrebleu il faut changer toutes les entity pour leur donner des "damageable" group
 func _on_bare_hand_attack_body_entered(body):
-	if body != self:
+	if body != self and body.is_in_group("damageable") :
+		print("entered area groupe damafge")
 		if body.z_index == 0:
 			barehand_array.append(body)	
-
+#Sacrebleu il faut changer toutes les entity pour leur donner des "damageable" group
 
 func _on_bare_hand_attack_body_exited(body):
 	if body != self:
@@ -526,9 +529,16 @@ func _on_action_timer_timeout():
 	$BareHand_attack/CollisionShape2D/sprite.hide()
 	$BareHand_attack/CollisionShape2D/sprite2.hide()
 	#passive_healing()
+	$BareHand_attack/CollisionShape2D.disabled = true
 	action_finished = true
 
 
 func _on_regen_timer_timeout():
 	stamina_regeneration()
 	action_finished = true
+
+
+func _on_bare_hand_attack_area_entered(area):
+	if area.is_in_group("damageable"):
+		print("damageable area touched")
+		area.get_parent().getDamaged(10,self)
