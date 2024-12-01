@@ -66,10 +66,12 @@ func check_Food():
 		#var s = Time.get_ticks_msec()
 
 		var alive_array = life_entity.vision_array["food"].filter(func(obj): return obj.isDead == false)
+		
 		#var ss = Time.get_ticks_msec()
 		#print("filter: " + str(ss-s) + "ms")
 		if alive_array.size() > 0:
-			get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)	
+			get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
+			
 			'if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
 				get_parent().get_node("avoid_state").target =  alive_array[0]'
 			return true

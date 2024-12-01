@@ -16,28 +16,22 @@ func instantiate_the_tiles_function():
 		World.block_element_array[t.y*World.world_size + t.x] = 0
 		World.block_element_state[t.y*World.world_size + t.x] = 1
 
+	var temp = ["sheep","grass","berry","jellybee","spiky_grass","spidercrab","stingtree"]
+	for i in range(temp.size()):	
+		for lc in range(5):
+			tiles = get_used_cells_by_id(1, 3, Vector2i(lc, i))
+			for t in tiles: 
+				var nl = Life.build_life(temp[i], t* World.tile_size)
+				if nl:
+					nl.age = int(nl.lifespan*0.5) 
+					nl.energy = nl.maxEnergy
+					nl.current_life_cycle = max(0,lc-1)
+
+					#nl.Growth()
+
+		
+		
 	
-	tiles = get_used_cells_by_id(1, 1, Vector2i(1, 1)) #grass
-	for t in tiles:
-		var nl = Life.build_life("grass", t* World.tile_size)
-	tiles = get_used_cells_by_id(1, 1, Vector2i(1, 0)) #sheep
-	for t in tiles:
-		var nl = Life.build_life("sheep", t* World.tile_size)
-	tiles = get_used_cells_by_id(1, 1, Vector2i(2, 0)) #berry
-	for t in tiles:
-		var nl = Life.build_life("berry", t* World.tile_size)
-	tiles = get_used_cells_by_id(1, 1, Vector2i(3, 0)) #jelly
-	for t in tiles:
-		var nl = Life.build_life("jellybee", t* World.tile_size)
-	tiles = get_used_cells_by_id(1, 1, Vector2i(4, 0))
-	for t in tiles:
-		var nl = Life.build_life("stingtree", t* World.tile_size)
-	tiles = get_used_cells_by_id(1, 1, Vector2i(2, 1))
-	for t in tiles:
-		var nl = Life.build_life("spiky_grass", t* World.tile_size)
-		tiles = get_used_cells_by_id(1, 1, Vector2i(3, 1))
-	for t in tiles:
-		var nl = Life.build_life("spidercrab", t* World.tile_size)
 	set_layer_enabled ( 1, false )	
 
 				

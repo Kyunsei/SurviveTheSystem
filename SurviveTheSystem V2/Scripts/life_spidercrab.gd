@@ -42,6 +42,7 @@ func Build_Stat():
 	self.maxSpeed = 190
 	self.size = $Sprite_0.texture.get_size()*0.33
 	self.age= 0
+	self.lifespan = 5000
 
 	AdjustBar()
 	
@@ -255,7 +256,7 @@ func _on_timer_timeout():
 
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 20 and self.energy > 5:
+		if self.age > 10 and self.energy > 5:
 			self.current_life_cycle += 1
 			var leg_pos = [self.getCenterPos()-Vector2(48,0), self.getCenterPos()-Vector2(-48,0), self.getCenterPos()-Vector2(48,-32), self.getCenterPos()-Vector2(-48,-32)]
 			var leg_rotation = [-1.5707963268,1.5707963268,-1.5707963268,1.5707963268]

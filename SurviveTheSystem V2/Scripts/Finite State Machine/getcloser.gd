@@ -30,7 +30,6 @@ func Enter():
 				remove_target()
 				Transitioned.emit(self,"idle_state")
 		life_entity.get_node("DebugLabel").text = "get closer"
-
 func Exit():
 	pass
 	
@@ -56,25 +55,24 @@ func Physics_Update(delta: float):
 					Transitioned.emit(self,"idle_state")
 				else:
 					if life_entity.navigation_agent.is_target_reachable():
+						if target.isDead:
+							remove_target()
+							Transitioned.emit(self,"idle_state")
 						#print("going to food")
 						if target_register_pos != target.getCenterPos():
 							life_entity.navigation_agent.target_position = target.getCenterPos()
 							target_register_pos = target.getCenterPos() 
+							
 						next_path_position = life_entity.navigation_agent.get_next_path_position()
 						direction = next_path_position - life_entity.getCenterPos()
-						
 						life_entity.velocity = direction.normalized() * life_entity.maxSpeed
+	
 						
 						
 
 						if life_entity.getCenterPos().distance_to(target.getCenterPos())<minimun_distance and next_state != "":
 								get_parent().get_node(next_state).target = target
 								Transitioned.emit(self,next_state)
-						
-								'elif life_entity.getCenterPos().distance_to(target.getCenterPos())>maximun_distance:
-								life_entity.velocity = Vector2.ZERO
-								#remove_target()
-								Transitioned.emit(self,"idle_state")'
 											
 						elif life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance:
 							#print("Eating")
@@ -84,12 +82,11 @@ func Physics_Update(delta: float):
 							Transitioned.emit(self,"idle_state")
 							
 							
-						elif target.isDead:
-							#print("food was dead")
-							remove_target()
-							Transitioned.emit(self,"idle_state")
+					
 					else:
+
 						remove_target()
+						Transitioned.emit(self,"idle_state")
 
 					
 			else:

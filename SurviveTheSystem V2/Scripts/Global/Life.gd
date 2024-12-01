@@ -279,14 +279,17 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 			Life.spidercrab_pool_scene[li].global_position = PickRandomPlace() * World.tile_size# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))'
 
 
-func build_life(ID, newposition: Vector2 = Vector2(0,0)):
+
+func build_life(ID, newposition: Vector2 = Vector2(0,0), life_cycle: int = 0):
 	var life: LifeEntity
 	var li = pool_state[ID].find(0)
 	if li != -1:
 			life = Life.pool_scene[ID][li]
 			life.pool_index = li
+			
 			life.Activate()
 			life.position = newposition
+			life.current_life_cycle = life_cycle
 	return life
 
 

@@ -57,7 +57,7 @@ func Build_Stat():
 	self.maxEnergy = 100
 	self.maxSpeed = 200
 	self.stamina = 100
-	self.lifespan = 300 
+	self.lifespan = 600 
 	AdjustBar()
 	
 func Build_Phenotype(): 
@@ -257,9 +257,7 @@ func _on_timer_timeout():
 
 
 			Metabo_cost()
-
 			Ageing()
-			print(age)
 			AdjustBar()
 
 

@@ -150,7 +150,7 @@ func Growth():
 			$Sprite_0.hide()
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
-	if current_life_cycle == 1:
+	elif current_life_cycle == 1:
 		$PointLight2D.hide()
 		if self.age > 3*(World.one_day_length/lifecycletime) and self.energy > 5:
 			self.current_life_cycle += 1	
@@ -162,7 +162,7 @@ func Growth():
 			$Sprite_1.hide()
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
-	if current_life_cycle == 2:
+	elif current_life_cycle == 2:
 		$PointLight2D.hide()
 		if self.age > 4*(World.one_day_length/lifecycletime) and self.energy > 10 and self.counter == 0:
 			self.current_life_cycle += 1	
@@ -174,24 +174,23 @@ func Growth():
 			$Sprite_2.hide()
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
-			
-		
+				
 		self.counter +=1
 		if self.counter >= 0.5*(World.one_day_length/lifecycletime):
 			self.counter = 0
-	if current_life_cycle == 3:
+	elif current_life_cycle == 3:
 		if World.isNight == true:
 			$PointLight2D.show()
 
 
 #Duplication
 func LifeDuplicate2(transporter):
-		if self.energy > 15 :
+		if self.energy >= 15 :
 			var life = Life.build_life(species)
 			if life != null:
 				self.energy -= 10
 				life.energy = 10
-				life.global_position = PickRandomPlaceWithRange(position,2 * World.tile_size)
+				#life.global_position = PickRandomPlaceWithRange(position,2 * World.tile_size)
 											
 				getTransported(life,transporter)
 							
@@ -239,6 +238,7 @@ func Activate():
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	self.size = get_node("Collision_0").shape.size
+	
 	if self.current_life_cycle == 0 or self.current_life_cycle == 3 :
 		if World.isNight == true:
 			$PointLight2D.show()
@@ -318,4 +318,11 @@ func _on_light_on() :
 func _on_light_out() :
 	$PointLight2D.hide()
 
+func _on_mouse_entered():
+	$DebugLabel.show()
+	Life.player.mouse_target = self
 
+func _on_mouse_exited():
+	$DebugLabel.hide()
+	if Life.player.mouse_target == self:
+		Life.player.mouse_target = null

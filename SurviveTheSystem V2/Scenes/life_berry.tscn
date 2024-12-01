@@ -30,6 +30,7 @@ fill_from = Vector2(0.5, 0.5)
 position = Vector2(1000, 1000)
 collision_layer = 0
 collision_mask = 0
+input_pickable = true
 script = ExtResource("1_hvx4d")
 
 [node name="Timer" type="Timer" parent="."]
@@ -84,6 +85,8 @@ range_layer_min = -4
 range_layer_max = 4
 texture = SubResource("GradientTexture2D_rwo2g")
 
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="area_entered" from="Vision" to="." method="_on_vision_area_entered"]
 [connection signal="area_exited" from="Vision" to="." method="_on_vision_area_exited"]
