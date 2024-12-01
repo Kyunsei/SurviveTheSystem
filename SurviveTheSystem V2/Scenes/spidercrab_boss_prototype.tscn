@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://dbrkbo21hsu0x"]
+[gd_scene load_steps=19 format=3 uid="uid://dbrkbo21hsu0x"]
 
 [ext_resource type="Script" path="res://Scripts/spidercrab_boss_prototype.gd" id="1_cooma"]
 [ext_resource type="Texture2D" uid="uid://d4ken0m8v5kmw" path="res://Art/crab_claw.png" id="2_5i7c0"]
@@ -9,11 +9,8 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/dash.gd" id="7_dj0sa"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="8_0uwn0"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_mvdwf"]
-size = Vector2(96, 128)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_1n314"]
-size = Vector2(32, 112)
+[sub_resource type="CircleShape2D" id="CircleShape2D_f6j4u"]
+radius = 64.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_vavt8"]
 radius = 240.0
@@ -76,7 +73,7 @@ tracks/1/keys = {
 
 [sub_resource type="Animation" id="Animation_badhj"]
 resource_name = "reset"
-length = 0.5
+length = 1.5
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -84,7 +81,7 @@ tracks/0/path = NodePath(".:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.5),
+"times": PackedFloat32Array(0, 1.5),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector2(128, -96), Vector2(96, 64)]
@@ -96,7 +93,7 @@ tracks/1/path = NodePath(".:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.5),
+"times": PackedFloat32Array(0, 1.5),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [-3.14159, -1.5708]
@@ -109,30 +106,35 @@ _data = {
 "reset": SubResource("Animation_badhj")
 }
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_lpqrx"]
+radius = 200.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1n314"]
+size = Vector2(32, 112)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mvdwf"]
+size = Vector2(96, 128)
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_acp5y"]
 radius = 126.306
 
 [node name="spidercrab_boss_prototype" type="CharacterBody2D"]
 position = Vector2(0, -64)
-collision_mask = 2
 script = ExtResource("1_cooma")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_f6j4u")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
 texture = ExtResource("2_fdibr")
 centered = false
 offset = Vector2(-64, -64)
 
-[node name="Collision_front" type="CollisionShape2D" parent="."]
-position = Vector2(16, 0)
-shape = SubResource("RectangleShape2D_mvdwf")
-
-[node name="Collision_back" type="CollisionShape2D" parent="."]
-position = Vector2(-48, 2)
-shape = SubResource("RectangleShape2D_1n314")
-
 [node name="claw" type="Area2D" parent="."]
 position = Vector2(96, 64)
 rotation = -1.5708
+collision_layer = 3
+collision_mask = 3
 
 [node name="Sprite_claw" type="Sprite2D" parent="claw"]
 position = Vector2(-14, -6)
@@ -148,6 +150,23 @@ shape = SubResource("CapsuleShape2D_vavt8")
 libraries = {
 "": SubResource("AnimationLibrary_vqo64")
 }
+
+[node name="Area_for_attack_start" type="Area2D" parent="."]
+
+[node name="CollisionShape_for_attack_start" type="CollisionShape2D" parent="Area_for_attack_start"]
+shape = SubResource("CircleShape2D_lpqrx")
+
+[node name="Area_damageable" type="Area2D" parent="." groups=["damageable"]]
+
+[node name="Collision_back" type="CollisionShape2D" parent="Area_damageable"]
+position = Vector2(-48, 2)
+shape = SubResource("RectangleShape2D_1n314")
+
+[node name="Area_undamageable" type="Area2D" parent="."]
+
+[node name="Collision_front" type="CollisionShape2D" parent="Area_undamageable"]
+position = Vector2(16, 0)
+shape = SubResource("RectangleShape2D_mvdwf")
 
 [node name="DebugLabel" type="Label" parent="."]
 visible = false
@@ -180,7 +199,7 @@ visible = false
 [node name="Collision" type="CollisionShape2D" parent="Vision"]
 shape = SubResource("CircleShape2D_acp5y")
 
-[node name="Area2D" type="Area2D" parent="."]
-
+[connection signal="body_entered" from="claw" to="." method="_on_claw_body_entered"]
+[connection signal="body_entered" from="Area_for_attack_start" to="." method="_on_area_for_attack_start_body_entered"]
 [connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
 [connection signal="tree_entered" from="Vision/Collision" to="." method="_on_collision_tree_entered"]

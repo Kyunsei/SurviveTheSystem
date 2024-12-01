@@ -201,7 +201,7 @@ func hide_under_soil():
 	if self.current_life_cycle == 0:
 		$ActionTimer.start(5.)
 
-func getDamaged(value):
+func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
 		self.PV -= value
 		if self.PV <= 0:

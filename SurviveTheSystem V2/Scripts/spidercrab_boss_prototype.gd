@@ -2,6 +2,7 @@ extends LifeEntity
 
 var species = "sc_boss"
 var target :LifeEntity
+var notattacking = true
 
 var vision_array = {
 	"food": [],
@@ -17,18 +18,22 @@ var rotation_dir = 0
 
 func Activate():
 	print("Im a mean boss and I activated just now")
+	$claw/Collision_claw.disabled = true
+	$Area_undamageable/Collision_front.disabled = true
 	set_physics_process(true)
 	self.isActive = true
 	self.isDead = false
 	Life.pool_state[species][pool_index] = 1
 	Life.life_number[species] += 1
-	$Collision_front.disabled = false
-	$Collision_front.show()
-	$Collision_back.disabled = false
-	$Collision_back.show()
+	#$Area_damageable/Collision_front.disabled = false
+	#$Area_damageable/Collision_front.show()
+	$Area_damageable/Collision_back.disabled = false
+	$Area_damageable/Collision_back.show()
 	#$Brainy.Activate()
 	Build_Stat()
 	show()
+	$Sprite_0.show()
+	$claw.show()
 	
 	set_collision_layer_value(1,true)
 
@@ -47,13 +52,7 @@ func _physics_process(delta):
 	if isPlayer and isDead == false:
 		input_dir = Player_Control_movement()
 
-	if target :
-		var direction = target.getCenterPos() - self.position
-		if direction.length()<500 and direction.length()>128:
-			self.velocity = direction.normalized()*maxSpeed
-			rotation = velocity.angle()
-		else :
-			self.velocity = Vector2()
+	Going_to_player()
 
 	move_and_collide(velocity *delta)
 	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
@@ -67,8 +66,11 @@ func _physics_process(delta):
 	if direction.normalized() != Vector2(0,0):
 		last_dir = direction
 
-func getDamaged(value):
+func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
+		if antagonist :
+			var direction = self.position - antagonist.getCenterPos() 
+			antagonist.position -= direction.normalized()*200
 		self.PV -= value
 		if self.PV <= 0:
 			Die()
@@ -104,8 +106,10 @@ func _on_timer_timeout():
 func Die():
 	self.isDead = true
 	velocity = Vector2(0,0)
-	$Brainy.Deactivate()
+	#$Brainy.Deactivate()
 	$Sprite_0.hide()
+	$claw.hide()
+	Deactivate()
 	
 
 	
@@ -118,7 +122,6 @@ func Deactivate():
 	self.isActive = false
 	Life.pool_state[species][pool_index] = 0
 	Life.life_number[species] -= 1
-
 	hide()
 	
 
@@ -128,9 +131,31 @@ func Eat(life):
 	life.Die()
 	life.cause_of_death = deathtype.EATEN
 
-
-
-
 func _on_vision_body_entered(body):
 	if body.species == "catronaute" :
 		target = body
+
+func Going_to_player() :
+	if target and notattacking == true :
+		var direction = target.getCenterPos() - self.position
+		if direction.length()<600 and direction.length()>128:
+			self.velocity = direction.normalized()*maxSpeed
+			rotation = velocity.angle()
+		elif direction.length()<120 :
+			self.velocity =- direction.normalized()*maxSpeed
+		else :
+			self.velocity = Vector2(0,0)
+
+
+func _on_area_for_attack_start_body_entered(body):
+	if body == target and notattacking == true :
+			notattacking = false
+			self.velocity = Vector2(0,0)
+			$claw/Collision_claw.disabled = false
+			$claw/AnimationPlayer.play("heavy_attack")
+			await $claw/AnimationPlayer.animation_finished
+			$claw/Collision_claw.disabled = true
+			$claw/AnimationPlayer.play("reset")
+			await $claw/AnimationPlayer.animation_finished
+			notattacking = true
+

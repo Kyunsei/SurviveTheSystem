@@ -344,7 +344,7 @@ func AdjustBar():
 
 var InvicibilityTime = 0
 
-func getDamaged(value):
+func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
 		self.PV -= value
 		if self.PV <= 0:
