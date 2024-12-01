@@ -513,7 +513,7 @@ func Eat(life):
 
 #Sacrebleu il faut changer toutes les entity pour leur donner des "damageable" group
 func _on_bare_hand_attack_body_entered(body):
-	if body != self and body.is_in_group("damageable") :
+	if body != self and body.is_in_group("not_damageable") == false :
 		print("entered area groupe damafge")
 		if body.z_index == 0:
 			barehand_array.append(body)	

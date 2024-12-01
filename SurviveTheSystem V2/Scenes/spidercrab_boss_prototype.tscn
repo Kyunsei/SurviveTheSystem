@@ -118,7 +118,7 @@ size = Vector2(96, 128)
 [sub_resource type="CircleShape2D" id="CircleShape2D_acp5y"]
 radius = 126.306
 
-[node name="spidercrab_boss_prototype" type="CharacterBody2D"]
+[node name="spidercrab_boss_prototype" type="CharacterBody2D" groups=["not_damageable"]]
 position = Vector2(0, -64)
 script = ExtResource("1_cooma")
 
