@@ -5,6 +5,8 @@ extends LifeEntity
 
 var species = "grass"
 
+
+
 var timer_count : int = 0
 
 func Build_Genome():
@@ -14,31 +16,27 @@ func Build_Genome():
 	Genome["sprite"] = [preload("res://Art/grass_1.png"),preload("res://Art/grass_2.png")]
 	Genome["dead_sprite"] = [preload("res://Art/grass_dead.png")]
 
-func Build_Phenotype(): #go to main
-	#This function should be call when building the pool.
-	
+'func Build_Phenotype(): #go to main
+	#This function should be call when building the pool.	
 	# SPRITE
-
 	$Sprite_1.hide()
-
-	$Dead_Sprite_0.hide()
-
-		
+	$Dead_Sprite_0.hide()		
 	#$Timer.start(randf_range(0,.25))
 	#ADD vision
 	$Vision/Collision.shape.radius = 150
 	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
-
 	#ADD Body
 	#$Body_0/Collision_0.shape.size = $Sprite_0.texture.get_size()
 	$Collision_0.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
-	
 	#$Body_1/Collision_1.shape.size = $Sprite_1.texture.get_size()
-	$Collision_1.position = Vector2(Life.life_size_unit/2,-$Sprite_1.texture.get_height()/2) #Vector2(width/2,-height/2)
-	
+	$Collision_1.position = Vector2(Life.life_size_unit/2,-$Sprite_1.texture.get_height()/2) #Vector2(width/2,-height/2)	
 	$Collision_1.hide()
-	$Collision_1.disabled = true		
+	$Collision_1.disabled = true'	
+
+
+
 	
+
 func Build_Stat():
 	self.PV = 10
 	self.current_life_cycle = 0
@@ -47,6 +45,8 @@ func Build_Stat():
 	self.lifespan = 1.5*(World.one_day_length/lifecycletime)
 	self.age = 0
 	self.maxEnergy = 50.
+	
+	self.isPickable = true
 
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -84,13 +84,15 @@ func Die():
 		carried_by.item_array.erase(self)
 		self.carried_by = null
 		z_index = 0
-	$Dead_Sprite_0.show()
+	
+	Update_sprite($Dead_Sprite_0, $Collision_0)
+	'$Dead_Sprite_0.show()
 	$Collision_1.disabled = true		
 	$Collision_0.disabled = false		
 	$Collision_0.show()
 	$Collision_1.hide()
 	$Sprite_1.hide()
-	$Sprite_0.hide()
+	$Sprite_0.hide()'
 	
 
 #GROWTHING
@@ -98,13 +100,13 @@ func Growth():
 	if current_life_cycle == 0:
 		if self.age >= 2 and self.energy > 2: #5
 			self.current_life_cycle += 1
-			
-			$Collision_0.hide()
+			Update_sprite($Sprite_1, $Collision_1)
+			'$Collision_0.hide()
 			$Collision_1.show()
 			$Collision_1.disabled = false		
 			$Collision_0.disabled = true	
 			$Sprite_1.show()
-			$Sprite_0.hide()
+			$Sprite_0.hide()'
 
 
 
@@ -154,6 +156,7 @@ func Activate():
 	show()
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
+	Update_sprite($Sprite_0,$Collision_0)
 	self.size = get_node("Collision_0").shape.size
 
 func Deactivate():	
@@ -176,10 +179,10 @@ func Deactivate():
 	#$Body_1/Collision_1.hide()
 	#$Body_1/Collision_1.disabled = true		
 	#$Body_0/Collision_0.disabled = false	
-	
-	$Sprite_1.hide()
+	Update_sprite($Sprite_0)
+	'$Sprite_1.hide()
 	$Dead_Sprite_0.hide()
-	$Sprite_0.show()
+	$Sprite_0.show()'
 	hide()
 
 

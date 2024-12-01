@@ -24,13 +24,23 @@ var LastOrientation = "down"
 var item_array = [] 
 var carried_by = null
 var direction = Vector2(0,0)
+var isPickable = false
 
 #Internal parameters
 var maxPV = 10
 var maxEnergy = 100.
 var maxSpeed = 0
 var lifespan =  0
+var energy = 0  #current level of energy/hunger
+var age = 0 #current age
+var size = Vector2(32,32) #size from sprite
+var PV = 0 #current level of health
+var current_life_cycle = 0 #which state of life it is. egg, young, adult, etc..
+var metabolic_cost = 1. #how much energy is consumed by cycle to keep biological function
 
+#Visualisation
+var current_sprite: Sprite2D
+var current_collision: CollisionShape2D
 
 #Genome parameters
 var Genome = {
@@ -40,13 +50,6 @@ var Genome = {
 
 
 
-#Inter parameters
-var energy = 0  #current level of energy/hunger
-var age = 0 #current age
-var size = Vector2(32,32) #size from sprite
-var PV = 0 #current level of health
-var current_life_cycle = 0 #which state of life it is. egg, young, adult, etc..
-var metabolic_cost = 1. #how much energy is consumed by cycle to keep biological function
 
 #Enum
 
@@ -90,6 +93,18 @@ func Build_Phenotype(): #go to main
 	#This function should be customised
 	pass
 
+func Update_sprite(new_sprite: Sprite2D, new_collision:CollisionShape2D = null):
+	if current_sprite:
+		current_sprite.hide()
+	current_sprite = new_sprite
+	current_sprite.show()
+	if new_collision:
+		if current_collision:
+			current_collision.hide()
+			current_collision.disabled = true
+		current_collision = new_collision
+		current_collision.show()
+		current_collision.disabled = false
 
 
 func _on_timer_timeout():
@@ -197,7 +212,7 @@ func getClosestLife(array,minDist):
 	var min_distance = minDist
 	var calc_distance = 0
 	for p in array:
-		calc_distance = position.distance_to(p.position)
+		calc_distance = getCenterPos().distance_to(p.getCenterPos())
 		if calc_distance <= min_distance:
 			min_distance = calc_distance
 			closest_entity = p

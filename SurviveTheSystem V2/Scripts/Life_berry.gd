@@ -74,6 +74,7 @@ func Build_Stat():
 	self.maxEnergy = 15
 	self.age= 0
 	self.lifespan= 15 * (World.one_day_length/lifecycletime)
+	self.isPickable = true
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -119,20 +120,10 @@ func Die():
 		self.carried_by = null
 		z_index = 0
 	
-	$Dead_Sprite_0.show()
+	Update_sprite($Dead_Sprite_0, $Collision_0)
+
 	$PointLight2D.hide()
-	$Collision_1.disabled = true	
-	$Collision_2.disabled = true		
-	$Collision_3.disabled = true		
-	$Collision_0.disabled = false		
-	$Collision_0.show()
-	$Collision_1.hide()
-	$Collision_2.hide()
-	$Collision_3.hide()
-	$Sprite_1.hide()
-	$Sprite_0.hide()
-	$Sprite_2.hide()
-	$Sprite_3.hide()
+
 	
 
 #GROWTHING
@@ -141,39 +132,26 @@ func Growth():
 		if World.isNight == true:
 			$PointLight2D.show()
 		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy > 2:
-			self.current_life_cycle += 1	
-			$Collision_0.hide()
-			$Collision_1.show()
-			$Collision_1.disabled = false		
-			$Collision_0.disabled = true	
-			$Sprite_1.show()
-			$Sprite_0.hide()
+			self.current_life_cycle += 1
+			Update_sprite($Sprite_1, $Collision_1)	
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
+			self.isPickable = false
 	elif current_life_cycle == 1:
 		$PointLight2D.hide()
 		if self.age > 3*(World.one_day_length/lifecycletime) and self.energy > 5:
-			self.current_life_cycle += 1	
-			$Collision_1.hide()
-			$Collision_2.show()
-			$Collision_2.disabled = false		
-			$Collision_1.disabled = true	
-			$Sprite_2.show()
-			$Sprite_1.hide()
+			self.current_life_cycle += 1
+			Update_sprite($Sprite_2, $Collision_2)	
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 	elif current_life_cycle == 2:
 		$PointLight2D.hide()
 		if self.age > 4*(World.one_day_length/lifecycletime) and self.energy > 10 and self.counter == 0:
-			self.current_life_cycle += 1	
-			$Collision_2.hide()
-			$Collision_3.show()
-			$Collision_3.disabled = false		
-			$Collision_2.disabled = true	
-			$Sprite_3.show()
-			$Sprite_2.hide()
+			self.current_life_cycle += 1
+			Update_sprite($Sprite_3, $Collision_3)	
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
+			self.isPickable = true
 				
 		self.counter +=1
 		if self.counter >= 0.5*(World.one_day_length/lifecycletime):
@@ -234,6 +212,7 @@ func Activate():
 	set_collision_layer_value(1,1)
 	$Vision.set_collision_mask_value(1,true)
 	#Build_Genome()
+	Update_sprite($Sprite_0, $Collision_0)
 	show()
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
@@ -267,8 +246,7 @@ func Deactivate():
 	#$Body_0/Collision_0.disabled = false	
 	
 	#$Sprite_1.hide()
-	$Dead_Sprite_0.hide()
-	$Sprite_0.show()
+	Update_sprite($Sprite_0, $Collision_0)
 	hide()
 
 

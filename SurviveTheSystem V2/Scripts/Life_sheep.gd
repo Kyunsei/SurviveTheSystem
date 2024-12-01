@@ -88,6 +88,7 @@ func Build_Stat():
 	self.lifespan = 4*(World.one_day_length/lifecycletime)
 
 	self.vision_distance = 500
+	self.isPickable = true
 
 func _physics_process(delta):
 	'if isPlayer:
@@ -151,15 +152,8 @@ func Die():
 	
 	
 	self.isDead = true
-	if self.current_life_cycle == 0:
-		$Dead_Sprite_0.show()
-		$Sprite_0.hide()
-	elif self.current_life_cycle == 1:
-		$Dead_Sprite_1.show()
-		$Sprite_1.hide()
-	elif self.current_life_cycle == 2: 	
-		$Dead_Sprite_2.show()
-		$Sprite_2.hide()
+	Update_sprite(get_node("Dead_Sprite_"+str(current_life_cycle)))
+
 
 
 #GROWTHING
@@ -167,8 +161,8 @@ func Growth():
 	if current_life_cycle == 0:
 		if self.age > 0.5*(World.one_day_length/lifecycletime) and self.energy > 4:
 			self.current_life_cycle += 1
-			$Sprite_1.show()
-			$Sprite_0.hide()
+			Update_sprite($Sprite_1)
+		
 			set_physics_process(true)
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
@@ -182,17 +176,14 @@ func Growth():
 		if self.age > 2.5*(World.one_day_length/lifecycletime) and self.energy > 8:
 
 			self.current_life_cycle += 1
-			$Sprite_2.show()
-			$Sprite_1.hide()
-			$Collision_0.hide()
-			$Collision_1.show()
-			$Collision_1.disabled = false		
-			$Collision_0.disabled = true	
+			Update_sprite($Sprite_2,$Collision_1)
+				
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 			self.maxEnergy = 20
 			size = Vector2(64,64)
+			self.isPickable = false
 
 			
 
@@ -276,6 +267,7 @@ func Activate():
 	Build_Stat()
 	#Build_Genome()
 	show()
+	Update_sprite($Sprite_0, $Collision_0)
 	set_collision_layer_value(1,true)
 	$Vision.set_collision_mask_value(1,true)
 	$Timer.wait_time = lifecycletime / World.speed

@@ -15,6 +15,10 @@ var input_dir = Vector2.ZERO
 var last_dir = Vector2.ZERO
 var rotation_dir = 0
 
+# Interaction
+var nearby_object: LifeEntity 
+var interaction_array =[]
+
 func Build_Genome():
 	Genome["maxPV"]=[10000000000000]
 	Genome["stamina"]=[100]
@@ -146,6 +150,8 @@ func _physics_process(delta):
 			last_dir = input_dir 
 			isimmobile_1sec = false	
 			
+		Highlight_closest_pickable_element()
+		
 	move_and_slide()
 	
 	
@@ -248,6 +254,26 @@ func _input(event):
 					b.BlockUpdate()'
 			if event.is_action_pressed("T"):
 				position = get_viewport().get_camera_2d().get_global_mouse_position()
+
+func Highlight_closest_pickable_element():
+	if interaction_array.size() > 0:
+		var closest_item = getClosestLife(interaction_array,$Interaction_Area/CollisionShape2D.shape.radius+100)
+		if closest_item:
+			if nearby_object:
+				if nearby_object != closest_item:
+					nearby_object.current_sprite.modulate = Color(1,1,1)
+					nearby_object.z_index = 0		
+					nearby_object = closest_item
+					nearby_object.current_sprite.modulate = Color(0,0,1)
+					nearby_object.z_index = 1	
+			else:
+				nearby_object = closest_item
+				nearby_object.current_sprite.modulate = Color(0,0,1)
+				nearby_object.z_index = 1
+				
+
+
+
 
 func _on_timer_timeout():
 	if World.isReady and isActive:
@@ -371,13 +397,23 @@ func Sprint_Action_Stop():
 		self.maxSpeed = 200
 
 func PickUp():
-	action_finished = false
-	$BareHand_attack/CollisionShape2D/sprite2.show()
-	$BareHand_attack/ActionTimer.start(0.2)
-	var closestItem = getClosestLife(barehand_array,$Vision/Collision.shape.radius+100)
+	if nearby_object:
+		action_finished = false
+		$BareHand_attack/CollisionShape2D/sprite2.show()
+		$BareHand_attack/ActionTimer.start(0.2)
+		nearby_object.getPickUP(self)
+		nearby_object.current_sprite.modulate = Color(1,1,1)
+		nearby_object.z_index = 0		
+		interaction_array.erase(nearby_object)
+		nearby_object = null
+		
+	
+	'var closestItem = getClosestLife(barehand_array,$Vision/Collision.shape.radius+100)
 	if closestItem != null:
 		var distancetoclosestItem = position.distance_to(closestItem.position)
 		if  distancetoclosestItem < 64 :
+			if closestItem.current_sprite:
+				closestItem.current_sprite.modulate = Color(0,0,1)
 
 			if closestItem.species == "berry":
 				if closestItem.current_life_cycle == 0:
@@ -412,7 +448,7 @@ func PickUp():
 			if closestItem.species == "stingtree" and  closestItem.current_life_cycle == 0:
 				if closestItem.mother_tree == null:
 					closestItem.getPickUP(self)
-					closestItem.z_index = 0
+					closestItem.z_index = 0'
 
 	
 func Drop():
@@ -436,7 +472,7 @@ func Eat_Action():
 
 
 func BareHand_attack():
-	$BareHand_attack/CollisionShape2D.disabled = false
+	#$BareHand_attack/CollisionShape2D.disabled = false
 	$BareHand_attack/CollisionShape2D/sprite.show()
 	$BareHand_attack/ActionTimer.start(0.2)
 	for i in barehand_array:
@@ -529,7 +565,7 @@ func _on_action_timer_timeout():
 	$BareHand_attack/CollisionShape2D/sprite.hide()
 	$BareHand_attack/CollisionShape2D/sprite2.hide()
 	#passive_healing()
-	$BareHand_attack/CollisionShape2D.disabled = true
+	#$BareHand_attack/CollisionShape2D.disabled = true
 	action_finished = true
 
 
@@ -542,3 +578,20 @@ func _on_bare_hand_attack_area_entered(area):
 	if area.is_in_group("damageable"):
 		print("damageable area touched")
 		area.get_parent().getDamaged(10,self)
+
+
+func _on_interaction_area_body_entered(body):
+	if body.isPickable and item_array.has(body)==false:
+		interaction_array.append(body)
+		
+
+
+func _on_interaction_area_body_exited(body):
+	if nearby_object == body:
+		nearby_object.current_sprite.modulate = Color(1,1,1)
+		nearby_object.z_index = 0
+		nearby_object = null
+	if interaction_array.has(body):
+		interaction_array.erase(body)
+		
+				
