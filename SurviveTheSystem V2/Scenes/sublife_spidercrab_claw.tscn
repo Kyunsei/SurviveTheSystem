@@ -174,10 +174,12 @@ light_mask = 0
 shape = SubResource("RectangleShape2D_3d3va")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
+visible = false
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("1_btg3k")
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
+visible = false
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("2_ud4by")
 centered = false

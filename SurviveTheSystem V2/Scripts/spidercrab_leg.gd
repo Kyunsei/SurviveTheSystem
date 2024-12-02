@@ -12,7 +12,7 @@ func Build_Stat():
 	self.maxSpeed = 190
 	self.lifespan = 200.
 	self.size = get_node("Sprite_0").texture.get_size() * $Sprite_0.scale
-
+	self.isPickable = true
 	
 
 
@@ -63,10 +63,8 @@ func Activate():
 	show()
 	
 	$Effect_Area/CollisionShape2D.disabled = true
-	$Collision_0.show()
-	$Collision_0.disabled = false	
-	$Dead_Sprite_0.hide()	
-	$Sprite_0.show()
+	Update_sprite($Sprite_0, $Collision_0)
+
 	#set_physics_process(true)
 	#Life.spidercrab_pool_state[self.pool_index] = 1
 
@@ -95,7 +93,7 @@ func Die():
 		carried_by.item_array.erase(self)
 		carried_by = null
 		z_index = 0
-
+	Update_sprite($Dead_Sprite_0)
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()
 	#$Crab_legArea2D/CollisionShape2D.queue_free()

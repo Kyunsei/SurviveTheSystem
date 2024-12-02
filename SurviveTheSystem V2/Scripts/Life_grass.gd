@@ -146,7 +146,7 @@ func LifeDuplicate():
 
 
 func Activate():
-	#set_physics_process(false)
+	
 	self.isActive = true
 	Life.pool_state[species][pool_index] = 1
 	Life.life_number[species] += 1
@@ -160,6 +160,10 @@ func Activate():
 	self.size = get_node("Collision_0").shape.size
 
 func Deactivate():	
+	if carried_by != null:
+		carried_by.item_array.erase(self)
+		self.carried_by = null
+		z_index = 0
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	set_physics_process(false)
 	Decomposition(0)

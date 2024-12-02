@@ -7,7 +7,7 @@ var species = "berry"
 
 var counter = 0
 
-
+var signalconnected = false
 
 
 func Build_Genome():
@@ -174,13 +174,8 @@ func LifeDuplicate2(transporter):
 							
 				self.current_life_cycle = 2
 				$PointLight2D.hide()
-
-				$Collision_3.hide()
-				$Collision_2.show()
-				$Collision_2.disabled = false		
-				$Collision_3.disabled = true	
-				$Sprite_2.show()
-				$Sprite_3.hide()
+				Update_sprite($Sprite_2, $Collision_2)
+				
 				
 
 			else:
@@ -203,8 +198,10 @@ signal light_out
 
 func Activate():
 
-	get_parent().get_parent().light_out.connect( _on_light_out)
-	get_parent().get_parent().light_on.connect( _on_light_on)
+	if not signalconnected:
+		get_parent().get_parent().light_out.connect( _on_light_out)
+		get_parent().get_parent().light_on.connect( _on_light_on)
+		signalconnected = true
 	self.isActive = true
 	Life.pool_state[species][pool_index] = 1
 	Life.life_number[species] += 1
@@ -224,6 +221,19 @@ func Activate():
 	if self.current_life_cycle == 1 or self.current_life_cycle == 2 :
 		if World.isNight == false:
 			$PointLight2D.hide()
+
+
+func getPickUP(transporter):
+	if current_life_cycle == 0:
+		if self.carried_by != null:
+			carried_by.item_array.erase(self)
+		self.carried_by = transporter
+		transporter.item_array.append(self)
+		#seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
+	elif current_life_cycle == 3:
+					LifeDuplicate2(transporter)
+ 
+
 
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)

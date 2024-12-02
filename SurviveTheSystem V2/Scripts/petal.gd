@@ -18,6 +18,7 @@ func Activate():
 	set_collision_layer_value(1,1)
 	#Build_Genome()
 	show()
+	Update_sprite($Sprite_0, $Collision_0)
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	self.size = get_node("Collision_0").shape.size
@@ -27,7 +28,7 @@ func Build_Stat():
 	self.PV = 100
 	self.maxPV = 100
 	self.lifespan = 10
-	
+	self.isPickable = true
 	
 	#diying
 func Die():

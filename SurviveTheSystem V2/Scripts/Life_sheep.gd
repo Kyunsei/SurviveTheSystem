@@ -98,7 +98,7 @@ func _physics_process(delta):
 	else:
 		velocity = Vector2(0,0)'
 	velocity = velocity * World.speed 
-	move_and_slide()	
+	move_and_collide(velocity*delta)	
 	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
 	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
 	
