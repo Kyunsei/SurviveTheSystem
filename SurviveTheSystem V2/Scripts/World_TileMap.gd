@@ -15,6 +15,11 @@ func instantiate_the_tiles_function():
 	for t in tiles:
 		World.block_element_array[t.y*World.world_size + t.x] = 0
 		World.block_element_state[t.y*World.world_size + t.x] = 1
+		
+	tiles = get_used_cells_by_id(0, 0, Vector2i(2, 0))
+	for t in tiles:
+		World.block_element_array[t.y*World.world_size + t.x] = 1
+		World.block_element_state[t.y*World.world_size + t.x] = 1
 
 	var temp = ["sheep","grass","berry","jellybee","spiky_grass","spidercrab","stingtree"]
 	for i in range(temp.size()):	
@@ -22,7 +27,7 @@ func instantiate_the_tiles_function():
 			tiles = get_used_cells_by_id(1, 3, Vector2i(lc, i))
 			for t in tiles: 
 				var nl = Life.build_life(temp[i], t* World.tile_size)
-				if nl:
+				if nl: 
 					nl.age = int(nl.lifespan*0.5) 
 					nl.energy = nl.maxEnergy
 					nl.current_life_cycle = max(0,lc-1)

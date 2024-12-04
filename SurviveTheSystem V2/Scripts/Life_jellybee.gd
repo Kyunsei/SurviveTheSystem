@@ -84,12 +84,13 @@ func spwan_pollen():
 	#generate new grass
 	var haspollen = true
 	if energy > 10 and haspollen:
-		var life = Life.build_life("spiky_grass")
+		pass
+		'var life = Life.build_life("spiky_grass")
 		if life != null:
 			life.energy = 2
 			var newpos = position
 			life.global_position = newpos# Vector2(randi_range(0,World.tile_size*World.world_size),randi_range(0,World.tile_size*World.world_size))
-			energy -= 2
+			energy -= 2'
 	pass
 
 #diying
@@ -291,3 +292,14 @@ func _on_vision_body_exited(body):
 func _on_action_timer_timeout():
 	action_finished = true
 
+
+func _on_mouse_entered():
+	$DebugLabel.show()
+	Life.player.mouse_target = self
+
+
+
+func _on_mouse_exited():
+	$DebugLabel.hide()
+	if Life.player.mouse_target == self:
+		Life.player.mouse_target = null

@@ -50,6 +50,8 @@ offset_bottom = 23.0
 [node name="Camera2D" type="Camera2D" parent="."]
 enabled = false
 
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="timeout" from="ActionTimer" to="." method="_on_action_timer_timeout"]
 [connection signal="area_entered" from="Vision" to="." method="_on_vision_area_entered"]

@@ -41,19 +41,22 @@ func Build_Stat():
 
 	self.current_life_cycle = 0
 	self.PV = 10
-	self.energy = 1
-	self.lifespan = 40
+	self.energy = 0
+	self.lifespan = 1.5*(World.one_day_length/lifecycletime)
 	self.age= 0
+	self.maxEnergy = 50.
+	
+
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
 		$Timer.wait_time = lifecycletime / World.speed
 	if World.isReady and isActive:
 		if isDead == false:
-			
-			Absorb_soil_energy(1,1)
-			Metabo_cost()	
-			#LifeDuplicate()
+			if self.energy < self.maxEnergy:
+				Absorb_soil_energy(1,1)
+			#Metabo_cost()	
+			LifeDuplicate()
 			Ageing()
 			Growth()
 
@@ -78,14 +81,7 @@ func Die():
 		carried_by.item_array.erase(self)
 		self.carried_by = null
 		z_index = 0
-	$Dead_Sprite_0.show()
-	$Collision_1.disabled = true		
-	$Collision_0.disabled = false		
-	#$Collision_0.show()
-	#$Collision_1.hide()
-	$Sprite_1.hide()
-	$Sprite_0.hide()
-	$Sprite_2.hide()
+	Update_sprite($Dead_Sprite_0,$Collision_0 )
 	$Sprite_flower.hide()
 	'var petal = Life.petal_scene.instantiate()
 	get_parent().add_child(petal) 
@@ -97,19 +93,13 @@ func Growth():
 		if self.age > 2 and self.energy > 2:
 			self.current_life_cycle += 1
 			
-			$Collision_0.hide()
-			$Collision_1.show()
-			$Collision_1.disabled = false		
-			$Collision_0.disabled = true	
-			$Sprite_1.show()
-			$Sprite_0.hide()
+			Update_sprite($Sprite_1,$Collision_1 )
+
 	if current_life_cycle == 1:
 		if self.age > 4 and self.energy > 2:
 			self.current_life_cycle += 1
-			$Collision_1.disabled = true	
-			$Collision_1.disabled = false		
-			$Sprite_2.show()
-			$Sprite_1.hide()
+			Update_sprite($Sprite_2,$Collision_1 )
+
 
 			#$Body/Collision_0.set_deferred("disabled", true)
 
@@ -119,8 +109,9 @@ func Growth():
 
 #Duplication
 func LifeDuplicate():
-	if current_life_cycle == 1 :
+	if current_life_cycle >= 1 :
 		if self.energy > 4:
+			print("new")
 			
 			
 			'var genome_ID = 0
@@ -141,18 +132,17 @@ func LifeDuplicate():
 				Life.plant_number += 1'
 			
 			#Life.grass_pool Technique
-			var li = Life.spiky_grass_pool_state.find(0)	
+			
+			var li = Life.build_life("spiky_grass")# Life.spiky_grass_pool_state.find(0)	
 			#+ Life.grass_pool_state.size()*0.05
-			if li > -1: # and Life.plant_number  < Life.grass_pool_state.size():
-				self.energy -= 1
-				Life.spiky_grass_pool_scene[li].Activate()
-				Life.spiky_grass_pool_scene[li].energy = 1
-				Life.spiky_grass_pool_scene[li].age = 0
-				Life.spiky_grass_pool_scene[li].current_life_cycle = 0
-				Life.spiky_grass_pool_scene[li].PV = Genome["maxPV"][0]
-
-				
-				Life.spiky_grass_pool_scene[li].global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
+			if li: # and Life.plant_number  < Life.grass_pool_state.size():
+				self.energy -= 0
+				li.Activate()
+				li.energy = 0
+				li.age = 0
+				li.current_life_cycle = 0
+				li.PV = Genome["maxPV"][0]
+				li.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
 			#else:
 				#pass
 				#print("pool empty")
@@ -178,6 +168,7 @@ func Activate():
 	set_collision_layer_value(1,1)
 	#Build_Genome()
 	show()
+	Update_sprite($Sprite_0,$Collision_0 )
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	self.size = get_node("Collision_0").shape.size
@@ -260,5 +251,15 @@ func _on_vision_body_entered(body):
 		petal.position = self.position - Vector2(10,10)
 
 
+func _on_mouse_entered():
+	$DebugLabel.show()
+	Life.player.mouse_target = self
 
+
+
+func _on_mouse_exited():
+	
+	$DebugLabel.hide()
+	if Life.player.mouse_target == self:
+		Life.player.mouse_target = null
 

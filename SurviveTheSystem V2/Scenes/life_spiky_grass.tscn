@@ -18,6 +18,7 @@ size = Vector2(32, 64)
 [node name="Spiky_grass" type="CharacterBody2D"]
 collision_layer = 0
 collision_mask = 0
+input_pickable = true
 script = ExtResource("1_6y67d")
 
 [node name="Timer" type="Timer" parent="."]
@@ -62,6 +63,8 @@ shape = SubResource("RectangleShape2D_dv5i7")
 [node name="Collision_1" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_dldvs")
 
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="area_entered" from="Vision" to="." method="_on_vision_area_entered"]
 [connection signal="area_exited" from="Vision" to="." method="_on_vision_area_exited"]
