@@ -221,7 +221,7 @@ func getClosestLife(array,minDist):
 func getCenterPos():
 	return  position + Vector2(size.x/2,-size.y/2)
 #METABO cost
-func Metabo_cost():
+func Metabo_cost_inSoil():
 	#energy lost is returned to soil
 	#var middle = position + Vector2(size.x/2,-size.y/2)
 	var middle = position + Vector2(size.x/2,0)#-size.y/2)
@@ -235,6 +235,11 @@ func Metabo_cost():
 		World.block_element_array[posindex] += min(energy, metabolic_cost)
 		energy -= min(energy,metabolic_cost)
 		update_tiles_according_soil_value([Vector2i(x,y)])
+
+func Metabo_cost():
+	energy -= min(energy,metabolic_cost)
+
+
 #Getting old
 func Ageing():
 	self.age +=1
@@ -275,7 +280,24 @@ func Absorb_soil_energy(value,radius):
 					World.block_element_array[posindex]	-= min(value,soil_energy)
 					update_tiles_according_soil_value([Vector2i(x,y)])
 
-
+func Absorb_sun_energy(value,radius):
+	if radius > nb_of_soil_block_by_radius.size():
+		print("too many block absorbed, please uptade the variable in new_life script")
+		radius = nb_of_soil_block_by_radius.size()-1
+	var middle = position + Vector2(size.x/2,0)#-size.y/2)
+	var center_x = int(middle.x/World.tile_size)
+	var	center_y = int(middle.y/World.tile_size)
+	#var value_max_absorbed_by_tile = clamp((maxEnergy - energy) / nb_of_soil_block_by_radius[radius], 0, value)
+	for x in range(center_x - radius, center_x + radius + 1):
+		for y in range(center_y - radius, center_y + radius + 1):
+			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+				var posindex = y*World.world_size + x
+				if posindex < World.sun_energy_block_array.size():
+					var sun_energy = World.sun_energy_block_array[posindex]	
+					energy += min(value,sun_energy)
+					World.sun_energy_block_array[posindex]	-= min(value,sun_energy)
+					energy = clamp(0,energy, maxEnergy)
+					#update_tiles_according_soil_value([Vector2i(x,y)]
 
 func Absorb_life_energy(entity,value):
 	var absorbed_energy = min (entity.energy, value)	

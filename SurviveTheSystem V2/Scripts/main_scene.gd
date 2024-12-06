@@ -292,6 +292,7 @@ signal light_on
 signal light_out
 
 func _on_day_timer_timeout():
+	World.sun_energy_block_array.fill(World.energy_flow_in)
 	#$UI/Night_filtre.show()
 	$DirectionalLight2D.show()
 	$NightTimer.start()

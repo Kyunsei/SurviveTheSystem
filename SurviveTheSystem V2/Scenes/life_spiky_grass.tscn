@@ -25,30 +25,36 @@ script = ExtResource("1_6y67d")
 
 [node name="Vision" type="Area2D" parent="."]
 collision_layer = 0
+monitorable = false
 
 [node name="Collision" type="CollisionShape2D" parent="Vision"]
 shape = SubResource("CapsuleShape2D_ld3jv")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("2_kqq52")
 centered = false
 offset = Vector2(0, -32)
 
 [node name="Sprite_flower" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("3_6by78")
 centered = false
 
 [node name="Sprite_1" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("4_idtlg")
 centered = false
 offset = Vector2(0, -64)
 
 [node name="Sprite_2" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("5_cjj12")
 centered = false
 offset = Vector2(0, -96)
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("6_rtytl")
 centered = false
 
@@ -58,9 +64,11 @@ offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
+position = Vector2(16, -16)
 shape = SubResource("RectangleShape2D_dv5i7")
 
 [node name="Collision_1" type="CollisionShape2D" parent="."]
+position = Vector2(16, -32)
 shape = SubResource("RectangleShape2D_dldvs")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]

@@ -53,9 +53,10 @@ func _on_timer_timeout():
 		$Timer.wait_time = lifecycletime / World.speed
 	if World.isReady and isActive:
 		if isDead == false:
-			if self.energy < self.maxEnergy:
-				Absorb_soil_energy(1,1)
-			#Metabo_cost()	
+			'if self.energy < self.maxEnergy:
+				Absorb_soil_energy(1,1)'
+			Absorb_sun_energy(1,1)
+			Metabo_cost()	
 			LifeDuplicate()
 			Ageing()
 			Growth()
@@ -111,7 +112,6 @@ func Growth():
 func LifeDuplicate():
 	if current_life_cycle >= 1 :
 		if self.energy > 4:
-			print("new")
 			
 			
 			'var genome_ID = 0
@@ -137,7 +137,6 @@ func LifeDuplicate():
 			#+ Life.grass_pool_state.size()*0.05
 			if li: # and Life.plant_number  < Life.grass_pool_state.size():
 				self.energy -= 0
-				li.Activate()
 				li.energy = 0
 				li.age = 0
 				li.current_life_cycle = 0
@@ -160,7 +159,8 @@ func LifeDuplicate():
 
 
 func Activate():
-	set_physics_process(false)
+
+	$Vision.monitoring = true
 	self.isActive = true
 	Life.pool_state[species][pool_index] = 1
 	Life.life_number[species] += 1
@@ -176,8 +176,9 @@ func Activate():
 	$Vision/Collision.disabled = false
 
 func Deactivate():	
+	set_physics_process(false)
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
-	
+	$Vision.monitoring = false
 	Decomposition(1)
 	$Timer.stop()
 	set_collision_layer_value(1,0)
@@ -198,26 +199,12 @@ func Deactivate():
 	#$Body_1/Collision_1.hide()
 	#$Body_1/Collision_1.disabled = true		
 	#$Body_0/Collision_0.disabled = false	
-	
-	$Sprite_1.hide()
-	$Dead_Sprite_0.hide()
-	$Sprite_0.show()
+	Update_sprite($Sprite_0)
 	hide()
 
 
 
-func _on_vision_area_entered(area):
-	if area.get_parent().name == "Player":
-		pass
-		'$Sprite_0.modulate = Color(0, 0, 1)
-		$Sprite_1.modulate = Color(0, 0, 1)'
 
-
-func _on_vision_area_exited(area):
-	if area.get_parent().name == "Player":
-		pass
-		'$Sprite_0.modulate = Color(1, 1, 1)
-		$Sprite_1.modulate = Color(1, 1, 1)'
 
 func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
@@ -238,9 +225,7 @@ func getDamaged(value,antagonist:LifeEntity=null):
 
 		
 
-		
-
-
+	
 
 func _on_vision_body_entered(body):
 	if body.species == "catronaute" and self.isDead == false and self.current_life_cycle > 0:

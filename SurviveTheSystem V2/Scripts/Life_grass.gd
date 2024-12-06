@@ -6,7 +6,7 @@ extends LifeEntity
 var species = "grass"
 
 
-
+var test_col = Color(1,1,1)
 var timer_count : int = 0
 
 func Build_Genome():
@@ -38,13 +38,15 @@ func Build_Genome():
 	
 
 func Build_Stat():
+	test_col =  Color(randi_range(0,1),randi_range(0,1),randi_range(0,1))
+	modulate = test_col
 	self.PV = 10
 	self.current_life_cycle = 0
 	self.PV = 10
 	self.energy = 0.
 	self.lifespan = 1.5*(World.one_day_length/lifecycletime)
 	self.age = 0
-	self.maxEnergy = 50.
+	self.maxEnergy = 10.
 	
 	self.isPickable = true
 
@@ -54,10 +56,10 @@ func _on_timer_timeout():
 	if World.isReady and isActive:
 		if isDead == false:
 
-			if self.energy < self.maxEnergy:
-				Absorb_soil_energy(1,1)
-			#Metabo_cost()
-				
+			'if self.energy < self.maxEnergy:
+				Absorb_soil_energy(1,1)'
+			Metabo_cost()
+			Absorb_sun_energy(1,1)
 			Growth()
 			LifeDuplicate()
 			Ageing()
@@ -126,6 +128,8 @@ func LifeDuplicate():
 						self.energy -= 0#20
 						life.energy = 0#20
 						life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
+						life.test_col = test_col
+						life.modulate = test_col
 					else:
 						pass
 		else:

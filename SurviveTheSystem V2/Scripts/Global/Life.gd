@@ -283,10 +283,10 @@ func Instantiate_emptyLife_pool(folder, N, ID):
 func build_life(ID, newposition: Vector2 = Vector2(0,0), life_cycle: int = 0):
 	var life: LifeEntity
 	var li = pool_state[ID].find(0)
+
 	if li != -1:
 			life = Life.pool_scene[ID][li]
-			life.pool_index = li
-			
+			life.pool_index = li			
 			life.Activate()
 			life.position = newposition
 			life.current_life_cycle = life_cycle

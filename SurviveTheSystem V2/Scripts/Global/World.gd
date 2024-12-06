@@ -8,7 +8,11 @@ var fieldofview = Vector2(0,0) #in tile
 
 var debug_mode = true
 
+#ENERGY SUN
+var energy_flow_in = 3.0 #how much energy added by day by tile
+var sun_energy_block_array = [] 
 
+#OLD SOIL ENERGY
 var block_element_array = [] #1D matrix of the block composing the world
 var block_element_state = [] #1D matrix of the block state composing the world
 
@@ -74,8 +78,10 @@ func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
+	sun_energy_block_array.resize(world_size*world_size)
 	block_element_array.fill(0)
 	block_element_state.fill(0)
+	sun_energy_block_array.fill(energy_flow_in)
 
 func build_world_shape(folder):
 

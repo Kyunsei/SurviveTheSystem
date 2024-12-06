@@ -61,7 +61,7 @@ func Build_Stat():
 	self.maxEnergy = 100
 	self.maxSpeed = 200
 	self.stamina = 100
-	self.lifespan = 600 
+	self.lifespan = 6000 
 	AdjustBar()
 	
 func Build_Phenotype(): 
