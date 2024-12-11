@@ -46,7 +46,7 @@ func Build_Stat():
 	self.energy = 0.
 	self.lifespan = 1.5*(World.one_day_length/lifecycletime)
 	self.age = 0
-	self.maxEnergy = 10.
+	self.maxEnergy = 5.
 	
 	self.isPickable = true
 
@@ -59,7 +59,7 @@ func _on_timer_timeout():
 			'if self.energy < self.maxEnergy:
 				Absorb_soil_energy(1,1)'
 			Metabo_cost()
-			Absorb_sun_energy(1,1)
+			Absorb_sun_energy(2,1)
 			Growth()
 			LifeDuplicate()
 			Ageing()
@@ -118,20 +118,23 @@ func LifeDuplicate():
 	if current_life_cycle == 1  :
 		if timer_count <= 0:
 			if self.energy > 4:	
-				var newpos = PickRandomPlaceWithRange(position,4 * World.tile_size)
-				var middle = newpos + Vector2(32/2,0)
-				var posindex = int(middle.y/World.tile_size)*World.world_size + int(middle.x/World.tile_size)
-				if World.block_element_array[posindex]>= 0:
-					timer_count = 1
-					var life: LifeEntity = Life.build_life(species)
-					if life != null:
-						self.energy -= 0#20
-						life.energy = 0#20
-						life.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
-						life.test_col = test_col
-						life.modulate = test_col
-					else:
-						pass
+
+				for i in range (3):
+					var newpos = PickRandomPlaceWithRange(position, 4 * World.tile_size)
+					var middle = newpos + Vector2(32/2,0)
+					var posindex = int(middle.y/World.tile_size)*World.world_size + int(middle.x/World.tile_size)		
+				#if World.block_element_array[posindex]>= 0:
+					if World.block_element_state[posindex]>= 1:
+						timer_count = 1
+						var life: LifeEntity = Life.build_life(species)
+						if life != null:
+							self.energy -= 0#20
+							life.energy = 0#20
+							life.global_position = newpos #PickRandomPlaceWithRange(position,4 * World.tile_size)
+							life.test_col = test_col
+							life.modulate = test_col
+						else:
+							pass
 		else:
 			timer_count -= 1		#$DebugLabel.text = "full"
 			pass
@@ -170,7 +173,7 @@ func Deactivate():
 		z_index = 0
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	set_physics_process(false)
-	Decomposition(0)
+	#Decomposition(0)
 	$Timer.stop()
 	set_collision_layer_value(1,0)
 	self.isActive = false

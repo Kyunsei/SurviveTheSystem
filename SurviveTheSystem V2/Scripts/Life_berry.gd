@@ -73,7 +73,7 @@ func Build_Stat():
 	self.energy = 10
 	self.maxEnergy = 15
 	self.age= 0
-	self.lifespan= 15 * (World.one_day_length/lifecycletime)
+	self.lifespan= 5 * (World.one_day_length/lifecycletime)
 	self.isPickable = true
 	
 func _on_timer_timeout():
@@ -83,10 +83,11 @@ func _on_timer_timeout():
 		if isDead == false:
 			if carried_by == null :
 				if current_life_cycle !=0:
-					#Metabo_cost()	
-					if self.energy < self.maxEnergy:
-						Absorb_soil_energy(2,3)
-
+					Metabo_cost()	
+					Absorb_sun_energy(2,3)
+					'if self.energy < self.maxEnergy:
+						Absorb_soil_energy(2,3)'
+				
 				Growth()
 				Ageing()
 			#elif carried_by.species == "spidercrab": 
@@ -98,8 +99,11 @@ func _on_timer_timeout():
 							Absorb_life_energy(carried_by,5)
 					Growth()
 					Ageing()
-			if self.energy <= 0 or self.age >= self.lifespan or self.PV <=0:
+			if self.energy <= 0 or self.PV <=0:
 					Die()
+					
+			'if self.age >= self.lifespan:
+				Revert()'
 				
 			if current_time_speed != World.speed:
 					adapt_time_to_worldspeed()
@@ -110,7 +114,15 @@ func _on_timer_timeout():
 		$DebugLabel.text = str(self.energy)
 
 
-
+func Revert():
+	self.current_life_cycle = 0
+	Update_sprite($Sprite_0, $Collision_0)	
+	self.maxPV = Genome["maxPV"][self.current_life_cycle]
+	self.PV = self.maxPV
+	self.isPickable = true
+	self.age = 0
+	if World.isNight == true:
+			$PointLight2D.show()
 
 #diying
 func Die():
@@ -224,6 +236,8 @@ func Activate():
 
 
 func getPickUP(transporter):
+	print(current_life_cycle)
+	print(age)
 	if current_life_cycle == 0:
 		if self.carried_by != null:
 			carried_by.item_array.erase(self)
@@ -238,7 +252,7 @@ func getPickUP(transporter):
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	
-	Decomposition(1)
+	#Decomposition(1)
 	$Timer.stop()
 	set_collision_layer_value(1,0)
 	$Vision.set_collision_mask_value(1,false)

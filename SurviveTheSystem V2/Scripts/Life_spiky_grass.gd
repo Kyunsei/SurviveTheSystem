@@ -42,9 +42,9 @@ func Build_Stat():
 	self.current_life_cycle = 0
 	self.PV = 10
 	self.energy = 0
-	self.lifespan = 1.5*(World.one_day_length/lifecycletime)
+	self.lifespan = 3*(World.one_day_length/lifecycletime)
 	self.age= 0
-	self.maxEnergy = 50.
+	self.maxEnergy = 5.
 	
 
 	
@@ -55,8 +55,10 @@ func _on_timer_timeout():
 		if isDead == false:
 			'if self.energy < self.maxEnergy:
 				Absorb_soil_energy(1,1)'
-			Absorb_sun_energy(1,1)
+			
 			Metabo_cost()	
+			Absorb_sun_energy(2,0)
+
 			LifeDuplicate()
 			Ageing()
 			Growth()
@@ -91,13 +93,13 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 2 and self.energy > 2:
+		if self.age > 9 and self.energy > 2:
 			self.current_life_cycle += 1
 			
 			Update_sprite($Sprite_1,$Collision_1 )
 
 	if current_life_cycle == 1:
-		if self.age > 4 and self.energy > 2:
+		if self.age > 18 and self.energy > 2:
 			self.current_life_cycle += 1
 			Update_sprite($Sprite_2,$Collision_1 )
 
@@ -141,7 +143,7 @@ func LifeDuplicate():
 				li.age = 0
 				li.current_life_cycle = 0
 				li.PV = Genome["maxPV"][0]
-				li.global_position = PickRandomPlaceWithRange(position,4 * World.tile_size)
+				li.global_position = PickRandomPlaceWithRange(position,2 * World.tile_size)
 			#else:
 				#pass
 				#print("pool empty")
@@ -171,15 +173,14 @@ func Activate():
 	Update_sprite($Sprite_0,$Collision_0 )
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
-	self.size = get_node("Collision_0").shape.size
-	$Collision_0.disabled = false
+	#self.size = get_node("Collision_0").shape.size
 	$Vision/Collision.disabled = false
 
 func Deactivate():	
 	set_physics_process(false)
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	$Vision.monitoring = false
-	Decomposition(1)
+	#Decomposition(1)
 	$Timer.stop()
 	set_collision_layer_value(1,0)
 	$Collision_0.disabled = true

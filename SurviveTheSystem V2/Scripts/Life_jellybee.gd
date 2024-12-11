@@ -64,7 +64,7 @@ func _on_timer_timeout():
 			
 			Metabo_cost()
 			#LifeDuplicate()
-			Ageing()
+			#Ageing()
 			spwan_pollen()
 			#Growth()
 			#AdjustDirection()
@@ -227,7 +227,7 @@ func Activate():
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	set_physics_process(false)
-	Decomposition(0)
+	#Decomposition(0)
 	set_collision_layer_value(1,false)
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()

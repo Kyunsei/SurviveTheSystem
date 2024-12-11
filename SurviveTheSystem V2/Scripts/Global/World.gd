@@ -9,7 +9,7 @@ var fieldofview = Vector2(0,0) #in tile
 var debug_mode = true
 
 #ENERGY SUN
-var energy_flow_in = 3.0 #how much energy added by day by tile
+var energy_flow_in = 2.0 #how much energy added by day by tile
 var sun_energy_block_array = [] 
 
 #OLD SOIL ENERGY
@@ -49,7 +49,7 @@ var shader := rd.shader_create_from_spirv(shader_spirv)
 
 
 #Diffusion Control
-var diffusion_speed = 2.5 #in sec
+var diffusion_speed = 10. #in sec
 var diffusion_quantity_style = false # false = factor true = number #not implemented.
 var diffusion_factor = 0.5
 

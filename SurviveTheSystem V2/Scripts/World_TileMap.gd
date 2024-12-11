@@ -30,7 +30,7 @@ func instantiate_the_tiles_function():
 				if nl: 
 					nl.age = int(nl.lifespan*0.5) 
 					nl.energy = nl.maxEnergy
-					nl.current_life_cycle = max(0,lc-1)
+					nl.current_life_cycle = 0#max(0,lc-1)
 
 					#nl.Growth()
 
@@ -225,6 +225,7 @@ func draw_navigation():
 
 func _on_block_timer_timeout():
 	pass
+	World.sun_energy_block_array.fill(World.energy_flow_in)
 	#World.BlockLoopGPU() 
 	#update_ALL_tilemap_tile_to_new_soil_value()
 	

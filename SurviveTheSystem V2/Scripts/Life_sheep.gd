@@ -85,7 +85,7 @@ func Build_Stat():
 	self.age= 0
 	self.maxEnergy = 30.
 
-	self.lifespan = 4*(World.one_day_length/lifecycletime)
+	self.lifespan = 5*(World.one_day_length/lifecycletime)
 
 	self.vision_distance = 500
 	self.isPickable = true
@@ -124,7 +124,7 @@ func _on_timer_timeout():
 			Ageing()
 			Growth()
 			AdjustDirection()
-			if self.energy <= 0 or self.age >= Genome["lifespan"][self.current_life_cycle] or self.PV <=0:
+			if self.energy <= 0 or self.age >= lifespan or self.PV <=0:
 				Die()			
 			if current_time_speed != World.speed:
 				adapt_time_to_worldspeed()
@@ -167,7 +167,7 @@ func Growth():
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
-			self.maxEnergy = 10
+			self.maxEnergy = 15
 			self.size = Vector2(32,32)
 			$Brainy.Activate()
 
@@ -185,25 +185,25 @@ func Growth():
 			size = Vector2(64,64)
 			self.isPickable = false
 
-			
-
+	if current_life_cycle == 2 and self.maxEnergy < 40:
+		self.maxEnergy = self.maxEnergy + 5
 
 #Duplication
 func LifeDuplicate():
 	
 	if current_life_cycle == 2 :
 
-		if self.age > 3.5*(World.one_day_length/lifecycletime)  and self.energy > 10 and repro_counter <= 0:
+		if self.age > 3.5*(World.one_day_length/lifecycletime)  and self.energy > 20 and repro_counter <= 0:
 			repro_counter = 2*(World.one_day_length/lifecycletime)
-			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
-			for i in range(0,min(3,int(self.energy-5)/5)):
-
+			#var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
+			for i in range(0,int(self.energy-20)/5):
 			#Lpool Technique
 				var life = Life.build_life(species)
 				if life != null:
 					self.energy -= 5
 					life.energy = 5
 					life.global_position = PickRandomPlaceWithRange(position,1 * World.tile_size)
+					self.maxEnergy -= 5
 				else:
 					print("sheep_pool empty")
 		else:
@@ -290,7 +290,7 @@ func Activate():
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	set_physics_process(false)
-	Decomposition(1)
+	#Decomposition(1)
 	set_collision_layer_value(1,false)
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()

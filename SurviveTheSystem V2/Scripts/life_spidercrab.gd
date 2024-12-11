@@ -405,7 +405,7 @@ func Deactivate():
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	set_physics_process(false)
 	$Brainy.Desactivate()
-	Decomposition(1)
+	#Decomposition(1)
 	set_collision_layer_value(1,false)
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()

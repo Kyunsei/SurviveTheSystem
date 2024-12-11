@@ -399,8 +399,8 @@ func Sprint_Action_Stop():
 func PickUp():
 	if nearby_object:
 		action_finished = false
-		$BareHand_attack/CollisionShape2D/sprite2.show()
-		$BareHand_attack/ActionTimer.start(0.2)
+		'$BareHand_attack/CollisionShape2D/sprite2.show()
+		$BareHand_attack/ActionTimer.start(0.2)'
 		nearby_object.getPickUP(self)
 		nearby_object.current_sprite.modulate = Color(1,1,1)
 		nearby_object.z_index = 0		
@@ -521,7 +521,7 @@ func Activate():
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
 	set_physics_process(false)
-	Decomposition(1)
+	#Decomposition(1)
 	set_collision_layer_value(1,false)
 	$Vision.set_collision_mask_value(1,false)
 	$Timer.stop()

@@ -68,6 +68,7 @@ position = Vector2(16, -16)
 shape = SubResource("RectangleShape2D_dv5i7")
 
 [node name="Collision_1" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(16, -32)
 shape = SubResource("RectangleShape2D_dldvs")
 

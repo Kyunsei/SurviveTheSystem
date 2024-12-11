@@ -130,9 +130,9 @@ func Init_life_pool(folder):
 		life_number[i] = 0
 		
 
-	Life.Instantiate_emptyLife_pool(folder, 2500, "grass")
+	Life.Instantiate_emptyLife_pool(folder, 3500, "grass")
 
-	Life.Instantiate_emptyLife_pool(folder, 850, "spiky_grass")
+	Life.Instantiate_emptyLife_pool(folder, 100, "spiky_grass")
 	Life.Instantiate_emptyLife_pool(folder, 100, "sheep")
 	Life.Instantiate_emptyLife_pool(folder, 100, "berry")
 	Life.Instantiate_emptyLife_pool(folder, 3, "cat")
