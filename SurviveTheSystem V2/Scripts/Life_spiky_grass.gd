@@ -44,7 +44,7 @@ func Build_Stat():
 	self.energy = 0
 	self.lifespan = 3*(World.one_day_length/lifecycletime)
 	self.age= 0
-	self.maxEnergy = 5.
+	self.maxEnergy = 15.
 	
 
 	

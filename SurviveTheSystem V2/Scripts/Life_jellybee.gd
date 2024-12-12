@@ -3,16 +3,19 @@ extends LifeEntity
 
 # sheep script
 var species = "jellybee"
+var haspollen = 0
 
+var vision_array = {
+	"food": [],
+	"danger": [],
+	"friend": []
+}
 
-
-var food_array = []
-var danger_array = []
-var friend_array = []
 
 var jelly_color = Color(randf_range(0,1),randf_range(0,1),randf_range(0,1),1) 
 var hive = null
 
+@onready var navigation_agent: NavigationAgent2D = $NavigationAgent2D
 
 var input_dir = Vector2(0,0)
 
@@ -34,7 +37,8 @@ func Build_Stat():
 	self.current_life_cycle = 0
 	self.maxPV = 10
 	self.PV = 10
-	self.energy = 10
+	self.energy = 5
+	self.maxEnergy = 10
 	self.maxSpeed = 150
 	self.lifespan = 2*(90/5)
 	self.age= 0
@@ -44,10 +48,8 @@ func Build_Stat():
 func _physics_process(delta):
 	if isPlayer:
 		input_dir = Player_Control_movement()	
-	if isDead == false:
-		Brainy()
-	else:
-		velocity = Vector2(0,0)
+
+
 		
 	var collision = move_and_collide(velocity *delta)	
 	
@@ -80,10 +82,13 @@ func _on_timer_timeout():
 		$DebugLabel.text = str(age) + " " + str(energy)
 
 
+
 func spwan_pollen():
 	#generate new grass
-	var haspollen = true
-	if energy > 10 and haspollen:
+	var posindex = int(position.y/World.tile_size) * World.world_size  +  int(position.x/World.tile_size)
+	if haspollen > 0 and World.block_element_state[posindex] > 0:
+		var life = Life.build_life("spiky_grass", position)
+		haspollen -= 1
 		pass
 		'var life = Life.build_life("spiky_grass")
 		if life != null:
@@ -95,6 +100,7 @@ func spwan_pollen():
 
 #diying
 func Die():
+	$Brainy.Desactivate()
 	for i in item_array:
 		i.carried_by = null
 		i.z_index = 0
@@ -107,9 +113,8 @@ func Die():
 	
 	
 	self.isDead = true
+	Update_sprite($Dead_Sprite_0)
 
-	$Dead_Sprite_0.show()
-	$Sprite_0.hide()
 	
 
 #GROWTHING
@@ -146,15 +151,15 @@ func LifeDuplicate():
 
 
 func angry_mode_on(target):
-	if danger_array.has(target) == false:
-		danger_array.append(target)
-		for f in friend_array:
-			f.danger_array = danger_array.duplicate()
+	if vision_array['danger'].has(target) == false:
+		vision_array['danger'].append(target)
+		for f in vision_array['friend']:
+			f.vision_array['danger'] = vision_array['danger'].duplicate()
 
 
 
 
-func Brainy():
+'func Brainy():
 	var center = position + Vector2(32,-32) #temporaire
 	var danger_array_temp = danger_array.duplicate()
 	var food_array_temp = food_array.duplicate()
@@ -198,7 +203,7 @@ func Brainy():
 			else:
 				AdjustDirection()
 		else:
-			AdjustDirection()
+			AdjustDirection()'
 	
 func Activate():
 	#set_physics_process(true)
@@ -216,13 +221,9 @@ func Activate():
 	#$Timer.start()
 	#$Timer.time_left = randf_range(0,$Timer.wait_time)
 	$Timer.start(randf_range(0,$Timer.wait_time))
-
-
-	$Collision_0.show()
-	$Collision_0.disabled = false
 	$Vision/Collision.disabled = false
-	$Dead_Sprite_0.hide()	
-	$Sprite_0.show()
+	Update_sprite($Sprite_0,$Collision_0)
+	$Brainy.Activate()
 
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
@@ -237,6 +238,7 @@ func Deactivate():
 	#Life.jellybee_pool_state[self.pool_index] = 0
 	$Vision/Collision.disabled = true
 	$Collision_0.disabled = true
+	$Brainy.Desactivate()
 	#Life.sheep_number -= 1
 	#prepare for new instance
 
@@ -252,9 +254,10 @@ func Deactivate():
 
 func Eat(life):
 	#print("Eaten")
-	self.energy += life.energy
-	life.energy= 0
-	life.Die()
+	self.energy += max(life.energy-5,0)
+	life.energy -= max(life.energy-5,0)
+	haspollen += 1
+	#life.Die()
 	#$DebugLabel.text = str(age) + " " + str(energy)
 
 
@@ -262,14 +265,14 @@ func Eat(life):
 func _on_vision_body_entered(body):
 
 		if body.species== "spiky_grass" and body.current_life_cycle == 2:
-			#print(position.distance_to(body.position))
-			food_array.append(body)
-			#Eat(body)
-			#getCloser(body.position)
+			print("flower")
+			if body.energy > 5:
+				vision_array['food'].append(body)
+
 		if body.species== "jellybee" and body!= self:
-				friend_array.append(body)
-				if body.danger_array.size() > 0:
-					self.danger_array = body.danger_array
+				vision_array['friend'].append(body)
+				if body.vision_array['danger'].size() > 0:
+					self.vision_array['danger'] = body.vision_array['danger']
 				
 	
 		#getAway(body.position)
@@ -279,13 +282,9 @@ func _on_vision_body_entered(body):
 
 
 func _on_vision_body_exited(body):
-		if body.species== "spiky_grass" and body.current_life_cycle == 2:
-			#print(position.distance_to(body.position))
-			food_array.erase(body)
-			#Eat(body)
-			#getCloser(body.position)
-		if body.species== "jellybee" and body!= self:
-				friend_array.erase(body)
+	for n in vision_array:
+		if vision_array[n].has(body):
+			vision_array[n].erase(body)
 	
 
 

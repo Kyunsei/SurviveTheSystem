@@ -48,7 +48,7 @@ func Build_Stat():
 	self.age = 0
 	self.maxEnergy = 5.
 	
-	self.isPickable = true
+	self.isPickable = false
 
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:

@@ -49,12 +49,16 @@ func _process(delta):
 
 	
 		#20 days
-		if World.day == 0 and gameover == false:
+		if World.day == 12 and gameover == false:
 			if Life.player.isActive == true:
 				var rocket = rocket_scene.instantiate()
 				rocket.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 				add_child(rocket)
 				gameover = true
+				$UI/Label_annoncemnt.text = "The rescue ship landed! Time to escape"
+				$UI/Label_annoncemnt.show()
+				await get_tree().create_timer(1.).timeout
+				$UI/Label_annoncemnt.hide()
 				#CallGameOver()
 				
 
