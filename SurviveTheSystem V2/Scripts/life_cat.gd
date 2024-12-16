@@ -31,9 +31,8 @@ func Build_Genome():
 	Genome["planty_sprite"] = [preload("res://Art/player_bulbi.png")] #TEMPORAIRE
 
 func passive_healing():
-	if self.PV < self.maxPV and isimmobile_1sec == true:
-		self.PV += 0.5
-		AdjustBar()
+	if self.PV < self.maxPV :
+		self.PV += 0.2
 		isimmobile_1sec = false
 
 func stamina_regeneration():
@@ -284,6 +283,7 @@ func _on_timer_timeout():
 
 			Metabo_cost()
 			Ageing()
+			passive_healing()
 			AdjustBar()
 
 
@@ -564,7 +564,7 @@ func _on_bare_hand_attack_body_exited(body):
 func _on_action_timer_timeout():
 	$BareHand_attack/CollisionShape2D/sprite.hide()
 	$BareHand_attack/CollisionShape2D/sprite2.hide()
-	#passive_healing()
+	
 	#$BareHand_attack/CollisionShape2D.disabled = true
 	action_finished = true
 
