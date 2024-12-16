@@ -5,10 +5,16 @@ extends LifeEntity
 var species = "jellybee"
 var haspollen = 0
 
+var berry_nest: LifeEntity
+
+var berry_nest_array = []
+
+
 var vision_array = {
 	"food": [],
 	"danger": [],
-	"friend": []
+	"friend": [],
+	"nest": []
 }
 
 
@@ -52,7 +58,8 @@ func _physics_process(delta):
 
 		
 	var collision = move_and_collide(velocity *delta)	
-	
+	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
+	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
 	if item_array.size() > 0:
 		for i in item_array:
 			i.position = position+Vector2(0,-32)	
@@ -285,7 +292,12 @@ func _on_vision_body_entered(body):
 				if body.vision_array['danger'].size() > 0:
 					self.vision_array['danger'] = body.vision_array['danger']
 				
-	
+		if body.species== "berry" and body.current_life_cycle == 3:
+			if not berry_nest:
+				berry_nest = body
+				$Brainy/idle_state.nest = body
+			if not berry_nest_array.has(body):
+				self.vision_array['nest'].append(body)
 		#getAway(body.position)
 
 
@@ -297,6 +309,16 @@ func _on_vision_body_exited(body):
 		if vision_array[n].has(body):
 			vision_array[n].erase(body)
 	
+	if berry_nest == body:
+		if body.current_life_cycle != 3:
+				print("no more nest?")
+				berry_nest = null
+				$Brainy/idle_state.nest = null
+				for n in self.vision_array['nest']:
+					if n.current_life_cycle == 3:
+						berry_nest = n
+						$Brainy/idle_state.nest = n
+						break
 
 
 func _on_action_timer_timeout():

@@ -2,13 +2,24 @@ extends State
 class_name idle_state
 
 
-var direction: Vector2i
+var direction: Vector2
 var wander_time : float
+
+var nest: LifeEntity
+@export var nest_distance: float
+
 
 func choose_direction_and_time():
 	direction = Vector2(randi_range(-1,1),randi_range(-1,1))
-	wander_time = randf_range(0.2,1.)
 	
+	if nest:
+				if check_nest_distance(nest):
+					pass
+				else:
+
+					direction = life_entity.position.direction_to(nest.position)
+					
+	wander_time = randf_range(0.2,1.)				
 
 func Enter():
 	if get_parent().get_parent():
@@ -38,6 +49,9 @@ func Physics_Update(delta: float):
 					Transitioned.emit(self,"getcloser_state")
 				else:
 					pass
+			
+					#get_parent().get_node("getcloser_state").target = nest
+					#Transitioned.emit(self,"getcloser_state")
 				
 
 
@@ -89,3 +103,10 @@ func getClosestLife(array):
 			min_distance = calc_distance
 			closest_entity = p
 	return closest_entity
+
+
+func check_nest_distance(nest):
+	if life_entity.position.distance_to(nest.position) > nest_distance:
+		return false
+	else:
+		return true

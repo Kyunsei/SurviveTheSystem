@@ -9,6 +9,8 @@ var counter = 0
 
 var signalconnected = false
 
+var jelly_bee_array = []
+
 
 func Build_Genome():
 	Genome["maxPV"]=[10,10,15,20]
@@ -135,7 +137,8 @@ func Die():
 	Update_sprite($Dead_Sprite_0, $Collision_0)
 
 	$PointLight2D.hide()
-
+	for b in jelly_bee_array:
+		b.berry_nest = null
 	
 
 #GROWTHING
@@ -187,6 +190,8 @@ func LifeDuplicate2(transporter):
 				self.current_life_cycle = 2
 				$PointLight2D.hide()
 				Update_sprite($Sprite_2, $Collision_2)
+				for b in jelly_bee_array:
+					b.berry_nest = null
 				
 				
 

@@ -65,6 +65,7 @@ initial_state = NodePath("idle_state")
 
 [node name="idle_state" type="Node" parent="Brainy"]
 script = ExtResource("5_m5pe2")
+nest_distance = 200.0
 
 [node name="getcloser_state" type="Node" parent="Brainy"]
 script = ExtResource("6_uo74p")
