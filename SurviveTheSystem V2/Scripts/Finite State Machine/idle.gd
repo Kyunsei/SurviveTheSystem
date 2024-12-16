@@ -13,7 +13,7 @@ func choose_direction_and_time():
 func Enter():
 	if get_parent().get_parent():
 		life_entity = 	get_parent().get_parent()
-		life_entity.get_node("DebugLabel").text = "idle"
+		#life_entity.get_node("DebugLabel").text = "idle"
 	choose_direction_and_time()
 	
 func Exit():

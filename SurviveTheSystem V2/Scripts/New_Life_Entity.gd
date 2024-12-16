@@ -96,13 +96,20 @@ func Build_Phenotype(): #go to main
 func Update_sprite(new_sprite: Sprite2D, new_collision:CollisionShape2D = null):
 	if current_sprite:
 		current_sprite.hide()
-	current_sprite = new_sprite
-	current_sprite.show()
-	if new_collision:
-		if current_collision:
+
+	
+	if current_collision:
 			current_collision.hide()
 			current_collision.disabled = true
+			
+	current_sprite = new_sprite
+	current_sprite.show()
+	
+	if new_collision:
 		current_collision = new_collision
+		current_collision.show()
+		current_collision.disabled = false
+	else:
 		current_collision.show()
 		current_collision.disabled = false
 

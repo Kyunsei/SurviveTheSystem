@@ -64,6 +64,8 @@ func _on_timer_timeout():
 			$Timer.wait_time = lifecycletime / World.speed
 		if isDead == false:
 			
+		
+			
 			Metabo_cost()
 			#LifeDuplicate()
 			#Ageing()
@@ -254,9 +256,18 @@ func Deactivate():
 
 func Eat(life):
 	#print("Eaten")
-	self.energy += max(life.energy-5,0)
-	life.energy -= max(life.energy-5,0)
+	var value = max(0,min(life.energy-5, 5))
+	self.energy += value
+	life.energy -=  value
 	haspollen += 1
+	if life.current_life_cycle <= 2 and  life.energy <= 5:
+		life.current_life_cycle = 1
+		life.Update_sprite(life.get_node("Sprite_1"),life.get_node("Collision_1"))
+		if vision_array["food"].has(life):
+			print("remove")
+			vision_array["food"].erase(life)
+	
+
 	#life.Die()
 	#$DebugLabel.text = str(age) + " " + str(energy)
 

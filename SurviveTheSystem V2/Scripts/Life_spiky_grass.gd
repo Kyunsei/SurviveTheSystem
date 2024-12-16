@@ -57,7 +57,7 @@ func _on_timer_timeout():
 				Absorb_soil_energy(1,1)'
 			
 			Metabo_cost()	
-			Absorb_sun_energy(2,0)
+			Absorb_sun_energy(2,1)
 
 			LifeDuplicate()
 			Ageing()
@@ -93,19 +93,16 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 9 and self.energy > 2:
+		if self.age > 3 and self.energy > 2:
 			self.current_life_cycle += 1
 			
 			Update_sprite($Sprite_1,$Collision_1 )
 
 	if current_life_cycle == 1:
-		if self.age > 18 and self.energy > 2:
+		if self.energy >= 15:
 			self.current_life_cycle += 1
 			Update_sprite($Sprite_2,$Collision_1 )
-
-
 			#$Body/Collision_0.set_deferred("disabled", true)
-
 			#$Body/Collision_1.set_deferred("disabled", false)
 			
 
@@ -113,7 +110,7 @@ func Growth():
 #Duplication
 func LifeDuplicate():
 	if current_life_cycle >= 1 :
-		if self.energy > 4:
+		if self.energy < 5:
 			
 			
 			'var genome_ID = 0

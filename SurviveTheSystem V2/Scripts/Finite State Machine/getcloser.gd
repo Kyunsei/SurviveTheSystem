@@ -13,13 +13,16 @@ var previous_pos: Vector2
 
 @export var eating_distance: int = 16
 
+
+@export var timer_before_forget: int = 10
+
 @export var minimun_distance: int = 0
 @export var maximun_distance: int = 32*5
 @export var next_state = ""
 
 
 func Enter():
-	timer = 3.
+	timer = 10.
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()
 		if target:
@@ -29,7 +32,7 @@ func Enter():
 				#print("too far /obstacle")
 				remove_target()
 				Transitioned.emit(self,"idle_state")
-		life_entity.get_node("DebugLabel").text = "get closer"
+		#life_entity.get_node("DebugLabel").text = "get closer"
 func Exit():
 	pass
 	
@@ -37,7 +40,7 @@ func Update(delta: float):
 	#check if stuck every 3 second
 	if timer <= 0:
 		remove_target()
-		timer = 3.
+		timer = 10.
 	timer -= delta
 	pass
 	
@@ -78,7 +81,8 @@ func Physics_Update(delta: float):
 							#print("Eating")
 							life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
-							remove_target()
+							if target.isDead:
+								remove_target()
 							Transitioned.emit(self,"idle_state")
 							
 							
