@@ -144,6 +144,7 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
+		print(0)
 		if World.isNight == true:
 			$PointLight2D.show()
 		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy > 2:
@@ -153,6 +154,7 @@ func Growth():
 			self.PV = self.maxPV
 			self.isPickable = false
 	elif current_life_cycle == 1:
+
 		$PointLight2D.hide()
 		if self.age > 3*(World.one_day_length/lifecycletime) and self.energy > 5:
 			self.current_life_cycle += 1
@@ -160,6 +162,7 @@ func Growth():
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 	elif current_life_cycle == 2:
+		print(self.age)
 		$PointLight2D.hide()
 		if self.age > 4*(World.one_day_length/lifecycletime) and self.energy > 10 and self.counter == 0:
 			self.current_life_cycle += 1
@@ -171,7 +174,9 @@ func Growth():
 		self.counter +=1
 		if self.counter >= 0.5*(World.one_day_length/lifecycletime):
 			self.counter = 0
+			
 	elif current_life_cycle == 3:
+
 		if World.isNight == true:
 			$PointLight2D.show()
 

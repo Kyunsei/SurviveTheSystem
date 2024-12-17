@@ -28,9 +28,12 @@ func instantiate_the_tiles_function():
 			for t in tiles: 
 				var nl = Life.build_life(temp[i], t* World.tile_size)
 				if nl: 
-					nl.age = int(nl.lifespan*0.5) 
+					nl.age = int(nl.lifespan*0.33) * lc
 					nl.energy = nl.maxEnergy
-					nl.current_life_cycle = 0#max(0,lc-1)
+					nl.current_life_cycle = max(0,lc-1)
+					if nl.species == "berry":
+						print(nl.current_life_cycle )
+					nl.Growth()
 
 					#nl.Growth()
 
