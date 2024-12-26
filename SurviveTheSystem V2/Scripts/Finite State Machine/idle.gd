@@ -1,5 +1,5 @@
 extends State
-class_name idle_state
+class_name swarm_state
 
 
 var direction: Vector2
@@ -85,6 +85,7 @@ func check_Food():
 		#print("filter: " + str(ss-s) + "ms")
 		if alive_array.size() > 0:
 			get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
+			get_parent().get_node("getcloser_state").action_type = "FOOD"
 			
 			'if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
 				get_parent().get_node("avoid_state").target =  alive_array[0]'
@@ -110,3 +111,22 @@ func check_nest_distance(nest):
 		return false
 	else:
 		return true
+
+
+func check_Enemy():
+	if life_entity.vision_array["enemy"].size() > 0:
+		#var s = Time.get_ticks_msec()
+
+		var alive_array = life_entity.vision_array["enemy"].filter(func(obj): return obj.isDead == false)
+		
+		#var ss = Time.get_ticks_msec()
+		#print("filter: " + str(ss-s) + "ms")
+		if alive_array.size() > 0:
+			get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
+			get_parent().get_node("getcloser_state").action_type = "ENEMY"			
+			'if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
+				get_parent().get_node("avoid_state").target =  alive_array[0]'
+			return true
+		
+		return false
+	return false

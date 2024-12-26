@@ -119,7 +119,7 @@ func LifeDuplicate():
 		if timer_count <= 0:
 			if self.energy > 4:	
 
-				for i in range (3):
+				for i in range (2):
 					var newpos = PickRandomPlaceWithRange(position, 4 * World.tile_size)
 					var middle = newpos + Vector2(32/2,0)
 					var posindex = int(middle.y/World.tile_size)*World.world_size + int(middle.x/World.tile_size)		

@@ -11,7 +11,10 @@ var target_register_pos : Vector2
 var timer: float
 var previous_pos: Vector2
 
-@export var eating_distance: int = 16
+var action_type = "FOOD" 
+
+@export var action_distance: int = 16
+
 
 
 @export var timer_before_forget: int = 10
@@ -77,15 +80,21 @@ func Physics_Update(delta: float):
 								get_parent().get_node(next_state).target = target
 								Transitioned.emit(self,next_state)
 											
-						elif life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance:
+						elif life_entity.getCenterPos().distance_to(target.getCenterPos())<action_distance:
 							#print("Eating")
-							life_entity.Eat(target)
+							if action_type == "FOOD":
+								var action_func = Callable(life_entity, "Eat")
+								action_func.call(target)
+							elif action_type == "ENEMY":
+								var action_func = Callable(target, "getDamaged")
+								action_func.call(2) 
+							#life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							if target.isDead:
 								remove_target()
 							Transitioned.emit(self,"idle_state")
 							
-							
+						
 					
 					else:
 

@@ -123,7 +123,7 @@ func _on_timer_timeout():
 			LifeDuplicate()
 			Ageing()
 			Growth()
-			AdjustDirection()
+			#AdjustDirection()
 			if self.energy <= 0 or self.age >= lifespan or self.PV <=0:
 				Die()			
 			if current_time_speed != World.speed:
@@ -174,10 +174,10 @@ func Growth():
 	if current_life_cycle == 1:
 
 		if self.age > 2.5*(World.one_day_length/lifecycletime) and self.energy > 8:
-
+			$Brainy.Activate()
 			self.current_life_cycle += 1
 			Update_sprite($Sprite_2,$Collision_1)
-				
+			set_physics_process(true)
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
@@ -186,8 +186,10 @@ func Growth():
 			self.isPickable = false
 
 	if current_life_cycle == 2 and self.maxEnergy < 40:
+		set_physics_process(true)
 		self.maxEnergy = self.maxEnergy + 5
-
+		self.maxSpeed = Genome["speed"][self.current_life_cycle]
+		$Brainy.Activate()
 #Duplication
 func LifeDuplicate():
 	
