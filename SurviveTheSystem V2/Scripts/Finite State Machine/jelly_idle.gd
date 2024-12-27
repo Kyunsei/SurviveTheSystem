@@ -1,5 +1,5 @@
 extends State
-class_name idle_state
+class_name jelly_idle_state
 
 
 var direction: Vector2
@@ -10,13 +10,11 @@ var nest: LifeEntity
 
 
 func choose_direction_and_time():
-	direction = Vector2(randi_range(-1,1),randi_range(-1,1))
-	
+	direction = Vector2(randi_range(-1,1),randi_range(-1,1))	
 	if nest:
 				if check_nest_distance(nest):
 					pass
 				else:
-
 					direction = life_entity.position.direction_to(nest.position)
 					
 	wander_time = randf_range(0.2,1.)				
