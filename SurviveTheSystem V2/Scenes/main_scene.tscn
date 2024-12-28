@@ -279,7 +279,7 @@ autostart = true
 visible = false
 
 [node name="DirectionalLight2D" type="DirectionalLight2D" parent="."]
-visible = false
+energy = 0.0
 blend_mode = 1
 
 [connection signal="timeout" from="Life/LifeTimer" to="." method="_on_life_timer_timeout"]

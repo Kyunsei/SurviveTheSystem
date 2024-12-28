@@ -184,7 +184,7 @@ func UpdateSimulationSpeed():
 
 	$DayTimer.wait_time= World.daytime / World.speed
 	$NightTimer.stop()
-	$DirectionalLight2D.hide()
+	#$DirectionalLight2D.hide()
 	light_out.emit()
 	$DayTimer.start(0)
 	
@@ -298,24 +298,50 @@ signal light_out
 func _on_day_timer_timeout():
 	
 	#$UI/Night_filtre.show()
-	$DirectionalLight2D.show()
+	#$DirectionalLight2D.show()
+	decrease_light_intensity()
 	$NightTimer.start()
 	light_on.emit()
 	World.isNight = true
 
-	
+
+func decrease_light_intensity():
+	var i = 0
+	while i <= 1:
+		i = i + 0.1
+		$DirectionalLight2D.energy = i
+		await wait(.5)
+
+func increase_light_intensity():
+	var i = 1
+	while i > 0:
+		i = i - 0.1
+		$DirectionalLight2D.energy = i
+		await wait(.5)
+		
+func wait(seconds: float):
+	var timer = Timer.new()
+	timer.wait_time = seconds
+	timer.one_shot = true
+	add_child(timer)
+	timer.start()
+	await timer.timeout  # Wait until the "timeout" signal is emitted
+	timer.queue_free()  # Remove the timer after use
+		
 
 
 func _on_night_timer_timeout():
 	World.day += 1 # Replace with function body.
-	$DirectionalLight2D.hide()
+	#$DirectionalLight2D.hide()
 	#$UI/Night_filtre.hide()
-	light_out.emit()
+	increase_light_intensity()
+	#light_out.emit()
 	$DayTimer.start()
 	$UI/DayCount.show()
 	$UI/DayCount.text = "Day " + str(World.day)
 	$UI/DayCount/Timer.start()
 	World.isNight = false
+	
 'func _exit_tree():
 	thread.wait_to_finish()
 	

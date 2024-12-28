@@ -49,7 +49,7 @@ var shader := rd.shader_create_from_spirv(shader_spirv)
 
 
 #Diffusion Control
-var diffusion_speed = 10. #in sec
+var diffusion_speed = 30. #in sec
 var diffusion_quantity_style = false # false = factor true = number #not implemented.
 var diffusion_factor = 0.5
 

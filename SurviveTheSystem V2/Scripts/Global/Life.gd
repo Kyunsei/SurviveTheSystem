@@ -133,7 +133,7 @@ func Init_life_pool(folder):
 	Life.Instantiate_emptyLife_pool(folder, 3500, "grass")
 
 	Life.Instantiate_emptyLife_pool(folder, 100, "spiky_grass")
-	Life.Instantiate_emptyLife_pool(folder, 40, "sheep")
+	Life.Instantiate_emptyLife_pool(folder, 80, "sheep")
 	Life.Instantiate_emptyLife_pool(folder, 100, "berry")
 	Life.Instantiate_emptyLife_pool(folder, 3, "cat")
 	Life.Instantiate_emptyLife_pool(folder, 100, "stingtree")

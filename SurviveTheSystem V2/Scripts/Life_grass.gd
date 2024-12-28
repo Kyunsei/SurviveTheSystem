@@ -47,7 +47,7 @@ func Build_Stat():
 	self.lifespan = 1.5*(World.one_day_length/lifecycletime)
 	self.age = 0
 	self.maxEnergy = 5.
-	
+	self.lifecycletime = 20. #30. #in second
 	self.isPickable = false
 
 func _on_timer_timeout():
