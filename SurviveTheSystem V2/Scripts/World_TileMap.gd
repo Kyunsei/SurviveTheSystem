@@ -31,8 +31,6 @@ func instantiate_the_tiles_function():
 					nl.age = int(nl.lifespan*0.33) * lc
 					nl.energy = nl.maxEnergy
 					nl.current_life_cycle = max(0,lc-1)
-					if nl.species == "berry":
-						print(nl.current_life_cycle )
 					nl.Growth()
 
 					#nl.Growth()
@@ -162,7 +160,7 @@ func draw_new_tiles_according_to_soil_value(layer, cells):
 		var co = get_cell_atlas_coords(layer,cell)
 		#if tile_id != -1:
 		var posindex = cell.y*World.world_size + cell.x
-		print(World.block_element_array[posindex])
+
 		
 		if World.block_element_array[posindex] >= 0:
 			World.block_element_state[posindex] = 1

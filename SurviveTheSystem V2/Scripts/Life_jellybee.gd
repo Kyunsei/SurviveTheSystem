@@ -90,7 +90,7 @@ func _on_timer_timeout():
 
 		#Debug part
 		$DebugLabel.text = str(age) + " " + str(energy)
-	if not berry_nest:
+	if not berry_nest or berry_nest.current_life_cycle != 3:
 		find_new_nest()
 
 
@@ -280,7 +280,6 @@ func Eat(life):
 		life.current_life_cycle = 1
 		life.Update_sprite(life.get_node("Sprite_1"),life.get_node("Collision_1"))
 		if vision_array["food"].has(life):
-			print("remove")
 			vision_array["food"].erase(life)
 	
 
@@ -316,7 +315,7 @@ func _on_vision_body_exited(body):
 	for n in vision_array:
 		if vision_array[n].has(body):
 			vision_array[n].erase(body)
-			
+	
 	if berry_nest == body:
 		if body.current_life_cycle != 3 or body.isDead== true:
 				berry_nest = null

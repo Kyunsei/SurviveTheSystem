@@ -401,6 +401,7 @@ func PickUp():
 		action_finished = false
 		'$BareHand_attack/CollisionShape2D/sprite2.show()
 		$BareHand_attack/ActionTimer.start(0.2)'
+
 		nearby_object.getPickUP(self)
 		nearby_object.current_sprite.modulate = Color(1,1,1)
 		nearby_object.z_index = 0		
@@ -550,7 +551,6 @@ func Eat(life):
 #Sacrebleu il faut changer toutes les entity pour leur donner des "damageable" group
 func _on_bare_hand_attack_body_entered(body):
 	if body != self and body.is_in_group("not_damageable") == false :
-		print("entered area groupe damafge")
 		if body.z_index == 0:
 			barehand_array.append(body)	
 #Sacrebleu il faut changer toutes les entity pour leur donner des "damageable" group
@@ -576,13 +576,15 @@ func _on_regen_timer_timeout():
 
 func _on_bare_hand_attack_area_entered(area):
 	if area.is_in_group("damageable"):
-		print("damageable area touched")
+		#print("damageable area touched")
 		area.get_parent().getDamaged(10,self)
 
 
 func _on_interaction_area_body_entered(body):
-	if body.isPickable and item_array.has(body)==false:
-		interaction_array.append(body)
+	if self.isActive:
+		if body.isPickable and item_array.has(body)==false:
+			interaction_array.append(body)
+
 		
 
 

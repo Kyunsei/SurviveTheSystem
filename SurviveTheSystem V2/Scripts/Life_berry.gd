@@ -11,6 +11,9 @@ var signalconnected = false
 
 var jelly_bee_array = []
 
+		
+signal light_on
+signal light_out
 
 func Build_Genome():
 	Genome["maxPV"]=[10,10,15,20]
@@ -144,7 +147,6 @@ func Die():
 #GROWTHING
 func Growth():
 	if current_life_cycle == 0:
-		print(0)
 		if World.isNight == true:
 			$PointLight2D.show()
 		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy > 2:
@@ -154,7 +156,6 @@ func Growth():
 			self.PV = self.maxPV
 			self.isPickable = false
 	elif current_life_cycle == 1:
-
 		$PointLight2D.hide()
 		if self.age > 3*(World.one_day_length/lifecycletime) and self.energy > 5:
 			self.current_life_cycle += 1
@@ -162,7 +163,6 @@ func Growth():
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 	elif current_life_cycle == 2:
-		print(self.age)
 		$PointLight2D.hide()
 		if self.age > 4*(World.one_day_length/lifecycletime) and self.energy > 10 and self.counter == 0:
 			self.current_life_cycle += 1
@@ -183,7 +183,8 @@ func Growth():
 
 #Duplication
 func LifeDuplicate2(transporter):
-		if self.energy >= 15 :
+		#print("duplicate")
+		#if self.energy >= 15 :
 			var life = Life.build_life(species)
 			if life != null:
 				self.energy -= 10
@@ -193,6 +194,7 @@ func LifeDuplicate2(transporter):
 				getTransported(life,transporter)
 							
 				self.current_life_cycle = 2
+				self.isPickable = false
 				$PointLight2D.hide()
 				Update_sprite($Sprite_2, $Collision_2)
 				for b in jelly_bee_array:
@@ -201,7 +203,7 @@ func LifeDuplicate2(transporter):
 				
 
 			else:
-				print("pool empty")
+				print("berry_pool empty")
 
 
 			
@@ -214,9 +216,8 @@ func getTransported(seed,transporter):
 	if transporter.isPlayer == false and transporter.species != "spidercrab" :
 		seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
 
-		
-signal light_on
-signal light_out
+
+
 
 func Activate():
 
@@ -246,8 +247,6 @@ func Activate():
 
 
 func getPickUP(transporter):
-	print(current_life_cycle)
-	print(age)
 	if current_life_cycle == 0:
 		if self.carried_by != null:
 			carried_by.item_array.erase(self)
@@ -255,7 +254,8 @@ func getPickUP(transporter):
 		transporter.item_array.append(self)
 		#seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
 	elif current_life_cycle == 3:
-					LifeDuplicate2(transporter)
+		#print("here")
+		LifeDuplicate2(transporter)
  
 
 
@@ -311,7 +311,8 @@ func _on_vision_body_entered(body):
 			if body.species== "spidercrab" and body.item_array.size() == 0  and body.current_life_cycle == 1:
 				LifeDuplicate2(body)	
 		else:
-			LifeDuplicate2(body.get_parent())
+			pass
+			#LifeDuplicate2(body.get_parent())
 
 
 
@@ -321,6 +322,7 @@ func _on_hitch_hike_timer_timeout():
 		carried_by.item_array.erase(self)
 		self.carried_by = null
 		self.z_index = 0
+		Update_sprite($Sprite_0, $Collision_0)
 
 func _on_light_on() :
 	if self.current_life_cycle == 0 or self.current_life_cycle == 3 :
