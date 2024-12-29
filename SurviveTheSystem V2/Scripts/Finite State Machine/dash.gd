@@ -41,6 +41,7 @@ func Update(_delta: float):
 				isDashing = false
 				life_entity.velocity = Vector2.ZERO
 				Transitioned.emit(self,"idle_state")
+				#life_entity.set_collision_mask_value(2,true)
 		
 func Physics_Update(_delta: float):
 	#if "food" in range :
@@ -59,7 +60,7 @@ func Physics_Update(_delta: float):
 				else :
 						'if not isDashing:
 						ChargeToward(target)'
-						if life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance:
+						if life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance + (eating_distance*3*life_entity.current_life_cycle):
 							life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							remove_target()
@@ -79,7 +80,7 @@ func check_Danger():
 		var alive_danger = life_entity.vision_array["danger"].filter(func(obj): return obj.isDead == false)
 		if alive_danger.size() > 0:
 			danger_entity = getClosestLife(alive_danger)
-			if life_entity.getCenterPos().distance_to(danger_entity.getCenterPos()) < World.tile_size*6:
+			if life_entity.getCenterPos().distance_to(danger_entity.getCenterPos()) < World.tile_size*2:
 				get_parent().get_node("avoid_state").target = danger_entity
 				return true
 			return false
@@ -97,6 +98,7 @@ func ChargeToward(food_source):
 	charge_direction = -(center - food_source.getCenterPos()).normalized()
 	life_entity.velocity = charge_direction * life_entity.maxSpeed*speed_multiplicator	
 	timer_dash_count = charge_duration	
+	#life_entity.set_collision_mask_value(2,false)
 
 func Charge_preparation(_delta):
 	if timer_dash_prep_count > 0:

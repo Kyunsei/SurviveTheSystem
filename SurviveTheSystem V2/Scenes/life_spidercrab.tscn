@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bkvttykvie6wd"]
+[gd_scene load_steps=13 format=3 uid="uid://bkvttykvie6wd"]
 
 [ext_resource type="Script" path="res://Scripts/life_spidercrab.gd" id="1_3m3wu"]
 [ext_resource type="Texture2D" uid="uid://e1v54i3ffumy" path="res://Art/spider.png" id="2_ge6rd"]
@@ -8,15 +8,14 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="6_e468h"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="7_p6dui"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/dash.gd" id="8_bo4wv"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="9_n34vj"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chh8i"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_wmr4f"]
-size = Vector2(42, 42)
+[sub_resource type="CircleShape2D" id="CircleShape2D_4635j"]
+radius = 8.0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_w0i8c"]
-size = Vector2(128, 128)
+[sub_resource type="CircleShape2D" id="CircleShape2D_4wqpl"]
+radius = 48.0
 
 [sub_resource type="Theme" id="Theme_g2d4v"]
 
@@ -32,13 +31,12 @@ script = ExtResource("1_3m3wu")
 one_shot = true
 
 [node name="Vision" type="Area2D" parent="."]
-visible = false
 collision_layer = 0
 collision_mask = 0
 
 [node name="Collision" type="CollisionShape2D" parent="Vision"]
-visible = false
 shape = SubResource("CircleShape2D_chh8i")
+debug_color = Color(0.854902, 0.32549, 0.45098, 0.419608)
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
 texture = ExtResource("2_ge6rd")
@@ -49,10 +47,10 @@ texture = ExtResource("3_ci0x6")
 centered = false
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_wmr4f")
+shape = SubResource("CircleShape2D_4635j")
 
 [node name="Collision_1" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_w0i8c")
+shape = SubResource("CircleShape2D_4wqpl")
 
 [node name="DebugLabel" type="Label" parent="."]
 offset_right = 40.0
@@ -91,24 +89,23 @@ path_desired_distance = 64.0
 script = ExtResource("4_hi2ya")
 initial_state = NodePath("idle_state")
 
-[node name="idle_spidercrab_state" type="Node" parent="Brainy"]
+[node name="idle_state" type="Node" parent="Brainy"]
 script = ExtResource("5_c3own")
 
 [node name="getcloser_state" type="Node" parent="Brainy"]
 script = ExtResource("6_e468h")
+chasing_max_timer = 1000.0
 minimun_distance = 320
 maximun_distance = 500
 next_state = "dash_state"
 
 [node name="avoid_state" type="Node" parent="Brainy"]
 script = ExtResource("7_p6dui")
-idle_type_state = "idle_spidercrab_state"
+detection_distance = 100
 
 [node name="dash_state" type="Node" parent="Brainy"]
 script = ExtResource("8_bo4wv")
-
-[node name="idle_state" type="Node" parent="Brainy"]
-script = ExtResource("9_n34vj")
+eating_distance = 32
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

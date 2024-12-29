@@ -51,6 +51,7 @@ shape = SubResource("RectangleShape2D_dv5i7")
 disabled = true
 
 [node name="DebugLabel" type="Label" parent="."]
+visible = false
 offset_right = 40.0
 offset_bottom = 23.0
 

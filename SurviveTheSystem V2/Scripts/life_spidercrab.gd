@@ -19,6 +19,8 @@ var input_dir = Vector2.ZERO
 var last_dir = Vector2.ZERO
 var rotation_dir = 0
 
+var clone_timer = 0
+
 func Build_Genome():
 	Genome["maxPV"]=[60,60]
 	Genome["speed"] =[190,150]
@@ -37,7 +39,8 @@ func init_progressbar():
 func Build_Stat():
 	self.current_life_cycle = 0
 	self.PV = 60# Genome["maxPV"][self.current_life_cycle]	
-	self.energy = 80
+	self.energy = 0
+	self.maxEnergy = 50
 	self.maxPV = 60#Genome["maxPV"][self.current_life_cycle]	
 	self.maxSpeed = 190
 	self.size = $Sprite_0.texture.get_size()*0.33
@@ -197,7 +200,7 @@ func hide_under_soil():
 	self.maxSpeed = 0
 	velocity = Vector2(0,0)
 	isBurrow = true
-	get_node("Collision_"+ str(current_life_cycle)).disabled = true
+	get_node("Collision_" + str(current_life_cycle)).disabled = true
 	$DebugLabel.text = "under_soil"
 	if self.current_life_cycle == 0:
 		$ActionTimer.start(5.)
@@ -237,8 +240,13 @@ func _on_timer_timeout():
 		if $Timer.wait_time != lifecycletime / World.speed:
 			$Timer.wait_time = lifecycletime / World.speed
 		if isDead == false:
+			if current_life_cycle == 1:
+				for i in range(2):
+					Metabo_cost()
+			elif current_life_cycle == 0:
+				for i in range(3):
+					Metabo_cost()
 
-			Metabo_cost()
 			Ageing()
 			AdjustBar()
 			LifeDuplicate()
@@ -256,7 +264,8 @@ func _on_timer_timeout():
 
 func Growth():
 	if current_life_cycle == 0:
-		if self.age > 10 and self.energy > 5:
+		#10*(World.one_day_length/lifecycletime)
+		if self.age > 5*(World.one_day_length/lifecycletime) and self.energy >= 30:
 			self.current_life_cycle += 1
 			var leg_pos = [self.getCenterPos()-Vector2(48,0), self.getCenterPos()-Vector2(-48,0), self.getCenterPos()-Vector2(48,-32), self.getCenterPos()-Vector2(-48,-32)]
 			var leg_rotation = [-1.5707963268,1.5707963268,-1.5707963268,1.5707963268]
@@ -276,12 +285,15 @@ func Growth():
 				crab_claw.position = claw_pos[n]
 				crab_claw.rotation = claw_rotation[n]
 				crab_claw.get_node("Sprite_0").flip_h = claw_flip[n]
+				
 			$Sprite_0.scale = Vector2(1,1)
 			$Dead_Sprite_0.scale = Vector2(1,1)
-			$Collision_0.disabled = true
+			
+			Update_sprite($Sprite_0,$Collision_1)
+			'$Collision_0.disabled = true
 			$Collision_1.disabled = false
 			$Collision_0.hide()
-			$Collision_1.show()
+			$Collision_1.show()'
 			position.x = position.x - $Sprite_0.texture.get_width()/2  + size.x/2 #*Vector2(1,0)
 			position.y = position.y + $Sprite_0.texture.get_height()/2  - size.y/2 #*Vector2(1,0)
 			$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #- ($Sprite_0.texture.get_size()/2 + size/2)*Vector2(1,0)
@@ -295,21 +307,27 @@ func Growth():
 			
 			
 			maxSpeed = 190
-		
+			self.maxEnergy = 80
 			self.maxSpeed = Genome["speed"][self.current_life_cycle]
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 
 func LifeDuplicate():
-	if self.age % 70 == 0 and self.energy > 60 and current_life_cycle >= 1:
-			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
-			var life = Life.build_life(species)
-			if life != null:
-				self.energy -= 30			
-				life.energy = 30
-				life.global_position = newpos 
+	#10*(World.one_day_length/lifecycletime)
+	if self.age > 20.*(World.one_day_length/lifecycletime) and self.energy >= 70 and current_life_cycle >= 1:
+			if clone_timer == 0 :
+				
+				var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
+				var life = Life.build_life(species)
+				if life != null:
+					self.energy -= 15			
+					life.energy = 15
+					life.global_position = newpos 
+					clone_timer = 5.*(World.one_day_length/lifecycletime)
+				else:
+					print("spidercrab_pool empty")
 			else:
-				print("spidercrab_pool empty")
+				clone_timer -= 1
 
 func Attack():
 	BareHand_attack()
@@ -458,10 +476,9 @@ func _on_vision_body_entered(body):
 	if body.species== "sheep":
 		if body.current_life_cycle > 0 and self.current_life_cycle == 1:
 			vision_array["food"].append(body)
-		elif body.current_life_cycle < 2 and self.current_life_cycle == 0:
+		elif body.current_life_cycle == 1 and self.current_life_cycle == 0:
 			vision_array["food"].append(body)
-	if body.species== "jellybee":
-		if self.current_life_cycle == 0:
+	if body.species== "jellybee" and self.current_life_cycle == 0:
 			vision_array["food"].append(body)
 	if body.species == "catronaute":
 		if self.current_life_cycle == 1:
