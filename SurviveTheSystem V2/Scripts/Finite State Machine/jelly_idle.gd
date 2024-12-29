@@ -42,6 +42,9 @@ func Physics_Update(delta: float):
 			if check_Danger():
 				Transitioned.emit(self,"avoid_state")
 			
+			elif check_Enemy():
+				Transitioned.emit(self,"getcloser_state")
+			
 			elif check_Hungry():
 				if check_Food():
 					Transitioned.emit(self,"getcloser_state")
@@ -84,6 +87,7 @@ func check_Food():
 		if alive_array.size() > 0:
 			get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
 			get_parent().get_node("getcloser_state").action_type = "FOOD"
+			get_parent().get_node("getcloser_state").chasing_max_timer = 10.
 			
 			'if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
 				get_parent().get_node("avoid_state").target =  alive_array[0]'
@@ -104,6 +108,18 @@ func getClosestLife(array):
 	return closest_entity
 
 
+func getClosestLife_from(ent,array):
+	var closest_entity: LifeEntity = null
+	var min_distance: float = 10000
+	var calc_distance: float = 0
+	for p in array:
+		calc_distance = ent.position.distance_to(p.position)
+		if calc_distance <= min_distance:
+			min_distance = calc_distance
+			closest_entity = p
+	return closest_entity
+
+
 func check_nest_distance(nest):
 	if life_entity.position.distance_to(nest.position) > nest_distance:
 		return false
@@ -112,19 +128,21 @@ func check_nest_distance(nest):
 
 
 func check_Enemy():
-	if life_entity.vision_array["enemy"].size() > 0:
-		#var s = Time.get_ticks_msec()
-
-		var alive_array = life_entity.vision_array["enemy"].filter(func(obj): return obj.isDead == false)
-		
-		#var ss = Time.get_ticks_msec()
-		#print("filter: " + str(ss-s) + "ms")
-		if alive_array.size() > 0:
-			get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
-			get_parent().get_node("getcloser_state").action_type = "ENEMY"			
-			'if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
-				get_parent().get_node("avoid_state").target =  alive_array[0]'
-			return true
-		
+	if nest:
+		var enemy_entity: LifeEntity
+		if life_entity.vision_array["enemy"].size() > 0:
+			var alive_enemy = life_entity.vision_array["enemy"].filter(func(obj): return obj.isDead == false)
+			if alive_enemy.size() > 0:
+				enemy_entity = getClosestLife_from(nest,alive_enemy)
+				if nest.getCenterPos().distance_to(enemy_entity.position) < World.tile_size*6:
+					get_parent().get_node("getcloser_state").target = enemy_entity
+					get_parent().get_node("getcloser_state").chasing_max_timer = 1.5
+					get_parent().get_node("getcloser_state").action_type = "ENEMY"			
+					return true
+				return false
+			return false
 		return false
-	return false
+	return false	
+		
+
+

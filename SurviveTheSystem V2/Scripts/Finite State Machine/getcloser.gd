@@ -15,9 +15,9 @@ var action_type = "FOOD"
 
 @export var action_distance: int = 16
 
+@export var chasing_max_timer: float = 10
 
 
-@export var timer_before_forget: int = 10
 
 @export var minimun_distance: int = 0
 @export var maximun_distance: int = 32*5
@@ -25,7 +25,7 @@ var action_type = "FOOD"
 
 
 func Enter():
-	timer = 10.
+	timer = chasing_max_timer
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()
 		if target:
@@ -43,7 +43,7 @@ func Update(delta: float):
 	#check if stuck every 3 second
 	if timer <= 0:
 		remove_target()
-		timer = 10.
+		timer = chasing_max_timer
 	timer -= delta
 	pass
 	
@@ -87,7 +87,7 @@ func Physics_Update(delta: float):
 								action_func.call(target)
 							elif action_type == "ENEMY":
 								var action_func = Callable(target, "getDamaged")
-								action_func.call(2) 
+								action_func.call(4) 
 							#life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							if target.isDead:
@@ -121,6 +121,10 @@ func check_Danger():
 	return false
 
 func remove_target():
-	if 	life_entity.vision_array["food"].has(target):
-			life_entity.vision_array["food"].erase(target)
-			target = null
+	for n in life_entity.vision_array:
+		if 	life_entity.vision_array[n].has(target):
+				if n == "food":
+					life_entity.vision_array[n].erase(target)
+				target = null
+
+

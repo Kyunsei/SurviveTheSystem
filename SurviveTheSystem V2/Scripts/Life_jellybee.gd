@@ -14,6 +14,7 @@ var vision_array = {
 	"food": [],
 	"danger": [],
 	"friend": [],
+	"enemy": [],
 	"nest": []
 }
 
@@ -89,7 +90,15 @@ func _on_timer_timeout():
 
 		#Debug part
 		$DebugLabel.text = str(age) + " " + str(energy)
+	if not berry_nest:
+		find_new_nest()
 
+
+func find_new_nest():
+	var potential_nest = vision_array["nest"].filter(func(obj): return obj.current_life_cycle == 3)
+	if potential_nest.size() > 0:
+			berry_nest = getClosestLife(potential_nest, 1000000.0)
+			$Brainy/idle_state.nest = berry_nest	
 
 
 func spwan_pollen():
@@ -283,7 +292,6 @@ func Eat(life):
 func _on_vision_body_entered(body):
 
 		if body.species== "spiky_grass" and body.current_life_cycle == 2:
-			print("flower")
 			if body.energy > 5:
 				vision_array['food'].append(body)
 
@@ -293,11 +301,10 @@ func _on_vision_body_entered(body):
 					self.vision_array['danger'] = body.vision_array['danger']
 				
 		if body.species== "berry" and body.current_life_cycle == 3:
-			if not berry_nest:
-				berry_nest = body
-				$Brainy/idle_state.nest = body
-			if not berry_nest_array.has(body):
 				self.vision_array['nest'].append(body)
+				
+		if body.species== "catronaute":
+			vision_array['enemy'].append(body)
 		#getAway(body.position)
 
 
@@ -305,20 +312,21 @@ func _on_vision_body_entered(body):
 
 
 func _on_vision_body_exited(body):
+
 	for n in vision_array:
 		if vision_array[n].has(body):
 			vision_array[n].erase(body)
-	
+			
 	if berry_nest == body:
-		if body.current_life_cycle != 3:
-				print("no more nest?")
+		if body.current_life_cycle != 3 or body.isDead== true:
 				berry_nest = null
 				$Brainy/idle_state.nest = null
-				for n in self.vision_array['nest']:
-					if n.current_life_cycle == 3:
-						berry_nest = n
-						$Brainy/idle_state.nest = n
-						break
+				var potential_nest = vision_array["nest"].filter(func(obj): return obj.current_life_cycle == 3)
+				if potential_nest.size() > 0:
+					berry_nest = getClosestLife(potential_nest, 1000000.0)
+					$Brainy/idle_state.nest = berry_nest	
+	
+			
 
 
 func _on_action_timer_timeout():
