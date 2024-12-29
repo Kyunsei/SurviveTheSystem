@@ -42,7 +42,7 @@ func Build_Stat():
 	self.maxSpeed = 190
 	self.size = $Sprite_0.texture.get_size()*0.33
 	self.age= 0
-	self.lifespan = 5000
+	self.lifespan = 30*(World.one_day_length/lifecycletime)
 
 	AdjustBar()
 	

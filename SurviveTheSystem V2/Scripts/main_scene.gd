@@ -318,6 +318,7 @@ func increase_light_intensity():
 		i = i - 0.1
 		$DirectionalLight2D.energy = i
 		await wait(.5)
+	light_out.emit()
 		
 func wait(seconds: float):
 	var timer = Timer.new()
@@ -335,7 +336,7 @@ func _on_night_timer_timeout():
 	#$DirectionalLight2D.hide()
 	#$UI/Night_filtre.hide()
 	increase_light_intensity()
-	#light_out.emit()
+
 	$DayTimer.start()
 	$UI/DayCount.show()
 	$UI/DayCount.text = "Day " + str(World.day)
