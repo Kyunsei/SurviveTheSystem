@@ -1,12 +1,15 @@
-[gd_scene load_steps=15 format=3 uid="uid://bvgtrefdtlsul"]
+[gd_scene load_steps=18 format=3 uid="uid://bvgtrefdtlsul"]
 
 [ext_resource type="Script" path="res://Scripts/main_scene.gd" id="1_0faxq"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_03gyf"]
+[ext_resource type="Texture2D" uid="uid://cij47xdxg35ub" path="res://blue-whale.png" id="3_kqjac"]
 [ext_resource type="TileSet" uid="uid://da3qv5bqnia2y" path="res://Scenes/tilemap_world.tres" id="3_n4anu"]
 [ext_resource type="PackedScene" uid="uid://cgax0tyixs3og" path="res://Scenes/pause_menu.tscn" id="3_qkr51"]
 [ext_resource type="Script" path="res://Scripts/World_TileMap.gd" id="4_34ivu"]
+[ext_resource type="Script" path="res://Test/whale_test.gd" id="4_66cqn"]
 [ext_resource type="PackedScene" uid="uid://m26fd7j0ngbx" path="res://Scenes/spawn_window.tscn" id="4_j4k08"]
 [ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_ytf0d"]
+[ext_resource type="AudioStream" uid="uid://bxuloq6crhyqa" path="res://whale_sound.mp3" id="5_5i0wj"]
 [ext_resource type="PackedScene" uid="uid://dx8j1h6gp20xq" path="res://Scenes/clock.tscn" id="5_a43f2"]
 [ext_resource type="PackedScene" uid="uid://cgchxlrwd55ih" path="res://Scenes/debug_menu.tscn" id="8_2wg6p"]
 [ext_resource type="Texture2D" uid="uid://ks7vvwcgxpmj" path="res://Test/dinosaur.png" id="10_qthox"]
@@ -30,6 +33,18 @@ script = ExtResource("1_0faxq")
 position = Vector2(18, -82)
 scale = Vector2(0.469708, 0.469708)
 texture = ExtResource("2_03gyf")
+
+[node name="Blue-whale" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-2630, -2548)
+scale = Vector2(8, 8)
+texture = ExtResource("3_kqjac")
+script = ExtResource("4_66cqn")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Blue-whale"]
+stream = ExtResource("5_5i0wj")
+volume_db = 10.0
+pitch_scale = 0.5
 
 [node name="World_TileMap" type="TileMap" parent="." groups=["navigation"]]
 tile_set = ExtResource("3_n4anu")
