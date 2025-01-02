@@ -43,7 +43,7 @@ script = ExtResource("4_66cqn")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="Blue-whale"]
 stream = ExtResource("5_5i0wj")
-volume_db = 10.0
+volume_db = 1.0
 pitch_scale = 0.5
 
 [node name="World_TileMap" type="TileMap" parent="." groups=["navigation"]]
