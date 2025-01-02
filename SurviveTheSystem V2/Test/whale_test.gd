@@ -9,7 +9,7 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	if World.day == 5:
+	if World.day == 5 and active == false:
 		whale_appear()
 	if active :
 		Whale_event(delta)
