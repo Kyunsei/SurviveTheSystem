@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://dey7g35btpob4"]
+
+[ext_resource type="Texture2D" uid="uid://khj45rgk1tsp" path="res://Art/under.png" id="1_14yxs"]
+[ext_resource type="Texture2D" uid="uid://c73peghcsdadi" path="res://Art/fill.png" id="2_8me8l"]
+
+[node name="ProgressBar" type="TextureProgressBar"]
+offset_right = 16.0
+offset_bottom = 17.0
+value = 20.0
+fill_mode = 4
+texture_under = ExtResource("1_14yxs")
+texture_over = ExtResource("1_14yxs")
+texture_progress = ExtResource("2_8me8l")
+tint_over = Color(1, 1, 1, 0)
+
+[node name="Action_timer_bar" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1136.0
+offset_bottom = -632.0
+grow_horizontal = 2
+grow_vertical = 2

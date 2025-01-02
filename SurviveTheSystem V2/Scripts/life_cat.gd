@@ -19,6 +19,8 @@ var rotation_dir = 0
 var nearby_object: LifeEntity 
 var interaction_array =[]
 
+var eat_timer = 0
+
 func Build_Genome():
 	Genome["maxPV"]=[10000000000000]
 	Genome["stamina"]=[100]
@@ -151,6 +153,22 @@ func _physics_process(delta):
 			
 		Highlight_closest_pickable_element()
 		
+		if Input.is_action_pressed("eat") and item_array.size() >0:
+			eat_timer += delta * 120
+			$TextureProgressBar.value = eat_timer
+			
+			if eat_timer >= 100:	
+				print("eat")
+				Eat_Action()
+				eat_timer = 0
+				$TextureProgressBar.hide()
+			#timer += delta
+		
+		'if timer >= threshold_time and action_started:
+		action_started = false
+		timer = 0
+		print("hold")'
+		
 	move_and_slide()
 	
 	
@@ -187,8 +205,21 @@ func _input(event):
 			Drop()
 			isimmobile_1sec = false
 
+
+		if Input.is_action_just_released("eat"):
+			eat_timer = 0
+			$TextureProgressBar.value = eat_timer
+			$TextureProgressBar.hide()
+			#if timer < threshold_time and action_started:
+			#action_started = false
+
+			
 		if event.is_action_pressed("eat"):
-			Eat_Action()
+		
+			eat_timer = 0
+			$TextureProgressBar.show()
+			$TextureProgressBar.value = eat_timer
+
 			#Eat()
 			isimmobile_1sec = false
 		if event.is_action_released("sprint"):

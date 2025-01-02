@@ -1,7 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://e2vhj8gjm240"]
+[gd_scene load_steps=13 format=3 uid="uid://e2vhj8gjm240"]
 
 [ext_resource type="Script" path="res://Scripts/life_cat.gd" id="1_ur5ob"]
 [ext_resource type="Texture2D" uid="uid://cg8jna1y730qc" path="res://Art/player_cat.png" id="2_j3d6h"]
+[ext_resource type="Texture2D" uid="uid://khj45rgk1tsp" path="res://Art/under.png" id="3_6rumc"]
+[ext_resource type="Texture2D" uid="uid://c73peghcsdadi" path="res://Art/fill.png" id="4_qsu2p"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_228d0"]
 radius = 18.0
@@ -153,6 +155,18 @@ texture = SubResource("GradientTexture2D_ij8ey")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interaction_Area"]
 position = Vector2(32, -16)
 shape = SubResource("CircleShape2D_noyci")
+
+[node name="TextureProgressBar" type="TextureProgressBar" parent="."]
+visible = false
+offset_left = 13.0
+offset_top = -96.0
+offset_right = 29.0
+offset_bottom = -80.0
+scale = Vector2(2, 2)
+value = 33.0
+fill_mode = 4
+texture_under = ExtResource("3_6rumc")
+texture_progress = ExtResource("4_qsu2p")
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="area_entered" from="BareHand_attack" to="." method="_on_bare_hand_attack_area_entered"]

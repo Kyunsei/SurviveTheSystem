@@ -24,6 +24,6 @@ func whale_appear():
 func Whale_event(delta):
 	position += Vector2(250,250) * delta
 
-func _input(event):
+'func _input(event):
 	if event.is_action_pressed("interact"):
-			whale_appear()
+			whale_appear()'
