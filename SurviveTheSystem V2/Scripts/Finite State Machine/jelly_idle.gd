@@ -42,14 +42,16 @@ func Physics_Update(delta: float):
 			if check_Danger():
 				Transitioned.emit(self,"avoid_state")
 			
-			elif check_Enemy():
-				Transitioned.emit(self,"getcloser_state")
-			
 			elif check_Hungry():
 				if check_Food():
 					Transitioned.emit(self,"getcloser_state")
 				else:
 					pass
+			
+			elif check_Enemy():
+				Transitioned.emit(self,"getcloser_state")
+			
+		
 			
 					#get_parent().get_node("getcloser_state").target = nest
 					#Transitioned.emit(self,"getcloser_state")
@@ -137,7 +139,12 @@ func check_Enemy():
 				if nest.getCenterPos().distance_to(enemy_entity.position) < World.tile_size*6:
 					get_parent().get_node("getcloser_state").target = enemy_entity
 					get_parent().get_node("getcloser_state").chasing_max_timer = 1.5
-					get_parent().get_node("getcloser_state").action_type = "ENEMY"			
+					get_parent().get_node("getcloser_state").action_type = "ENEMY"
+					return true
+				elif life_entity.getCenterPos().distance_to(enemy_entity.position) < World.tile_size*6:	
+					get_parent().get_node("getcloser_state").target = enemy_entity
+					get_parent().get_node("getcloser_state").chasing_max_timer = 1.5
+					get_parent().get_node("getcloser_state").action_type = "ENEMY"		
 					return true
 				return false
 			return false

@@ -511,10 +511,9 @@ func BareHand_attack():
 	for i in barehand_array:
 		#print(i)
 		if i != null :
-			if i.species == "jellybee" :
-				i.angry_mode_on(self)
+	
 
-			elif i.species == "spiky_grass" :
+			if i.species == "spiky_grass" :
 				self.getDamaged(2)
 				i.getDamaged(1)
 			else :

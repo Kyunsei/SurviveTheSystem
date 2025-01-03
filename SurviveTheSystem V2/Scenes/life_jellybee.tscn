@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://broobw420njr3"]
+[gd_scene load_steps=12 format=3 uid="uid://broobw420njr3"]
 
 [ext_resource type="Script" path="res://Scripts/Life_jellybee.gd" id="1_oac7o"]
 [ext_resource type="Texture2D" uid="uid://bftar3bq74hv4" path="res://Art/jellybee.png" id="2_hurvh"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/jelly_idle.gd" id="5_xrx0x"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="6_uo74p"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="7_226af"]
+[ext_resource type="Texture2D" uid="uid://bb3i85tiy02hb" path="res://Art/jelly_hive.png" id="9_xs6lx"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ld3jv"]
 
@@ -78,6 +79,10 @@ script = ExtResource("6_uo74p")
 
 [node name="avoid_state" type="Node" parent="Brainy"]
 script = ExtResource("7_226af")
+
+[node name="Nest_sprite" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("9_xs6lx")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

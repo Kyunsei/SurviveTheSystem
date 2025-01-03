@@ -99,6 +99,8 @@ func find_new_nest():
 	if potential_nest.size() > 0:
 			berry_nest = getClosestLife(potential_nest, 1000000.0)
 			$Brainy/idle_state.nest = berry_nest	
+			berry_nest.current_sprite.modulate = Color(0,1,0)
+			#berry_nest.Update_sprite($Nest_sprite)
 
 
 func spwan_pollen():
