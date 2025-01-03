@@ -89,6 +89,7 @@ func Build_Stat():
 
 	self.vision_distance = 500
 	self.isPickable = true
+	self.push_distance = 32
 
 func _physics_process(delta):
 	'if isPlayer:

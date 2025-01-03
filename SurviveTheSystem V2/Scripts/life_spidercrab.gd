@@ -210,20 +210,26 @@ func hide_under_soil():
 		$HP_bar.hide()
 		
 func getDamaged(value,antagonist:LifeEntity=null):
-	if InvicibilityTime == 0:
-		self.PV -= value
-		if self.PV <= 0:
-			Die()
-		InvicibilityTime = 1 
-		modulate = Color(1, 0.2, 0.2)
-		await get_tree().create_timer(0.1).timeout
-		InvicibilityTime = 0
-		modulate = Color(1, 1, 1)
-		if self.has_node("HP_bar"):
-			self.AdjustBar()
-			self.get_node("HP_bar").show()
-		if current_life_cycle == 0:
-			hide_under_soil()
+	if current_life_cycle == 1:
+		pass
+		antagonist.getPushed(self,64)
+		
+		
+	elif current_life_cycle == 0:
+		if InvicibilityTime == 0:
+			self.PV -= value
+			if self.PV <= 0:
+				Die()
+			InvicibilityTime = 1 
+			modulate = Color(1, 0.2, 0.2)
+			await get_tree().create_timer(0.1).timeout
+			InvicibilityTime = 0
+			modulate = Color(1, 1, 1)
+			if self.has_node("HP_bar"):
+				self.AdjustBar()
+				self.get_node("HP_bar").show()
+			if current_life_cycle == 0:
+				hide_under_soil()
 		
 
 

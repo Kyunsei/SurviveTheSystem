@@ -20,6 +20,9 @@ var isPlayer = false
 var action_finished = true
 var LastOrientation = "down"
 
+#INTERACTION
+var push_distance : int = 0
+
 #INVENTAIRE
 var item_array = [] 
 var carried_by = null
@@ -390,6 +393,7 @@ var InvicibilityTime = 0
 
 func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
+		getPushed(antagonist,push_distance)
 		self.PV -= value
 		if self.PV <= 0:
 			Die()
@@ -405,6 +409,11 @@ func getDamaged(value,antagonist:LifeEntity=null):
 		self.get_node("HP_bar").show()
 
 		#position -= Vector2(-10,0)
+
+func getPushed(from,distance):
+
+	direction = (getCenterPos() - from.getCenterPos()).normalized()
+	position = position +  direction * distance
 
 func Activate():
 	self.isActive = true

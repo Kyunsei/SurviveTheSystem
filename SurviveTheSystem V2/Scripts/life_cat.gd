@@ -21,6 +21,9 @@ var interaction_array =[]
 
 var eat_timer = 0
 
+#other
+
+
 func Build_Genome():
 	Genome["maxPV"]=[10000000000000]
 	Genome["stamina"]=[100]
@@ -239,15 +242,15 @@ func _input(event):
 			current_action = 2'
 		if event.is_action_pressed("zoom_in"):
 			#if input_dir == Vector2(0,0):
-				$Camera2D.zoom.x += 0.05
-				$Camera2D.zoom.y += 0.05
+				get_parent().get_parent().get_node("Camera2D").zoom.x += 0.05
+				get_parent().get_parent().get_node("Camera2D").zoom.y += 0.05
 				#World.fieldofview = round(get_viewport().get_visible_rect().size * 1/$Camera2D.zoom / World.tile_size) 
 
 
 		if event.is_action_pressed("zoom_out"):
 			#if input_dir == Vector2(0,0):
-				$Camera2D.zoom.x -= 0.05
-				$Camera2D.zoom.y -= 0.05
+				get_parent().get_parent().get_node("Camera2D").zoom.x -= 0.05
+				get_parent().get_parent().get_node("Camera2D").zoom.y -= 0.05
 				#World.fieldofview = round(get_viewport().get_visible_rect().size * 1/$Camera2D.zoom / World.tile_size)
 		if World.debug_mode:
 			#if event.is_action_pressed("test1"):
@@ -524,7 +527,15 @@ func Eat_Action():
 		Eat(item_array[0])
 		AdjustBar()
 
+func getPushed(from,distance):
 
+	var camera = get_parent().get_parent().get_node("Camera2D")
+	camera.position_smoothing_enabled = true
+	direction = (getCenterPos() - from.getCenterPos()).normalized()
+	position = position +  direction * distance
+	await get_tree().create_timer(0.3).timeout
+
+	camera.position_smoothing_enabled = false
 
 func BareHand_attack():
 	#$BareHand_attack/CollisionShape2D.disabled = false
@@ -539,7 +550,7 @@ func BareHand_attack():
 				self.getDamaged(2)
 				i.getDamaged(1)
 			else :
-				i.getDamaged(10)
+				i.getDamaged(10,self)
 
 
 			

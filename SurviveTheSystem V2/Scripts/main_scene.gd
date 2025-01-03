@@ -43,6 +43,7 @@ func _process(delta):
 			var playerworldpos = World.getWorldPos(Life.player.global_position)
 			#World.ActivateAndDesactivateBlockAround(Life.player.input_dir, playerworldpos.x,playerworldpos.y,allblocks)
 			$StarBackground.position = Life.player.position  #background follow player
+			$Camera2D.position = Life.player.position
 			
 		$UI/FPS.text = "  " + str(Engine.get_frames_per_second()) + " FPS" #FPS
 		#$UI/Debug.text = str(World.day) + " day \n" +"berry: " +   str(Life.berry_number) + " / " + str(Life.berry_pool_state.size()) + " \n" + "sheep: " +   str(Life.sheep_number) + " / " + str(Life.sheep_pool_state.size()) + " \n" + "grass: "  + str(Life.plant_number) + " / " + str(Life.max_life)  + "\n stingtree: " +   str(Life.stingtree_number) + " / " + str(Life.stingtree_pool_state.size()) + " \n" + "crabspider: " +   str(Life.spidercrab_number) + " / " + str(Life.spidercrab_pool_state.size())   
@@ -140,7 +141,7 @@ func InitNewGame():
 			
 	Life.player.age = 0
 	Life.player.isPlayer = true 
-	Life.player.get_node("Camera2D").enabled = true
+	#Life.player.get_node("Camera2D").enabled = true
 	
 
 	#player.get_node("Camera2D").enabled = true 
