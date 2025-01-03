@@ -250,41 +250,63 @@ func _input(event):
 				$Camera2D.zoom.y -= 0.05
 				#World.fieldofview = round(get_viewport().get_visible_rect().size * 1/$Camera2D.zoom / World.tile_size)
 		if World.debug_mode:
-			if event.is_action_pressed("test1"):
-				print("q")
-				var middle = position  #+ Vector2(size.x/2,-size.y/2)'
-				var center_x = int(middle.x/World.tile_size)
-				var	center_y = int(middle.y/World.tile_size)
-				var radius = 2 #in tiles
-				for x in range(center_x - radius, center_x + radius + 1):
-					for y in range(center_y - radius, center_y + radius + 1):
-						if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
-							var posindex = y*World.world_size + x
-							if posindex < World.block_element_array.size():				
-								World.block_element_array[posindex]	-= 5
-								if 	World.block_element_array[posindex]	< 0:
-									World.block_element_array[posindex]	= 0
-								update_tiles_according_soil_value([Vector2i(x,y)])
-				'for b in get_parent().get_parent().get_node("Blocks").get_children():
-					b.BlockUpdate()'
+			#if event.is_action_pressed("test1"):
+				#print("q")
+				#var middle = position  #+ Vector2(size.x/2,-size.y/2)'
+				#var center_x = int(middle.x/World.tile_size)
+				#var	center_y = int(middle.y/World.tile_size)
+				#var radius = 2 #in tiles
+				#for x in range(center_x - radius, center_x + radius + 1):
+					#for y in range(center_y - radius, center_y + radius + 1):
+						#if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+							#var posindex = y*World.world_size + x
+							#if posindex < World.block_element_array.size():				
+								#World.block_element_array[posindex]	-= 5
+								#if 	World.block_element_array[posindex]	< 0:
+									#World.block_element_array[posindex]	= 0
+								#update_tiles_according_soil_value([Vector2i(x,y)])
+				#'for b in get_parent().get_parent().get_node("Blocks").get_children():
+					#b.BlockUpdate()'
 
-			if event.is_action_pressed("test2"):
-				print("e")
-				var middle = position  #+ Vector2(size.x/2,-size.y/2)'
-				var center_x = int(middle.x/World.tile_size)
-				var	center_y = int(middle.y/World.tile_size)
-				var radius = 2 #in tiles
-				for x in range(center_x - radius, center_x + radius + 1):
-					for y in range(center_y - radius, center_y + radius + 1):
-						if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
-							var posindex = y*World.world_size + x
-							if posindex < World.block_element_array.size():				
-								World.block_element_array[posindex]	+= 5
-								update_tiles_according_soil_value([Vector2i(x,y)])
-				'for b in get_parent().get_parent().get_node("Blocks").get_children():
-					b.BlockUpdate()'
+			#if event.is_action_pressed("test2"):
+				#print("e")
+				#var middle = position  #+ Vector2(size.x/2,-size.y/2)'
+				#var center_x = int(middle.x/World.tile_size)
+				#var	center_y = int(middle.y/World.tile_size)
+				#var radius = 2 #in tiles
+				#for x in range(center_x - radius, center_x + radius + 1):
+					#for y in range(center_y - radius, center_y + radius + 1):
+						#if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+							#var posindex = y*World.world_size + x
+							#if posindex < World.block_element_array.size():				
+								#World.block_element_array[posindex]	+= 5
+								#update_tiles_according_soil_value([Vector2i(x,y)])
+				#'for b in get_parent().get_parent().get_node("Blocks").get_children():
+					#b.BlockUpdate()'
 			if event.is_action_pressed("T"):
 				position = get_viewport().get_camera_2d().get_global_mouse_position()
+				
+			if event.is_action_pressed("test1"):
+				var mouse_position =get_viewport().get_camera_2d().get_global_mouse_position()
+				draw_block(mouse_position, 0, 1)
+			if event.is_action_pressed("test2"):
+				var mouse_position =get_viewport().get_camera_2d().get_global_mouse_position()
+				draw_block(mouse_position, -1, 1)
+
+
+func draw_block(mouse_position, value, radius):
+				var center_x = int(mouse_position.x/World.tile_size)
+				var	center_y = int(mouse_position.y/World.tile_size)
+				for x in range(center_x - radius, center_x + radius + 1):
+					for y in range(center_y - radius, center_y + radius + 1):
+						#if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+							var posindex = y*World.world_size + x
+							if posindex < World.block_element_array.size() and posindex >= 0:
+								print(World.block_element_array[posindex])				
+								World.block_element_array[posindex]	= value
+								get_parent().get_parent().get_node("World_TileMap").draw_new_tiles_according_to_soil_value(0, [Vector2i(x,y)])
+								#get_parent().get_parent().get_node("World_TileMap").update_ALL_tilemap_tile_to_new_soil_value()
+								#get_parent().get_parent().get_node("World_TileMap").update_tilemap_tile_array_to_new_soil_value(0, [Vector2i(x,y)])
 
 func Highlight_closest_pickable_element():
 	if interaction_array.size() > 0:

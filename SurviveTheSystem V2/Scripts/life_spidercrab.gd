@@ -197,14 +197,18 @@ func ChargeToward(target):
 
 func hide_under_soil():
 	get_node("Sprite_0").hide()
+	
+	#current_sprite.hide()
+	
 	self.maxSpeed = 0
 	velocity = Vector2(0,0)
 	isBurrow = true
 	get_node("Collision_" + str(current_life_cycle)).disabled = true
-	$DebugLabel.text = "under_soil"
+	#$DebugLabel.text = "under_soil"
 	if self.current_life_cycle == 0:
-		$ActionTimer.start(5.)
-
+		$ActionTimer.start(10.)
+		$HP_bar.hide()
+		
 func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
 		self.PV -= value
@@ -215,12 +219,13 @@ func getDamaged(value,antagonist:LifeEntity=null):
 		await get_tree().create_timer(0.1).timeout
 		InvicibilityTime = 0
 		modulate = Color(1, 1, 1)
+		if self.has_node("HP_bar"):
+			self.AdjustBar()
+			self.get_node("HP_bar").show()
 		if current_life_cycle == 0:
 			hide_under_soil()
 		
-	if self.has_node("HP_bar"):
-		self.AdjustBar()
-		self.get_node("HP_bar").show()
+
 
 func get_out_of_soil():
 	get_node("Sprite_0").show()
@@ -248,7 +253,7 @@ func _on_timer_timeout():
 					Metabo_cost()
 
 			Ageing()
-			AdjustBar()
+			#AdjustBar()
 			LifeDuplicate()
 			Growth()
 
@@ -372,7 +377,7 @@ func Throw():
 func Eat_Action():
 	if item_array.size() >0:	
 		Eat(item_array[0])
-		AdjustBar()
+		#AdjustBar()
 
 
 
