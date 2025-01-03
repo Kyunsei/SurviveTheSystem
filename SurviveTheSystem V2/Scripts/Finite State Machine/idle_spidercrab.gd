@@ -64,7 +64,7 @@ func check_Danger():
 		var alive_danger = life_entity.vision_array["danger"].filter(func(obj): return obj.isDead == false)
 		if alive_danger.size() > 0:
 			danger_entity = getClosestLife(alive_danger)
-			if life_entity.getCenterPos().distance_to(danger_entity.getCenterPos()) < World.tile_size*2:
+			if life_entity.getCenterPos().distance_to(danger_entity.getCenterPos()) < World.tile_size*4:
 				get_parent().get_node("avoid_state").target = danger_entity
 				return true
 			return false

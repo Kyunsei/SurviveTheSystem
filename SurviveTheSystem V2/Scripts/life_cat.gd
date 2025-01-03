@@ -161,7 +161,8 @@ func _physics_process(delta):
 				print("eat")
 				Eat_Action()
 				eat_timer = 0
-				$TextureProgressBar.hide()
+				if item_array.size() ==0:
+					$TextureProgressBar.hide()
 			#timer += delta
 		
 		'if timer >= threshold_time and action_started:

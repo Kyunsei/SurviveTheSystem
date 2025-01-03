@@ -38,11 +38,11 @@ func Physics_Update(delta: float):
 				#print(life_entity.position + direction.normalized() *detection_distance)
 				'if life_entity.position + direction *detection_distance:
 						print("void")'
-				life_entity.velocity = direction.normalized() * life_entity.maxSpeed *2.
+				life_entity.velocity = direction.normalized() * life_entity.maxSpeed *dodge_speed
 				if previous_position == life_entity.position:
 					timer = 0.3
 					escaping_void = true
-					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) )* life_entity.maxSpeed *dodge_speed
+					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) ) * life_entity.maxSpeed *dodge_speed
 				previous_position = life_entity.position
 				if direction.length() >  detection_distance:
 						Transitioned.emit(self,idle_type_state)
@@ -50,7 +50,7 @@ func Physics_Update(delta: float):
 				if previous_position == life_entity.position:
 					timer = 0.3
 					escaping_void = true
-					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) )* life_entity.maxSpeed *dodge_speed
+					life_entity.velocity =  (Vector2(randf_range(-1,1),randf_range(-1,1)) ) * life_entity.maxSpeed *dodge_speed
 		
 	'if life_entity:
 		if life_entity.danger_array.size()>0:

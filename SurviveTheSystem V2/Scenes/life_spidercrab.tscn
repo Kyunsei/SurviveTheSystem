@@ -101,7 +101,7 @@ next_state = "dash_state"
 
 [node name="avoid_state" type="Node" parent="Brainy"]
 script = ExtResource("7_p6dui")
-detection_distance = 100
+detection_distance = 200
 
 [node name="dash_state" type="Node" parent="Brainy"]
 script = ExtResource("8_bo4wv")
