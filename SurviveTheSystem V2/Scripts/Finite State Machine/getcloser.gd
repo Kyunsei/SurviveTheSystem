@@ -71,7 +71,7 @@ func Physics_Update(delta: float):
 							
 						next_path_position = life_entity.navigation_agent.get_next_path_position()
 						direction = next_path_position - life_entity.getCenterPos()
-						life_entity.velocity = direction.normalized() * life_entity.maxSpeed
+						life_entity.velocity = direction.normalized() * life_entity.maxSpeed 
 	
 						
 						
@@ -87,7 +87,7 @@ func Physics_Update(delta: float):
 								action_func.call(target)
 							elif action_type == "ENEMY":
 								var action_func = Callable(target, "getDamaged")
-								action_func.call(4) 
+								action_func.call(8) 
 							#life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							if target.isDead:
