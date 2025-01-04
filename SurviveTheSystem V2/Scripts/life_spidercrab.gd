@@ -47,7 +47,7 @@ func Build_Stat():
 	self.size = $Sprite_0.texture.get_size()*0.33
 	self.age= 0
 	self.lifespan = 30*(World.one_day_length/lifecycletime)
-
+	self.isPickable = true
 	AdjustBar()
 	
 func Build_Phenotype(): 
@@ -322,6 +322,7 @@ func Growth():
 				
 			$Sprite_0.scale = Vector2(1,1)
 			$Dead_Sprite_0.scale = Vector2(1,1)
+			self.isPickable = false
 			
 			Update_sprite($Sprite_0,$Collision_1)
 			'$Collision_0.disabled = true

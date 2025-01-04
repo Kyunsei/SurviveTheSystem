@@ -73,6 +73,7 @@ offset_right = 52.0
 offset_bottom = 23.0
 
 [node name="HP_bar" type="ProgressBar" parent="."]
+z_index = 1
 offset_left = -32.0
 offset_top = -63.0
 offset_right = -22.0
@@ -84,6 +85,7 @@ fill_mode = 3
 show_percentage = false
 
 [node name="Energy_bar" type="ProgressBar" parent="."]
+z_index = 1
 offset_left = -16.0
 offset_top = -64.0
 offset_right = -5.0
