@@ -60,7 +60,7 @@ func Physics_Update(_delta: float):
 				else :
 						'if not isDashing:
 						ChargeToward(target)'
-						if life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance + (eating_distance*3*life_entity.current_life_cycle):
+						if life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance + (eating_distance*life_entity.current_life_cycle):
 							life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							remove_target()
