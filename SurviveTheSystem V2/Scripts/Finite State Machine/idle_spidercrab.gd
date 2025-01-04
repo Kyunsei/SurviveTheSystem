@@ -52,6 +52,9 @@ func Physics_Update(delta: float):
 						Transitioned.emit(self,"getcloser_state")
 					else:
 						life_entity.velocity = direction * get_parent().get_parent().maxSpeed * 1
+			
+			elif check_Enemy():
+				Transitioned.emit(self,"getcloser_state")
 				
 					#get_parent().get_node("getcloser_state").target = nest
 					#Transitioned.emit(self,"getcloser_state")

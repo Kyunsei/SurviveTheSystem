@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bkvttykvie6wd"]
+[gd_scene load_steps=15 format=3 uid="uid://bkvttykvie6wd"]
 
 [ext_resource type="Script" path="res://Scripts/life_spidercrab.gd" id="1_3m3wu"]
 [ext_resource type="Texture2D" uid="uid://e1v54i3ffumy" path="res://Art/spider.png" id="2_ge6rd"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="6_e468h"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="7_p6dui"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/dash.gd" id="8_bo4wv"]
+[ext_resource type="AudioStream" uid="uid://bgn1prv34ie2q" path="res://Sound/cling.mp3" id="9_6oweo"]
+[ext_resource type="AudioStream" uid="uid://ck4cxuyqyrx0g" path="res://Sound/hurt.mp3" id="10_71acl"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chh8i"]
 
@@ -107,6 +109,16 @@ detection_distance = 200
 [node name="dash_state" type="Node" parent="Brainy"]
 script = ExtResource("8_bo4wv")
 eating_distance = 32
+
+[node name="Sound" type="Node2D" parent="."]
+
+[node name="Cling" type="AudioStreamPlayer2D" parent="Sound"]
+stream = ExtResource("9_6oweo")
+pitch_scale = 2.0
+
+[node name="hurt" type="AudioStreamPlayer2D" parent="Sound"]
+stream = ExtResource("10_71acl")
+pitch_scale = 1.5
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

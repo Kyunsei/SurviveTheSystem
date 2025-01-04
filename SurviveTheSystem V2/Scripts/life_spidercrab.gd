@@ -9,7 +9,8 @@ var barehand_array = []
 
 var vision_array = {
 	"food": [],
-	"danger": []
+	"danger": [],
+	"enemy": []
 }
 
 
@@ -211,8 +212,26 @@ func hide_under_soil():
 		
 func getDamaged(value,antagonist:LifeEntity=null):
 	if current_life_cycle == 1:
-		pass
-		antagonist.getPushed(self,64)
+
+		if getCenterPos().direction_to(antagonist.getCenterPos()).y < -0.8:
+			if InvicibilityTime == 0:
+				getPushed(antagonist,64)
+				$Sound/hurt.playing = true
+				vision_array["enemy"].append(antagonist)
+				self.PV -= value
+				if self.PV <= 0:
+					Die()
+				InvicibilityTime = 1 
+				modulate = Color(1, 0.2, 0.2)
+				await get_tree().create_timer(0.1).timeout
+				InvicibilityTime = 0
+				modulate = Color(1, 1, 1)
+				if self.has_node("HP_bar"):
+					self.AdjustBar()
+					self.get_node("HP_bar").show()
+		else:
+			antagonist.getPushed(self,64)
+			$Sound/Cling.playing = true
 		
 		
 	elif current_life_cycle == 0:

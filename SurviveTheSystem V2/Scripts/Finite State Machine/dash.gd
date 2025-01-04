@@ -64,9 +64,11 @@ func Physics_Update(_delta: float):
 							life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							remove_target()
+					
 							Transitioned.emit(self,"idle_state")
 						elif target.isDead:
 							remove_target()
+						
 							Transitioned.emit(self,"idle_state")
 						'else:
 						remove_target()'
@@ -88,9 +90,13 @@ func check_Danger():
 	return false
 
 func remove_target():
-	if 	life_entity.vision_array["food"].has(target):
-			life_entity.vision_array["food"].erase(target)
+	for n in life_entity.vision_array:
+		if life_entity.vision_array[n].has(target):
+			life_entity.vision_array[n].erase(target)
 			target = null
+	'if 	life_entity.vision_array["food"].has(target):
+			life_entity.vision_array["food"].erase(target)
+			target = null'
 
 func ChargeToward(food_source):
 	isDashing = true
