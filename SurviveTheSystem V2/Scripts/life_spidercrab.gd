@@ -320,6 +320,7 @@ func Growth():
 				crab_claw.rotation = claw_rotation[n]
 				crab_claw.get_node("Sprite_0").flip_h = claw_flip[n]
 				
+			
 			$Sprite_0.scale = Vector2(1,1)
 			$Dead_Sprite_0.scale = Vector2(1,1)
 			self.isPickable = false
@@ -424,21 +425,23 @@ func Die():
 	self.isDead = true
 	velocity = Vector2(0,0)
 	Drop()
-	$Dead_Sprite_0.show()
-	$Sprite_0.hide()
+	Update_sprite($Dead_Sprite_0, $Collision_0)
+	'$Dead_Sprite_0.show()
+	$Sprite_0.hide()'
 
 	
 	
 func Activate():
 
 	set_physics_process(true)
+	Update_sprite($Sprite_0, $Collision_0)
 	self.isActive = true
 	self.isDead = false
 	$Brainy.Activate()
 	Life.pool_state[species][pool_index] = 1
 	Life.life_number[species] += 1
-	$Collision_1.disabled = true
-	$Collision_1.hide()
+	#$Collision_1.disabled = true
+	#$Collision_1.hide()
 	Build_Stat()
 	show()
 	
@@ -449,10 +452,10 @@ func Activate():
 	$Timer.start(randf_range(0,$Timer.wait_time))
 
 
-	$Collision_0.show()
-	$Collision_0.disabled = false	
-	$Dead_Sprite_0.hide()	
-	$Sprite_0.show()
+	#$Collision_0.show()
+	#$Collision_0.disabled = false	
+	#$Dead_Sprite_0.hide()	
+	#$Sprite_0.show()
 
 func Deactivate():	
 	#global_position = PickRandomPlaceWithRange(position,5 * World.tile_size)
@@ -519,6 +522,7 @@ func _on_vision_body_entered(body):
 		if self.current_life_cycle == 1:
 			vision_array["food"].append(body)
 		else:
+			#pass
 			vision_array["danger"].append(body)
 
 		#getAway(body.position)

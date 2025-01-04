@@ -53,6 +53,7 @@ shape = SubResource("CircleShape2D_4635j")
 
 [node name="Collision_1" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_4wqpl")
+disabled = true
 
 [node name="DebugLabel" type="Label" parent="."]
 visible = false
