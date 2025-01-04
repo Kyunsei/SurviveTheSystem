@@ -130,7 +130,10 @@ func _on_timer_timeout():
 			if current_time_speed != World.speed:
 				adapt_time_to_worldspeed()
 		else:
-			Deactivate()
+			if energy <= 0:
+				Deactivate()
+			else:
+				energy -= 5
 
 		#Debug part
 		$DebugLabel.text = str(age) + " " + str(energy)
@@ -140,6 +143,7 @@ func _on_timer_timeout():
 
 #diying
 func Die():
+
 	$Brainy.Desactivate()
 	for i in item_array:
 		i.carried_by = null
@@ -155,7 +159,7 @@ func Die():
 	self.isDead = true
 	Update_sprite(get_node("Dead_Sprite_"+str(current_life_cycle)))
 
-
+	current_sprite.modulate = Color(0.5,0.5,0.5)
 
 #GROWTHING
 func Growth():

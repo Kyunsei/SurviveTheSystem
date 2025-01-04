@@ -156,16 +156,22 @@ func _physics_process(delta):
 			
 		Highlight_closest_pickable_element()
 		
-		if Input.is_action_pressed("eat") and item_array.size() >0:
-			eat_timer += delta * 120
-			$TextureProgressBar.value = eat_timer
-			
-			if eat_timer >= 100:	
-				print("eat")
-				Eat_Action()
-				eat_timer = 0
-				if item_array.size() ==0:
-					$TextureProgressBar.hide()
+		if Input.is_action_pressed("eat") :
+			if item_array.size() >0 or nearby_object:
+				$TextureProgressBar.show()
+				eat_timer += delta * 120
+				$TextureProgressBar.value = eat_timer
+				
+				if eat_timer >= 100:	
+					if item_array.size() >0:
+						Eat_Action()
+						if item_array.size() ==0 :
+							$TextureProgressBar.hide()
+					elif nearby_object:
+						Eat(nearby_object)
+						$TextureProgressBar.hide()
+					eat_timer = 0
+					
 			#timer += delta
 		
 		'if timer >= threshold_time and action_started:
@@ -218,14 +224,14 @@ func _input(event):
 			#action_started = false
 
 			
-		if event.is_action_pressed("eat"):
+		'if event.is_action_pressed("eat"):
 		
 			eat_timer = 0
 			$TextureProgressBar.show()
-			$TextureProgressBar.value = eat_timer
+			$TextureProgressBar.value = eat_timer'
 
 			#Eat()
-			isimmobile_1sec = false
+			#isimmobile_1sec = false
 		if event.is_action_released("sprint"):
 			Sprint_Action_Stop()
 			isimmobile_1sec = false
@@ -525,7 +531,7 @@ func Throw():
 func Eat_Action():
 	if item_array.size() >0:	
 		Eat(item_array[0])
-		AdjustBar()
+
 
 func getPushed(from,distance):
 
@@ -605,13 +611,20 @@ func Eat(life):
 		self.energy += life.energy
 		life.energy= 0
 		life.Die()
+	elif life.species == "sheep" and life.current_life_cycle >= 2 and life.isDead:
+		var value = min(life.energy,10)
+		self.energy += value
+		life.energy -= value
+		if life.energy <= 0:
+			life.Deactivate()
+
 	elif life.species == "petal" :
 		self.energy += life.energy
 		life.energy= 0
 		PV += 10
 		life.Die()
 	#$DebugLabel.text = str(age) + " " + str(energy)
-
+	AdjustBar()
 #Sacrebleu il faut changer toutes les entity pour leur donner des "damageable" group
 func _on_bare_hand_attack_body_entered(body):
 	if body != self and body.is_in_group("not_damageable") == false :
@@ -648,7 +661,8 @@ func _on_interaction_area_body_entered(body):
 	if self.isActive:
 		if body.isPickable and item_array.has(body)==false:
 			interaction_array.append(body)
-
+		elif body.species == "sheep" and body.isDead and item_array.has(body)==false:
+			interaction_array.append(body)
 		
 
 

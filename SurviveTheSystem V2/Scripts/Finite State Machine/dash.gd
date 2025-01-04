@@ -40,8 +40,9 @@ func Update(_delta: float):
 			if timer_dash_count <= 0:
 				isDashing = false
 				life_entity.velocity = Vector2.ZERO
+				life_entity.set_collision_mask_value(2,true)
 				Transitioned.emit(self,"idle_state")
-				#life_entity.set_collision_mask_value(2,true)
+
 		
 func Physics_Update(_delta: float):
 	#if "food" in range :
@@ -104,7 +105,7 @@ func ChargeToward(food_source):
 	charge_direction = -(center - food_source.getCenterPos()).normalized()
 	life_entity.velocity = charge_direction * life_entity.maxSpeed*speed_multiplicator	
 	timer_dash_count = charge_duration	
-	#life_entity.set_collision_mask_value(2,false)
+	life_entity.set_collision_mask_value(2,false)
 
 func Charge_preparation(_delta):
 	if timer_dash_prep_count > 0:

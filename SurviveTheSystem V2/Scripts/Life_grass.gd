@@ -71,7 +71,10 @@ func _on_timer_timeout():
 			if current_time_speed != World.speed:
 				adapt_time_to_worldspeed()
 		else:
-			Deactivate()
+			if energy <= 0:
+				Deactivate()
+			else:
+				energy -= 5
 
 		#Debug partw
 		#$DebugLabel.text =  "%.4f" % energy
