@@ -28,6 +28,7 @@ func Enter():
 		life_entity.velocity = Vector2.ZERO
 		life_entity.get_node("DebugLabel").text = "dash"
 func Exit():
+	life_entity.set_collision_mask_value(2,true)
 	life_entity.get_node("Sprite_0").modulate =  Color(1,1,1,1) 
 	isDashing = false
 	
