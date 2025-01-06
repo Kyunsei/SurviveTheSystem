@@ -89,6 +89,7 @@ disabled = true
 one_shot = true
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(16, 0)
 blend_mode = 2
 range_layer_min = -4
 range_layer_max = 4

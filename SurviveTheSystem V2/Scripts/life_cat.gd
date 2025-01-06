@@ -378,6 +378,7 @@ func _on_timer_timeout():
 
 func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
+		$sound/hurt_sound.playing = true
 		self.PV -= value
 		AdjustBar()
 		InvicibilityTime = 1 
@@ -573,6 +574,7 @@ func BareHand_attack():
 			
 
 func Die():
+	$sound/death_sound.playing = true
 	DropALL()
 	self.isDead = true
 	$Dead_Sprite_0.show()
