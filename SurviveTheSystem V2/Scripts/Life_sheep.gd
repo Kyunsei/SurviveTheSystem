@@ -158,7 +158,6 @@ func Die():
 	
 	self.isDead = true
 	Update_sprite(get_node("Dead_Sprite_"+str(current_life_cycle)))
-
 	current_sprite.modulate = Color(0.5,0.5,0.5)
 
 #GROWTHING
@@ -194,6 +193,7 @@ func Growth():
 		set_physics_process(true)
 		self.maxEnergy = self.maxEnergy + 5
 		self.maxSpeed = Genome["speed"][self.current_life_cycle]
+		self.isPickable = false
 		$Brainy.Activate()
 #Duplication
 func LifeDuplicate():

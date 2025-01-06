@@ -169,10 +169,11 @@ func _physics_process(delta):
 
 	
 func getPickUP(transporter):
-	if self.carried_by != null:
-		carried_by.item_array.erase(self)
-	self.carried_by = transporter
-	transporter.item_array.append(self)
+	if self.isPickable:
+		if self.carried_by != null:
+			carried_by.item_array.erase(self)
+		self.carried_by = transporter
+		transporter.item_array.append(self)
 	#seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
 
 
