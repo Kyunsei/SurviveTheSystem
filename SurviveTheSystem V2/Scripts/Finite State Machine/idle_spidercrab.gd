@@ -23,7 +23,7 @@ func choose_direction_and_time():
 	wander_time = randf_range(0.2,1.)				
 
 func Enter():
-	print("enter IDLE")
+	#print("enter IDLE")
 	if get_parent().get_parent():
 		life_entity = 	get_parent().get_parent()
 		#life_entity.get_node("DebugLabel").text = "idle"

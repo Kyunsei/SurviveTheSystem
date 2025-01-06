@@ -17,6 +17,9 @@ func Enter():
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()
 		life_entity.get_node("DebugLabel").text = "avoid"
+		if life_entity.species == "sheep" :
+			life_entity.get_node("Sound").get_node("avoid").pitch_scale = 3 - life_entity.current_life_cycle
+			life_entity.get_node("Sound").get_node("avoid").playing = true
 		if life_entity.species == "spidercrab" :
 			print("entered avoid state SPIDERCRAB")
 	

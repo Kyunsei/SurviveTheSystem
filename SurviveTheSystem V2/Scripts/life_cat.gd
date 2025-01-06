@@ -141,7 +141,7 @@ func Player_Control_movement():
 		return input_dir
 		
 func _physics_process(delta):
-	if isPlayer:
+	if isPlayer and isDead == false:
 		if dashing == false :
 			input_dir = Player_Control_movement()
 			
@@ -202,7 +202,7 @@ func _physics_process(delta):
 				i.position =  last_dir * $Sprite_0.texture.get_size() * Vector2(1,1)/2  + (position + $Sprite_0.texture.get_size()/4* Vector2(1,-1))
 	
 func _input(event):
-	if isPlayer:
+	if isPlayer and isDead == false:
 		#var object_attack_vector = Vector2(get_viewport().get_mouse_position() - self.position)
 		#object_attack_vector = object_attack_vector.normalized()*60
 		if event.is_action_pressed("use"):
@@ -367,28 +367,30 @@ func _on_timer_timeout():
 			if self.age >= lifespan:
 				cause_of_death = deathtype.AGE
 				Die()
-			if self.PV <=0:
-				cause_of_death = deathtype.NONE
-				Die()			
+					
 			if current_time_speed != World.speed:
 				adapt_time_to_worldspeed()
 		else:
-			Deactivate()
+			if energy <= 0:
+				Deactivate()
+			else:
+				energy -= 5
 
 
 func getDamaged(value,antagonist:LifeEntity=null):
 	if InvicibilityTime == 0:
+		InvicibilityTime = 1 
 		$sound/hurt_sound.playing = true
 		self.PV -= value
 		AdjustBar()
-		InvicibilityTime = 1 
+
 		$Sprite_0.modulate = Color(1, 0.2, 0.2)
-		await get_tree().create_timer(0.5).timeout
+		await get_tree().create_timer(0.8).timeout
 		InvicibilityTime = 0
 		$Sprite_0.modulate = Color(1, 1, 1)
-	if self.PV <= 0:
-		Die()
-		cause_of_death = deathtype.DAMMAGE
+		if self.PV <= 0:
+			Die()
+			cause_of_death = deathtype.DAMMAGE
 
 func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV
@@ -577,8 +579,12 @@ func Die():
 	$sound/death_sound.playing = true
 	DropALL()
 	self.isDead = true
+	velocity = Vector2(0,0)
 	$Dead_Sprite_0.show()
 	$Sprite_0.hide()
+	
+	await get_tree().create_timer(1.8).timeout
+	Deactivate()
 	
 	
 func Activate():

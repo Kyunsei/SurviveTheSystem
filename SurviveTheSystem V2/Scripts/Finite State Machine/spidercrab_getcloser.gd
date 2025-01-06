@@ -25,7 +25,7 @@ var action_type = "FOOD"
 
 
 func Enter():
-	print("enter CLOSER")
+	#print("enter CLOSER")
 	timer = chasing_max_timer
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()
@@ -96,7 +96,10 @@ func Physics_Update(delta: float):
 				previous_pos = 	life_entity.position
 			else:
 				Transitioned.emit(self,"idle_state")
-			
+		else:
+			Transitioned.emit(self,"idle_state")
+	else:
+		Transitioned.emit(self,"idle_state")	
 func check_Danger():
 	var danger_entity: LifeEntity
 	if life_entity.vision_array["danger"].size() > 0:
