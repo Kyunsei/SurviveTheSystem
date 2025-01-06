@@ -22,12 +22,14 @@ var charge_direction : Vector2
 var isDashing: bool = false
 
 func Enter():
+	#print("enter DASH")
 	if get_parent().get_parent(): 
 		life_entity = get_parent().get_parent()
 		timer_dash_prep_count = charging_time
 		life_entity.velocity = Vector2.ZERO
-		life_entity.get_node("DebugLabel").text = "dash"
+		#life_entity.get_node("DebugLabel").text = "dash"
 func Exit():
+	#print("exit DASH")
 	life_entity.set_collision_mask_value(2,true)
 	life_entity.get_node("Sprite_0").modulate =  Color(1,1,1,1) 
 	isDashing = false
@@ -42,6 +44,7 @@ func Update(_delta: float):
 				isDashing = false
 				life_entity.velocity = Vector2.ZERO
 				life_entity.set_collision_mask_value(2,true)
+
 				Transitioned.emit(self,"idle_state")
 
 		
@@ -54,10 +57,12 @@ func Physics_Update(_delta: float):
 	if life_entity:
 		if life_entity.isActive and life_entity.isDead == false:
 			if check_Danger() and not isDashing:
+
 				Transitioned.emit(self,"avoid_state")
 			elif target:
 				if target.isDead:
 					remove_target()
+
 					Transitioned.emit(self,"idle_state")
 				else :
 						'if not isDashing:
@@ -66,11 +71,12 @@ func Physics_Update(_delta: float):
 							life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							remove_target()
+
 					
 							Transitioned.emit(self,"idle_state")
 						elif target.isDead:
 							remove_target()
-						
+
 							Transitioned.emit(self,"idle_state")
 						'else:
 						remove_target()'
@@ -118,4 +124,5 @@ func Charge_preparation(_delta):
 		if target:
 			ChargeToward(target)
 		else:
+
 			Transitioned.emit(self,"idle_state")

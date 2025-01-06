@@ -23,12 +23,14 @@ func choose_direction_and_time():
 	wander_time = randf_range(0.2,1.)				
 
 func Enter():
+	#print("enter IDLE")
 	if get_parent().get_parent():
 		life_entity = 	get_parent().get_parent()
 		#life_entity.get_node("DebugLabel").text = "idle"
 	choose_direction_and_time()
 	
 func Exit():
+	#print("exit IDLE")
 	pass
 	
 func Update(delta: float):
