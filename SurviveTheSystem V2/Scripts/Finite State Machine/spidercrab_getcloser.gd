@@ -25,7 +25,7 @@ var action_type = "FOOD"
 
 
 func Enter():
-	#print("enter CLOSER")
+	print("enter CLOSER")
 	timer = chasing_max_timer
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()

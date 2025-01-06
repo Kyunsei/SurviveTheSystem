@@ -176,55 +176,24 @@ func angry_mode_on(target):
 		for f in vision_array['friend']:
 			f.vision_array['danger'] = vision_array['danger'].duplicate()
 
+func getDamaged(value,antagonist:LifeEntity=null):
+	pass
+	#if InvicibilityTime == 0:
+		#getPushed(antagonist,push_distance)
+		#self.PV -= value
+		#if self.PV <= 0:
+			#Die()
+		#InvicibilityTime = 1 
+		#modulate = Color(1, 0.2, 0.2)
+		#await get_tree().create_timer(0.5).timeout
+		#InvicibilityTime = 0
+		#modulate = Color(1, 1, 1)
+#
+	#if self.has_node("HP_bar"):
+#
+		#self.AdjustBar()
+		#self.get_node("HP_bar").show()
 
-
-
-'func Brainy():
-	var center = position + Vector2(32,-32) #temporaire
-	var danger_array_temp = danger_array.duplicate()
-	var food_array_temp = food_array.duplicate()
-	var friend_array_temp = friend_array.duplicate()
-
-	
-
-	if action_finished == true:
-		if danger_array_temp.size()>0:
-			var cl = getClosestLife(danger_array_temp,1000)
-			if cl !=null:
-				if cl.isDead == false:
-					getCloser(cl.getCenterPos())
-					if center.distance_to(cl.getCenterPos()) < 32 and cl.isDead == false:				
-							cl.getDamaged(2)
-					else:
-						getCloser(cl.getCenterPos())
-				else:
-					AdjustDirection()
-			
-			
-		elif self.energy <= 10 and food_array_temp.size()>0:
-			var cl = getClosestLife(food_array_temp,1000)
-			if cl !=null:
-				#$DebugLabel.text ="feeding"
-				if center.distance_to(cl.getCenterPos()) < 32 and cl.isDead == false:				
-						Absorb_life_energy(cl,3)
-				if cl.isDead == false and cl.energy >= 5:
-						getCloser(cl.getCenterPos())
-				else:
-					AdjustDirection()
-			else:
-				AdjustDirection()
-		elif self.energy >10:
-			if hive != null:
-				if center.distance_to(hive.getCenterPos()) < 32 and hive.isDead == false:				
-						hive.energy += min(8,energy)
-						energy -= min(8,energy)
-				else:
-					getCloser(hive.getCenterPos()) 
-			else:
-				AdjustDirection()
-		else:
-			AdjustDirection()'
-	
 func Activate():
 	#set_physics_process(true)
 	self.isActive = true

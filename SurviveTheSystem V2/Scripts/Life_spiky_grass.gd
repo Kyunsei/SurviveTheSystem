@@ -59,7 +59,7 @@ func _on_timer_timeout():
 			Metabo_cost()	
 			Absorb_sun_energy(2,1)
 
-			LifeDuplicate()
+			#LifeDuplicate()
 			Ageing()
 			Growth()
 

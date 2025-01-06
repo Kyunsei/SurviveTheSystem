@@ -20,11 +20,13 @@ radius = 16.0
 size = Vector2(32, 96)
 
 [sub_resource type="Gradient" id="Gradient_q0a1l"]
-offsets = PackedFloat32Array(0.168831, 0.649351)
-colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+offsets = PackedFloat32Array(0.441558, 0.603896, 0.649351)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.500001, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_ij8ey"]
 gradient = SubResource("Gradient_q0a1l")
+width = 96
+height = 96
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 
@@ -142,7 +144,6 @@ one_shot = true
 
 [node name="PointLight2D2" type="PointLight2D" parent="."]
 position = Vector2(32, -32)
-scale = Vector2(4, 4)
 blend_mode = 2
 range_layer_min = -4
 range_layer_max = 4

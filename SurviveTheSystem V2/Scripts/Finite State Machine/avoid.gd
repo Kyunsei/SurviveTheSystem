@@ -17,6 +17,8 @@ func Enter():
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()
 		life_entity.get_node("DebugLabel").text = "avoid"
+		if life_entity.species == "spidercrab" :
+			print("entered avoid state SPIDERCRAB")
 	
 func Exit():
 	pass

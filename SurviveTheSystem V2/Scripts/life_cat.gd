@@ -21,6 +21,10 @@ var interaction_array =[]
 
 var eat_timer = 0
 
+var zoomIncrement = 0.05
+var zoomMin = 0.75
+var zoomMax = 1.5
+var zoom_level = 0
 #other
 
 
@@ -88,7 +92,8 @@ func Build_Phenotype():
 	#ADD Body
 
 	#$Collision_0.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
-
+	if World.debug_mode: 
+		zoomMin = 0
 	init_progressbar()
 	
 	self.size = $Sprite_0.texture.get_size()
@@ -246,18 +251,24 @@ func _input(event):
 			isimmobile_1sec = false
 		'else:
 			current_action = 2'
+		zoom_level = get_parent().get_parent().get_node("Camera2D").zoom.x
 		if event.is_action_pressed("zoom_in"):
 			#if input_dir == Vector2(0,0):
-				get_parent().get_parent().get_node("Camera2D").zoom.x += 0.05
-				get_parent().get_parent().get_node("Camera2D").zoom.y += 0.05
+				#get_parent().get_parent().get_node("Camera2D").zoom.x += zoomIncrement
+				#get_parent().get_parent().get_node("Camera2D").zoom.y += zoomIncrement
+				zoom_level = clamp(zoom_level + zoomIncrement, zoomMin, zoomMax)
+				get_parent().get_parent().get_node("Camera2D").zoom = zoom_level * Vector2.ONE
+
+				get_tree().get_root().set_input_as_handled()
 				#World.fieldofview = round(get_viewport().get_visible_rect().size * 1/$Camera2D.zoom / World.tile_size) 
 
 
 		if event.is_action_pressed("zoom_out"):
 			#if input_dir == Vector2(0,0):
-				get_parent().get_parent().get_node("Camera2D").zoom.x -= 0.05
-				get_parent().get_parent().get_node("Camera2D").zoom.y -= 0.05
-				#World.fieldofview = round(get_viewport().get_visible_rect().size * 1/$Camera2D.zoom / World.tile_size)
+				#get_parent().get_parent().get_node("Camera2D").zoom.x -= 0.05
+				#get_parent().get_parent().get_node("Camera2D").zoom.y -= 0.05
+				zoom_level = clamp(zoom_level - zoomIncrement, zoomMin, zoomMax)
+				get_parent().get_parent().get_node("Camera2D").zoom = zoom_level * Vector2.ONE
 		if World.debug_mode:
 			#if event.is_action_pressed("test1"):
 				#print("q")
@@ -618,7 +629,7 @@ func Eat(life):
 		if life.energy <= 0:
 			life.Deactivate()
 
-	elif life.species == "petal" :
+	elif life.species == "petal" and life.isDead == false :
 		self.energy += life.energy
 		life.energy= 0
 		PV += 10

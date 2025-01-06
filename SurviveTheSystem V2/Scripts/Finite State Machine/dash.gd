@@ -22,7 +22,7 @@ var charge_direction : Vector2
 var isDashing: bool = false
 
 func Enter():
-	#print("enter DASH")
+	print("enter DASH")
 	if get_parent().get_parent(): 
 		life_entity = get_parent().get_parent()
 		timer_dash_prep_count = charging_time
