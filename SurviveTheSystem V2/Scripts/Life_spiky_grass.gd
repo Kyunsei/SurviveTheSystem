@@ -212,9 +212,13 @@ func getDamaged(value,antagonist:LifeEntity=null):
 		InvicibilityTime = 1 
 		modulate = Color(1, 0.2, 0.2)
 
-		var petal = Life.petal_scene.instantiate()
-		get_parent().add_child(petal) 
-		petal.position = self.position - Vector2(10,10)
+		if current_life_cycle == 2 :
+			current_life_cycle -= 1
+			energy -= 10
+			Update_sprite($Sprite_1,$Collision_1 )
+			var petal = Life.petal_scene.instantiate()
+			get_parent().add_child(petal) 
+			petal.position = self.position - Vector2(10,10)
 		
 		await get_tree().create_timer(0.5).timeout
 		InvicibilityTime = 0

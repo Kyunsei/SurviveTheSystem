@@ -32,6 +32,7 @@ func Build_Stat():
 	
 	#diying
 func Die():
+	self.isPickable = false
 	self.isDead = true
 	$Sprite_0.modulate = Color(0.5, 0.5, 0.5,0.5)
 	if carried_by != null:
