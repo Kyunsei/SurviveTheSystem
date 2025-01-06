@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://bkvttykvie6wd"]
+[gd_scene load_steps=16 format=3 uid="uid://bkvttykvie6wd"]
 
 [ext_resource type="Script" path="res://Scripts/life_spidercrab.gd" id="1_3m3wu"]
 [ext_resource type="Texture2D" uid="uid://e1v54i3ffumy" path="res://Art/spider.png" id="2_ge6rd"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/dash.gd" id="8_bo4wv"]
 [ext_resource type="AudioStream" uid="uid://bgn1prv34ie2q" path="res://Sound/cling.mp3" id="9_6oweo"]
 [ext_resource type="AudioStream" uid="uid://ck4cxuyqyrx0g" path="res://Sound/hurt.mp3" id="10_71acl"]
+[ext_resource type="AudioStream" uid="uid://c8jko5wn4ax7h" path="res://Sound/coucou.mp3" id="11_n8aj8"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chh8i"]
 
@@ -121,6 +122,9 @@ pitch_scale = 2.0
 [node name="hurt" type="AudioStreamPlayer2D" parent="Sound"]
 stream = ExtResource("10_71acl")
 pitch_scale = 1.5
+
+[node name="coucou" type="AudioStreamPlayer2D" parent="Sound"]
+stream = ExtResource("11_n8aj8")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

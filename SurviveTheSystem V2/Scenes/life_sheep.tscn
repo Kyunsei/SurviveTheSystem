@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dfy55q0tpbtav"]
+[gd_scene load_steps=12 format=3 uid="uid://dfy55q0tpbtav"]
 
 [ext_resource type="Script" path="res://Scripts/Life_sheep.gd" id="1_ftmai"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/brainy.gd" id="2_7k25x"]
@@ -6,7 +6,8 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="3_hk7l5"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="4_8o44k"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="5_feg8t"]
-[ext_resource type="AudioStream" uid="uid://cmhagkiqob6sq" path="res://Sound/sheep1.mp3" id="7_ox85v"]
+[ext_resource type="AudioStream" uid="uid://r7xjrh8x8k65" path="res://Sound/sheep1.mp3" id="7_ox85v"]
+[ext_resource type="AudioStream" uid="uid://dfsab7dl67vwy" path="res://Sound/sheep3.mp3" id="8_05sa3"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ld3jv"]
 
@@ -91,7 +92,9 @@ script = ExtResource("5_feg8t")
 
 [node name="avoid" type="AudioStreamPlayer2D" parent="Sound"]
 stream = ExtResource("7_ox85v")
-pitch_scale = 2.0
+
+[node name="avoid2" type="AudioStreamPlayer2D" parent="Sound"]
+stream = ExtResource("8_05sa3")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

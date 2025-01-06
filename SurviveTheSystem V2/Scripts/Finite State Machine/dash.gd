@@ -27,6 +27,7 @@ func Enter():
 		life_entity = get_parent().get_parent()
 		timer_dash_prep_count = charging_time
 		life_entity.velocity = Vector2.ZERO
+		life_entity.get_node("Sound").get_node("coucou").playing = true
 		#life_entity.get_node("DebugLabel").text = "dash"
 func Exit():
 	#print("exit DASH")

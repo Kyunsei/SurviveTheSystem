@@ -18,8 +18,10 @@ func Enter():
 		life_entity = get_parent().get_parent()
 		life_entity.get_node("DebugLabel").text = "avoid"
 		if life_entity.species == "sheep" :
-			life_entity.get_node("Sound").get_node("avoid").pitch_scale = 3 - life_entity.current_life_cycle
-			life_entity.get_node("Sound").get_node("avoid").playing = true
+			var sound = ["avoid","avoid2"]
+			var rd_id = randi_range(0,1)
+			life_entity.get_node("Sound").get_node(sound[rd_id]).pitch_scale = 3 - life_entity.current_life_cycle
+			life_entity.get_node("Sound").get_node(sound[rd_id]).playing = true
 		if life_entity.species == "spidercrab" :
 			print("entered avoid state SPIDERCRAB")
 	
