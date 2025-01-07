@@ -56,6 +56,7 @@ func Build_Phenotype():
 	$Sprite_0.scale *= Genome["scale"][self.current_life_cycle]
 	#$Collision_0.shape.size = size
 	$Dead_Sprite_0.scale *= Genome["scale"][self.current_life_cycle]
+	$light.scale *= Genome["scale"][self.current_life_cycle]
 	
 	$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
 	#$Sprite_0.offset.x = 0 # -$Sprite_0.texture.get_width()/4
@@ -324,6 +325,7 @@ func Growth():
 			
 			$Sprite_0.scale = Vector2(1,1)
 			$Dead_Sprite_0.scale = Vector2(1,1)
+			$light.scale = Vector2(1,1)
 			self.isPickable = false
 			
 			Update_sprite($Sprite_0,$Collision_1)
