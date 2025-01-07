@@ -70,7 +70,7 @@ func Build_Phenotype():
 	$Collision_1.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*1
 
 	#Vision
-	$Vision/Collision.shape.radius = 1500
+	$Vision/Collision.shape.radius = 5500
 	$Vision/Collision.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #Vector2(width/2,-height/2)
 
 
@@ -86,7 +86,7 @@ func _physics_process(delta):
 		if isDead == false :
 			Brainy()'
 
-	move_and_collide(velocity *delta)
+	move_and_slide()
 	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
 	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
 	if item_array.size() > 0:
@@ -512,7 +512,7 @@ func _on_mouse_exited():
 
 func _on_vision_body_entered(body):
 	if body.species== "sheep":
-		if body.current_life_cycle > 0 and self.current_life_cycle == 1:
+		if body.current_life_cycle > 1 and self.current_life_cycle == 1:
 			vision_array["food"].append(body)
 		elif body.current_life_cycle == 1 and self.current_life_cycle == 0:
 			vision_array["food"].append(body)

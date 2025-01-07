@@ -93,7 +93,7 @@ func check_Food():
 	if life_entity.vision_array["food"].size() > 0:
 		#var s = Time.get_ticks_msec()
 
-		var alive_array = life_entity.vision_array["food"].filter(func(obj): return obj.isDead == false)
+		var alive_array = life_entity.vision_array["food"] #.filter(func(obj): return obj.isDead == false)
 		
 		#var ss = Time.get_ticks_msec()
 		#print("filter: " + str(ss-s) + "ms")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bkvttykvie6wd"]
+[gd_scene load_steps=19 format=3 uid="uid://bkvttykvie6wd"]
 
 [ext_resource type="Script" path="res://Scripts/life_spidercrab.gd" id="1_3m3wu"]
 [ext_resource type="Texture2D" uid="uid://e1v54i3ffumy" path="res://Art/spider.png" id="2_ge6rd"]
@@ -21,6 +21,26 @@ radius = 8.0
 radius = 48.0
 
 [sub_resource type="Theme" id="Theme_g2d4v"]
+
+[sub_resource type="Gradient" id="Gradient_2a72t"]
+offsets = PackedFloat32Array(0, 0.69, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mccqv"]
+gradient = SubResource("Gradient_2a72t")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.8, 0.8)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_bqeis"]
+gradient = SubResource("Gradient_2a72t")
+width = 16
+height = 16
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.8, 0.8)
 
 [node name="Spidercrab" type="CharacterBody2D"]
 collision_layer = 0
@@ -90,6 +110,7 @@ show_percentage = false
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 path_desired_distance = 64.0
 target_desired_distance = 16.0
+debug_enabled = true
 
 [node name="Brainy" type="Node2D" parent="." node_paths=PackedStringArray("initial_state")]
 script = ExtResource("4_hi2ya")
@@ -125,6 +146,36 @@ pitch_scale = 1.5
 
 [node name="coucou" type="AudioStreamPlayer2D" parent="Sound"]
 stream = ExtResource("11_n8aj8")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(48, -45)
+scale = Vector2(0.734375, 0.734375)
+texture = SubResource("GradientTexture2D_mccqv")
+
+[node name="PointLight2D2" type="PointLight2D" parent="."]
+position = Vector2(73, -43)
+scale = Vector2(0.734375, 0.734375)
+texture = SubResource("GradientTexture2D_mccqv")
+
+[node name="PointLight2D3" type="PointLight2D" parent="."]
+position = Vector2(76, -57)
+scale = Vector2(0.734375, 0.734375)
+texture = SubResource("GradientTexture2D_bqeis")
+
+[node name="PointLight2D4" type="PointLight2D" parent="."]
+position = Vector2(82, -51)
+scale = Vector2(0.734375, 0.734375)
+texture = SubResource("GradientTexture2D_bqeis")
+
+[node name="PointLight2D5" type="PointLight2D" parent="."]
+position = Vector2(49, -58)
+scale = Vector2(0.734375, 0.734375)
+texture = SubResource("GradientTexture2D_bqeis")
+
+[node name="PointLight2D6" type="PointLight2D" parent="."]
+position = Vector2(39, -58)
+scale = Vector2(0.734375, 0.734375)
+texture = SubResource("GradientTexture2D_bqeis")
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]

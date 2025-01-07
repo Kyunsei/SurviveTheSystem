@@ -30,7 +30,7 @@ func Enter():
 	if get_parent().get_parent():
 		life_entity = get_parent().get_parent()
 		if target:
-			life_entity.navigation_agent.target_position = target.getCenterPos()
+			#life_entity.navigation_agent.target_position = target.getCenterPos()
 			target_register_pos = target.getCenterPos() 
 			'if not life_entity.navigation_agent.is_target_reachable():
 				#print("too far /obstacle")
@@ -47,7 +47,9 @@ func Update(delta: float):
 	#check if stuck every 3 second
 	if timer <= 0:
 		print("crab tired")
-		remove_target()
+		#remove_target()
+		target = null
+		Transitioned.emit(self,"idle_state")
 		timer = chasing_max_timer
 	timer -= delta
 	pass
@@ -61,26 +63,30 @@ func Physics_Update(delta: float):
 				Transitioned.emit(self,"avoid_state")
 				
 			elif target:
-				if target.isDead:
-
+				if target.isActive == false:
 					remove_target()
 					Transitioned.emit(self,"idle_state")
 				else:
-					if target.isDead:
+					if target.isActive == false:
 						remove_target()
-
 						Transitioned.emit(self,"idle_state")
+						
 					#print("going to food")
-					if target_register_pos != target.getCenterPos():
+					'if target_register_pos != target.getCenterPos():
 						life_entity.navigation_agent.target_position = target.getCenterPos()
-						target_register_pos = target.getCenterPos() 
+						target_register_pos = target.getCenterPos() '
 					
 			
 					#if life_entity.navigation_agent.is_target_reachable():
-					next_path_position = life_entity.navigation_agent.get_next_path_position()
-					direction = next_path_position - life_entity.getCenterPos()
+					#next_path_position = life_entity.navigation_agent.get_next_path_position()
+					direction = target.getCenterPos() - life_entity.getCenterPos()
 					life_entity.velocity = direction.normalized() * life_entity.maxSpeed 
-	
+					#else:
+					#	get_parent().get_node(next_state).target = target
+					#	Transitioned.emit(self,next_state)
+					'print(next_path_position)
+					print(direction)
+					print("------------")'
 									
 					if life_entity.getCenterPos().distance_to(target.getCenterPos())<minimun_distance and next_state != "":
 							get_parent().get_node(next_state).target = target
