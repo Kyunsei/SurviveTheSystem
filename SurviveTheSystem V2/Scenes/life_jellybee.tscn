@@ -35,6 +35,15 @@ collision_mask = 0
 visible = false
 shape = SubResource("CapsuleShape2D_ld3jv")
 
+[node name="Vision_close" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape2D" parent="Vision_close"]
+visible = false
+shape = SubResource("CapsuleShape2D_ld3jv")
+
 [node name="Sprite_0" type="Sprite2D" parent="."]
 texture = ExtResource("2_hurvh")
 centered = false
@@ -92,3 +101,5 @@ texture = ExtResource("9_xs6lx")
 [connection signal="area_exited" from="Vision" to="." method="_on_vision_area_exited"]
 [connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
 [connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]
+[connection signal="body_entered" from="Vision_close" to="." method="_on_vision_close_body_entered"]
+[connection signal="body_exited" from="Vision_close" to="." method="_on_vision_close_body_exited"]

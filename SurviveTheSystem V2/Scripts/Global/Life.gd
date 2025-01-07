@@ -139,7 +139,7 @@ func Init_life_pool(folder):
 	Life.Instantiate_emptyLife_pool(folder, 100, "stingtree")
 	Life.Instantiate_emptyLife_pool(folder, 10, "spidercrab")
 	Life.Instantiate_emptyLife_pool(folder, 2, "sc_boss")
-	Life.Instantiate_emptyLife_pool(folder, 30, "jellybee")
+	Life.Instantiate_emptyLife_pool(folder, 50, "jellybee")
 	
 	
 

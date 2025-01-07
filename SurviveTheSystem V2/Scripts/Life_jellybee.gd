@@ -8,7 +8,7 @@ var haspollen = 0
 var berry_nest: LifeEntity
 
 var berry_nest_array = []
-
+var duplicate_timer = 0
 
 var vision_array = {
 	"food": [],
@@ -35,6 +35,10 @@ func Build_Phenotype(): #go to main
 	$Vision/Collision.shape.radius = 4000
 	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
 
+	$Vision_close/Collision.shape.radius = 200
+	$Vision_close/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
+
+	#ADD Body
 	#ADD Body
 	#$Body_0/Collision_0.shape.size = $Sprite_0.texture.get_size()
 	$Collision_0.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
@@ -47,7 +51,7 @@ func Build_Stat():
 	self.energy = 5
 	self.maxEnergy = 10
 	self.maxSpeed = 300
-	self.lifespan = 2*(90/5)
+	self.lifespan = 2*(90/10)
 	self.age= 0
 	$Sprite_0.modulate = jelly_color
 
@@ -75,11 +79,12 @@ func _on_timer_timeout():
 		
 			
 			Metabo_cost()
-			#LifeDuplicate()
-			#Ageing()
+			LifeDuplicate()
+			Ageing()
 			spwan_pollen()
 			#Growth()
 			#AdjustDirection()
+			duplicate_timer += 1
 			if self.energy <= 0 or self.age >= lifespan or self.PV <=0:
 
 				Die()			
@@ -90,17 +95,47 @@ func _on_timer_timeout():
 
 		#Debug part
 		$DebugLabel.text = str(age) + " " + str(energy)
-	if not berry_nest or berry_nest.current_life_cycle != 3:
+	if not berry_nest or berry_nest.current_life_cycle != 3 :
+		find_new_nest()
+	if isNestOvercrowded(berry_nest):
 		find_new_nest()
 
+func isNestOvercrowded(berry_nest):
+	var population = 0
+	if berry_nest:
+		for f in vision_array["friend"]:
+			if f.berry_nest:
+				if f.berry_nest == berry_nest:
+					population += 1
+	if population > 2:
+		return true
+	else:
+		return false
+					
+				
 
 func find_new_nest():
-	var potential_nest = vision_array["nest"].filter(func(obj): return obj.current_life_cycle == 3)
-	if potential_nest.size() > 0:
-			berry_nest = getClosestLife(potential_nest, 1000000.0)
-			$Brainy/idle_state.nest = berry_nest	
-			berry_nest.current_sprite.modulate = Color(0,1,0)
-			#berry_nest.Update_sprite($Nest_sprite)
+	var potential_nest_array = vision_array["nest"].filter(func(obj): return obj.current_life_cycle == 3)
+	if berry_nest:
+		if potential_nest_array.has(berry_nest):
+			potential_nest_array.erase(berry_nest)
+		
+
+	for n in range(5):
+		if potential_nest_array.size() > 0:
+			var potential_berry_nest = getClosestLife(potential_nest_array, 1000000.0)
+			if potential_berry_nest:
+				if isNestOvercrowded(potential_berry_nest):
+					potential_nest_array.erase(potential_berry_nest)
+				else:
+					berry_nest = potential_berry_nest
+					$Brainy/idle_state.nest = berry_nest	
+					berry_nest.current_sprite.modulate = Color(0,1,0)
+					return
+		else:
+			return
+			
+		
 
 
 func spwan_pollen():
@@ -150,24 +185,22 @@ func Growth():
 #Duplication
 func LifeDuplicate():
 
-	if self.age > 5 and self.energy > 15:
-			var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
+	if self.age > 5 and self.energy > 10 and duplicate_timer >= 4 and berry_nest:
 
 		#Lpool Technique
-			var li = Life.jellybee_pool_state.find(0)	
-			#+ Life.grass_pool_state.size()*0.05
-			if li > -1: # and Life.sheep_number  < Life.sheep_pool_scene.size():
-				self.energy -= 10
-				Life.jellybee_pool_scene[li].jelly_color = jelly_color
-				Life.jellybee_pool_scene[li].Activate()
-				Life.jellybee_pool_scene[li].energy = 10
-				Life.jellybee_pool_scene[li].age = 0
-				Life.jellybee_pool_scene[li].current_life_cycle = 0
-				Life.jellybee_pool_scene[li].PV = 10
-				Life.jellybee_pool_scene[li].global_position = newpos 
+			var life = Life.build_life(species)
+			if life != null:
+					self.energy -= 5
+					life.energy = 5
+					life.jelly_color = jelly_color
+					life.global_position = PickRandomPlaceWithRange(position,1 * World.tile_size, true)
+					self.maxEnergy -= 5
+					duplicate_timer = 0
 			else:
-				pass
-				print("jellybee_pool empty")
+					print("jellypool_pool empty")
+			
+
+		
 
 
 func angry_mode_on(target):
@@ -206,11 +239,13 @@ func Activate():
 	show()
 	set_collision_layer_value(1,true)
 	$Vision.set_collision_mask_value(1,true)
+	$Vision_close.set_collision_mask_value(1,true)
 	$Timer.wait_time = lifecycletime / World.speed
 	#$Timer.start()
 	#$Timer.time_left = randf_range(0,$Timer.wait_time)
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	$Vision/Collision.disabled = false
+	$Vision_close/Collision.disabled = false
 	Update_sprite($Sprite_0,$Collision_0)
 	$Brainy.Activate()
 
@@ -220,12 +255,14 @@ func Deactivate():
 	#Decomposition(0)
 	set_collision_layer_value(1,false)
 	$Vision.set_collision_mask_value(1,false)
+	$Vision_close.set_collision_mask_value(1,false)
 	$Timer.stop()
 	self.isActive = false
 	Life.pool_state[species][pool_index] = 0
 	Life.life_number[species] -= 1
 	#Life.jellybee_pool_state[self.pool_index] = 0
 	$Vision/Collision.disabled = true
+	$Vision_close/Collision.disabled = true
 	$Collision_0.disabled = true
 	$Brainy.Desactivate()
 	#Life.sheep_number -= 1
@@ -265,10 +302,8 @@ func _on_vision_body_entered(body):
 			if body.energy > 5:
 				vision_array['food'].append(body)
 
-		if body.species== "jellybee" and body!= self:
-				vision_array['friend'].append(body)
-				if body.vision_array['danger'].size() > 0:
-					self.vision_array['danger'] = body.vision_array['danger']
+	
+				
 				
 		if body.species== "berry" and body.current_life_cycle == 3:
 				self.vision_array['nest'].append(body)
@@ -313,3 +348,13 @@ func _on_mouse_exited():
 	$DebugLabel.hide()
 	if Life.player.mouse_target == self:
 		Life.player.mouse_target = null
+
+
+func _on_vision_close_body_entered(body):
+	if body.species== "jellybee" and body!= self:
+		vision_array['friend'].append(body) # Replace with function body.
+
+
+func _on_vision_close_body_exited(body):
+		if vision_array["friend"].has(body):
+			vision_array["friend"].erase(body)

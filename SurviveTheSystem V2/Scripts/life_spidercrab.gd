@@ -79,24 +79,25 @@ func Build_Phenotype():
 
 
 func _physics_process(delta):
-	if isPlayer and isDead == false:
-		input_dir = Player_Control_movement()
+	if carried_by == null :
+		if isPlayer and isDead == false:
+			input_dir = Player_Control_movement()
 
-	'else:
-		if isDead == false :
-			Brainy()'
+		'else:
+			if isDead == false :
+				Brainy()'
 
-	move_and_slide()
-	global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
-	global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
-	if item_array.size() > 0:
-		var c = 0
-		for i in item_array:
-				i.position = position + Vector2(48+c*16,-64)
-				c += 1
-	
-	if direction.normalized() != Vector2(0,0):
-		last_dir = direction
+		move_and_slide()
+		global_position.x = clamp(global_position.x, 0, World.world_size*World.tile_size)
+		global_position.y = clamp(global_position.y, 0, World.world_size*World.tile_size)
+		if item_array.size() > 0:
+			var c = 0
+			for i in item_array:
+					i.position = position + Vector2(48+c*16,-64)
+					c += 1
+		
+		if direction.normalized() != Vector2(0,0):
+			last_dir = direction
 
 
 

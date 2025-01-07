@@ -458,16 +458,20 @@ func update_tiles_according_soil_value(cells):
 
 
 
-func PickRandomPlaceWithRange(position,range):
-	var random_x = randi_range(max(0,position.x-range),min((World.world_size)* World.tile_size ,position.x+range))
-	var random_y = randi_range(max(0,position.y-range),min((World.world_size)* World.tile_size ,position.y+range))
-	var newpos = Vector2(random_x, random_y)
-	if World.block_element_state[int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)] != 1:
-		#newpos = PickRandomPlaceWithRange(position,range)
-		#newpos = PickRandomPlaceWithRange(position,range)
-		return PickRandomPlaceWithRange(position,range)  #+ Vector2(randi_range(0,8),randi_range(0,8))
-	else:
-		return newpos
+func PickRandomPlaceWithRange(position,range, isVoidPossible = false):
+
+		var random_x = randi_range(max(0,position.x-range),min((World.world_size)* World.tile_size ,position.x+range))
+		var random_y = randi_range(max(0,position.y-range),min((World.world_size)* World.tile_size ,position.y+range))
+		var newpos = Vector2(random_x, random_y)
+		if not isVoidPossible:
+			if World.block_element_state[int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)] != 1:
+				#newpos = PickRandomPlaceWithRange(position,range)
+				#newpos = PickRandomPlaceWithRange(position,range)
+				return PickRandomPlaceWithRange(position,range)  #+ Vector2(randi_range(0,8),randi_range(0,8))
+			else:
+				return newpos
+		else:
+			return newpos
 
 
 func adapt_time_to_worldspeed():

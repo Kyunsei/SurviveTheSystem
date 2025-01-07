@@ -147,27 +147,29 @@ pitch_scale = 1.5
 [node name="coucou" type="AudioStreamPlayer2D" parent="Sound"]
 stream = ExtResource("11_n8aj8")
 
-[node name="PointLight2D" type="PointLight2D" parent="."]
+[node name="light" type="Node2D" parent="."]
+
+[node name="PointLight2D" type="PointLight2D" parent="light"]
 position = Vector2(48, -45)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_mccqv")
 
-[node name="PointLight2D2" type="PointLight2D" parent="."]
+[node name="PointLight2D2" type="PointLight2D" parent="light"]
 position = Vector2(73, -43)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_mccqv")
 
-[node name="PointLight2D3" type="PointLight2D" parent="."]
+[node name="PointLight2D3" type="PointLight2D" parent="light"]
 position = Vector2(76, -57)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_bqeis")
 
-[node name="PointLight2D4" type="PointLight2D" parent="."]
+[node name="PointLight2D4" type="PointLight2D" parent="light"]
 position = Vector2(82, -51)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_bqeis")
 
-[node name="PointLight2D5" type="PointLight2D" parent="."]
+[node name="PointLight2D5" type="PointLight2D" parent="light"]
 position = Vector2(49, -58)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_bqeis")
