@@ -90,6 +90,7 @@ func Build_Stat():
 	self.vision_distance = 500
 	self.isPickable = true
 	self.push_distance = 32
+	metabolic_cost = 5
 
 func _physics_process(delta):
 	'if isPlayer:
@@ -115,11 +116,8 @@ func _on_timer_timeout():
 		if isDead == false:
 			if self.current_life_cycle !=0:
 				pass
-				Metabo_cost()
-				Metabo_cost()
-				Metabo_cost()
-				Metabo_cost()
-				Metabo_cost()
+				Metabo_cost(metabolic_cost)
+
 				#self.energy += 20	
 			LifeDuplicate()
 			Ageing()

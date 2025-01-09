@@ -78,8 +78,10 @@ func Build_Stat():
 	self.energy = 10
 	self.maxEnergy = 15
 	self.age= 0
+	self.lifecycletime = 10.
 	self.lifespan= 5 * (World.one_day_length/lifecycletime)
 	self.isPickable = true
+	metabolic_cost = 1.
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -88,8 +90,9 @@ func _on_timer_timeout():
 		if isDead == false:
 			if carried_by == null :
 				if current_life_cycle !=0:
-					Metabo_cost()	
-					Absorb_sun_energy(2,3)
+					Metabo_cost(metabolic_cost * 29 - 5 )	
+					Absorb_sun_energy(1,3)
+				
 					'if self.energy < self.maxEnergy:
 						Absorb_soil_energy(2,3)'
 				

@@ -9,8 +9,9 @@ var fieldofview = Vector2(0,0) #in tile
 var debug_mode = true
 
 #ENERGY SUN
-var energy_flow_in = 2.0 #how much energy added by day by tile
+var energy_flow_in = 1.0 #how much energy added by day by tile
 var sun_energy_block_array = [] 
+var sun_energy_occupation_array = [] 
 
 #OLD SOIL ENERGY
 var block_element_array = [] #1D matrix of the block composing the world
@@ -49,7 +50,7 @@ var shader := rd.shader_create_from_spirv(shader_spirv)
 
 
 #Diffusion Control
-var diffusion_speed = 30. #in sec
+var diffusion_speed = 10. #in sec
 var diffusion_quantity_style = false # false = factor true = number #not implemented.
 var diffusion_factor = 0.5
 
@@ -79,9 +80,11 @@ func Init_matrix():
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
 	sun_energy_block_array.resize(world_size*world_size)
+	sun_energy_occupation_array.resize(world_size*world_size)
 	block_element_array.fill(0)
 	block_element_state.fill(0)
 	sun_energy_block_array.fill(energy_flow_in)
+	sun_energy_occupation_array.fill(0)
 
 func build_world_shape(folder):
 

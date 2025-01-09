@@ -45,7 +45,7 @@ func Build_Stat():
 	self.lifespan = 3*(World.one_day_length/lifecycletime)
 	self.age= 0
 	self.maxEnergy = 15.
-	
+	metabolic_cost = 1.0
 
 	
 func _on_timer_timeout():
@@ -56,7 +56,7 @@ func _on_timer_timeout():
 			'if self.energy < self.maxEnergy:
 				Absorb_soil_energy(1,1)'
 			
-			Metabo_cost()	
+			Metabo_cost(metabolic_cost)	
 			Absorb_sun_energy(2,1)
 
 			#LifeDuplicate()

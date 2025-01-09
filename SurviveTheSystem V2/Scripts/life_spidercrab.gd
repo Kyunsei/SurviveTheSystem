@@ -49,6 +49,7 @@ func Build_Stat():
 	self.lifespan = 30*(World.one_day_length/lifecycletime)
 	self.isPickable = true
 	AdjustBar()
+	metabolic_cost = 3
 	
 func Build_Phenotype(): 
 	# SPRITE
@@ -273,11 +274,9 @@ func _on_timer_timeout():
 			$Timer.wait_time = lifecycletime / World.speed
 		if isDead == false:
 			if current_life_cycle == 1:
-				for i in range(2):
-					Metabo_cost()
+					Metabo_cost(metabolic_cost)
 			elif current_life_cycle == 0:
-				for i in range(3):
-					Metabo_cost()
+					Metabo_cost(metabolic_cost+1)
 
 			Ageing()
 			#AdjustBar()

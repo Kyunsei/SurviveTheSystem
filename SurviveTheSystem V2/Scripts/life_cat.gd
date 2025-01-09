@@ -70,6 +70,7 @@ func Build_Stat():
 	self.maxSpeed = 200
 	self.stamina = 100
 	self.lifespan = 6000 
+	metabolic_cost = 1.
 	AdjustBar()
 	
 func Build_Phenotype(): 
@@ -355,7 +356,7 @@ func _on_timer_timeout():
 		if isDead == false:
 
 
-			Metabo_cost()
+			Metabo_cost(metabolic_cost)
 			Ageing()
 			passive_healing()
 			AdjustBar()
@@ -643,6 +644,8 @@ func Eat(life):
 		PV += 10
 		life.Die()
 	#$DebugLabel.text = str(age) + " " + str(energy)
+	self.energy = clamp(self.energy,0, self.maxEnergy)
+
 	AdjustBar()
 #Sacrebleu il faut changer toutes les entity pour leur donner des "damageable" group
 func _on_bare_hand_attack_body_entered(body):

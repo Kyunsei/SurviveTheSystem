@@ -122,7 +122,7 @@ func _on_timer_timeout():
 		if isDead == false:
 			
 			Absorb_soil_energy(0,0)
-			Metabo_cost()	
+			Metabo_cost(metabolic_cost)	
 			LifeDuplicate()
 			Ageing()
 			Growth()
@@ -247,8 +247,8 @@ func Metabo_cost_inSoil():
 		energy -= min(energy,metabolic_cost)
 		update_tiles_according_soil_value([Vector2i(x,y)])
 
-func Metabo_cost():
-	energy -= min(energy,metabolic_cost)
+func Metabo_cost(value):
+	energy -= min(energy,value)
 
 
 #Getting old
@@ -307,7 +307,8 @@ func Absorb_sun_energy(value,radius):
 					var sun_energy = World.sun_energy_block_array[posindex]	
 					energy += min(value,sun_energy)
 					World.sun_energy_block_array[posindex]	-= min(value,sun_energy)
-					energy = clamp(0,energy, maxEnergy)
+					World.sun_energy_occupation_array[posindex] = 1
+					energy = clamp(energy,0, maxEnergy)
 					#update_tiles_according_soil_value([Vector2i(x,y)]
 
 func Absorb_life_energy(entity,value):

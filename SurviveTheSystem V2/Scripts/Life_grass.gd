@@ -38,17 +38,19 @@ func Build_Genome():
 	
 
 func Build_Stat():
-	test_col =  Color(randi_range(0,1),randi_range(0,1),randi_range(0,1))
+	#test_col =  Color(randi_range(0,1),randi_range(0,1),randi_range(0,1))
 	modulate = test_col
 	self.PV = 10
 	self.current_life_cycle = 0
 	self.PV = 10
 	self.energy = 0.
-	self.lifespan = 1.5*(World.one_day_length/lifecycletime)
+	self.lifecycletime = 10. #30. #in second
+	self.lifespan = 3*(World.one_day_length/lifecycletime)
 	self.age = 0
 	self.maxEnergy = 5.
-	self.lifecycletime = 20. #30. #in second
+
 	self.isPickable = false
+	metabolic_cost = 1.
 
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -58,8 +60,8 @@ func _on_timer_timeout():
 
 			'if self.energy < self.maxEnergy:
 				Absorb_soil_energy(1,1)'
-			Metabo_cost()
-			Absorb_sun_energy(2,1)
+			Metabo_cost(metabolic_cost + 2)
+			Absorb_sun_energy(1,1)
 			Growth()
 			LifeDuplicate()
 			Ageing()
@@ -77,7 +79,7 @@ func _on_timer_timeout():
 				energy -= 5
 
 		#Debug partw
-		#$DebugLabel.text =  "%.4f" % energy
+		$DebugLabel.text =  "%.4f" % energy
 
 
 
@@ -123,21 +125,22 @@ func LifeDuplicate():
 			if self.energy > 4:	
 
 				for i in range (2):
-					var newpos = PickRandomPlaceWithRange(position, 4 * World.tile_size)
+					var newpos = PickRandomPlaceWithRange(position, 3 * World.tile_size)
 					var middle = newpos + Vector2(32/2,0)
 					var posindex = int(middle.y/World.tile_size)*World.world_size + int(middle.x/World.tile_size)		
 				#if World.block_element_array[posindex]>= 0:
 					if World.block_element_state[posindex]>= 1:
-						timer_count = 1
-						var life: LifeEntity = Life.build_life(species)
-						if life != null:
-							self.energy -= 0#20
-							life.energy = 0#20
-							life.global_position = newpos #PickRandomPlaceWithRange(position,4 * World.tile_size)
-							life.test_col = test_col
-							life.modulate = test_col
-						else:
-							pass
+						if World.sun_energy_occupation_array[posindex]==0:
+							timer_count = 1
+							var life: LifeEntity = Life.build_life(species)
+							if life != null:
+								self.energy -= 0#20
+								life.energy = 0#20
+								life.global_position = newpos #PickRandomPlaceWithRange(position,4 * World.tile_size)
+								life.test_col = test_col
+								life.modulate = test_col
+							else:
+								pass
 		else:
 			timer_count -= 1		#$DebugLabel.text = "full"
 			pass
