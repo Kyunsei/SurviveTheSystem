@@ -76,7 +76,6 @@ offset_left = 861.0
 offset_top = 416.0
 offset_right = 1020.0
 offset_bottom = 454.0
-button_pressed = true
 
 [node name="Label2" type="Label" parent="."]
 offset_left = 892.0

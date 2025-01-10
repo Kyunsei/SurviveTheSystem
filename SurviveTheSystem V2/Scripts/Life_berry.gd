@@ -82,6 +82,7 @@ func Build_Stat():
 	self.lifespan= 5 * (World.one_day_length/lifecycletime)
 	self.isPickable = true
 	metabolic_cost = 1.
+	photosynthesis_level = 2
 	
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -90,8 +91,8 @@ func _on_timer_timeout():
 		if isDead == false:
 			if carried_by == null :
 				if current_life_cycle !=0:
-					Metabo_cost(metabolic_cost * 29 - 5 )	
-					Absorb_sun_energy(1,3)
+					Metabo_cost(5)	
+					Absorb_sun_energy(1,4)
 				
 					'if self.energy < self.maxEnergy:
 						Absorb_soil_energy(2,3)'
@@ -144,7 +145,7 @@ func Die():
 		z_index = 0
 	
 	Update_sprite($Dead_Sprite_0, $Collision_0)
-
+	set_sun_occupation(0,4)
 	$PointLight2D.hide()
 	for b in jelly_bee_array:
 		b.berry_nest = null
@@ -155,7 +156,8 @@ func Growth():
 	if current_life_cycle == 0:
 		if World.isNight == true:
 			$PointLight2D.show()
-		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy > 2:
+		if self.age > 1*(World.one_day_length/lifecycletime) and self.energy > 2:
+
 			self.current_life_cycle += 1
 			Update_sprite($Sprite_1, $Collision_1)	
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
@@ -163,14 +165,16 @@ func Growth():
 			self.isPickable = false
 	elif current_life_cycle == 1:
 		$PointLight2D.hide()
-		if self.age > 3*(World.one_day_length/lifecycletime) and self.energy > 5:
+		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy > 5:
+
 			self.current_life_cycle += 1
 			Update_sprite($Sprite_2, $Collision_2)	
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
 			self.PV = self.maxPV
 	elif current_life_cycle == 2:
 		$PointLight2D.hide()
-		if self.age > 4*(World.one_day_length/lifecycletime) and self.energy > 10 and self.counter == 0:
+		if self.age > 3*(World.one_day_length/lifecycletime) and self.energy > 10 and self.counter == 0:
+
 			self.current_life_cycle += 1
 			Update_sprite($Sprite_3, $Collision_3)	
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]

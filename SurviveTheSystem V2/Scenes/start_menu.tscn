@@ -1,6 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://b66m0lrgm0ubu"]
+[gd_scene load_steps=11 format=3 uid="uid://b66m0lrgm0ubu"]
 
 [ext_resource type="Script" path="res://Scripts/StartMenu.gd" id="1_aywa7"]
+[ext_resource type="Texture2D" uid="uid://c05lqom0fawav" path="res://Art/berry_5.png" id="2_hx35n"]
+[ext_resource type="Texture2D" uid="uid://dpd222h8h31km" path="res://Art/berry_1.png" id="3_8sge5"]
+[ext_resource type="Texture2D" uid="uid://ci6xppd6grqfi" path="res://Art/berry_3.png" id="4_hr3pp"]
+[ext_resource type="Texture2D" uid="uid://bfae5syr2y1x4" path="res://Art/grass_2.png" id="5_8r3re"]
+[ext_resource type="Texture2D" uid="uid://bbletb5j0buo8" path="res://Art/grass_1.png" id="6_ksbd6"]
+[ext_resource type="Texture2D" uid="uid://cxknvht080h0u" path="res://Art/spiky_grass_2.png" id="7_a5e5f"]
+[ext_resource type="Texture2D" uid="uid://blm537rpfx3gm" path="res://Art/spiky_flower.png" id="8_xs5fy"]
+[ext_resource type="Texture2D" uid="uid://ca7scia4d8ogq" path="res://Art/spiky_grass_0.png" id="9_t17mw"]
+[ext_resource type="Texture2D" uid="uid://clv2dt253r3n" path="res://Art/spiky_grass_1.png" id="10_64id8"]
 
 [node name="StartMenu" type="Control"]
 layout_mode = 3
@@ -34,6 +43,21 @@ theme_type_variation = &"HeaderLarge"
 theme_override_font_sizes/font_size = 60
 text = "Survive The System"
 
+[node name="Title2" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -329.0
+offset_top = 146.0
+offset_right = 314.0
+offset_bottom = 229.0
+grow_horizontal = 2
+theme_type_variation = &"HeaderLarge"
+theme_override_font_sizes/font_size = 40
+text = "Prototype 1.2 - The Plant Updates"
+horizontal_alignment = 1
+
 [node name="Button_VBox" type="VBoxContainer" parent="."]
 layout_mode = 1
 anchors_preset = 5
@@ -50,6 +74,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "play"
 
+[node name="Button4" type="Button" parent="Button_VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Challenges (NEW!)"
+
 [node name="AchievButton" type="Button" parent="Button_VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
@@ -59,11 +88,6 @@ text = "Achievment"
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "TEST 3D"
-
-[node name="Button4" type="Button" parent="Button_VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-text = "Test diffusion"
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 1
@@ -134,10 +158,93 @@ layout_mode = 2
 [node name="FoV" type="LineEdit" parent="DebugValue"]
 layout_mode = 2
 
+[node name="Node2D" type="Node2D" parent="."]
+position = Vector2(198, 225)
+
+[node name="Berry5" type="Sprite2D" parent="Node2D"]
+position = Vector2(-32, 102)
+texture = ExtResource("2_hx35n")
+
+[node name="Berry6" type="Sprite2D" parent="Node2D"]
+position = Vector2(19, 149)
+texture = ExtResource("2_hx35n")
+
+[node name="Berry7" type="Sprite2D" parent="Node2D"]
+position = Vector2(-66, 192)
+texture = ExtResource("2_hx35n")
+
+[node name="Berry1" type="Sprite2D" parent="Node2D"]
+position = Vector2(784, -100)
+texture = ExtResource("3_8sge5")
+
+[node name="Berry3" type="Sprite2D" parent="Node2D"]
+position = Vector2(822, -33)
+texture = ExtResource("4_hr3pp")
+
+[node name="Grass2" type="Sprite2D" parent="Node2D"]
+position = Vector2(-18, 332)
+texture = ExtResource("5_8r3re")
+
+[node name="Grass1" type="Sprite2D" parent="Node2D"]
+position = Vector2(-55, -127)
+texture = ExtResource("6_ksbd6")
+
+[node name="Grass3" type="Sprite2D" parent="Node2D"]
+position = Vector2(-30, -107)
+texture = ExtResource("5_8r3re")
+
+[node name="Grass4" type="Sprite2D" parent="Node2D"]
+position = Vector2(-69, -79)
+texture = ExtResource("5_8r3re")
+
+[node name="SpikyGrass2" type="Sprite2D" parent="Node2D"]
+position = Vector2(663, 302)
+texture = ExtResource("7_a5e5f")
+
+[node name="SpikyGrass3" type="Sprite2D" parent="Node2D"]
+position = Vector2(686, 335)
+texture = ExtResource("7_a5e5f")
+
+[node name="SpikyGrass4" type="Sprite2D" parent="Node2D"]
+position = Vector2(734, 295)
+texture = ExtResource("7_a5e5f")
+
+[node name="SpikyGrass5" type="Sprite2D" parent="Node2D"]
+position = Vector2(720, 344)
+texture = ExtResource("7_a5e5f")
+
+[node name="SpikyGrass6" type="Sprite2D" parent="Node2D"]
+position = Vector2(787, 246)
+texture = ExtResource("7_a5e5f")
+
+[node name="SpikyGrass7" type="Sprite2D" parent="Node2D"]
+position = Vector2(776, 314)
+texture = ExtResource("7_a5e5f")
+
+[node name="SpikyGrass8" type="Sprite2D" parent="Node2D"]
+position = Vector2(816, 338)
+texture = ExtResource("7_a5e5f")
+
+[node name="SpikyFlower" type="Sprite2D" parent="Node2D"]
+position = Vector2(755, -24)
+texture = ExtResource("8_xs5fy")
+
+[node name="SpikyGrass0" type="Sprite2D" parent="."]
+position = Vector2(804, 399)
+texture = ExtResource("9_t17mw")
+
+[node name="SpikyGrass1" type="Sprite2D" parent="."]
+position = Vector2(860, 369)
+texture = ExtResource("9_t17mw")
+
+[node name="SpikyGrass9" type="Sprite2D" parent="."]
+position = Vector2(869, 413)
+texture = ExtResource("10_64id8")
+
 [connection signal="pressed" from="Button_VBox/PlayButton" to="." method="_on_play_button_pressed"]
+[connection signal="pressed" from="Button_VBox/Button4" to="." method="_on_button_4_pressed"]
 [connection signal="pressed" from="Button_VBox/AchievButton" to="." method="_on_achiev_button_pressed"]
 [connection signal="pressed" from="Button_VBox/Button_TEST" to="." method="_on_button_test_pressed"]
-[connection signal="pressed" from="Button_VBox/Button4" to="." method="_on_button_4_pressed"]
 [connection signal="text_changed" from="DebugValue/worldsize" to="." method="_on_worldsize_text_changed"]
 [connection signal="text_changed" from="DebugValue/tilesize" to="." method="_on_tilesize_text_changed"]
 [connection signal="text_changed" from="DebugValue/Total_Element" to="." method="_on_total_element_text_changed"]

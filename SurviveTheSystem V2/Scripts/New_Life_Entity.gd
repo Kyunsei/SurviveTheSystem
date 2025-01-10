@@ -40,6 +40,7 @@ var size = Vector2(32,32) #size from sprite
 var PV = 0 #current level of health
 var current_life_cycle = 0 #which state of life it is. egg, young, adult, etc..
 var metabolic_cost = 1. #how much energy is consumed by cycle to keep biological function
+var photosynthesis_level = 1 # 1,2 or 3
 
 #Visualisation
 var current_sprite: Sprite2D
@@ -248,7 +249,7 @@ func Metabo_cost_inSoil():
 		update_tiles_according_soil_value([Vector2i(x,y)])
 
 func Metabo_cost(value):
-	energy -= min(energy,value)
+	energy -= value #min(energy,value)
 
 
 #Getting old
@@ -303,12 +304,15 @@ func Absorb_sun_energy(value,radius):
 		for y in range(center_y - radius, center_y + radius + 1):
 			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
 				var posindex = y*World.world_size + x
-				if posindex < World.sun_energy_block_array.size():
-					var sun_energy = World.sun_energy_block_array[posindex]	
+				if posindex < World.sun_energy_block_array[0].size():
+
+					var sun_energy = World.sun_energy_block_array[World.n_sun_level-photosynthesis_level][posindex]
+					sun_energy = max(0,sun_energy)
 					energy += min(value,sun_energy)
-					World.sun_energy_block_array[posindex]	-= min(value,sun_energy)
-					World.sun_energy_occupation_array[posindex] = 1
-					energy = clamp(energy,0, maxEnergy)
+					World.sun_energy_block_array[World.n_sun_level-photosynthesis_level][posindex]	-= min(value,sun_energy)
+					World.sun_energy_occupation_array[World.n_sun_level-photosynthesis_level][posindex]	= value
+					#World.sun_energy_occupation_array[posindex] = 1
+					#energy = clamp(energy,0, maxEnergy)
 					#update_tiles_according_soil_value([Vector2i(x,y)]
 
 func Absorb_life_energy(entity,value):
@@ -384,7 +388,22 @@ func Decomposition(radius):
 						self.energy -= value 
 
 
-
+func set_sun_occupation(value,radius):
+	if radius > nb_of_soil_block_by_radius.size():
+		print("too many block absorbed, please uptade the variable in new_life script")
+		radius = nb_of_soil_block_by_radius.size()-1
+	var middle = position + Vector2(size.x/2,0)#-size.y/2)
+	var center_x = int(middle.x/World.tile_size)
+	var	center_y = int(middle.y/World.tile_size)
+	#var value_max_absorbed_by_tile = clamp((maxEnergy - energy) / nb_of_soil_block_by_radius[radius], 0, value)
+	for x in range(center_x - radius, center_x + radius + 1):
+		for y in range(center_y - radius, center_y + radius + 1):
+			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+				var posindex = y*World.world_size + x
+				if posindex < World.sun_energy_occupation_array[0].size():
+					World.sun_energy_occupation_array[World.n_sun_level-photosynthesis_level][posindex]	= value
+					
+				
 
 func AdjustBar():
 	$HP_bar.value = self.PV *100 / self.maxPV 

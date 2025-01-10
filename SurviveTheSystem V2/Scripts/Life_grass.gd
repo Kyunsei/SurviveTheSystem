@@ -4,7 +4,7 @@ extends LifeEntity
 # Grass script
 
 var species = "grass"
-
+var sub_species: int = 0
 
 var test_col = Color(1,1,1)
 var timer_count : int = 0
@@ -38,8 +38,10 @@ func Build_Genome():
 	
 
 func Build_Stat():
+	#self.sub_species = randi_range(0,1)
+	self.sub_species = 0
 	#test_col =  Color(randi_range(0,1),randi_range(0,1),randi_range(0,1))
-	modulate = test_col
+	#modulate = test_col
 	self.PV = 10
 	self.current_life_cycle = 0
 	self.PV = 10
@@ -47,11 +49,22 @@ func Build_Stat():
 	self.lifecycletime = 10. #30. #in second
 	self.lifespan = 3*(World.one_day_length/lifecycletime)
 	self.age = 0
-	self.maxEnergy = 5.
+	self.maxEnergy = 10.
 
 	self.isPickable = false
 	metabolic_cost = 1.
+	
 
+	
+	if self.sub_species == 1:
+		test_col = Color(0,0,1)
+		modulate = test_col
+		self.maxEnergy = 10.
+	else:
+		test_col = Color(1,1,1)
+		modulate = test_col
+		self.maxEnergy = 10.
+		
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
 		$Timer.wait_time = lifecycletime / World.speed
@@ -60,11 +73,39 @@ func _on_timer_timeout():
 
 			'if self.energy < self.maxEnergy:
 				Absorb_soil_energy(1,1)'
-			Metabo_cost(metabolic_cost + 2)
-			Absorb_sun_energy(1,1)
+
+
+			
+			if self.sub_species == 0:
+				Metabo_cost(5)
+				Absorb_sun_energy(2,1)
+				#modulate =  Color(1,1,1)
+				
+
+			else:
+				var energybefore = energy
+				Metabo_cost(3)
+				Absorb_sun_energy(2,1)
+				if energy - energybefore > 4:
+					Die()
+					#enrgy = 0
+			
+
+				
+			energy = clamp(energy, 0, maxEnergy)
+
+			
 			Growth()
 			LifeDuplicate()
 			Ageing()
+			
+			'if self.sub_species == 1:
+				if self.energy > 6:
+					self.energy = 0
+					Die()
+'
+			
+			
 			
 
 			if self.energy <= 0 or self.age >= lifespan or self.PV <=0:
@@ -79,7 +120,7 @@ func _on_timer_timeout():
 				energy -= 5
 
 		#Debug partw
-		$DebugLabel.text =  "%.4f" % energy
+		$DebugLabel.text =  "%.4f" % energy + " sub: " + str(self.sub_species)
 
 
 
@@ -91,7 +132,7 @@ func Die():
 		carried_by.item_array.erase(self)
 		self.carried_by = null
 		z_index = 0
-	
+	set_sun_occupation(0,1)
 	Update_sprite($Dead_Sprite_0, $Collision_0)
 	'$Dead_Sprite_0.show()
 	$Collision_1.disabled = true		
@@ -124,13 +165,13 @@ func LifeDuplicate():
 		if timer_count <= 0:
 			if self.energy > 4:	
 
-				for i in range (2):
-					var newpos = PickRandomPlaceWithRange(position, 3 * World.tile_size)
+				for i in range (2 + sub_species*2):
+					var newpos = PickRandomPlaceWithRange(position, 3 * World.tile_size + sub_species)
 					var middle = newpos + Vector2(32/2,0)
 					var posindex = int(middle.y/World.tile_size)*World.world_size + int(middle.x/World.tile_size)		
 				#if World.block_element_array[posindex]>= 0:
 					if World.block_element_state[posindex]>= 1:
-						if World.sun_energy_occupation_array[posindex]==0:
+						#if World.sun_energy_occupation_array[posindex]==0:
 							timer_count = 1
 							var life: LifeEntity = Life.build_life(species)
 							if life != null:
@@ -139,6 +180,13 @@ func LifeDuplicate():
 								life.global_position = newpos #PickRandomPlaceWithRange(position,4 * World.tile_size)
 								life.test_col = test_col
 								life.modulate = test_col
+								life.sub_species = self.sub_species
+								life.maxEnergy = maxEnergy
+								if sub_species == 0:
+									pass
+								else:
+									Life.red -= 1
+									Life.blue += 1
 							else:
 								pass
 		else:
@@ -171,6 +219,8 @@ func Activate():
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	Update_sprite($Sprite_0,$Collision_0)
 	self.size = get_node("Collision_0").shape.size
+	
+	Life.red += 1
 
 func Deactivate():	
 	if carried_by != null:
@@ -185,6 +235,11 @@ func Deactivate():
 	self.isActive = false
 	Life.pool_state[species][pool_index] = 0
 	Life.life_number[species] -= 1
+	
+	if sub_species == 0:
+		Life.red -= 1
+	else:
+		Life.blue -= 1
 
 
 

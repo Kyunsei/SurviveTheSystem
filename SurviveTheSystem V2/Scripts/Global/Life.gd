@@ -104,6 +104,10 @@ var pool_scene = {
 }
 
 
+#Variable for challenges
+var blue = 0
+var red = 0
+
 func Calculate_score():
 	score += 1
 
@@ -119,8 +123,7 @@ func Calculate_score():
 			folder.add_child(nl)'
 
 
-func Init_life_pool(folder):
-
+func Init_life_pool():
 
 	for i in pool_scene:
 		pool_scene[i] = []
@@ -130,8 +133,8 @@ func Init_life_pool(folder):
 		life_number[i] = 0
 		
 
+func fill_with_empty_entity_pool_lifes(folder):
 	Life.Instantiate_emptyLife_pool(folder, 3500, "grass")
-
 	Life.Instantiate_emptyLife_pool(folder, 100, "spiky_grass")
 	Life.Instantiate_emptyLife_pool(folder, 80, "sheep")
 	Life.Instantiate_emptyLife_pool(folder, 100, "berry")

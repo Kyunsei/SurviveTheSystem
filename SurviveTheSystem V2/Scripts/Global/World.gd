@@ -6,12 +6,16 @@ var world_size = 500 #The size in tile of the World
 var tile_size = 32#128 # the size in pixel of each tile
 var fieldofview = Vector2(0,0) #in tile
 
-var debug_mode = true
+var debug_mode = false
+
+#chall
+var ID_chal = 0
 
 #ENERGY SUN
-var energy_flow_in = 1.0 #how much energy added by day by tile
-var sun_energy_block_array = [] 
-var sun_energy_occupation_array = [] 
+var energy_flow_in = 2.0 #how much energy added by day by tile
+var sun_energy_block_array = []
+var sun_energy_occupation_array = []
+var n_sun_level = 3
 
 #OLD SOIL ENERGY
 var block_element_array = [] #1D matrix of the block composing the world
@@ -65,11 +69,7 @@ var block_diffusion_par = []
 func Init_World(folder):
 	Init_matrix()
 	Init_shader()
-	'var s = Time.get_ticks_msec()'
-	#build_world_shape(folder)
-	'var ss = Time.get_ticks_msec()
-	print("old: " + str(ss-s) + "ms")'
-	
+
 	speed = 1.0
 	day = 0
 	isReady = true
@@ -79,16 +79,33 @@ func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
-	sun_energy_block_array.resize(world_size*world_size)
-	sun_energy_occupation_array.resize(world_size*world_size)
+
 	block_element_array.fill(0)
 	block_element_state.fill(0)
-	sun_energy_block_array.fill(energy_flow_in)
-	sun_energy_occupation_array.fill(0)
+	
+
+	for i in range(n_sun_level): 
+		sun_energy_block_array.append([])
+		sun_energy_occupation_array.append([])
+		for j in range(world_size*world_size): 
+			sun_energy_block_array[i].append(0)
+			sun_energy_occupation_array[i].append(0)
+
+	for i in range(n_sun_level): 
+		sun_energy_block_array[i].fill(energy_flow_in)
+	#sun_energy_occupation_array.fill(0)
+
+
+func add_energy_in_sun_level():
+	sun_energy_block_array[0].fill(energy_flow_in)
+	for l in range(1,n_sun_level):
+		for i in range(sun_energy_block_array[l].size()):
+			sun_energy_block_array[l][i] = sun_energy_block_array[l-1][i] - sun_energy_occupation_array[l-1][i]
+
+
+
 
 func build_world_shape(folder):
-
-
 
 
 	make_and_instatiate_round_island(47,120,12,folder)	
