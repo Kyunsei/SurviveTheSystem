@@ -365,21 +365,36 @@ func add_energy_in_sun_level():
 
 func SunLayerFillGPU():
 	sun_energy_block_array[0].fill(energy_flow_in)
+	sun_energy_block_array[1].fill(energy_flow_in)
+	sun_energy_block_array[2].fill(energy_flow_in)
 	var uniform_array = []
-	var buffer_array = []
-	var c = 0
-	for s in n_sun_level:
-		var sun_energy_block_array_buffer = init_buffer(sun_energy_block_array[s])
-		var sun_energy_occupation_array_buffer = init_buffer(sun_energy_occupation_array[s])
+	
 
-		buffer_array.append(sun_energy_block_array_buffer)
-		var Occupationuniform = init_uniform(sun_energy_occupation_array_buffer,c)	
-		c=+1
-		var Energyuniform = init_uniform(sun_energy_block_array_buffer,c)	
-		c=+1
 
-		uniform_array.append(Occupationuniform)
-		uniform_array.append(Energyuniform)
+	var sun_energy_block_array_buffer_0 = init_buffer(sun_energy_block_array[0])
+	var sun_energy_occupation_array_buffer_0 = init_buffer(sun_energy_occupation_array[0])
+
+	
+	var Occupationuniform_0 = init_uniform(sun_energy_occupation_array_buffer_0,0)	
+	var Energyuniform_0 = init_uniform(sun_energy_block_array_buffer_0,1)	
+	uniform_array.append(Occupationuniform_0)
+	uniform_array.append(Energyuniform_0)
+	
+	var sun_energy_block_array_buffer_1 = init_buffer(sun_energy_block_array[1])
+	var sun_energy_occupation_array_buffer_1 = init_buffer(sun_energy_occupation_array[1])
+	
+	var Occupationuniform_1 = init_uniform(sun_energy_occupation_array_buffer_1,2)	
+	var Energyuniform_1 = init_uniform(sun_energy_block_array_buffer_1,3)	
+	uniform_array.append(Occupationuniform_1)
+	uniform_array.append(Energyuniform_1)
+	
+	var sun_energy_block_array_buffer_2 = init_buffer(sun_energy_block_array[2])
+	var sun_energy_occupation_array_buffer_2 = init_buffer(sun_energy_occupation_array[2])
+
+	var Occupationuniform_2 = init_uniform(sun_energy_occupation_array_buffer_2,4)	
+	var Energyuniform_2 = init_uniform(sun_energy_block_array_buffer_2,5)	
+	uniform_array.append(Occupationuniform_2)
+	uniform_array.append(Energyuniform_2)
 	#bind them
 	var uniform_set := rd.uniform_set_create(uniform_array, shader, 0) # the last parameter (the 0) needs to match the "set" in our shader file
 
@@ -390,7 +405,7 @@ func SunLayerFillGPU():
 	rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
 	
 	##########33
-	rd.compute_list_dispatch(compute_list,World.sun_energy_block_array.size()/32, 1, 1)
+	rd.compute_list_dispatch(compute_list,World.sun_energy_block_array[0].size()/32, 1, 1)
 	#########################
 	
 	rd.compute_list_end()
@@ -400,11 +415,14 @@ func SunLayerFillGPU():
 	rd.sync()
 
 	# Read back the data from the buffer
-	for s in n_sun_level:
-		var output_bytes := rd.buffer_get_data(buffer_array[s])
-		var output := output_bytes.to_float32_array()
-		sun_energy_block_array[s] = output	
 
+	var output_bytes := rd.buffer_get_data(sun_energy_block_array_buffer_1)
+	var output := output_bytes.to_float32_array()
+	sun_energy_block_array[1] = output	
+	
+	var output_bytes2 := rd.buffer_get_data(sun_energy_block_array_buffer_2)
+	var output2 := output_bytes2.to_float32_array()
+	sun_energy_block_array[2] = output2	
 
 
 
