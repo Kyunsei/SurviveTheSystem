@@ -20,6 +20,7 @@ var timer_dash_count : float = 0
 var timer_dash_prep_count : float = 0
 var charge_direction : Vector2 
 var isDashing: bool = false
+var justCharged = false
 
 func Enter():
 	#print("enter DASH")
@@ -42,10 +43,12 @@ func Update(_delta: float):
 		if timer_dash_count > 0:
 			timer_dash_count -= _delta
 			if timer_dash_count <= 0:
-				isDashing = false
 				life_entity.velocity = Vector2.ZERO
 				life_entity.set_collision_mask_value(2,true)
-
+				justCharged = true
+				await get_tree().create_timer(1).timeout
+				isDashing = false
+				justCharged = false
 				Transitioned.emit(self,"idle_state")
 
 		
@@ -73,12 +76,12 @@ func Physics_Update(_delta: float):
 						'if not isDashing:
 						ChargeToward(target)'
 						if life_entity.position.distance_to(target.getCenterPos())<eating_distance + (eating_distance*life_entity.current_life_cycle):
-							life_entity.Eat(target)
-							life_entity.velocity = Vector2.ZERO
-							remove_target()
+							if justCharged == false :
+								life_entity.Eat(target)
+								life_entity.velocity = Vector2.ZERO
+								remove_target()
+								Transitioned.emit(self,"idle_state")
 
-					
-							Transitioned.emit(self,"idle_state")
 						elif target.isDead:
 							remove_target()
 

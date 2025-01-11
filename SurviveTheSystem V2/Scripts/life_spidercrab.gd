@@ -102,104 +102,6 @@ func _physics_process(delta):
 		if direction.normalized() != Vector2(0,0):
 			last_dir = direction
 
-
-
-'func Brainy():
-	var center = position + Vector2(size.x/2,-size.y/2)
-	var food_array_temp = food_array.duplicate()
-	var danger_array_temp = danger_array.duplicate()
-
-	if danger_array_temp.size() > 0:
-		var cl = getClosestLife(danger_array_temp,250)
-		if cl != null:
-			getAway(cl.getCenterPos())
-
-	if item_array.size() > 0:
-		if item_array[0].species == "berry" and item_array[0].current_life_cycle == 3 and action_finished: 
-			if isBurrow ==false:
-				hide_under_soil()
-				action_finished = false
-				$ActionTimer.start(1.)
-
-			elif isBurrow and action_finished :
-				if food_array_temp.size()>0:
-					var cl = getClosestLife(food_array_temp,1000)
-					if cl !=null:
-						$DebugLabel.text ="waiting_Food" 
-						if center.distance_to(cl.getCenterPos()) < (128*3) and cl.isDead == false:
-							var rdn = randi_range(0,100)
-							if rdn < 25:
-								attack_from_soil(cl)
-								action_finished = false
-								$ActionTimer.start(1.)
-							else:
-								action_finished = false
-								$ActionTimer.start(1.)
-							
-						elif center.distance_to(cl.getCenterPos()) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
-								if cl.species=="catronaute":					
-									cl.getDamaged(10)
-								else :
-									Eat(cl)
-									velocity = Vector2(0,0)'
-				
-
-'if action_finished == true and isBurrow == false:
-		if self.energy < 90 and food_array_temp.size()>0:
-			var cl = getClosestLife(food_array_temp,1000)
-			if cl !=null:
-				$DebugLabel.text ="feeding" 
-				#NEED TO ADJUST DISTANCE ACCORDING TO CENTER NOT CORNER
-				if center.distance_to(cl.getCenterPos()) < (128*3) and cl.isDead == false:
-					$DebugLabel.text ="charging"
-					var rdn = randi_range(0,100)
-					if rdn < 50:
-						ChargeToward(cl.getCenterPos())
-					else:
-						velocity = Vector2(0,0)
-						action_finished = false
-						$ActionTimer.start(2.)
-					
-				elif center.distance_to(cl.getCenterPos()) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
-						if cl.species=="catronaute":
-						
-							cl.getDamaged(10)
-						else :
-							Eat(cl)
-							velocity = Vector2(0,0)
-							$DebugLabel.text ="Eat"
-				elif cl.isDead == false and center.distance_to(cl.getCenterPos()) >= 128*3:
-						#ChargeToward(cl.position)
-						getCloser(cl.position)
-						$DebugLabel.text ="getToFood "
-				else:
-					AdjustDirection()
-			else:
-				AdjustDirection()
-		else:
-			AdjustDirection()
-	else:
-		var cl = getClosestLife(food_array_temp,1000)
-		if cl !=null:
-			if center.distance_to(cl.getCenterPos()) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
-				if cl.species=="catronaute":
-					cl.getDamaged(10)
-				else :
-					Eat(cl)
-					velocity = Vector2(0,0)
-					$DebugLabel.text ="Eat"'
-'#AdjustDirection()
-		print("here?")
-		velocity = Vector2(0,0)'	
-
-func ChargeToward(target):
-	var center = getCenterPos()
-	if action_finished == true:
-		action_finished = false
-		$ActionTimer.start(0.5)
-		direction = -(center - target).normalized()
-		velocity = direction * maxSpeed*4			
-
 func hide_under_soil():
 	get_node("Sprite_0").hide()
 	
@@ -267,7 +169,6 @@ func get_out_of_soil():
 	
 func attack_from_soil(cl):
 	get_out_of_soil()
-	ChargeToward(cl.getCenterPos())
 	$DebugLabel.text = "CHAAAARGE !!!!"
 	pass
 
