@@ -686,7 +686,7 @@ func _on_bare_hand_attack_area_entered(area):
 
 func _on_interaction_area_body_entered(body):
 	if self.isActive:
-		if body.isPickable and item_array.has(body)==false:
+		if body.isPickable and item_array.has(body)==false and body.isDead==false:
 			interaction_array.append(body)
 		elif body.species == "sheep" and body.isDead and item_array.has(body)==false:
 			interaction_array.append(body)

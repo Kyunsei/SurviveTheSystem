@@ -263,7 +263,7 @@ func getPickUP(transporter):
 		self.carried_by = transporter
 		transporter.item_array.append(self)
 		#seed.get_node("HitchHike_Timer").start(randf_range(1.5,4)/World.speed)
-	elif current_life_cycle == 3:
+	elif current_life_cycle == 3 and isDead==false:
 		#print("here")
 		LifeDuplicate2(transporter)
  
