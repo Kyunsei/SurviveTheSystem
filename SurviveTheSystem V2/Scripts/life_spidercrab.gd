@@ -217,9 +217,9 @@ func hide_under_soil():
 func getDamaged(value,antagonist:LifeEntity=null):
 	if current_life_cycle == 1:
 		var CrabToAntagonist =  position.direction_to(antagonist.getCenterPos())
-		last_dir = Vector2(1,1)
-		print(CrabToAntagonist.dot(last_dir))
-		if CrabToAntagonist.dot(last_dir) > 0 :
+		var crab_facing_direction = Vector2(cos(rotation),sin(rotation)) 
+
+		if CrabToAntagonist.dot(crab_facing_direction) < -0.8 :
 			if InvicibilityTime == 0:
 				getPushed(antagonist,64)
 				$Sound/hurt.playing = true

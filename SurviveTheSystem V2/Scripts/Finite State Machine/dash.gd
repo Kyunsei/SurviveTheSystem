@@ -67,8 +67,9 @@ func Physics_Update(_delta: float):
 
 					Transitioned.emit(self,"idle_state")
 				else :
-						direction = target.getCenterPos() - life_entity.position
-						life_entity.rotation = direction.angle()
+						if not isDashing:
+							direction = target.getCenterPos() - life_entity.position
+							life_entity.rotation = direction.angle()
 						'if not isDashing:
 						ChargeToward(target)'
 						if life_entity.position.distance_to(target.getCenterPos())<eating_distance + (eating_distance*life_entity.current_life_cycle):
@@ -112,8 +113,8 @@ func remove_target():
 
 func ChargeToward(food_source):
 	isDashing = true
-	var center = life_entity.getCenterPos()
-	charge_direction = -(center - food_source.getCenterPos()).normalized()
+
+	charge_direction = -(life_entity.position - food_source.getCenterPos()).normalized()
 	life_entity.rotation = charge_direction.angle()
 	life_entity.velocity = charge_direction * life_entity.maxSpeed*speed_multiplicator	
 	timer_dash_count = charge_duration	
