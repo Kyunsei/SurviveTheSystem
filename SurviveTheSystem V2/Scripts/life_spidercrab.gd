@@ -38,6 +38,7 @@ func init_progressbar():
 	#get("custom_styles/fg").bg_color = Color(1, 0, 0)
 
 func Build_Stat():
+	print(rotation)
 	self.current_life_cycle = 0
 	self.PV = 60# Genome["maxPV"][self.current_life_cycle]	
 	self.energy = 0
@@ -59,17 +60,17 @@ func Build_Phenotype():
 	$Dead_Sprite_0.scale *= Genome["scale"][self.current_life_cycle]
 	$light.scale *= Genome["scale"][self.current_life_cycle]
 	
-	$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
-	#$Sprite_0.offset.x = 0 # -$Sprite_0.texture.get_width()/4
-	
-	$Dead_Sprite_0.offset.y = -$Dead_Sprite_0.texture.get_height()
+	#$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
+	##$Sprite_0.offset.x = 0 # -$Sprite_0.texture.get_width()/4
+	#
+	#$Dead_Sprite_0.offset.y = -$Dead_Sprite_0.texture.get_height()
 	#$Dead_Sprite_0.offset.x = 0# -$Dead_Sprite_0.texture.get_width()/2
 	
 	$Dead_Sprite_0.hide()
 
 	#Body
-	$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #Vector2(width/2,-height/2)
-	$Collision_1.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*1
+	#$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #Vector2(width/2,-height/2)
+	#$Collision_1.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*1
 
 	#Vision
 	$Vision/Collision.shape.radius = 5500
@@ -215,8 +216,10 @@ func hide_under_soil():
 		
 func getDamaged(value,antagonist:LifeEntity=null):
 	if current_life_cycle == 1:
-
-		if getCenterPos().direction_to(antagonist.getCenterPos()).y < -0.8:
+		var CrabToAntagonist =  position.direction_to(antagonist.getCenterPos())
+		last_dir = Vector2(1,1)
+		print(CrabToAntagonist.dot(last_dir))
+		if CrabToAntagonist.dot(last_dir) > 0 :
 			if InvicibilityTime == 0:
 				getPushed(antagonist,64)
 				$Sound/hurt.playing = true

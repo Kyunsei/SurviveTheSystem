@@ -55,6 +55,7 @@ func Physics_Update(_delta: float):
 		#change color delta -= 1 second
 		#go in straight line after delta == 0
 	
+	
 	if life_entity:
 		if life_entity.isActive and life_entity.isDead == false:
 			if check_Danger() and not isDashing:
@@ -66,9 +67,11 @@ func Physics_Update(_delta: float):
 
 					Transitioned.emit(self,"idle_state")
 				else :
+						direction = target.getCenterPos() - life_entity.position
+						life_entity.rotation = direction.angle()
 						'if not isDashing:
 						ChargeToward(target)'
-						if life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance + (eating_distance*life_entity.current_life_cycle):
+						if life_entity.position.distance_to(target.getCenterPos())<eating_distance + (eating_distance*life_entity.current_life_cycle):
 							life_entity.Eat(target)
 							life_entity.velocity = Vector2.ZERO
 							remove_target()
@@ -111,6 +114,7 @@ func ChargeToward(food_source):
 	isDashing = true
 	var center = life_entity.getCenterPos()
 	charge_direction = -(center - food_source.getCenterPos()).normalized()
+	life_entity.rotation = charge_direction.angle()
 	life_entity.velocity = charge_direction * life_entity.maxSpeed*speed_multiplicator	
 	timer_dash_count = charge_duration	
 	life_entity.set_collision_mask_value(2,false)

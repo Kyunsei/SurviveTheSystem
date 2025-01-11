@@ -62,12 +62,13 @@ shape = SubResource("CircleShape2D_chh8i")
 debug_color = Color(0.854902, 0.32549, 0.45098, 0.419608)
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
+rotation = -1.5708
 texture = ExtResource("2_ge6rd")
-centered = false
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
+visible = false
+rotation = -1.5708
 texture = ExtResource("3_ci0x6")
-centered = false
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_4635j")
