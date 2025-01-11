@@ -478,7 +478,7 @@ func update_tiles_according_soil_value(cells):
 
 
 
-func PickRandomPlaceWithRange(position,range, isVoidPossible = false):
+func PickRandomPlaceWithRange(position,range, isVoidPossible = false, count = 0):
 
 		var random_x = randi_range(max(0,position.x-range),min((World.world_size)* World.tile_size ,position.x+range))
 		var random_y = randi_range(max(0,position.y-range),min((World.world_size)* World.tile_size ,position.y+range))
@@ -487,7 +487,11 @@ func PickRandomPlaceWithRange(position,range, isVoidPossible = false):
 			if World.block_element_state[int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)] != 1:
 				#newpos = PickRandomPlaceWithRange(position,range)
 				#newpos = PickRandomPlaceWithRange(position,range)
-				return PickRandomPlaceWithRange(position,range)  #+ Vector2(randi_range(0,8),randi_range(0,8))
+				count += 1
+				if count < 10:
+					return PickRandomPlaceWithRange(newpos,range,count)#+ Vector2(randi_range(0,8),randi_range(0,8))
+				else: 
+					return position  
 			else:
 				return newpos
 		else:

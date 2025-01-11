@@ -30,3 +30,8 @@ func _on_check_box_2_toggled(toggled_on):
 func _on_button_2_pressed():
 	World.ID_chal = 2
 	$Level_text.text = "Get 100 blue specimens!"
+
+
+func _on_button_3_pressed():
+	World.ID_chal = 3
+	$Level_text.text = "Green one ?!"

@@ -41,7 +41,23 @@ func initChallenges(ID):
 			Life.red -= 1
 			Life.blue += 1
 			life.position = Vector2(randi_range(World.tile_size*25,World.tile_size*30),randi_range(World.tile_size*10,World.tile_size*15))
-								
+	if ID == 3:
+
+		Life.Instantiate_emptyLife_pool($Life, 3000, "grass")
+		Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+		var pl = Life.build_life("cat")
+		if pl:
+			Life.player = pl
+			Life.player.age = 0
+			Life.player.isPlayer = true 
+			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+		for i in range(10):
+			var life = Life.build_life("grass")
+			life.sub_species = 2
+			life.Build_Stat()
+			life.modulate = life.test_col
+			life.position = Vector2(randi_range(10*World.tile_size,World.tile_size*World.world_size-10),randi_range(10*World.tile_size,World.tile_size*World.world_size-10))
+															
 									
 func _ready(): 
 	World.world_size = 50
@@ -90,7 +106,8 @@ func wincondition(ID):
 				await get_tree().create_timer(2.).timeout
 				$UI/Label_annoncemnt.hide()
 
-
+	if ID == 3:
+		$UI/Score.text = "IDK"
 		
 
 

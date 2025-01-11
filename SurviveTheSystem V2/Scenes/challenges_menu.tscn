@@ -57,7 +57,6 @@ text = "2"
 [node name="Button3" type="Button" parent="GridContainer"]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
-disabled = true
 text = "3
 "
 
@@ -127,6 +126,7 @@ horizontal_alignment = 1
 
 [connection signal="pressed" from="GridContainer/Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="GridContainer/Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="GridContainer/Button3" to="." method="_on_button_3_pressed"]
 [connection signal="pressed" from="ButtonReturn" to="." method="_on_button_return_pressed"]
 [connection signal="pressed" from="ButtonPlay" to="." method="_on_button_play_pressed"]
 [connection signal="toggled" from="CheckBox2" to="." method="_on_check_box_2_toggled"]

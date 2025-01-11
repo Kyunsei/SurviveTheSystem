@@ -39,7 +39,6 @@ func Build_Genome():
 
 func Build_Stat():
 	#self.sub_species = randi_range(0,1)
-	self.sub_species = 0
 	#test_col =  Color(randi_range(0,1),randi_range(0,1),randi_range(0,1))
 	#modulate = test_col
 	self.PV = 10
@@ -59,11 +58,15 @@ func Build_Stat():
 	if self.sub_species == 1:
 		test_col = Color(0,0,1)
 		modulate = test_col
-		self.maxEnergy = 10.
+
+	elif self.sub_species == 2:
+		test_col = Color(0,1,0)
+		modulate = test_col
+
 	else:
 		test_col = Color(1,1,1)
 		modulate = test_col
-		self.maxEnergy = 10.
+
 		
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
@@ -81,7 +84,12 @@ func _on_timer_timeout():
 				Absorb_sun_energy(2,1)
 				#modulate =  Color(1,1,1)
 				
+			elif self.sub_species == 2:
+				Absorb_sun_energy(2,0)
+				Metabo_cost(1)
 
+
+				#modulate =  Color(1,1,1)
 			else:
 				var energybefore = energy
 				Metabo_cost(3)
@@ -167,7 +175,7 @@ func LifeDuplicate():
 
 				for i in range (2 + sub_species*2):
 					var newpos = PickRandomPlaceWithRange(position, 3 * World.tile_size + sub_species)
-					var middle = newpos + Vector2(32/2,0)
+					var middle = newpos #+ Vector2(32/2,0)
 					var posindex = int(middle.y/World.tile_size)*World.world_size + int(middle.x/World.tile_size)		
 				#if World.block_element_array[posindex]>= 0:
 					if World.block_element_state[posindex]>= 1:
