@@ -38,7 +38,7 @@ func init_progressbar():
 	#get("custom_styles/fg").bg_color = Color(1, 0, 0)
 
 func Build_Stat():
-	print(rotation)
+
 	self.current_life_cycle = 0
 	self.PV = 60# Genome["maxPV"][self.current_life_cycle]	
 	self.energy = 0
