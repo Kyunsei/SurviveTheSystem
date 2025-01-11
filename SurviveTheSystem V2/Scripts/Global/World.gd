@@ -49,6 +49,7 @@ var life_position_thread = []
 # Load GLSL shader
 var rd := RenderingServer.create_local_rendering_device()
 var shader_file := load("res://Scripts//compute_worldblock.glsl")
+var shader_file_sun := load("res://Scripts//compute_sun_block.glsl")
 var shader_spirv: RDShaderSPIRV = shader_file.get_spirv()
 var shader := rd.shader_create_from_spirv(shader_spirv)
 
@@ -94,13 +95,6 @@ func Init_matrix():
 	for i in range(n_sun_level): 
 		sun_energy_block_array[i].fill(energy_flow_in)
 	#sun_energy_occupation_array.fill(0)
-
-
-func add_energy_in_sun_level():
-	sun_energy_block_array[0].fill(energy_flow_in)
-	for l in range(1,n_sun_level):
-		for i in range(sun_energy_block_array[l].size()):
-			sun_energy_block_array[l][i] = sun_energy_block_array[l-1][i] - sun_energy_occupation_array[l-1][i]
 
 
 
@@ -170,7 +164,8 @@ func make_and_instatiate_round_island(x,y,radius,folder):
 
 func Init_shader():
 	rd = RenderingServer.create_local_rendering_device()
-	shader_file = load("res://Scripts//compute_worldblock.glsl")
+	#shader_file = load("res://Scripts//compute_worldblock.glsl")
+	shader_file = load("res://Scripts//compute_sun_block.glsl")
 	shader_spirv = shader_file.get_spirv()
 	shader = rd.shader_create_from_spirv(shader_spirv)
 
@@ -357,3 +352,59 @@ func BlockLoopGPU():
 	var output_bytes := rd.buffer_get_data(BlockArraybuffer)
 	var output := output_bytes.to_float32_array()
 	World.block_element_array = output	
+
+
+
+func add_energy_in_sun_level():
+	sun_energy_block_array[0].fill(energy_flow_in)
+	for l in range(1,n_sun_level):
+		for i in range(sun_energy_block_array[l].size()):
+			sun_energy_block_array[l][i] = sun_energy_block_array[l-1][i] - sun_energy_occupation_array[l-1][i]
+
+
+
+func SunLayerFillGPU():
+	sun_energy_block_array[0].fill(energy_flow_in)
+	var uniform_array = []
+	var buffer_array = []
+	var c = 0
+	for s in n_sun_level:
+		var sun_energy_block_array_buffer = init_buffer(sun_energy_block_array[s])
+		var sun_energy_occupation_array_buffer = init_buffer(sun_energy_occupation_array[s])
+
+		buffer_array.append(sun_energy_block_array_buffer)
+		var Occupationuniform = init_uniform(sun_energy_occupation_array_buffer,c)	
+		c=+1
+		var Energyuniform = init_uniform(sun_energy_block_array_buffer,c)	
+		c=+1
+
+		uniform_array.append(Occupationuniform)
+		uniform_array.append(Energyuniform)
+	#bind them
+	var uniform_set := rd.uniform_set_create(uniform_array, shader, 0) # the last parameter (the 0) needs to match the "set" in our shader file
+
+	# Create a compute pipeline
+	var pipeline := rd.compute_pipeline_create(shader)
+	var compute_list := rd.compute_list_begin()
+	rd.compute_list_bind_compute_pipeline(compute_list, pipeline)
+	rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
+	
+	##########33
+	rd.compute_list_dispatch(compute_list,World.sun_energy_block_array.size()/32, 1, 1)
+	#########################
+	
+	rd.compute_list_end()
+
+	# Submit to GPU and wait for sync
+	rd.submit()
+	rd.sync()
+
+	# Read back the data from the buffer
+	for s in n_sun_level:
+		var output_bytes := rd.buffer_get_data(buffer_array[s])
+		var output := output_bytes.to_float32_array()
+		sun_energy_block_array[s] = output	
+
+
+
+

@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://cq47yn75ave4q"
+path="res://.godot/imported/compute_sun_block.glsl-14ad80f98b4fd1326864efade4203ee5.res"
+
+[deps]
+
+source_file="res://Scripts/compute_sun_block.glsl"
+dest_files=["res://.godot/imported/compute_sun_block.glsl-14ad80f98b4fd1326864efade4203ee5.res"]
+
+[params]
+

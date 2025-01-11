@@ -227,7 +227,8 @@ func draw_navigation():
 func _on_block_timer_timeout():
 
 	#World.sun_energy_block_array.fill(World.energy_flow_in)
-	World.add_energy_in_sun_level()
+	#World.add_energy_in_sun_level()
+	World.SunLayerFillGPU()
 	#World.BlockLoopGPU() 
 	#update_ALL_tilemap_tile_to_new_soil_value()
 	
