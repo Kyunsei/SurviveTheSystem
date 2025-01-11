@@ -157,31 +157,26 @@ scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_mccqv")
 
 [node name="PointLight2D2" type="PointLight2D" parent="light"]
-visible = false
 position = Vector2(11.125, 23.875)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_mccqv")
 
 [node name="PointLight2D3" type="PointLight2D" parent="light"]
-visible = false
 position = Vector2(14.125, 9.87499)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_bqeis")
 
 [node name="PointLight2D4" type="PointLight2D" parent="light"]
-visible = false
 position = Vector2(20.125, 15.875)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_bqeis")
 
 [node name="PointLight2D5" type="PointLight2D" parent="light"]
-visible = false
 position = Vector2(-12.875, 8.87499)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_bqeis")
 
 [node name="PointLight2D6" type="PointLight2D" parent="light"]
-visible = false
 position = Vector2(-22.875, 8.87499)
 scale = Vector2(0.734375, 0.734375)
 texture = SubResource("GradientTexture2D_bqeis")

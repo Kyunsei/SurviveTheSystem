@@ -9,6 +9,7 @@ var dashing = false
 var worn_out = false
 var is_sprinting = false
 var stamina = 100
+var signalconnected = false
 
 #movmnt
 var input_dir = Vector2.ZERO
@@ -589,6 +590,10 @@ func Die():
 	
 	
 func Activate():
+	if not signalconnected:
+		get_parent().get_parent().light_out.connect( _on_light_out)
+		get_parent().get_parent().light_on.connect( _on_light_on)
+		signalconnected = true
 	set_physics_process(true)
 	self.isActive = true
 	self.isDead = false
@@ -697,3 +702,9 @@ func _on_interaction_area_body_exited(body):
 		interaction_array.erase(body)
 		
 				
+func _on_light_on() :
+		$PointLight2D.show()
+	
+	
+func _on_light_out() :
+	$PointLight2D.hide()
