@@ -56,7 +56,7 @@ func _on_timer_timeout():
 			'if self.energy < self.maxEnergy:
 				Absorb_soil_energy(1,1)'
 			
-			Metabo_cost(metabolic_cost)	
+			Metabo_cost(3)	
 			Absorb_sun_energy(2,1)
 
 			#LifeDuplicate()
@@ -65,7 +65,7 @@ func _on_timer_timeout():
 
 			if self.energy <= 0 or self.age >= lifespan or self.PV <=0:
 				Die()
-			
+			energy = clamp(energy, 0, maxEnergy)
 			if current_time_speed != World.speed:
 				adapt_time_to_worldspeed()
 		else:

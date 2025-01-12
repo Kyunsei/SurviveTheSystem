@@ -91,7 +91,7 @@ func _on_timer_timeout():
 		if isDead == false:
 			if carried_by == null :
 				if current_life_cycle !=0:
-					Metabo_cost(5)	
+					Metabo_cost(10)	
 					Absorb_sun_energy(1,4)
 				
 					'if self.energy < self.maxEnergy:
@@ -113,7 +113,8 @@ func _on_timer_timeout():
 					
 			'if self.age >= self.lifespan:
 				Revert()'
-				
+			energy = clamp(energy, 0, maxEnergy)
+			
 			if current_time_speed != World.speed:
 					adapt_time_to_worldspeed()
 		else:

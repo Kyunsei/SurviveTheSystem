@@ -100,12 +100,14 @@ theme_override_font_sizes/font_size = 40
 text = "Play"
 
 [node name="CheckBox2" type="CheckBox" parent="."]
+layout_mode = 0
 offset_left = 1001.0
 offset_top = 529.0
 offset_right = 1160.0
 offset_bottom = 567.0
 
 [node name="Label2" type="Label" parent="."]
+layout_mode = 0
 offset_left = 1022.0
 offset_top = 535.0
 offset_right = 1142.0
