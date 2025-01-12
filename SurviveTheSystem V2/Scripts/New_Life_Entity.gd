@@ -433,7 +433,7 @@ func getDamaged(value,antagonist:LifeEntity=null):
 
 func getPushed(from,distance):
 
-	direction = (getCenterPos() - from.getCenterPos()).normalized()
+	direction = (position - from.position).normalized()
 	position = position +  direction * distance
 
 func Activate():

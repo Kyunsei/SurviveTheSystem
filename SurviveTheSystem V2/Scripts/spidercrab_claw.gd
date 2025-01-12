@@ -99,6 +99,7 @@ func Die():
 
 
 func _on_effect_area_body_entered(body):
-	if body.species != "block" and body != carried_by and body != self:
-		body.getDamaged(50,carried_by)
-		hastouchedsomething = true
+	if carried_by:
+		if body.species != "block" and body != carried_by and body != self:
+			body.getDamaged(50,carried_by)
+			hastouchedsomething = true
