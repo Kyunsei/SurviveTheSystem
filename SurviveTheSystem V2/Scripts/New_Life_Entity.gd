@@ -69,7 +69,7 @@ enum deathtype {
 var cause_of_death = deathtype.NONE
 
 #FACILTATE CALCULUS
-var nb_of_soil_block_by_radius = [1,5,13,29,49,81]
+var nb_of_soil_block_by_radius = [1,5,13,29,49,81,160,320,640]
 
 
 #for debug only

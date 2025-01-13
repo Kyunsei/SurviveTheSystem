@@ -21,7 +21,7 @@ func instantiate_the_tiles_function():
 		World.block_element_array[t.y*World.world_size + t.x] = 1
 		World.block_element_state[t.y*World.world_size + t.x] = 1
 
-	var temp = ["sheep","grass","berry","jellybee","spiky_grass","spidercrab","stingtree","fox"]
+	var temp = ["sheep","grass","berry","jellybee","spiky_grass","spidercrab","stingtree","fox","bigtree"]
 	for i in range(temp.size()):	
 		for lc in range(5):
 			tiles = get_used_cells_by_id(1, 3, Vector2i(lc, i))

@@ -64,7 +64,8 @@ var life_scene = {
 	'spidercrab' : load("res://Scenes/life_spidercrab.tscn"),
 	#'sc_boss' : load("res://Scenes/spidercrab_boss_prototype.tscn"),
 	'jellybee' : load("res://Scenes/life_jellybee.tscn"),
-	'fox' : load("res://Scenes/life_fox.tscn")
+	'fox' : load("res://Scenes/life_fox.tscn"),
+	'bigtree': load("res://Scenes/life_bigtree.tscn")
 }
 
 var life_number = {
@@ -77,7 +78,8 @@ var life_number = {
 	"jellybee": 0,
 	"berry": 0,
 	"stingtree":0,
-	"fox": 0
+	"fox": 0,
+	"bigtree": 0
 }
 
 var pool_state = {
@@ -90,7 +92,8 @@ var pool_state = {
 	"jellybee": [],
 	"berry": [],
 	"stingtree":[],
-	"fox":[]
+	"fox":[],
+	"bigtree":[]
 }
 
 var pool_scene = {
@@ -104,7 +107,8 @@ var pool_scene = {
 	"jellybee": [],
 	"berry": [],
 	"stingtree":[],
-	"fox": []
+	"fox": [],
+	"bigtree":[]
 }
 
 
@@ -148,7 +152,7 @@ func fill_with_empty_entity_pool_lifes(folder):
 	#Life.Instantiate_emptyLife_pool(folder, 2, "sc_boss")
 	Life.Instantiate_emptyLife_pool(folder, 50, "jellybee")
 	Life.Instantiate_emptyLife_pool(folder, 10, "fox")
-	
+	Life.Instantiate_emptyLife_pool(folder, 100, "bigtree")
 
 
 

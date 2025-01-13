@@ -326,6 +326,7 @@ text = "------------------------------------------------"
 
 [node name="info_all_alife" type="Label" parent="Panel/Alife_Debug/Option"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 8
 text = "INFO ON CURRENT SIMULATION"
 
 [node name="Label4" type="Label" parent="Panel/Alife_Debug/Option"]
