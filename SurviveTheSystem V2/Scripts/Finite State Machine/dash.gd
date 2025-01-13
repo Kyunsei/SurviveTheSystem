@@ -16,6 +16,8 @@ var previous_pos: Vector2
 @export var charge_duration: float = .3
 @export var charging_time: float = 1.
 
+@export var isRotating: bool = false
+
 var timer_dash_count : float = 0
 var timer_dash_prep_count : float = 0
 var charge_direction : Vector2 
@@ -28,7 +30,8 @@ func Enter():
 		life_entity = get_parent().get_parent()
 		timer_dash_prep_count = charging_time
 		life_entity.velocity = Vector2.ZERO
-		life_entity.get_node("Sound").get_node("coucou").playing = true
+		if life_entity.get_node("Sound").get_node("coucou"):
+			life_entity.get_node("Sound").get_node("coucou").playing = true
 		#life_entity.get_node("DebugLabel").text = "dash"
 func Exit():
 	#print("exit DASH")
@@ -72,7 +75,8 @@ func Physics_Update(_delta: float):
 				else :
 						if not isDashing:
 							direction = target.getCenterPos() - life_entity.position
-							life_entity.rotation = direction.angle()
+							if isRotating:
+								life_entity.rotation = direction.angle()
 						'if not isDashing:
 						ChargeToward(target)'
 						if life_entity.position.distance_to(target.getCenterPos())<eating_distance + (eating_distance*life_entity.current_life_cycle):
@@ -118,7 +122,8 @@ func ChargeToward(food_source):
 	isDashing = true
 
 	charge_direction = -(life_entity.position - food_source.getCenterPos()).normalized()
-	life_entity.rotation = charge_direction.angle()
+	if isRotating:
+		life_entity.rotation = charge_direction.angle()
 	life_entity.velocity = charge_direction * life_entity.maxSpeed*speed_multiplicator	
 	timer_dash_count = charge_duration	
 	life_entity.set_collision_mask_value(2,false)

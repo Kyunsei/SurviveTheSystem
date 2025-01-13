@@ -123,6 +123,7 @@ script = ExtResource("5_c3own")
 [node name="getcloser_state" type="Node" parent="Brainy"]
 script = ExtResource("6_b8121")
 chasing_max_timer = 1000.0
+isRotating = true
 minimun_distance = 320
 maximun_distance = 500
 next_state = "dash_state"
@@ -134,6 +135,7 @@ detection_distance = 200
 [node name="dash_state" type="Node" parent="Brainy"]
 script = ExtResource("8_bo4wv")
 eating_distance = 32
+isRotating = true
 
 [node name="Sound" type="Node2D" parent="."]
 

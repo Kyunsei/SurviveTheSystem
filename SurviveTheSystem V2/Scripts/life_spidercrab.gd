@@ -383,7 +383,7 @@ func Eat(life):
 	life.energy= 0
 	life.Die()
 	life.cause_of_death = deathtype.EATEN
-
+	energy = clamp(energy,0,maxEnergy)
 
 func _on_bare_hand_attack_body_entered(body):
 	if body != self:
@@ -426,7 +426,7 @@ func _on_vision_body_entered(body):
 			vision_array["food"].append(body)
 	if body.species== "jellybee" and self.current_life_cycle == 0:
 			vision_array["food"].append(body)
-	if body.species == "catronaute":
+	if body.species == "catronaute" or body.species == "fox" :
 		if self.current_life_cycle == 1:
 			vision_array["food"].append(body)
 		else:
@@ -440,5 +440,6 @@ func _on_vision_body_exited(body):
 	for n in vision_array:
 		if vision_array[n].has(body):
 			vision_array[n].erase(body)
+
 
 

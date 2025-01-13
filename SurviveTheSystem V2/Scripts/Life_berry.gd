@@ -194,6 +194,7 @@ func Growth():
 
 #Duplication
 func LifeDuplicate2(transporter):
+		
 		#print("duplicate")
 		#if self.energy >= 15 :
 			var life = Life.build_life(species)
@@ -201,8 +202,11 @@ func LifeDuplicate2(transporter):
 				self.energy -= 10
 				life.energy = 10
 				#life.global_position = PickRandomPlaceWithRange(position,2 * World.tile_size)
-											
-				getTransported(life,transporter)
+				
+				if transporter:		
+					getTransported(life,transporter)
+				else:
+					life.position = PickRandomPlaceWithRange(position,3 * World.tile_size)
 							
 				self.current_life_cycle = 2
 				self.isPickable = false

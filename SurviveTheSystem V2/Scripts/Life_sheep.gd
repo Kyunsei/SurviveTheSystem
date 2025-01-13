@@ -348,7 +348,7 @@ func _on_vision_body_entered(body):
 			else :
 			#getAway(body.position)
 				vision_array["friend"].append(body)
-		if body.species == "catronaute" or body.species == "spidercrab" :
+		if body.species == "catronaute" or body.species == "spidercrab" or body.species == "fox"  :
 			vision_array["danger"].append(body)
 
 

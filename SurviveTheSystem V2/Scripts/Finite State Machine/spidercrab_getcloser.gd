@@ -17,6 +17,7 @@ var action_type = "FOOD"
 
 @export var chasing_max_timer: float = 10
 
+@export var isRotating: bool = false
 
 
 @export var minimun_distance: int = 0
@@ -81,7 +82,8 @@ func Physics_Update(delta: float):
 					#next_path_position = life_entity.navigation_agent.get_next_path_position()
 					direction = target.getCenterPos() - life_entity.position
 					life_entity.velocity = direction.normalized() * life_entity.maxSpeed 
-					life_entity.rotation = direction.angle()
+					if isRotating:
+						life_entity.rotation = direction.angle()
 					#else:
 					#	get_parent().get_node(next_state).target = target
 					#	Transitioned.emit(self,next_state)
