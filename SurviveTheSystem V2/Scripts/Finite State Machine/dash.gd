@@ -16,10 +16,13 @@ var previous_pos: Vector2
 @export var charge_duration: float = .3
 @export var charging_time: float = 1.
 
+@export var isRotating: bool = false
+
 var timer_dash_count : float = 0
 var timer_dash_prep_count : float = 0
 var charge_direction : Vector2 
 var isDashing: bool = false
+var justCharged = false
 
 func Enter():
 	#print("enter DASH")
@@ -27,7 +30,8 @@ func Enter():
 		life_entity = get_parent().get_parent()
 		timer_dash_prep_count = charging_time
 		life_entity.velocity = Vector2.ZERO
-		life_entity.get_node("Sound").get_node("coucou").playing = true
+		if life_entity.get_node("Sound").get_node("coucou"):
+			life_entity.get_node("Sound").get_node("coucou").playing = true
 		#life_entity.get_node("DebugLabel").text = "dash"
 func Exit():
 	#print("exit DASH")
@@ -42,10 +46,12 @@ func Update(_delta: float):
 		if timer_dash_count > 0:
 			timer_dash_count -= _delta
 			if timer_dash_count <= 0:
-				isDashing = false
 				life_entity.velocity = Vector2.ZERO
 				life_entity.set_collision_mask_value(2,true)
-
+				justCharged = true
+				await get_tree().create_timer(1).timeout
+				isDashing = false
+				justCharged = false
 				Transitioned.emit(self,"idle_state")
 
 		
@@ -54,6 +60,7 @@ func Physics_Update(_delta: float):
 		#Get speed, get rotation.body.target
 		#change color delta -= 1 second
 		#go in straight line after delta == 0
+	
 	
 	if life_entity:
 		if life_entity.isActive and life_entity.isDead == false:
@@ -66,15 +73,19 @@ func Physics_Update(_delta: float):
 
 					Transitioned.emit(self,"idle_state")
 				else :
+						if not isDashing:
+							direction = target.getCenterPos() - life_entity.position
+							if isRotating:
+								life_entity.rotation = direction.angle()
 						'if not isDashing:
 						ChargeToward(target)'
-						if life_entity.getCenterPos().distance_to(target.getCenterPos())<eating_distance + (eating_distance*life_entity.current_life_cycle):
-							life_entity.Eat(target)
-							life_entity.velocity = Vector2.ZERO
-							remove_target()
+						if life_entity.position.distance_to(target.getCenterPos())<eating_distance + (eating_distance*life_entity.current_life_cycle):
+							if justCharged == false :
+								life_entity.Eat(target)
+								life_entity.velocity = Vector2.ZERO
+								remove_target()
+								Transitioned.emit(self,"idle_state")
 
-					
-							Transitioned.emit(self,"idle_state")
 						elif target.isDead:
 							remove_target()
 
@@ -109,8 +120,10 @@ func remove_target():
 
 func ChargeToward(food_source):
 	isDashing = true
-	var center = life_entity.getCenterPos()
-	charge_direction = -(center - food_source.getCenterPos()).normalized()
+
+	charge_direction = -(life_entity.position - food_source.getCenterPos()).normalized()
+	if isRotating:
+		life_entity.rotation = charge_direction.angle()
 	life_entity.velocity = charge_direction * life_entity.maxSpeed*speed_multiplicator	
 	timer_dash_count = charge_duration	
 	life_entity.set_collision_mask_value(2,false)

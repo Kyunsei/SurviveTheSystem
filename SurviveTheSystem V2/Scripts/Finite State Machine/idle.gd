@@ -5,6 +5,8 @@ class_name idle_state
 var direction: Vector2
 var wander_time : float
 
+@export var HungryThresold: float = 0.9
+
 var nest: LifeEntity
 @export var nest_distance: float
 
@@ -70,7 +72,7 @@ func check_Danger():
 				
 
 func check_Hungry():
-	if life_entity.energy < life_entity.maxEnergy:
+	if life_entity.energy < life_entity.maxEnergy*HungryThresold:
 		return true
 	else:
 		return false

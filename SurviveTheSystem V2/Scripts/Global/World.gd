@@ -6,11 +6,16 @@ var world_size = 500 #The size in tile of the World
 var tile_size = 32#128 # the size in pixel of each tile
 var fieldofview = Vector2(0,0) #in tile
 
-var debug_mode = true
+var debug_mode = false
+
+#chall
+var ID_chal = 0
 
 #ENERGY SUN
 var energy_flow_in = 2.0 #how much energy added by day by tile
-var sun_energy_block_array = [] 
+var sun_energy_block_array = []
+var sun_energy_occupation_array = []
+var n_sun_level = 3
 
 #OLD SOIL ENERGY
 var block_element_array = [] #1D matrix of the block composing the world
@@ -44,12 +49,13 @@ var life_position_thread = []
 # Load GLSL shader
 var rd := RenderingServer.create_local_rendering_device()
 var shader_file := load("res://Scripts//compute_worldblock.glsl")
+var shader_file_sun := load("res://Scripts//compute_sun_block.glsl")
 var shader_spirv: RDShaderSPIRV = shader_file.get_spirv()
 var shader := rd.shader_create_from_spirv(shader_spirv)
 
 
 #Diffusion Control
-var diffusion_speed = 30. #in sec
+var diffusion_speed = 10. #in sec
 var diffusion_quantity_style = false # false = factor true = number #not implemented.
 var diffusion_factor = 0.5
 
@@ -64,11 +70,7 @@ var block_diffusion_par = []
 func Init_World(folder):
 	Init_matrix()
 	Init_shader()
-	'var s = Time.get_ticks_msec()'
-	#build_world_shape(folder)
-	'var ss = Time.get_ticks_msec()
-	print("old: " + str(ss-s) + "ms")'
-	
+
 	speed = 1.0
 	day = 0
 	isReady = true
@@ -78,14 +80,26 @@ func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
-	sun_energy_block_array.resize(world_size*world_size)
+
 	block_element_array.fill(0)
 	block_element_state.fill(0)
-	sun_energy_block_array.fill(energy_flow_in)
+	
+
+	for i in range(n_sun_level): 
+		sun_energy_block_array.append([])
+		sun_energy_occupation_array.append([])
+		for j in range(world_size*world_size): 
+			sun_energy_block_array[i].append(0)
+			sun_energy_occupation_array[i].append(0)
+
+	for i in range(n_sun_level): 
+		sun_energy_block_array[i].fill(energy_flow_in)
+	#sun_energy_occupation_array.fill(0)
+
+
+
 
 func build_world_shape(folder):
-
-
 
 
 	make_and_instatiate_round_island(47,120,12,folder)	
@@ -150,7 +164,8 @@ func make_and_instatiate_round_island(x,y,radius,folder):
 
 func Init_shader():
 	rd = RenderingServer.create_local_rendering_device()
-	shader_file = load("res://Scripts//compute_worldblock.glsl")
+	#shader_file = load("res://Scripts//compute_worldblock.glsl")
+	shader_file = load("res://Scripts//compute_sun_block.glsl")
 	shader_spirv = shader_file.get_spirv()
 	shader = rd.shader_create_from_spirv(shader_spirv)
 
@@ -337,3 +352,77 @@ func BlockLoopGPU():
 	var output_bytes := rd.buffer_get_data(BlockArraybuffer)
 	var output := output_bytes.to_float32_array()
 	World.block_element_array = output	
+
+
+
+func add_energy_in_sun_level():
+	sun_energy_block_array[0].fill(energy_flow_in)
+	for l in range(1,n_sun_level):
+		for i in range(sun_energy_block_array[l].size()):
+			sun_energy_block_array[l][i] = sun_energy_block_array[l-1][i] - sun_energy_occupation_array[l-1][i]
+
+
+
+func SunLayerFillGPU():
+	sun_energy_block_array[0].fill(energy_flow_in)
+	sun_energy_block_array[1].fill(energy_flow_in)
+	sun_energy_block_array[2].fill(energy_flow_in)
+	var uniform_array = []
+	
+
+
+	var sun_energy_block_array_buffer_0 = init_buffer(sun_energy_block_array[0])
+	var sun_energy_occupation_array_buffer_0 = init_buffer(sun_energy_occupation_array[0])
+
+	
+	var Occupationuniform_0 = init_uniform(sun_energy_occupation_array_buffer_0,0)	
+	var Energyuniform_0 = init_uniform(sun_energy_block_array_buffer_0,1)	
+	uniform_array.append(Occupationuniform_0)
+	uniform_array.append(Energyuniform_0)
+	
+	var sun_energy_block_array_buffer_1 = init_buffer(sun_energy_block_array[1])
+	var sun_energy_occupation_array_buffer_1 = init_buffer(sun_energy_occupation_array[1])
+	
+	var Occupationuniform_1 = init_uniform(sun_energy_occupation_array_buffer_1,2)	
+	var Energyuniform_1 = init_uniform(sun_energy_block_array_buffer_1,3)	
+	uniform_array.append(Occupationuniform_1)
+	uniform_array.append(Energyuniform_1)
+	
+	var sun_energy_block_array_buffer_2 = init_buffer(sun_energy_block_array[2])
+	var sun_energy_occupation_array_buffer_2 = init_buffer(sun_energy_occupation_array[2])
+
+	var Occupationuniform_2 = init_uniform(sun_energy_occupation_array_buffer_2,4)	
+	var Energyuniform_2 = init_uniform(sun_energy_block_array_buffer_2,5)	
+	uniform_array.append(Occupationuniform_2)
+	uniform_array.append(Energyuniform_2)
+	#bind them
+	var uniform_set := rd.uniform_set_create(uniform_array, shader, 0) # the last parameter (the 0) needs to match the "set" in our shader file
+
+	# Create a compute pipeline
+	var pipeline := rd.compute_pipeline_create(shader)
+	var compute_list := rd.compute_list_begin()
+	rd.compute_list_bind_compute_pipeline(compute_list, pipeline)
+	rd.compute_list_bind_uniform_set(compute_list, uniform_set, 0)
+	
+	##########33
+	rd.compute_list_dispatch(compute_list,World.sun_energy_block_array[0].size()/32, 1, 1)
+	#########################
+	
+	rd.compute_list_end()
+
+	# Submit to GPU and wait for sync
+	rd.submit()
+	rd.sync()
+
+	# Read back the data from the buffer
+
+	var output_bytes := rd.buffer_get_data(sun_energy_block_array_buffer_1)
+	var output := output_bytes.to_float32_array()
+	sun_energy_block_array[1] = output	
+	
+	var output_bytes2 := rd.buffer_get_data(sun_energy_block_array_buffer_2)
+	var output2 := output_bytes2.to_float32_array()
+	sun_energy_block_array[2] = output2	
+
+
+

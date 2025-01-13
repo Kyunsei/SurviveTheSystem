@@ -1,0 +1,134 @@
+[gd_scene load_steps=2 format=3 uid="uid://chjgfuxfq4tps"]
+
+[ext_resource type="Script" path="res://Scripts/challenges_menu.gd" id="1_efxev"]
+
+[node name="Challenges_Menu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_efxev")
+
+[node name="BackGroundColor" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.552941, 0.4, 0.541176, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -75.0
+offset_top = 50.0
+offset_right = 75.0
+offset_bottom = 100.0
+grow_horizontal = 2
+theme_type_variation = &"HeaderLarge"
+theme_override_font_sizes/font_size = 60
+text = "Challenges"
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 0
+offset_left = 390.0
+offset_top = 216.0
+offset_right = 802.0
+offset_bottom = 451.0
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+columns = 3
+
+[node name="Button" type="Button" parent="GridContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+text = "1"
+
+[node name="Button2" type="Button" parent="GridContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+text = "2"
+
+[node name="Button3" type="Button" parent="GridContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+text = "3
+"
+
+[node name="Button4" type="Button" parent="GridContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+disabled = true
+text = "4
+"
+
+[node name="Button5" type="Button" parent="GridContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+disabled = true
+text = "5
+"
+
+[node name="Button6" type="Button" parent="GridContainer"]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+disabled = true
+text = "6
+"
+
+[node name="ButtonReturn" type="Button" parent="."]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 569.0
+offset_right = 163.0
+offset_bottom = 632.0
+theme_override_font_sizes/font_size = 40
+text = "Return"
+
+[node name="ButtonPlay" type="Button" parent="."]
+layout_mode = 2
+offset_left = 979.0
+offset_top = 569.0
+offset_right = 1119.0
+offset_bottom = 632.0
+theme_override_font_sizes/font_size = 40
+text = "Play"
+
+[node name="CheckBox2" type="CheckBox" parent="."]
+layout_mode = 0
+offset_left = 1001.0
+offset_top = 529.0
+offset_right = 1160.0
+offset_bottom = 567.0
+
+[node name="Label2" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1022.0
+offset_top = 535.0
+offset_right = 1142.0
+offset_bottom = 563.0
+text = "Debug Mode"
+
+[node name="Level_text" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.123
+anchor_bottom = 0.092
+offset_left = 364.0
+offset_top = 457.0
+offset_right = 607.304
+offset_bottom = 452.384
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+
+[connection signal="pressed" from="GridContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="GridContainer/Button2" to="." method="_on_button_2_pressed"]
+[connection signal="pressed" from="GridContainer/Button3" to="." method="_on_button_3_pressed"]
+[connection signal="pressed" from="ButtonReturn" to="." method="_on_button_return_pressed"]
+[connection signal="pressed" from="ButtonPlay" to="." method="_on_button_play_pressed"]
+[connection signal="toggled" from="CheckBox2" to="." method="_on_check_box_2_toggled"]

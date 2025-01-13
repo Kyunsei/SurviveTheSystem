@@ -9,6 +9,7 @@ var dashing = false
 var worn_out = false
 var is_sprinting = false
 var stamina = 100
+var signalconnected = false
 
 #movmnt
 var input_dir = Vector2.ZERO
@@ -70,6 +71,7 @@ func Build_Stat():
 	self.maxSpeed = 200
 	self.stamina = 100
 	self.lifespan = 6000 
+	metabolic_cost = 1.
 	AdjustBar()
 	
 func Build_Phenotype(): 
@@ -355,7 +357,7 @@ func _on_timer_timeout():
 		if isDead == false:
 
 
-			Metabo_cost()
+			Metabo_cost(metabolic_cost)
 			Ageing()
 			passive_healing()
 			AdjustBar()
@@ -588,6 +590,10 @@ func Die():
 	
 	
 func Activate():
+	if not signalconnected:
+		get_parent().get_parent().light_out.connect( _on_light_out)
+		get_parent().get_parent().light_on.connect( _on_light_on)
+		signalconnected = true
 	set_physics_process(true)
 	self.isActive = true
 	self.isDead = false
@@ -643,6 +649,8 @@ func Eat(life):
 		PV += 10
 		life.Die()
 	#$DebugLabel.text = str(age) + " " + str(energy)
+	self.energy = clamp(self.energy,0, self.maxEnergy)
+
 	AdjustBar()
 #Sacrebleu il faut changer toutes les entity pour leur donner des "damageable" group
 func _on_bare_hand_attack_body_entered(body):
@@ -678,7 +686,7 @@ func _on_bare_hand_attack_area_entered(area):
 
 func _on_interaction_area_body_entered(body):
 	if self.isActive:
-		if body.isPickable and item_array.has(body)==false:
+		if body.isPickable and item_array.has(body)==false and body.isDead==false:
 			interaction_array.append(body)
 		elif body.species == "sheep" and body.isDead and item_array.has(body)==false:
 			interaction_array.append(body)
@@ -694,3 +702,9 @@ func _on_interaction_area_body_exited(body):
 		interaction_array.erase(body)
 		
 				
+func _on_light_on() :
+		$PointLight2D.show()
+	
+	
+func _on_light_out() :
+	$PointLight2D.hide()

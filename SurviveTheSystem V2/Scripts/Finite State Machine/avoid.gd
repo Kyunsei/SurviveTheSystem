@@ -22,6 +22,8 @@ func Enter():
 			var rd_id = randi_range(0,1)
 			life_entity.get_node("Sound").get_node(sound[rd_id]).pitch_scale = 3 - life_entity.current_life_cycle
 			life_entity.get_node("Sound").get_node(sound[rd_id]).playing = true
+		elif life_entity.species == "fox" :
+			life_entity.get_node("Sound").get_node("hish").playing = true
 		if life_entity.species == "spidercrab" :
 			print("entered avoid state SPIDERCRAB")
 	
@@ -46,10 +48,14 @@ func Physics_Update(delta: float):
 				'if life_entity.position + direction *detection_distance:
 						print("void")'
 				life_entity.velocity = direction.normalized() * life_entity.maxSpeed *dodge_speed
+				if life_entity.species == "spidercrab" :
+					life_entity.rotation = direction.angle()
 				if previous_position == life_entity.position:
 					timer = 0.3
 					escaping_void = true
 					life_entity.velocity = (Vector2(randf_range(-1,1),randf_range(-1,1)) ) * life_entity.maxSpeed *dodge_speed
+					if life_entity.species == "spidercrab" :
+						life_entity.rotation = direction.angle()
 				previous_position = life_entity.position
 				if direction.length() >  detection_distance:
 						Transitioned.emit(self,idle_type_state)
@@ -58,6 +64,8 @@ func Physics_Update(delta: float):
 					timer = 0.3
 					escaping_void = true
 					life_entity.velocity =  (Vector2(randf_range(-1,1),randf_range(-1,1)) ) * life_entity.maxSpeed *dodge_speed
+					if life_entity.species == "spidercrab" :
+						life_entity.rotation = direction.angle()
 		
 	'if life_entity:
 		if life_entity.danger_array.size()>0:

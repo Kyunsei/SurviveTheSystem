@@ -45,6 +45,7 @@ func Build_Stat():
 	self.maxSpeed = 190
 	self.age= 0
 	self.size = $Sprite_0.texture.get_size()
+	metabolic_cost = 1
 
 
 
@@ -90,7 +91,7 @@ func _on_timer_timeout():
 			$Timer.wait_time = lifecycletime / World.speed
 		if isDead == false:
 
-			Metabo_cost()
+			Metabo_cost(metabolic_cost)
 			Ageing()
 			AdjustBar()
 			LifeDuplicate()

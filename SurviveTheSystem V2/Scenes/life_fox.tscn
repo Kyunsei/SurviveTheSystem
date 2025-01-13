@@ -1,0 +1,119 @@
+[gd_scene load_steps=16 format=3 uid="uid://bnhiba1llibvm"]
+
+[ext_resource type="Script" path="res://Scripts/life_fox.gd" id="1_dsa6u"]
+[ext_resource type="Texture2D" uid="uid://sq3frdjfvhig" path="res://Art/fox_0.png" id="2_fl7x7"]
+[ext_resource type="Texture2D" uid="uid://wp4gwxrfauaq" path="res://Art/fox_1.png" id="3_bmhux"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/brainy.gd" id="4_1thcn"]
+[ext_resource type="Texture2D" uid="uid://db1yub8ff5dj7" path="res://Art/fox_dead0.png" id="4_2ocxo"]
+[ext_resource type="Texture2D" uid="uid://choetduo0lpy5" path="res://Art/fox_dead1.png" id="5_hw8j1"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/spidercrab_getcloser.gd" id="6_lhtkx"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="7_qjey5"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="7_vcavt"]
+[ext_resource type="Script" path="res://Scripts/Finite State Machine/dash.gd" id="8_oqekv"]
+[ext_resource type="AudioStream" uid="uid://ck4cxuyqyrx0g" path="res://Sound/hurt.mp3" id="10_ovjfm"]
+[ext_resource type="AudioStream" uid="uid://dnn0gchtctvv3" path="res://Sound/fox_1.mp3" id="11_k4yfh"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_chh8i"]
+radius = 800.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4635j"]
+radius = 8.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4wqpl"]
+radius = 20.0
+
+[node name="fox" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 2
+input_pickable = true
+script = ExtResource("1_dsa6u")
+
+[node name="Timer" type="Timer" parent="."]
+
+[node name="Vision" type="Area2D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 0
+
+[node name="Collision" type="CollisionShape2D" parent="Vision"]
+shape = SubResource("CircleShape2D_chh8i")
+debug_color = Color(0.854902, 0.32549, 0.45098, 0.419608)
+
+[node name="Sprite_0" type="Sprite2D" parent="."]
+texture = ExtResource("2_fl7x7")
+offset = Vector2(0, -16)
+
+[node name="Sprite_1" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("3_bmhux")
+offset = Vector2(0, -32)
+
+[node name="Dead_Sprite_0" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("4_2ocxo")
+offset = Vector2(0, -16)
+
+[node name="Dead_Sprite_1" type="Sprite2D" parent="."]
+visible = false
+texture = ExtResource("5_hw8j1")
+offset = Vector2(0, -32)
+
+[node name="Collision_0" type="CollisionShape2D" parent="."]
+position = Vector2(0, -11)
+shape = SubResource("CircleShape2D_4635j")
+
+[node name="Collision_1" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(2, -24)
+shape = SubResource("CircleShape2D_4wqpl")
+disabled = true
+
+[node name="DebugLabel" type="Label" parent="."]
+visible = false
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 64.0
+target_desired_distance = 16.0
+debug_enabled = true
+
+[node name="Brainy" type="Node2D" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("4_1thcn")
+initial_state = NodePath("idle_state")
+
+[node name="idle_state" type="Node" parent="Brainy"]
+script = ExtResource("7_qjey5")
+HungryThresold = 0.5
+
+[node name="getcloser_state" type="Node" parent="Brainy"]
+script = ExtResource("6_lhtkx")
+chasing_max_timer = 1000.0
+minimun_distance = 240
+maximun_distance = 500
+next_state = "dash_state"
+
+[node name="avoid_state" type="Node" parent="Brainy"]
+script = ExtResource("7_vcavt")
+dodge_speed = 2.0
+detection_distance = 320
+
+[node name="dash_state" type="Node" parent="Brainy"]
+script = ExtResource("8_oqekv")
+eating_distance = 32
+speed_multiplicator = 6
+charge_duration = 0.2
+
+[node name="Sound" type="Node2D" parent="."]
+
+[node name="hish" type="AudioStreamPlayer2D" parent="Sound"]
+stream = ExtResource("11_k4yfh")
+
+[node name="hurt" type="AudioStreamPlayer2D" parent="Sound"]
+stream = ExtResource("10_ovjfm")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
+[connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]

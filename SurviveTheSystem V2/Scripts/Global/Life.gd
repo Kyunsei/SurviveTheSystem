@@ -62,8 +62,9 @@ var life_scene = {
 	'cat' : load("res://Scenes/life_cat.tscn"),
 	'stingtree' : load("res://Scenes/life_stingtree.tscn"),
 	'spidercrab' : load("res://Scenes/life_spidercrab.tscn"),
-	'sc_boss' : load("res://Scenes/spidercrab_boss_prototype.tscn"),
-	'jellybee' : load("res://Scenes/life_jellybee.tscn")
+	#'sc_boss' : load("res://Scenes/spidercrab_boss_prototype.tscn"),
+	'jellybee' : load("res://Scenes/life_jellybee.tscn"),
+	'fox' : load("res://Scenes/life_fox.tscn")
 }
 
 var life_number = {
@@ -71,11 +72,12 @@ var life_number = {
 	"grass": 0,
 	"spiky_grass":0,
 	"spidercrab": 0,
-	"sc_boss": 0,
+	#"sc_boss": 0,
 	"sheep": 0,
 	"jellybee": 0,
 	"berry": 0,
-	"stingtree":0
+	"stingtree":0,
+	"fox": 0
 }
 
 var pool_state = {
@@ -83,11 +85,12 @@ var pool_state = {
 	"grass": [],
 	"spiky_grass": [],
 	"spidercrab": [],
-	"sc_boss":[],
+	#"sc_boss":[],
 	"sheep": [],
 	"jellybee": [],
 	"berry": [],
-	"stingtree":[]
+	"stingtree":[],
+	"fox":[]
 }
 
 var pool_scene = {
@@ -100,9 +103,14 @@ var pool_scene = {
 	"sheep": [],
 	"jellybee": [],
 	"berry": [],
-	"stingtree":[]
+	"stingtree":[],
+	"fox": []
 }
 
+
+#Variable for challenges
+var blue = 0
+var red = 0
 
 func Calculate_score():
 	score += 1
@@ -119,8 +127,7 @@ func Calculate_score():
 			folder.add_child(nl)'
 
 
-func Init_life_pool(folder):
-
+func Init_life_pool():
 
 	for i in pool_scene:
 		pool_scene[i] = []
@@ -130,17 +137,17 @@ func Init_life_pool(folder):
 		life_number[i] = 0
 		
 
+func fill_with_empty_entity_pool_lifes(folder):
 	Life.Instantiate_emptyLife_pool(folder, 3500, "grass")
-
 	Life.Instantiate_emptyLife_pool(folder, 100, "spiky_grass")
 	Life.Instantiate_emptyLife_pool(folder, 80, "sheep")
 	Life.Instantiate_emptyLife_pool(folder, 100, "berry")
 	Life.Instantiate_emptyLife_pool(folder, 3, "cat")
 	Life.Instantiate_emptyLife_pool(folder, 100, "stingtree")
 	Life.Instantiate_emptyLife_pool(folder, 10, "spidercrab")
-	Life.Instantiate_emptyLife_pool(folder, 2, "sc_boss")
+	#Life.Instantiate_emptyLife_pool(folder, 2, "sc_boss")
 	Life.Instantiate_emptyLife_pool(folder, 50, "jellybee")
-	
+	Life.Instantiate_emptyLife_pool(folder, 10, "fox")
 	
 
 

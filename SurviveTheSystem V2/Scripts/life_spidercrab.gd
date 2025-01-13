@@ -38,6 +38,7 @@ func init_progressbar():
 	#get("custom_styles/fg").bg_color = Color(1, 0, 0)
 
 func Build_Stat():
+
 	self.current_life_cycle = 0
 	self.PV = 60# Genome["maxPV"][self.current_life_cycle]	
 	self.energy = 0
@@ -49,6 +50,7 @@ func Build_Stat():
 	self.lifespan = 30*(World.one_day_length/lifecycletime)
 	self.isPickable = true
 	AdjustBar()
+	metabolic_cost = 3
 	
 func Build_Phenotype(): 
 	# SPRITE
@@ -58,17 +60,17 @@ func Build_Phenotype():
 	$Dead_Sprite_0.scale *= Genome["scale"][self.current_life_cycle]
 	$light.scale *= Genome["scale"][self.current_life_cycle]
 	
-	$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
-	#$Sprite_0.offset.x = 0 # -$Sprite_0.texture.get_width()/4
-	
-	$Dead_Sprite_0.offset.y = -$Dead_Sprite_0.texture.get_height()
+	#$Sprite_0.offset.y = -$Sprite_0.texture.get_height()
+	##$Sprite_0.offset.x = 0 # -$Sprite_0.texture.get_width()/4
+	#
+	#$Dead_Sprite_0.offset.y = -$Dead_Sprite_0.texture.get_height()
 	#$Dead_Sprite_0.offset.x = 0# -$Dead_Sprite_0.texture.get_width()/2
 	
 	$Dead_Sprite_0.hide()
 
 	#Body
-	$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #Vector2(width/2,-height/2)
-	$Collision_1.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*1
+	#$Collision_0.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*Genome["scale"][self.current_life_cycle] #Vector2(width/2,-height/2)
+	#$Collision_1.position = Vector2($Sprite_0.texture.get_width()/2,-$Sprite_0.texture.get_height()/2)*1
 
 	#Vision
 	$Vision/Collision.shape.radius = 5500
@@ -94,109 +96,11 @@ func _physics_process(delta):
 		if item_array.size() > 0:
 			var c = 0
 			for i in item_array:
-					i.position = position + Vector2(48+c*16,-64)
+					i.position = position #+ Vector2(48+c*16,-64)
 					c += 1
 		
 		if direction.normalized() != Vector2(0,0):
 			last_dir = direction
-
-
-
-'func Brainy():
-	var center = position + Vector2(size.x/2,-size.y/2)
-	var food_array_temp = food_array.duplicate()
-	var danger_array_temp = danger_array.duplicate()
-
-	if danger_array_temp.size() > 0:
-		var cl = getClosestLife(danger_array_temp,250)
-		if cl != null:
-			getAway(cl.getCenterPos())
-
-	if item_array.size() > 0:
-		if item_array[0].species == "berry" and item_array[0].current_life_cycle == 3 and action_finished: 
-			if isBurrow ==false:
-				hide_under_soil()
-				action_finished = false
-				$ActionTimer.start(1.)
-
-			elif isBurrow and action_finished :
-				if food_array_temp.size()>0:
-					var cl = getClosestLife(food_array_temp,1000)
-					if cl !=null:
-						$DebugLabel.text ="waiting_Food" 
-						if center.distance_to(cl.getCenterPos()) < (128*3) and cl.isDead == false:
-							var rdn = randi_range(0,100)
-							if rdn < 25:
-								attack_from_soil(cl)
-								action_finished = false
-								$ActionTimer.start(1.)
-							else:
-								action_finished = false
-								$ActionTimer.start(1.)
-							
-						elif center.distance_to(cl.getCenterPos()) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
-								if cl.species=="catronaute":					
-									cl.getDamaged(10)
-								else :
-									Eat(cl)
-									velocity = Vector2(0,0)'
-				
-
-'if action_finished == true and isBurrow == false:
-		if self.energy < 90 and food_array_temp.size()>0:
-			var cl = getClosestLife(food_array_temp,1000)
-			if cl !=null:
-				$DebugLabel.text ="feeding" 
-				#NEED TO ADJUST DISTANCE ACCORDING TO CENTER NOT CORNER
-				if center.distance_to(cl.getCenterPos()) < (128*3) and cl.isDead == false:
-					$DebugLabel.text ="charging"
-					var rdn = randi_range(0,100)
-					if rdn < 50:
-						ChargeToward(cl.getCenterPos())
-					else:
-						velocity = Vector2(0,0)
-						action_finished = false
-						$ActionTimer.start(2.)
-					
-				elif center.distance_to(cl.getCenterPos()) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
-						if cl.species=="catronaute":
-						
-							cl.getDamaged(10)
-						else :
-							Eat(cl)
-							velocity = Vector2(0,0)
-							$DebugLabel.text ="Eat"
-				elif cl.isDead == false and center.distance_to(cl.getCenterPos()) >= 128*3:
-						#ChargeToward(cl.position)
-						getCloser(cl.position)
-						$DebugLabel.text ="getToFood "
-				else:
-					AdjustDirection()
-			else:
-				AdjustDirection()
-		else:
-			AdjustDirection()
-	else:
-		var cl = getClosestLife(food_array_temp,1000)
-		if cl !=null:
-			if center.distance_to(cl.getCenterPos()) < 64*Genome["scale"][current_life_cycle] and cl.isDead == false:
-				if cl.species=="catronaute":
-					cl.getDamaged(10)
-				else :
-					Eat(cl)
-					velocity = Vector2(0,0)
-					$DebugLabel.text ="Eat"'
-'#AdjustDirection()
-		print("here?")
-		velocity = Vector2(0,0)'	
-
-func ChargeToward(target):
-	var center = getCenterPos()
-	if action_finished == true:
-		action_finished = false
-		$ActionTimer.start(0.5)
-		direction = -(center - target).normalized()
-		velocity = direction * maxSpeed*4			
 
 func hide_under_soil():
 	get_node("Sprite_0").hide()
@@ -214,8 +118,10 @@ func hide_under_soil():
 		
 func getDamaged(value,antagonist:LifeEntity=null):
 	if current_life_cycle == 1:
+		var CrabToAntagonist =  position.direction_to(antagonist.getCenterPos())
+		var crab_facing_direction = Vector2(cos(rotation),sin(rotation)) 
 
-		if getCenterPos().direction_to(antagonist.getCenterPos()).y < -0.8:
+		if CrabToAntagonist.dot(crab_facing_direction) < -0.8 :
 			if InvicibilityTime == 0:
 				getPushed(antagonist,64)
 				$Sound/hurt.playing = true
@@ -263,7 +169,6 @@ func get_out_of_soil():
 	
 func attack_from_soil(cl):
 	get_out_of_soil()
-	ChargeToward(cl.getCenterPos())
 	$DebugLabel.text = "CHAAAARGE !!!!"
 	pass
 
@@ -273,11 +178,9 @@ func _on_timer_timeout():
 			$Timer.wait_time = lifecycletime / World.speed
 		if isDead == false:
 			if current_life_cycle == 1:
-				for i in range(2):
-					Metabo_cost()
+					Metabo_cost(metabolic_cost)
 			elif current_life_cycle == 0:
-				for i in range(3):
-					Metabo_cost()
+					Metabo_cost(metabolic_cost+1)
 
 			Ageing()
 			#AdjustBar()
@@ -296,31 +199,32 @@ func _on_timer_timeout():
 			else:
 				energy -= 5
 
-
+func Crab_drop() :
+	#var leg_pos = [position-Vector2(48,0), position-Vector2(-48,0), position-Vector2(48,-32), position-Vector2(-48,-32)]
+	#var leg_rotation = [-1.5707963268,1.5707963268,-1.5707963268,1.5707963268]
+	#var leg_flip = [1,0,1,0]
+	#for n in range(4) :
+		#var crab_leg = Life.spidercrab_leg_scene.instantiate()
+		#get_parent().add_child(crab_leg) 
+		#crab_leg.position = leg_pos[n]
+		#crab_leg.rotation = leg_rotation[n]
+		#crab_leg.get_node("Sprite_0").flip_h = leg_flip[n]
+	var claw_pos = [position-Vector2(32,-64), position-Vector2(-32,-64)]
+	var claw_rotation = [-6.2831853072,0]
+	var claw_flip = [0,1]
+	for n in range(2) :
+		var crab_claw = Life.spidercrab_claw_scene.instantiate()
+		get_parent().add_child(crab_claw) 
+		crab_claw.position = claw_pos[n]
+		crab_claw.rotation = claw_rotation[n]
+		crab_claw.get_node("Sprite_0").flip_h = claw_flip[n]
 
 func Growth():
 	if current_life_cycle == 0:
 		#10*(World.one_day_length/lifecycletime)
 		if self.age > 5*(World.one_day_length/lifecycletime) and self.energy >= 30:
 			self.current_life_cycle += 1
-			var leg_pos = [self.getCenterPos()-Vector2(48,0), self.getCenterPos()-Vector2(-48,0), self.getCenterPos()-Vector2(48,-32), self.getCenterPos()-Vector2(-48,-32)]
-			var leg_rotation = [-1.5707963268,1.5707963268,-1.5707963268,1.5707963268]
-			var leg_flip = [1,0,1,0]
-			for n in range(4) :
-				var crab_leg = Life.spidercrab_leg_scene.instantiate()
-				get_parent().add_child(crab_leg) 
-				crab_leg.position = leg_pos[n]
-				crab_leg.rotation = leg_rotation[n]
-				crab_leg.get_node("Sprite_0").flip_h = leg_flip[n]
-			var claw_pos = [self.getCenterPos()-Vector2(32,-64), self.getCenterPos()-Vector2(-32,-64)]
-			var claw_rotation = [-6.2831853072,0]
-			var claw_flip = [0,1]
-			for n in range(2) :
-				var crab_claw = Life.spidercrab_claw_scene.instantiate()
-				get_parent().add_child(crab_claw) 
-				crab_claw.position = claw_pos[n]
-				crab_claw.rotation = claw_rotation[n]
-				crab_claw.get_node("Sprite_0").flip_h = claw_flip[n]
+			
 				
 			
 			$Sprite_0.scale = Vector2(1,1)
@@ -429,6 +333,7 @@ func Die():
 	velocity = Vector2(0,0)
 	Drop()
 	Update_sprite($Dead_Sprite_0, $Collision_0)
+	Crab_drop()
 	'$Dead_Sprite_0.show()
 	$Sprite_0.hide()'
 
@@ -478,7 +383,7 @@ func Eat(life):
 	life.energy= 0
 	life.Die()
 	life.cause_of_death = deathtype.EATEN
-
+	energy = clamp(energy,0,maxEnergy)
 
 func _on_bare_hand_attack_body_entered(body):
 	if body != self:
@@ -521,7 +426,7 @@ func _on_vision_body_entered(body):
 			vision_array["food"].append(body)
 	if body.species== "jellybee" and self.current_life_cycle == 0:
 			vision_array["food"].append(body)
-	if body.species == "catronaute":
+	if body.species == "catronaute" or body.species == "fox" :
 		if self.current_life_cycle == 1:
 			vision_array["food"].append(body)
 		else:
@@ -535,5 +440,6 @@ func _on_vision_body_exited(body):
 	for n in vision_array:
 		if vision_array[n].has(body):
 			vision_array[n].erase(body)
+
 
 

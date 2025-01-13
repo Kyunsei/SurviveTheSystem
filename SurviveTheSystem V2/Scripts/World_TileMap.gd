@@ -21,7 +21,7 @@ func instantiate_the_tiles_function():
 		World.block_element_array[t.y*World.world_size + t.x] = 1
 		World.block_element_state[t.y*World.world_size + t.x] = 1
 
-	var temp = ["sheep","grass","berry","jellybee","spiky_grass","spidercrab","stingtree"]
+	var temp = ["sheep","grass","berry","jellybee","spiky_grass","spidercrab","stingtree","fox"]
 	for i in range(temp.size()):	
 		for lc in range(5):
 			tiles = get_used_cells_by_id(1, 3, Vector2i(lc, i))
@@ -225,8 +225,10 @@ func draw_navigation():
 
 
 func _on_block_timer_timeout():
-	pass
-	World.sun_energy_block_array.fill(World.energy_flow_in)
+
+	#World.sun_energy_block_array.fill(World.energy_flow_in)
+	#World.add_energy_in_sun_level()
+	World.SunLayerFillGPU()
 	#World.BlockLoopGPU() 
 	#update_ALL_tilemap_tile_to_new_soil_value()
 	

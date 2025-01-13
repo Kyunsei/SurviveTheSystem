@@ -23,7 +23,7 @@ signal world_speed_changed
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-
+	World.world_size = 500
   
 	InitNewGame()
 	#$Life/Player/Sprite2D.texture = Life.player_skin[Life.player_skin_ID]
@@ -80,7 +80,8 @@ func InitNewGame():
 	init_debug_feature()
 	
 	#Init the World
-	Life.Init_life_pool($Life)
+	Life.Init_life_pool()
+	Life.fill_with_empty_entity_pool_lifes($Life)
 	World.Init_World($Blocks)
 
 	#FUTURE PROCEDURAL FUNCTIOM

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bwlpguhd7osn2"
-path="res://.godot/imported/bamboo.png-b575768b4a3e206182ffe2d5a8b4f441.ctex"
+uid="uid://wp4gwxrfauaq"
+path="res://.godot/imported/fox_1.png-c8d789e02fb49457c9d1904b97e093c6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Scenes/bamboo.png"
-dest_files=["res://.godot/imported/bamboo.png-b575768b4a3e206182ffe2d5a8b4f441.ctex"]
+source_file="res://Art/fox_1.png"
+dest_files=["res://.godot/imported/fox_1.png-c8d789e02fb49457c9d1904b97e093c6.ctex"]
 
 [params]
 

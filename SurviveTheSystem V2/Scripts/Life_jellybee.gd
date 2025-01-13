@@ -54,7 +54,7 @@ func Build_Stat():
 	self.lifespan = 2*(90/10)
 	self.age= 0
 	$Sprite_0.modulate = jelly_color
-
+	metabolic_cost = 1
 
 func _physics_process(delta):
 	if isPlayer:
@@ -78,7 +78,7 @@ func _on_timer_timeout():
 			
 		
 			
-			Metabo_cost()
+			Metabo_cost(metabolic_cost)
 			LifeDuplicate()
 			Ageing()
 			spwan_pollen()

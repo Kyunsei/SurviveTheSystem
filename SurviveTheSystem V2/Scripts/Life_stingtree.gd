@@ -66,7 +66,7 @@ func Build_Stat():
 	self.current_life_cycle = 0
 	self.PV = Genome["maxPV"][self.current_life_cycle]
 	self.energy = 1
-	
+	metabolic_cost = 1 
 func _on_timer_timeout():
 	if $Timer.wait_time != lifecycletime / World.speed:
 		$Timer.wait_time = lifecycletime / World.speed
@@ -74,7 +74,7 @@ func _on_timer_timeout():
 		if isDead == false:
 			if carried_by == null:
 				if isOnTree == false:
-					Metabo_cost()	
+					Metabo_cost(metabolic_cost)	
 					Absorb_soil_energy(2,min(4,self.current_life_cycle))
 			
 					LifeDuplicate()
