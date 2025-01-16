@@ -39,15 +39,21 @@ func _on_timer_timeout():
 		if isDead == false:
 			if carried_by == null :
 				if current_life_cycle !=0:
-					Metabo_cost(10)	
-					Absorb_sun_energy(1,5*current_life_cycle)
+
+					if current_life_cycle == 1:
+						Metabo_cost(72)	
+						Absorb_sun_energy(1,5) #81
+					elif current_life_cycle == 2:
+						Metabo_cost(280)	
+						Absorb_sun_energy(1,10) #317
 					LifeDuplicate()
 					'if self.energy < self.maxEnergy:
 						Absorb_soil_energy(2,3)'
 				
 				Growth()
 				Ageing()
-
+			if self.energy <= 0 or self.PV <=0:
+				Die()
 			energy = clamp(energy, 0, maxEnergy)
 			
 			if current_time_speed != World.speed:
@@ -56,7 +62,7 @@ func _on_timer_timeout():
 			if energy <= 0:
 				Deactivate()
 			else:
-				energy -= 5
+				energy -= 50
 
 		#Debug part
 		$DebugLabel.text = str(self.energy)
@@ -72,7 +78,7 @@ func Die():
 		z_index = 0
 	
 	Update_sprite($Dead_Sprite_0, $Collision_0)
-	set_sun_occupation(0,3*current_life_cycle)
+	set_sun_occupation(-1,5*current_life_cycle)
 
 	
 
@@ -80,20 +86,25 @@ func Die():
 func Growth():
 	if current_life_cycle == 0:
 		if self.age > 1*(World.one_day_length/lifecycletime) and self.energy > 2:
-
+			photosynthesis_level = 2
 			self.current_life_cycle += 1
+			set_sun_occupation(1,5) 
 			Update_sprite($Sprite_1, $Collision_1)	
 			self.maxPV = 30
+			self.maxEnergy = 50
 			self.PV = self.maxPV
 			self.isPickable = false
 	elif current_life_cycle == 1:
 		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy > 5:
+			set_sun_occupation(-1,5) #remove previous layer
 			self.current_life_cycle += 1
 			Update_sprite($Sprite_2, $Collision_2)	
 			self.maxPV =60
+			self.maxEnergy = 100
 			self.PV = self.maxPV
-	
-
+			photosynthesis_level = 3
+			
+			set_sun_occupation(1,10)
 
 #Duplication
 func LifeDuplicate():

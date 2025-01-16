@@ -138,7 +138,34 @@ func update_tilemap_tile_array_to_new_soil_value(layer, cells):
 					set_tile_according_to_soil_value(cell)
 				#set_cell(0, cell, 0, Vector2i(0,co.y) + Vector2i(randi_range(0,3), 0))
 
+func update_tile_array_to_new_sun_value(layer, cell):
+		var tile_id = get_cell_source_id(layer,cell)
+		if tile_id != -1:
+			var tile = get_cell_tile_data(layer,cell)
+			var co = get_cell_atlas_coords(layer,cell)
+			if co != Vector2i(0,2): #empty tile
+				if co.y < 1: #border
+					set_tile_according_to_sun_value(cell)
+				#set_cell(0, cell, 0, Vector2i(0,co.y) + Vector2i(randi_range(0,3), 0))
 
+
+
+
+func set_tile_according_to_sun_value(coord: Vector2i):
+	var layer = 0
+	var posindex = coord.y*World.world_size + coord.x
+	var sum_occupation = 0
+	if World.block_element_state[posindex]== 1:
+		for n in [0,1]:
+			sum_occupation += World.sun_energy_occupation_array[n][posindex]
+		
+		if sum_occupation == 0: #no plant there
+			set_cell(layer, coord, 0, Vector2i(3,0))
+		elif sum_occupation == 1: #  plant there
+			set_cell(layer, coord, 0, Vector2i(1,0))
+		elif sum_occupation >= 2:
+			set_cell(layer, coord, 0, Vector2i(0,0))
+	
 
 func set_tile_according_to_soil_value(coord: Vector2i):
 	var layer = 0

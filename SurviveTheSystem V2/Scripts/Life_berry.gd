@@ -9,6 +9,8 @@ var counter = 0
 
 var signalconnected = false
 
+var sunoccupationisSet = false
+
 var jelly_bee_array = []
 
 		
@@ -146,7 +148,8 @@ func Die():
 		z_index = 0
 	
 	Update_sprite($Dead_Sprite_0, $Collision_0)
-	set_sun_occupation(0,4)
+	set_sun_occupation(-1,4)
+	sunoccupationisSet = false
 	$PointLight2D.hide()
 	for b in jelly_bee_array:
 		b.berry_nest = null
@@ -167,7 +170,7 @@ func Growth():
 	elif current_life_cycle == 1:
 		$PointLight2D.hide()
 		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy > 5:
-
+			#set_sun_occupation(1,4) 
 			self.current_life_cycle += 1
 			Update_sprite($Sprite_2, $Collision_2)	
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
@@ -175,7 +178,7 @@ func Growth():
 	elif current_life_cycle == 2:
 		$PointLight2D.hide()
 		if self.age > 3*(World.one_day_length/lifecycletime) and self.energy > 10 and self.counter == 0:
-
+			#set_sun_occupation(1,4) 
 			self.current_life_cycle += 1
 			Update_sprite($Sprite_3, $Collision_3)	
 			self.maxPV = Genome["maxPV"][self.current_life_cycle]
@@ -187,9 +190,13 @@ func Growth():
 			self.counter = 0
 			
 	elif current_life_cycle == 3:
-
+		#set_sun_occupation(1,4) 
 		if World.isNight == true:
 			$PointLight2D.show()
+	
+	if current_life_cycle >0 and sunoccupationisSet == false:
+		set_sun_occupation(1,4) 
+		sunoccupationisSet = true
 
 
 #Duplication

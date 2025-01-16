@@ -293,9 +293,9 @@ func Absorb_soil_energy(value,radius):
 					update_tiles_according_soil_value([Vector2i(x,y)])
 
 func Absorb_sun_energy(value,radius):
-	if radius > nb_of_soil_block_by_radius.size():
+	'if radius > nb_of_soil_block_by_radius.size():
 		print("too many block absorbed, please uptade the variable in new_life script")
-		radius = nb_of_soil_block_by_radius.size()-1
+		radius = nb_of_soil_block_by_radius.size()-1'
 	var middle = position + Vector2(size.x/2,0)#-size.y/2)
 	var center_x = int(middle.x/World.tile_size)
 	var	center_y = int(middle.y/World.tile_size)
@@ -310,7 +310,8 @@ func Absorb_sun_energy(value,radius):
 					sun_energy = max(0,sun_energy)
 					energy += min(value,sun_energy)
 					World.sun_energy_block_array[World.n_sun_level-photosynthesis_level][posindex]	-= min(value,sun_energy)
-					World.sun_energy_occupation_array[World.n_sun_level-photosynthesis_level][posindex]	= value
+					'World.sun_energy_occupation_array[World.n_sun_level-photosynthesis_level][posindex]	= max(value,World.sun_energy_occupation_array[World.n_sun_level-photosynthesis_level][posindex])
+					update_tiles_according_sun_value(Vector2(x,y))'
 					#World.sun_energy_occupation_array[posindex] = 1
 					#energy = clamp(energy,0, maxEnergy)
 					#update_tiles_according_soil_value([Vector2i(x,y)]
@@ -389,9 +390,10 @@ func Decomposition(radius):
 
 
 func set_sun_occupation(value,radius):
-	if radius > nb_of_soil_block_by_radius.size():
+	var dummycount = 0
+	'if radius > nb_of_soil_block_by_radius.size():
 		print("too many block absorbed, please uptade the variable in new_life script")
-		radius = nb_of_soil_block_by_radius.size()-1
+		radius = nb_of_soil_block_by_radius.size()-1'
 	var middle = position + Vector2(size.x/2,0)#-size.y/2)
 	var center_x = int(middle.x/World.tile_size)
 	var	center_y = int(middle.y/World.tile_size)
@@ -401,7 +403,12 @@ func set_sun_occupation(value,radius):
 			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
 				var posindex = y*World.world_size + x
 				if posindex < World.sun_energy_occupation_array[0].size():
-					World.sun_energy_occupation_array[World.n_sun_level-photosynthesis_level][posindex]	= value
+					World.sun_energy_occupation_array[World.n_sun_level-photosynthesis_level][posindex]	+= value
+					update_tiles_according_sun_value(Vector2(x,y))
+					dummycount += 1
+					
+	
+	#print(dummycount)
 					
 				
 
@@ -477,6 +484,11 @@ func update_tiles_according_soil_value(cells):
 	get_parent().get_parent().get_node("World_TileMap").update_tilemap_tile_array_to_new_soil_value(layer, cells)
 
 
+func update_tiles_according_sun_value(cell):
+	var layer = 0
+	get_parent().get_parent().get_node("World_TileMap").update_tile_array_to_new_sun_value(layer, cell)
+
+
 
 func PickRandomPlaceWithRange(position,range, isVoidPossible = false, count = 0):
 
@@ -491,6 +503,7 @@ func PickRandomPlaceWithRange(position,range, isVoidPossible = false, count = 0)
 				if count < 10:
 					return PickRandomPlaceWithRange(newpos,range,count)#+ Vector2(randi_range(0,8),randi_range(0,8))
 				else: 
+					#print("here")
 					return position  
 			else:
 				return newpos

@@ -47,6 +47,7 @@ texture = ExtResource("4_1gg5o")
 offset = Vector2(0, -320)
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
+visible = false
 texture = ExtResource("5_7px2i")
 
 [node name="DebugLabel" type="Label" parent="."]
