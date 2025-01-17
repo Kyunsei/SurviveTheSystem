@@ -52,7 +52,7 @@ func initChallenges(ID):
 			Life.player.age = 0
 			Life.player.isPlayer = true 
 			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
-		for i in range(10):
+		for i in range(0):
 			var life = Life.build_life("grass")
 			life.sub_species = 2
 			life.Build_Stat()

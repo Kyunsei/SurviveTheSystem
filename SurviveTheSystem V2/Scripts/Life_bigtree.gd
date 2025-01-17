@@ -115,8 +115,9 @@ func LifeDuplicate():
 			if life != null:
 				self.energy -= 10
 				life.energy = 10
+				
 				life.position = PickRandomPlaceWithRange(position,20 * World.tile_size)
-										
+				print("new tree at " + str(life.position))	
 
 			else:
 				print("bigtree_pool empty")

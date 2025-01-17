@@ -8,7 +8,7 @@ var color_list = [Color.DARK_RED,Color.CADET_BLUE,Color.YELLOW_GREEN,Color.BEIGE
 func instantiate_the_tiles_function():
 	var tiles = get_used_cells_by_id(0, 0, Vector2i(0, 0))
 	for t in tiles:
-		World.block_element_array[t.y*World.world_size + t.x] = 20
+		World.block_element_array[t.y*World.world_size + t.x] = 0
 		World.block_element_state[t.y*World.world_size + t.x] = 1
 					
 	tiles = get_used_cells_by_id(0, 0, Vector2i(3, 0))
@@ -18,9 +18,15 @@ func instantiate_the_tiles_function():
 		
 	tiles = get_used_cells_by_id(0, 0, Vector2i(2, 0))
 	for t in tiles:
-		World.block_element_array[t.y*World.world_size + t.x] = 1
+		World.block_element_array[t.y*World.world_size + t.x] = 0
 		World.block_element_state[t.y*World.world_size + t.x] = 1
 
+	tiles = get_used_cells_by_id(0, 0, Vector2i(1, 0))
+	for t in tiles:
+		World.block_element_array[t.y*World.world_size + t.x] = 0
+		World.block_element_state[t.y*World.world_size + t.x] = 1
+		
+		
 	var temp = ["sheep","grass","berry","jellybee","spiky_grass","spidercrab","stingtree","fox","bigtree"]
 	for i in range(temp.size()):	
 		for lc in range(5):

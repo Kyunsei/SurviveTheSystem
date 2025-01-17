@@ -496,12 +496,16 @@ func PickRandomPlaceWithRange(position,range, isVoidPossible = false, count = 0)
 		var random_y = randi_range(max(0,position.y-range),min((World.world_size)* World.tile_size ,position.y+range))
 		var newpos = Vector2(random_x, random_y)
 		if not isVoidPossible:
+
+			print(newpos)
+			print(World.block_element_state[int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)])
 			if World.block_element_state[int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)] != 1:
 				#newpos = PickRandomPlaceWithRange(position,range)
 				#newpos = PickRandomPlaceWithRange(position,range)
+				print("count: " + str(count))
 				count += 1
 				if count < 10:
-					return PickRandomPlaceWithRange(newpos,range,count)#+ Vector2(randi_range(0,8),randi_range(0,8))
+					return PickRandomPlaceWithRange(position,range,isVoidPossible,count)#+ Vector2(randi_range(0,8),randi_range(0,8))
 				else: 
 					#print("here")
 					return position  
