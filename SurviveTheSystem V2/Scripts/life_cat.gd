@@ -440,21 +440,21 @@ func Dash_Action():
 			set_collision_mask_value(2,false)
 			velocity = last_dir.normalized()*self.maxSpeed
 			await get_tree().create_timer(0.2).timeout
-			dashing = false
-			
-			action_finished = true 
+
 			set_collision_mask_value(2,true)
 			#$Collision_0.shape.size *= 2.5
 			velocity = Vector2.ZERO
 			self.maxSpeed = 200
 			if getsoiltype(position)<1:
 				await get_tree().create_timer(0.1).timeout
-				self.PV -= 10
-				$sound/hurt_sound.playing = true
+				getDamaged(10)
 				position = initial_position
 				if PV <= 0:
 					Die()
 					cause_of_death = deathtype.VOID
+			dashing = false
+			
+			action_finished = true 
 			AdjustBar() #Ca c'est pour que les bar de HP et faim change si jaja
 			
 			await get_tree().create_timer(1.5).timeout

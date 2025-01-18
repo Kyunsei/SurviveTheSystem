@@ -179,7 +179,7 @@ func Growth():
 func LifeDuplicate():
 	
 
-	if self.age > 5 and self.energy > 10 and duplicate_timer >= 5 and berry_nest:
+	if self.age > 5 and self.energy > 10 and duplicate_timer >= 6 and berry_nest:
 
 		#Lpool Technique
 			var life = Life.build_life(species)
