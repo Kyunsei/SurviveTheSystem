@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://broobw420njr3"]
+[gd_scene load_steps=13 format=3 uid="uid://broobw420njr3"]
 
 [ext_resource type="Script" path="res://Scripts/Life_jellybee.gd" id="1_oac7o"]
 [ext_resource type="Texture2D" uid="uid://bftar3bq74hv4" path="res://Art/jellybee.png" id="2_hurvh"]
@@ -10,7 +10,11 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="7_226af"]
 [ext_resource type="Texture2D" uid="uid://bb3i85tiy02hb" path="res://Art/jelly_hive.png" id="9_xs6lx"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ld3jv"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_kd1gp"]
+radius = 4000.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wtduf"]
+radius = 200.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dv5i7"]
 size = Vector2(32, 32)
@@ -33,7 +37,8 @@ collision_mask = 0
 
 [node name="Collision" type="CollisionShape2D" parent="Vision"]
 visible = false
-shape = SubResource("CapsuleShape2D_ld3jv")
+position = Vector2(0, -65)
+shape = SubResource("CircleShape2D_kd1gp")
 
 [node name="Vision_close" type="Area2D" parent="."]
 visible = false
@@ -42,21 +47,20 @@ collision_mask = 0
 
 [node name="Collision" type="CollisionShape2D" parent="Vision_close"]
 visible = false
-shape = SubResource("CapsuleShape2D_ld3jv")
+position = Vector2(0, -65)
+shape = SubResource("CircleShape2D_wtduf")
 
 [node name="Sprite_0" type="Sprite2D" parent="."]
 texture = ExtResource("2_hurvh")
-centered = false
 offset = Vector2(0, -64)
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
 visible = false
 texture = ExtResource("3_r77nf")
-centered = false
-offset = Vector2(0, -32)
+offset = Vector2(0, -16)
 
 [node name="Collision_0" type="CollisionShape2D" parent="."]
-position = Vector2(16, -49)
+position = Vector2(0, -65)
 shape = SubResource("RectangleShape2D_dv5i7")
 disabled = true
 

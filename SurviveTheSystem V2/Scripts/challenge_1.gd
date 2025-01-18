@@ -60,10 +60,23 @@ func initChallenges(ID):
 			life.Build_Stat()
 			life.modulate = life.test_col
 			life.position = Vector2(randi_range(10*World.tile_size,World.tile_size*World.world_size-10),randi_range(10*World.tile_size,World.tile_size*World.world_size-10))
+	
+	if ID == 4:
+
+		Life.Instantiate_emptyLife_pool($Life, 300, "spiky_grass")
+		Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+		Life.Instantiate_emptyLife_pool($Life, 100, "jellybee")
+		var pl = Life.build_life("cat")
+		if pl:
+			Life.player = pl
+			Life.player.age = 0
+			Life.player.isPlayer = true 
+			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+
 															
 									
 func _ready(): 
-	World.world_size = 50
+	World.world_size = 140
 	InitNewGame()
 
 	
@@ -112,6 +125,9 @@ func wincondition(ID):
 	if ID == 3:
 		$UI/Score.text = "IDK"
 		
+
+	if ID == 4:
+		$UI/Score.text = "JellyBee Test"
 
 
 

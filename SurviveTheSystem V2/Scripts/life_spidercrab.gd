@@ -104,6 +104,7 @@ func _physics_process(delta):
 
 func hide_under_soil():
 	get_node("Sprite_0").hide()
+	$light.hide()
 	
 	#current_sprite.hide()
 	
@@ -162,6 +163,7 @@ func getDamaged(value,antagonist:LifeEntity=null):
 
 func get_out_of_soil():
 	get_node("Sprite_0").show()
+	$light.show()
 	get_node("Collision_"+ str(current_life_cycle)).disabled = false
 	isBurrow = false
 	self.maxSpeed = Genome["speed"][self.current_life_cycle]

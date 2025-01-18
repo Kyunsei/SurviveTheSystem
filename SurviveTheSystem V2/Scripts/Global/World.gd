@@ -80,6 +80,8 @@ func Init_matrix():
 	element = 1000
 	block_element_array.resize(world_size*world_size)
 	block_element_state.resize(world_size*world_size)
+	sun_energy_block_array = []
+	sun_energy_occupation_array = []
 
 	block_element_array.fill(0)
 	block_element_state.fill(-1)
@@ -95,8 +97,6 @@ func Init_matrix():
 	for i in range(n_sun_level): 
 		sun_energy_block_array[i].fill(energy_flow_in)
 	#sun_energy_occupation_array.fill(0)
-
-
 
 
 func build_world_shape(folder):

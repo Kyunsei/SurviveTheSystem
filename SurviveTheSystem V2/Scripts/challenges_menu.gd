@@ -35,3 +35,8 @@ func _on_button_2_pressed():
 func _on_button_3_pressed():
 	World.ID_chal = 3
 	$Level_text.text = "Green one ?!"
+
+
+func _on_button_4_pressed():
+	World.ID_chal = 4
+	$Level_text.text = "JellyBee Testing ground"

@@ -29,29 +29,16 @@ var input_dir = Vector2(0,0)
 
 func Build_Phenotype(): #go to main
 	#This function should be call when building the pool.
-	$Dead_Sprite_0.hide()		
-	#$Timer.start(randf_range(0,.25))
-	#ADD vision
-	$Vision/Collision.shape.radius = 4000
-	$Vision/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
-
-	$Vision_close/Collision.shape.radius = 200
-	$Vision_close/Collision.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
-
-	#ADD Body
-	#ADD Body
-	#$Body_0/Collision_0.shape.size = $Sprite_0.texture.get_size()
-	$Collision_0.position = Vector2(Life.life_size_unit/2,-$Sprite_0.texture.get_height()/2) #Vector2(width/2,-height/2)
-		
+	pass
 
 func Build_Stat():
 	self.current_life_cycle = 0
 	self.maxPV = 10
 	self.PV = 10
 	self.energy = 5
-	self.maxEnergy = 10
+	self.maxEnergy = 15
 	self.maxSpeed = 300
-	self.lifespan = 2*(90/10)
+	self.lifespan = 10*(90/10)
 	self.age= 0
 	$Sprite_0.modulate = jelly_color
 	metabolic_cost = 1
@@ -184,6 +171,9 @@ func Growth():
 
 #Duplication
 func LifeDuplicate():
+	print("......"+str(pool_index))
+	print (self.energy)
+	
 
 	if self.age > 5 and self.energy > 10 and duplicate_timer >= 4 and berry_nest:
 

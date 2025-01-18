@@ -447,9 +447,9 @@ func Dash_Action():
 			#$Collision_0.shape.size *= 2.5
 			velocity = Vector2.ZERO
 			self.maxSpeed = 200
-			if getsoiltype(position)== 0:
+			if getsoiltype(position)<1:
 				await get_tree().create_timer(0.1).timeout
-				self.PV -= 20
+				self.PV -= 10
 				position = initial_position
 				if PV <= 0:
 					Die()
