@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://blm537rpfx3gm" path="res://Art/spiky_flower.png" id="3_6by78"]
 [ext_resource type="Texture2D" uid="uid://clv2dt253r3n" path="res://Art/spiky_grass_1.png" id="4_idtlg"]
 [ext_resource type="Texture2D" uid="uid://cxknvht080h0u" path="res://Art/spiky_grass_2.png" id="5_cjj12"]
-[ext_resource type="Texture2D" uid="uid://bhfpugerkdv6e" path="res://Art/poop_star_0.png" id="6_rtytl"]
+[ext_resource type="Texture2D" uid="uid://cca40fhtfdiig" path="res://Art/spiky_grass_dead_0.png" id="6_fu86j"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ld3jv"]
 
@@ -55,7 +55,7 @@ offset = Vector2(0, -96)
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
 visible = false
-texture = ExtResource("6_rtytl")
+texture = ExtResource("6_fu86j")
 centered = false
 
 [node name="DebugLabel" type="Label" parent="."]
