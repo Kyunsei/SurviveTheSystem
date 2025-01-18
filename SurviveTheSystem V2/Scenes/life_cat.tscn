@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cg8jna1y730qc" path="res://Art/player_cat.png" id="2_j3d6h"]
 [ext_resource type="Texture2D" uid="uid://khj45rgk1tsp" path="res://Art/under.png" id="3_6rumc"]
 [ext_resource type="Texture2D" uid="uid://c73peghcsdadi" path="res://Art/fill.png" id="4_qsu2p"]
-[ext_resource type="AudioStream" uid="uid://bufc2se6eum5r" path="res://Sound/hurt_cat.mp3" id="5_ggv2i"]
+[ext_resource type="AudioStream" uid="uid://dqgnkj46r50em" path="res://Sound/dmg_soundV2.mp3" id="5_q010d"]
 [ext_resource type="AudioStream" uid="uid://xo87qi3y17fl" path="res://Sound/death_sound.mp3" id="6_5575g"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_228d0"]
@@ -173,8 +173,7 @@ texture_progress = ExtResource("4_qsu2p")
 [node name="sound" type="Node2D" parent="."]
 
 [node name="hurt_sound" type="AudioStreamPlayer2D" parent="sound"]
-stream = ExtResource("5_ggv2i")
-pitch_scale = 1.5
+stream = ExtResource("5_q010d")
 
 [node name="death_sound" type="AudioStreamPlayer2D" parent="sound"]
 stream = ExtResource("6_5575g")
