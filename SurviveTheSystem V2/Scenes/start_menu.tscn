@@ -55,7 +55,7 @@ offset_bottom = 229.0
 grow_horizontal = 2
 theme_type_variation = &"HeaderLarge"
 theme_override_font_sizes/font_size = 40
-text = "Prototype 1.05 - The Plant Updates"
+text = "Prototype 1.10 - The Plant Updates (suite)"
 horizontal_alignment = 1
 
 [node name="Button_VBox" type="VBoxContainer" parent="."]
