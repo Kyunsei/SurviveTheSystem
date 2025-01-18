@@ -199,7 +199,7 @@ func LifeDuplicate():
 	if current_life_cycle == 2 :
 
 		if self.age > 3.5*(World.one_day_length/lifecycletime)  and self.energy > 20 and repro_counter <= 0:
-			repro_counter = 2*(World.one_day_length/lifecycletime)
+			repro_counter = 4*(World.one_day_length/lifecycletime)
 			#var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
 			for i in range(0,int(self.energy-20)/5):
 			#Lpool Technique

@@ -450,6 +450,7 @@ func Dash_Action():
 			if getsoiltype(position)<1:
 				await get_tree().create_timer(0.1).timeout
 				self.PV -= 10
+				$sound/hurt_sound.playing = true
 				position = initial_position
 				if PV <= 0:
 					Die()

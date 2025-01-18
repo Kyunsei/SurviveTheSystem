@@ -54,9 +54,8 @@ centered = false
 offset = Vector2(0, -96)
 
 [node name="Dead_Sprite_0" type="Sprite2D" parent="."]
-visible = false
+position = Vector2(16, -16)
 texture = ExtResource("6_fu86j")
-centered = false
 
 [node name="DebugLabel" type="Label" parent="."]
 offset_right = 40.0
