@@ -228,7 +228,8 @@ func Growth():
 			self.current_life_cycle += 1
 			
 				
-			
+			$Sound/coucou.pitch_scale = 1
+			$Sound/coucou.volume_db = 10
 			$Sprite_0.scale = Vector2(1,1)
 			$Dead_Sprite_0.scale = Vector2(1,1)
 			$light.scale = Vector2(1,1)
@@ -343,6 +344,8 @@ func Die():
 	
 func Activate():
 
+
+
 	set_physics_process(true)
 	Update_sprite($Sprite_0, $Collision_0)
 	self.isActive = true
@@ -360,7 +363,9 @@ func Activate():
 
 	$Timer.wait_time = lifecycletime / World.speed
 	$Timer.start(randf_range(0,$Timer.wait_time))
-
+	if current_life_cycle <1 :
+		$Sound/coucou.pitch_scale = 2
+		$Sound/coucou.volume_db = 0
 
 	#$Collision_0.show()
 	#$Collision_0.disabled = false	

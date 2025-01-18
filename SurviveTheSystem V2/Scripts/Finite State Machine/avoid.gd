@@ -20,7 +20,11 @@ func Enter():
 		if life_entity.species == "sheep" :
 			var sound = ["avoid","avoid2"]
 			var rd_id = randi_range(0,1)
-			life_entity.get_node("Sound").get_node(sound[rd_id]).pitch_scale = 3 - life_entity.current_life_cycle
+			if life_entity.current_life_cycle < 2:
+				life_entity.get_node("Sound").get_node(sound[rd_id]).pitch_scale = 3 - life_entity.current_life_cycle
+			else :
+				life_entity.get_node("Sound").get_node(sound[rd_id]).pitch_scale = 1.2
+				
 			life_entity.get_node("Sound").get_node(sound[rd_id]).playing = true
 		elif life_entity.species == "fox" :
 			life_entity.get_node("Sound").get_node("hish").playing = true

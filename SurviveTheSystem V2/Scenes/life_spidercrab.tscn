@@ -10,7 +10,7 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/dash.gd" id="8_bo4wv"]
 [ext_resource type="AudioStream" uid="uid://bgn1prv34ie2q" path="res://Sound/cling.mp3" id="9_6oweo"]
 [ext_resource type="AudioStream" uid="uid://ck4cxuyqyrx0g" path="res://Sound/hurt.mp3" id="10_71acl"]
-[ext_resource type="AudioStream" uid="uid://c8jko5wn4ax7h" path="res://Sound/coucou.mp3" id="11_n8aj8"]
+[ext_resource type="AudioStream" uid="uid://bcacvgwc1fjuq" path="res://Sound/attackCrabV1.mp3" id="11_pj4ef"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_chh8i"]
 
@@ -148,7 +148,8 @@ stream = ExtResource("10_71acl")
 pitch_scale = 1.5
 
 [node name="coucou" type="AudioStreamPlayer2D" parent="Sound"]
-stream = ExtResource("11_n8aj8")
+stream = ExtResource("11_pj4ef")
+volume_db = 10.0
 
 [node name="light" type="Node2D" parent="."]
 rotation = -1.5708

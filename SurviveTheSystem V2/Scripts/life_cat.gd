@@ -628,6 +628,8 @@ func Deactivate():
 
 func Eat(life):
 	#print("Eaten")
+	if $sound/miam_sound.playing == false :
+		$sound/miam_sound.playing = true
 	if life.species == "berry" and life.current_life_cycle == 0:
 		self.energy += life.energy
 		life.energy= 0

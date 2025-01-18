@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="3_hk7l5"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="4_8o44k"]
 [ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="5_feg8t"]
-[ext_resource type="AudioStream" uid="uid://r7xjrh8x8k65" path="res://Sound/sheep1.mp3" id="7_ox85v"]
+[ext_resource type="AudioStream" uid="uid://b1dpx0iw66003" path="res://Sound/belementV1.mp3" id="7_2nfa8"]
 [ext_resource type="AudioStream" uid="uid://dfsab7dl67vwy" path="res://Sound/sheep3.mp3" id="8_05sa3"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ld3jv"]
@@ -91,7 +91,8 @@ script = ExtResource("5_feg8t")
 [node name="Sound" type="Node2D" parent="."]
 
 [node name="avoid" type="AudioStreamPlayer2D" parent="Sound"]
-stream = ExtResource("7_ox85v")
+stream = ExtResource("7_2nfa8")
+pitch_scale = 1.8
 
 [node name="avoid2" type="AudioStreamPlayer2D" parent="Sound"]
 stream = ExtResource("8_05sa3")
