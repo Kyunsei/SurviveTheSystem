@@ -46,6 +46,7 @@ func initChallenges(ID):
 		Life.Instantiate_emptyLife_pool($Life, 3000, "grass")
 		Life.Instantiate_emptyLife_pool($Life, 100, "berry")
 		Life.Instantiate_emptyLife_pool($Life, 100, "bigtree")
+		Life.Instantiate_emptyLife_pool($Life, 100, "sheep")
 		var pl = Life.build_life("cat")
 		if pl:
 			Life.player = pl

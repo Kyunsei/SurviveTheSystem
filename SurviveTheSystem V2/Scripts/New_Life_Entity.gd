@@ -394,9 +394,8 @@ func set_sun_occupation(value,radius):
 	'if radius > nb_of_soil_block_by_radius.size():
 		print("too many block absorbed, please uptade the variable in new_life script")
 		radius = nb_of_soil_block_by_radius.size()-1'
-	var middle = position + Vector2(size.x/2,0)#-size.y/2)
-	var center_x = int(middle.x/World.tile_size)
-	var	center_y = int(middle.y/World.tile_size)
+	var center_x = int(position.x/World.tile_size)
+	var	center_y = int(position.y/World.tile_size)
 	#var value_max_absorbed_by_tile = clamp((maxEnergy - energy) / nb_of_soil_block_by_radius[radius], 0, value)
 	for x in range(center_x - radius, center_x + radius + 1):
 		for y in range(center_y - radius, center_y + radius + 1):
@@ -407,7 +406,33 @@ func set_sun_occupation(value,radius):
 					update_tiles_according_sun_value(Vector2(x,y))
 					dummycount += 1
 					
+
+
+func getSunOccupation(layer,radius,value, pos = position):
+	var dummycount = 0
+	var occupation_level: float = 0.0 # [0.,0.,0.]
+	var total: float = 0.
+	var count: float = 0.
 	
+	'if radius > nb_of_soil_block_by_radius.size():
+		print("too many block absorbed, please uptade the variable in new_life script")
+		radius = nb_of_soil_block_by_radius.size()-1'
+	var center_x = int(pos.x/World.tile_size)
+	var	center_y = int(pos.y/World.tile_size)
+	#for n in range(World.n_sun_level):
+	var n = World.n_sun_level - layer
+	#var value_max_absorbed_by_tile = clamp((maxEnergy - energy) / nb_of_soil_block_by_radius[radius], 0, value)
+	for x in range(center_x - radius, center_x + radius + 1):
+		for y in range(center_y - radius, center_y + radius + 1):
+			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+				var posindex = y*World.world_size + x
+				if posindex < World.sun_energy_occupation_array[0].size():
+					count += World.sun_energy_occupation_array[n][posindex]	
+					total += value
+
+	occupation_level = count/total
+	return occupation_level
+
 	#print(dummycount)
 					
 				
@@ -495,25 +520,30 @@ func PickRandomPlaceWithRange(position,range, isVoidPossible = false, count = 0)
 		var random_x = randi_range(max(0,position.x-range),min((World.world_size)* World.tile_size ,position.x+range))
 		var random_y = randi_range(max(0,position.y-range),min((World.world_size)* World.tile_size ,position.y+range))
 		var newpos = Vector2(random_x, random_y)
-		if not isVoidPossible:
+		var posindex = int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)
+		if posindex < World.block_element_state.size():
+			if not isVoidPossible:
 
-			print(newpos)
-			print(World.block_element_state[int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)])
-			if World.block_element_state[int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)] != 1:
-				#newpos = PickRandomPlaceWithRange(position,range)
-				#newpos = PickRandomPlaceWithRange(position,range)
-				print("count: " + str(count))
-				count += 1
-				if count < 10:
-					return PickRandomPlaceWithRange(position,range,isVoidPossible,count)#+ Vector2(randi_range(0,8),randi_range(0,8))
-				else: 
-					#print("here")
-					return position  
+				#print(newpos)
+				#print(World.block_element_state[int(random_y/World.tile_size)*World.world_size + int(random_x/World.tile_size)])
+				if World.block_element_state[posindex] != 1:
+					#newpos = PickRandomPlaceWithRange(position,range)
+					#newpos = PickRandomPlaceWithRange(position,range)
+					#print("count: " + str(count))
+					count += 1
+					if count < 10:
+						return PickRandomPlaceWithRange(position,range,isVoidPossible,count)#+ Vector2(randi_range(0,8),randi_range(0,8))
+					else: 
+						#print("here")
+						return position  
+				else:
+					return newpos
 			else:
+				print("here? " +  self.species)
 				return newpos
 		else:
-			return newpos
-
+			print("outside map????")
+			return position
 
 func adapt_time_to_worldspeed():
 	$Timer.wait_time = lifecycletime / World.speed

@@ -338,6 +338,11 @@ func _on_vision_body_entered(body):
 			vision_array["food"].append(body)
 			#Eat(body)
 			#getCloser(body.position)
+		if body.species== "bigtree":
+			#print(position.distance_to(body.position))
+			if body.current_life_cycle < 2:
+				vision_array["food"].append(body)
+
 		if body.species== "sheep" and body!= self:
 			if item_array.size() > 0 :
 				if item_array[0].species == "berry" :

@@ -49,7 +49,6 @@ func Build_Stat():
 	self.lifespan = 3*(World.one_day_length/lifecycletime)
 	self.age = 0
 	self.maxEnergy = 10.
-
 	self.isPickable = false
 	metabolic_cost = 1.
 	
@@ -90,7 +89,7 @@ func _on_timer_timeout():
 
 
 				#modulate =  Color(1,1,1)
-			else:
+			elif self.sub_species == 1:
 				var energybefore = energy
 				Metabo_cost(3)
 				Absorb_sun_energy(2,1)
@@ -116,7 +115,7 @@ func _on_timer_timeout():
 			
 			
 
-			if self.energy <= 0 or self.age >= lifespan or self.PV <=0:
+			if self.energy <= 0 or self.PV <=0: # or self.age >= lifespan or self.PV <=0:
 				Die()
 			
 			if current_time_speed != World.speed:
@@ -140,7 +139,7 @@ func Die():
 		carried_by.item_array.erase(self)
 		self.carried_by = null
 		z_index = 0
-	set_sun_occupation(0,1)
+	set_sun_occupation(-2,1)
 	Update_sprite($Dead_Sprite_0, $Collision_0)
 	'$Dead_Sprite_0.show()
 	$Collision_1.disabled = true		
@@ -172,35 +171,35 @@ func LifeDuplicate():
 	if current_life_cycle == 1  :
 		if timer_count <= 0:
 			if self.energy > 4:	
-
-				for i in range (2 + sub_species*2):
+				for i in range (3 + sub_species*2):
 					var newpos = PickRandomPlaceWithRange(position, 3 * World.tile_size + sub_species)
-					var middle = newpos #+ Vector2(32/2,0)
-					var posindex = int(middle.y/World.tile_size)*World.world_size + int(middle.x/World.tile_size)		
-				#if World.block_element_array[posindex]>= 0:
+					var posindex = int(newpos.y/World.tile_size)*World.world_size + int(newpos.x/World.tile_size)		
+					#if World.block_element_array[posindex]>= 0:
 					if World.block_element_state[posindex]>= 1:
-						#if World.sun_energy_occupation_array[posindex]==0:
-							timer_count = 1
-							var life: LifeEntity = Life.build_life(species)
-							if life != null:
-								self.energy -= 0#20
-								life.energy = 0#20
-								life.global_position = newpos #PickRandomPlaceWithRange(position,4 * World.tile_size)
-								life.test_col = test_col
-								life.modulate = test_col
-								life.sub_species = self.sub_species
-								life.maxEnergy = maxEnergy
-								if sub_species == 0:
-									pass
+						if getSunOccupation(1,1,2, newpos) == 0.0:
+							#if World.sun_energy_occupation_array[posindex]==0:
+								timer_count = 1
+								var life: LifeEntity = Life.build_life(species)
+								if life != null:
+									self.energy -= 0#20
+									life.energy = 0#20
+									life.global_position = newpos #PickRandomPlaceWithRange(position,4 * World.tile_size)
+									life.test_col = test_col
+									life.modulate = test_col
+									life.sub_species = self.sub_species
+									life.set_sun_occupation(2,1) 
+									#life.maxEnergy = maxEnergy
+									if sub_species == 0:
+										pass
+									else:	
+										Life.red -= 1
+										Life.blue += 1
 								else:
-									Life.red -= 1
-									Life.blue += 1
-							else:
-								pass
+									pass
 		else:
-			timer_count -= 1		#$DebugLabel.text = "full"
-			pass
-					#print("pool empty")
+				timer_count -= 1		#$DebugLabel.text = "full"
+				pass
+						#print("pool empty")
 
 
 			
@@ -227,7 +226,7 @@ func Activate():
 	$Timer.start(randf_range(0,$Timer.wait_time))
 	Update_sprite($Sprite_0,$Collision_0)
 	self.size = get_node("Collision_0").shape.size
-	
+
 	Life.red += 1
 
 func Deactivate():	

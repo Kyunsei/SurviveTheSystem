@@ -41,11 +41,15 @@ func _on_timer_timeout():
 				if current_life_cycle !=0:
 
 					if current_life_cycle == 1:
-						Metabo_cost(72)	
+						#var pen = energy
+						Metabo_cost(51)	
 						Absorb_sun_energy(1,5) #81
+						#$DebugLabel.text = str(energy-pen)
 					elif current_life_cycle == 2:
+
 						Metabo_cost(280)	
 						Absorb_sun_energy(1,10) #317
+						#print(energy-pen)
 					LifeDuplicate()
 					'if self.energy < self.maxEnergy:
 						Absorb_soil_energy(2,3)'
@@ -65,7 +69,7 @@ func _on_timer_timeout():
 				energy -= 50
 
 		#Debug part
-		$DebugLabel.text = str(self.energy)
+		#$DebugLabel.text = str(self.energy)
 
 
 
@@ -78,7 +82,8 @@ func Die():
 		z_index = 0
 	
 	Update_sprite($Dead_Sprite_0, $Collision_0)
-	set_sun_occupation(-1,5*current_life_cycle)
+	if current_life_cycle >0 :
+		set_sun_occupation(-1,5*current_life_cycle)
 
 	
 
@@ -86,26 +91,31 @@ func Die():
 func Growth():
 	if current_life_cycle == 0:
 		if self.age > 1*(World.one_day_length/lifecycletime) and self.energy > 2:
-			photosynthesis_level = 2
-			self.current_life_cycle += 1
-			set_sun_occupation(1,5) 
-			Update_sprite($Sprite_1, $Collision_1)	
-			self.maxPV = 30
-			self.maxEnergy = 50
-			self.PV = self.maxPV
-			self.isPickable = false
+			if getSunOccupation(2,5,1) < 0.3:
+				photosynthesis_level = 2
+				self.current_life_cycle += 1
+				set_sun_occupation(1,5) 
+				Update_sprite($Sprite_1, $Collision_1)	
+				self.maxPV = 30
+				self.maxEnergy = 50
+				self.PV = self.maxPV
+				self.isPickable = false
 	elif current_life_cycle == 1:
 		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy > 5:
-			set_sun_occupation(-1,5) #remove previous layer
-			self.current_life_cycle += 1
-			Update_sprite($Sprite_2, $Collision_2)	
-			self.maxPV =60
-			self.maxEnergy = 100
-			self.PV = self.maxPV
-			photosynthesis_level = 3
-			
-			set_sun_occupation(1,10)
 
+			if getSunOccupation(3,10,1) < 0.3:
+				set_sun_occupation(-1,5) #remove previous layer
+				self.current_life_cycle += 1
+				Update_sprite($Sprite_2, $Collision_2)	
+				self.maxPV =60
+				self.maxEnergy = 100
+				self.PV = self.maxPV
+				
+				photosynthesis_level = 3
+				set_sun_occupation(1,10)
+
+
+					
 #Duplication
 func LifeDuplicate():
 	if current_life_cycle == 2:
@@ -117,7 +127,8 @@ func LifeDuplicate():
 				life.energy = 10
 				
 				life.position = PickRandomPlaceWithRange(position,20 * World.tile_size)
-				print("new tree at " + str(life.position))	
+				#print("new tree at " + str(life.position))	
+				#print(World.block_element_state[int(position.y/World.tile_size)*World.world_size + int(position.x/World.tile_size)])
 
 			else:
 				print("bigtree_pool empty")
