@@ -33,11 +33,12 @@ func initChallenges(ID):
 			Life.player.age = 0
 			Life.player.isPlayer = true 
 			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
-		for i in range(10):
+		for i in range(0):
 			var life = Life.build_life("grass")
 			life.sub_species = 1
 			life.test_col = Color(0,0,1)
 			life.modulate = life.test_col
+			life.energy= 5
 			Life.red -= 1
 			Life.blue += 1
 			life.position = Vector2(randi_range(World.tile_size*25,World.tile_size*30),randi_range(World.tile_size*10,World.tile_size*15))

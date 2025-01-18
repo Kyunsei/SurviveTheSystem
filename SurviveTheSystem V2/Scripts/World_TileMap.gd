@@ -34,13 +34,15 @@ func instantiate_the_tiles_function():
 			for t in tiles: 
 				var nl = Life.build_life(temp[i], t* World.tile_size)
 				if nl: 
+					nl.current_life_cycle = max(0,lc-1)
 					if nl.species == "grass":
-						nl.sub_species = 1-lc
+						nl.sub_species = lc -1	
 						nl.Build_Stat()
-						nl.set_sun_occupation(2,1) 
+						nl.set_sun_occupation(2,1)
+						nl.current_life_cycle = 0
+						
 					nl.age = int(nl.lifespan*0.33) * lc
 					nl.energy = nl.maxEnergy
-					nl.current_life_cycle = max(0,lc-1)
 					nl.Growth()
 
 

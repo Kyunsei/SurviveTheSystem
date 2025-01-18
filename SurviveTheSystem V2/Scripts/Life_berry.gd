@@ -148,8 +148,10 @@ func Die():
 		z_index = 0
 	
 	Update_sprite($Dead_Sprite_0, $Collision_0)
-	set_sun_occupation(-1,4)
-	sunoccupationisSet = false
+	if current_life_cycle > 0:
+		set_sun_occupation(-1,4)
+		sunoccupationisSet = false
+	#print(getSunOccupation(1,4,1))
 	$PointLight2D.hide()
 	for b in jelly_bee_array:
 		b.berry_nest = null

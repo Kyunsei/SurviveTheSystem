@@ -434,6 +434,31 @@ func getSunOccupation(layer,radius,value, pos = position):
 	return occupation_level
 
 	#print(dummycount)
+
+func getSunEnergy(layer,radius,value, pos = position):
+	var dummycount = 0
+	#var occupation_level: float = 0.0 # [0.,0.,0.]
+	#var total: float = 0.
+	var count: float = 0.
+	
+	'if radius > nb_of_soil_block_by_radius.size():
+		print("too many block absorbed, please uptade the variable in new_life script")
+		radius = nb_of_soil_block_by_radius.size()-1'
+	var center_x = int(pos.x/World.tile_size)
+	var	center_y = int(pos.y/World.tile_size)
+	#for n in range(World.n_sun_level):
+	var n = World.n_sun_level - layer
+	#var value_max_absorbed_by_tile = clamp((maxEnergy - energy) / nb_of_soil_block_by_radius[radius], 0, value)
+	for x in range(center_x - radius, center_x + radius + 1):
+		for y in range(center_y - radius, center_y + radius + 1):
+			if (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y) <= radius * radius:
+				var posindex = y*World.world_size + x
+				if posindex < World.sun_energy_block_array[0].size():
+					count += World.sun_energy_block_array[n][posindex]	
+					#total += value
+
+	#occupation_level = count/total
+	return count
 					
 				
 

@@ -51,6 +51,7 @@ func Build_Stat():
 	self.maxEnergy = 10.
 	self.isPickable = false
 	metabolic_cost = 1.
+	photosynthesis_level = 1.
 	
 
 	
@@ -79,7 +80,7 @@ func _on_timer_timeout():
 
 			
 			if self.sub_species == 0:
-				Metabo_cost(5)
+				Metabo_cost(7)
 				Absorb_sun_energy(2,1)
 				#modulate =  Color(1,1,1)
 				
@@ -115,8 +116,12 @@ func _on_timer_timeout():
 			
 			
 
-			if self.energy <= 0 or self.PV <=0: # or self.age >= lifespan or self.PV <=0:
+			if self.energy <= 0 or self.PV <=0: # or or self.PV <=0:
 				Die()
+				
+			if  self.age >= lifespan:
+				pass
+				#Die()
 			
 			if current_time_speed != World.speed:
 				adapt_time_to_worldspeed()
@@ -168,21 +173,31 @@ func Growth():
 
 #Duplication
 func LifeDuplicate():
+	var energy_required = 10
+	var occupation_required = 0.0
+	if sub_species == 1:
+		energy_required = 3
+		occupation_required = 0.4
 	if current_life_cycle == 1  :
 		if timer_count <= 0:
 			if self.energy > 4:	
 				for i in range (3 + sub_species*2):
-					var newpos = PickRandomPlaceWithRange(position, 3 * World.tile_size + sub_species)
+					var newpos = PickRandomPlaceWithRange(position, 3 * World.tile_size)
 					var posindex = int(newpos.y/World.tile_size)*World.world_size + int(newpos.x/World.tile_size)		
 					#if World.block_element_array[posindex]>= 0:
 					if World.block_element_state[posindex]>= 1:
-						if getSunOccupation(1,1,2, newpos) == 0.0:
+						'if sub_species==1:
+							print(getSunEnergy(1,1,2, newpos))
+							print(getSunOccupation(1,1,2, newpos))
+							print("..........")'
+						if getSunEnergy(1,1,2, newpos) >= energy_required and getSunOccupation(1,1,2, newpos) <= occupation_required:
+						#if getSunOccupation(1,1,2, newpos) == 0.0 and getSunOccupation(2,1,2, newpos) == 0.0 and getSunOccupation(3,1,2, newpos) == 0.0:
 							#if World.sun_energy_occupation_array[posindex]==0:
 								timer_count = 1
 								var life: LifeEntity = Life.build_life(species)
 								if life != null:
 									self.energy -= 0#20
-									life.energy = 0#20
+									life.energy = 5#20
 									life.global_position = newpos #PickRandomPlaceWithRange(position,4 * World.tile_size)
 									life.test_col = test_col
 									life.modulate = test_col
