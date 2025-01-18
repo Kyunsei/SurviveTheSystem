@@ -141,11 +141,11 @@ func check_Enemy():
 					get_parent().get_node("getcloser_state").chasing_max_timer = 1.5
 					get_parent().get_node("getcloser_state").action_type = "ENEMY"
 					return true
-				elif life_entity.getCenterPos().distance_to(enemy_entity.position) < World.tile_size*6:	
+				'elif life_entity.getCenterPos().distance_to(enemy_entity.position) < World.tile_size*6:	
 					get_parent().get_node("getcloser_state").target = enemy_entity
 					get_parent().get_node("getcloser_state").chasing_max_timer = 1.5
 					get_parent().get_node("getcloser_state").action_type = "ENEMY"		
-					return true
+					return true'
 				return false
 			return false
 		return false
