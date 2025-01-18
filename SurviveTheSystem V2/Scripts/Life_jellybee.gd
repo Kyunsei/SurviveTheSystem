@@ -84,7 +84,9 @@ func _on_timer_timeout():
 		$DebugLabel.text = str(age) + " " + str(energy)
 	if not berry_nest or berry_nest.current_life_cycle != 3 :
 		find_new_nest()
+		print("No nest")
 	if isNestOvercrowded(berry_nest):
+		print("Too much medusa")
 		find_new_nest()
 
 func isNestOvercrowded(berry_nest):
@@ -106,21 +108,25 @@ func find_new_nest():
 	if berry_nest:
 		if potential_nest_array.has(berry_nest):
 			potential_nest_array.erase(berry_nest)
-		
+	var random_id = randi_range(0,potential_nest_array.size()-1)
+	if potential_nest_array.size() > 0:
+		berry_nest = potential_nest_array[random_id]
+		$Brainy/idle_state.nest = berry_nest	
+		berry_nest.current_sprite.modulate = Color(0,1,0)
 
-	for n in range(5):
-		if potential_nest_array.size() > 0:
-			var potential_berry_nest = getClosestLife(potential_nest_array, 1000000.0)
-			if potential_berry_nest:
-				if isNestOvercrowded(potential_berry_nest):
-					potential_nest_array.erase(potential_berry_nest)
-				else:
-					berry_nest = potential_berry_nest
-					$Brainy/idle_state.nest = berry_nest	
-					berry_nest.current_sprite.modulate = Color(0,1,0)
-					return
-		else:
-			return
+	#for n in range(5):
+		#if potential_nest_array.size() > 0:
+			#var potential_berry_nest = getClosestLife(potential_nest_array, 1000000.0)
+			#if potential_berry_nest:
+				#if isNestOvercrowded(potential_berry_nest):
+					#potential_nest_array.erase(potential_berry_nest)
+				#else:
+					#berry_nest = potential_berry_nest
+					#$Brainy/idle_state.nest = berry_nest	
+					#berry_nest.current_sprite.modulate = Color(0,1,0)
+					#return
+		#else:
+			#return
 			
 		
 
@@ -171,11 +177,9 @@ func Growth():
 
 #Duplication
 func LifeDuplicate():
-	print("......"+str(pool_index))
-	print (self.energy)
 	
 
-	if self.age > 5 and self.energy > 10 and duplicate_timer >= 4 and berry_nest:
+	if self.age > 5 and self.energy > 10 and duplicate_timer >= 5 and berry_nest:
 
 		#Lpool Technique
 			var life = Life.build_life(species)

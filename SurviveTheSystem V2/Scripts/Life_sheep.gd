@@ -85,7 +85,7 @@ func Build_Stat():
 	self.age= 0
 	self.maxEnergy = 30.
 
-	self.lifespan = 5*(World.one_day_length/lifecycletime)
+	self.lifespan = 7*(World.one_day_length/lifecycletime)
 
 	self.vision_distance = 500
 	self.isPickable = true
