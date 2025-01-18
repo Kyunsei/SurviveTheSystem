@@ -93,9 +93,11 @@ script = ExtResource("5_feg8t")
 [node name="avoid" type="AudioStreamPlayer2D" parent="Sound"]
 stream = ExtResource("7_2nfa8")
 pitch_scale = 1.8
+attenuation = 3.0
 
 [node name="avoid2" type="AudioStreamPlayer2D" parent="Sound"]
 stream = ExtResource("8_05sa3")
+attenuation = 3.0
 
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
