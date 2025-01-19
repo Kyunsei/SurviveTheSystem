@@ -564,6 +564,9 @@ func BareHand_attack():
 	#$BareHand_attack/CollisionShape2D.disabled = false
 	$BareHand_attack/CollisionShape2D/sprite.show()
 	$BareHand_attack/ActionTimer.start(0.2)
+	var sound = [$sound/attack_sound1,$sound/attack_sound2,$sound/attack_sound3]
+	var rd_id = randi_range(0,2)
+	sound[rd_id].playing = true
 	for i in barehand_array:
 		#print(i)
 		if i != null :
@@ -572,6 +575,7 @@ func BareHand_attack():
 			if i.species == "spiky_grass" :
 				self.getDamaged(2)
 				i.getDamaged(1)
+
 			else :
 				i.getDamaged(10,self)
 
