@@ -10,7 +10,8 @@ var barehand_array = []
 var vision_array = {
 	"food": [],
 	"danger": [],
-	"enemy": []
+	"enemy": [],
+	"friend": []
 }
 
 

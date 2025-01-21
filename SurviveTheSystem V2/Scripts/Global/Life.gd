@@ -143,14 +143,14 @@ func Init_life_pool():
 
 func fill_with_empty_entity_pool_lifes(folder):
 	Life.Instantiate_emptyLife_pool(folder, 1500, "grass")
-	Life.Instantiate_emptyLife_pool(folder, 100, "spiky_grass")
-	Life.Instantiate_emptyLife_pool(folder, 80, "sheep")
+	Life.Instantiate_emptyLife_pool(folder, 80, "spiky_grass")
+	Life.Instantiate_emptyLife_pool(folder, 60, "sheep")
 	Life.Instantiate_emptyLife_pool(folder, 100, "berry")
 	Life.Instantiate_emptyLife_pool(folder, 3, "cat")
 	Life.Instantiate_emptyLife_pool(folder, 100, "stingtree")
 	Life.Instantiate_emptyLife_pool(folder, 10, "spidercrab")
 	#Life.Instantiate_emptyLife_pool(folder, 2, "sc_boss")
-	Life.Instantiate_emptyLife_pool(folder, 50, "jellybee")
+	Life.Instantiate_emptyLife_pool(folder, 20, "jellybee")
 	Life.Instantiate_emptyLife_pool(folder, 20, "fox")
 	Life.Instantiate_emptyLife_pool(folder, 100, "bigtree")
 

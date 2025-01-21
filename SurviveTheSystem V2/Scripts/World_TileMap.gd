@@ -72,21 +72,45 @@ func procedural1():
 			else:
 				set_cell(0, Vector2i(x, y), 0, Vector2i(3, 0))
 
-func procedural2():
-	var size
-	var islandtype
-	var islandtypeshape
-	var x = 0
-	var y = 0
-	var r = 0
-	for i in range(1,5):
-		for j in range(1,5):
-			r = randi_range(5,20)
-			x = 20*i + 20*(i-1)# *2*i
-			y = 20*j + 20*(j-1)# *2*i
-			draw_round_island(x,y,r,0)
+func procedural(x=World.world_size/2,y=World.world_size/2,radius=10,n_island=8, count=0, maxcount= 5):
+	#var n_island =1 # randi_range(5,10) 
+	#var island_dic = {}
+	count += 1
+	var child_pos = [Vector2(1,0),Vector2(0,1),Vector2(-1,0),Vector2(0,-1),Vector2(1,-1),Vector2(-1,1),Vector2(1,1),Vector2(-1,-1)]
+	child_pos.shuffle()
 	
-	pass	
+	var jump_distance = 4
+	
+	if x+radius < World.world_size and   x-radius > 0 and y+radius < World.world_size and   y-radius > 0 :
+		draw_round_island(x,y,radius,0)
+		
+		var label = Label.new()
+		label.text = str(count)
+		label.position = Vector2(x*World.tile_size, y*World.tile_size)
+		add_child(label)
+	'if count == 0:
+		pass'
+
+	if count == 2:
+		maxcount =  randi_range(0,5)
+		
+	if count > maxcount:
+		return
+		
+	var x_parent = x
+	var y_parent = y
+	var r_parent = radius
+
+	for i in range(n_island):
+
+		n_island = randi_range(0,8)
+		radius = randi_range(5,10)
+		x = x_parent + (radius + jump_distance + r_parent) * child_pos[i].normalized().x   
+		y = y_parent + (radius + jump_distance + r_parent) * child_pos[i].normalized().y
+		procedural(x,y,radius,n_island, count, maxcount)
+
+		
+
 
 func build_world():
 	#iland center: [(47,120),(140,140)

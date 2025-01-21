@@ -148,18 +148,21 @@ func check_Enemy():
 	return false
 
 func check_Friend():
-	if life_entity.vision_array["friend"].size() > 0:
-			var alive_array = life_entity.vision_array["friend"].filter(func(obj): return obj.isDead == false)
-			if alive_array.size() > 0:
-				if life_entity.position.distance_to(getClosestLife(alive_array).position) < friend_distance:
-					get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
-					get_parent().get_node("getcloser_state").next_state = "" # = "FRIEND"	
-					#get_parent().get_node("getcloser_state").next_state = "dash_state" # = "FRIEND"					
-					print("going to friend")		
-					return true
+	if life_entity.vision_array["friend"]:
+		if life_entity.vision_array["friend"].size() > 0:
+				var alive_array = life_entity.vision_array["friend"].filter(func(obj): return obj.isDead == false)
+				if alive_array.size() > 0:
+					if life_entity.position.distance_to(getClosestLife(alive_array).position) < friend_distance:
+						get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
+						get_parent().get_node("getcloser_state").next_state = "" # = "FRIEND"	
+						#get_parent().get_node("getcloser_state").next_state = "dash_state" # = "FRIEND"					
+						print("going to friend")		
+						return true
+					else:
+						return false
 				else:
 					return false
-			else:
-				return false
+		else:
+			return false
 	else:
 		return false
