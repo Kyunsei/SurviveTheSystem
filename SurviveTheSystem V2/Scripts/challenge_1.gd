@@ -11,6 +11,7 @@ var initialized = false
 
 
 func initChallenges(ID):
+
 	Life.Instantiate_emptyLife_pool($Life, 1, "cat")
 	if ID == 1:
 		Life.Instantiate_emptyLife_pool($Life, 10, "spidercrab")
@@ -73,10 +74,41 @@ func initChallenges(ID):
 			Life.player.isPlayer = true 
 			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 
-															
-									
+
+	if ID == 5:
+		$World_TileMap.procedural()
+		Life.Instantiate_emptyLife_pool($Life, 300, "grass")
+		Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+		Life.Instantiate_emptyLife_pool($Life, 100, "spiky_grass")
+		Life.Instantiate_emptyLife_pool($Life, 10, "sheep")
+		Life.Instantiate_emptyLife_pool($Life, 5, "spidercrab")
+		Life.Instantiate_emptyLife_pool($Life, 5, "jellybee")
+		Life.Instantiate_emptyLife_pool($Life, 15, "fox")
+		Life.Instantiate_emptyLife_pool($Life, 15, "bigtree")
+		var pl = Life.build_life("cat")
+		if pl:
+			Life.player = pl
+			Life.player.age = 0
+			Life.player.isPlayer = true 
+			Life.player.global_position = Vector2(320,320)#Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+	
+	if ID == 6:
+		Life.Instantiate_emptyLife_pool($Life, 300, "spiky_grass")
+		Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+		Life.Instantiate_emptyLife_pool($Life, 100, "grass")
+		Life.Instantiate_emptyLife_pool($Life, 10, "sheep")
+		Life.Instantiate_emptyLife_pool($Life, 5, "jellybee")
+		Life.Instantiate_emptyLife_pool($Life, 15, "fox")
+		Life.Instantiate_emptyLife_pool($Life, 15, "bigtree")
+		var pl = Life.build_life("cat")
+		if pl:
+			Life.player = pl
+			Life.player.age = 0
+			Life.player.isPlayer = true 
+			Life.player.global_position = Vector2(320,320)#Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+																								
 func _ready(): 
-	World.world_size = 140
+	World.world_size = 200
 	InitNewGame()
 
 	
@@ -130,6 +162,9 @@ func wincondition(ID):
 		$UI/Score.text = "JellyBee Test"
 
 
+	if ID == 5:
+		$UI/Score.text = "Procedural Test"
+
 
 
 
@@ -182,6 +217,9 @@ func UpdateSimulationSpeed():
 	
 signal light_on
 signal light_out
+
+
+
 
 func _on_day_timer_timeout():
 	

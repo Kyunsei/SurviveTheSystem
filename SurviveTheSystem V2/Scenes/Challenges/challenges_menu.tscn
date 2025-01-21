@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://chjgfuxfq4tps"]
 
-[ext_resource type="Script" path="res://Scripts/challenges_menu.gd" id="1_efxev"]
+[ext_resource type="Script" path="res://Scripts/challenges_menu.gd" id="1_x3dac"]
 
 [node name="Challenges_Menu" type="Control"]
 layout_mode = 3
@@ -9,7 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_efxev")
+script = ExtResource("1_x3dac")
 
 [node name="BackGroundColor" type="ColorRect" parent="."]
 layout_mode = 1
@@ -69,14 +69,12 @@ text = "4
 [node name="Button5" type="Button" parent="GridContainer"]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
-disabled = true
 text = "5
 "
 
 [node name="Button6" type="Button" parent="GridContainer"]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
-disabled = true
 text = "6
 "
 
@@ -129,6 +127,8 @@ horizontal_alignment = 1
 [connection signal="pressed" from="GridContainer/Button2" to="." method="_on_button_2_pressed"]
 [connection signal="pressed" from="GridContainer/Button3" to="." method="_on_button_3_pressed"]
 [connection signal="pressed" from="GridContainer/Button4" to="." method="_on_button_4_pressed"]
+[connection signal="pressed" from="GridContainer/Button5" to="." method="_on_button_5_pressed"]
+[connection signal="pressed" from="GridContainer/Button6" to="." method="_on_button_6_pressed"]
 [connection signal="pressed" from="ButtonReturn" to="." method="_on_button_return_pressed"]
 [connection signal="pressed" from="ButtonPlay" to="." method="_on_button_play_pressed"]
 [connection signal="toggled" from="CheckBox2" to="." method="_on_check_box_2_toggled"]

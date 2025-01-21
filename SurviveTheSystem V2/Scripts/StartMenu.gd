@@ -52,7 +52,7 @@ func _on_button_test_pressed():
 
 
 func _on_button_4_pressed():
-	get_tree().change_scene_to_file("res://Scenes/challenges_menu.tscn") # Replace with function body.
+	get_tree().change_scene_to_file("res://Scenes/Challenges/challenges_menu.tscn") # Replace with function body.
 
 
 func _on_button_5_pressed():

@@ -12,11 +12,12 @@ var barehand_array = []
 var vision_array = {
 	"food": [],
 	"danger": [],
-	"enemy": []
+	"enemy": [],
+	"friend":[]
 }
 
 
-var isBurrow = false
+
 #movmnt
 var input_dir = Vector2.ZERO
 
@@ -72,6 +73,8 @@ func getDamaged(value,antagonist:LifeEntity=null):
 		getPushed(antagonist,64)
 		$Sound/hurt.playing = true
 		vision_array["danger"].append(antagonist)
+		if vision_array["friend"].has(antagonist) == false:
+				vision_array["friend"].erase(antagonist)
 		self.PV -= value
 		if self.PV <= 0:
 			Die()
@@ -110,7 +113,7 @@ func _on_timer_timeout():
 func Growth():
 	if current_life_cycle == 0:
 		#10*(World.one_day_length/lifecycletime)
-		if self.age > 3*(World.one_day_length/lifecycletime) and self.energy >= 15:
+		if self.age > 2*(World.one_day_length/lifecycletime) and self.energy >= 15:
 			self.current_life_cycle += 1
 			
 			
@@ -133,7 +136,7 @@ func Growth():
 
 func LifeDuplicate():
 	#10*(World.one_day_length/lifecycletime)
-	if self.age > 5.*(World.one_day_length/lifecycletime) and self.energy >= 25 and current_life_cycle >= 1:
+	if self.age > 4.*(World.one_day_length/lifecycletime) and self.energy >= 25 and current_life_cycle >= 1:
 			if clone_timer == 0 :
 				
 				var newpos = PickRandomPlaceWithRange(position,1 * World.tile_size)
@@ -142,7 +145,7 @@ func LifeDuplicate():
 					self.energy -= 15			
 					life.energy = 15
 					life.global_position = newpos 
-					clone_timer = 3.*(World.one_day_length/lifecycletime)
+					clone_timer = 2.*(World.one_day_length/lifecycletime)
 				else:
 					print("fox_pool empty")
 			else:
@@ -216,6 +219,12 @@ func Eat(life):
 	if life.species == "berry" and life.current_life_cycle == 3:
 		life.LifeDuplicate2(null)
 	else:
+		if life.carried_by:
+			if life.carried_by.species == "catronaute":
+
+				if vision_array["danger"].has(life.carried_by) == false and vision_array["friend"].has(life.carried_by) == false:
+					vision_array["friend"].append(life.carried_by)
+
 		self.energy += life.energy
 		energy = clamp(energy,0,maxEnergy)
 		life.energy= 0

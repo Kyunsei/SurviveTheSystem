@@ -55,7 +55,38 @@ func instantiate_the_tiles_function():
 	set_layer_enabled ( 1, false )	
 
 				
-			
+func procedural1():
+	
+	var moisture = FastNoiseLite.new()
+
+	moisture.seed = randi()
+	moisture.frequency = 0.005
+
+	
+	for x in range(World.world_size):
+		for y in range(World.world_size):
+			var moist = moisture.get_noise_2d(x, y)*10
+			print(moist)	
+			if moist < 0:
+				set_cell(0, Vector2i(x, y), 0, Vector2i(0, 2))
+			else:
+				set_cell(0, Vector2i(x, y), 0, Vector2i(3, 0))
+
+func procedural2():
+	var size
+	var islandtype
+	var islandtypeshape
+	var x = 0
+	var y = 0
+	var r = 0
+	for i in range(1,5):
+		for j in range(1,5):
+			r = randi_range(5,20)
+			x = 20*i + 20*(i-1)# *2*i
+			y = 20*j + 20*(j-1)# *2*i
+			draw_round_island(x,y,r,0)
+	
+	pass	
 
 func build_world():
 	#iland center: [(47,120),(140,140)

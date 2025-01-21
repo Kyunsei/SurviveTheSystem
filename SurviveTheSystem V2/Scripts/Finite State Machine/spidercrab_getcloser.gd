@@ -91,15 +91,18 @@ func Physics_Update(delta: float):
 					print(direction)
 					print("------------")'
 									
-					if life_entity.getCenterPos().distance_to(target.getCenterPos())<minimun_distance and next_state != "":
+					if life_entity.getCenterPos().distance_to(target.getCenterPos())<minimun_distance:
+						if next_state == "":
+							life_entity.velocity = Vector2(0,0)
+						else:
 							get_parent().get_node(next_state).target = target
 							Transitioned.emit(self,next_state)
-
 					
-					if previous_pos == 	life_entity.position:
-						print("stuck")
-						get_parent().get_node(next_state).target = target
-						Transitioned.emit(self,next_state)
+					
+							if previous_pos == 	life_entity.position:
+								print("stuck")
+								get_parent().get_node(next_state).target = target
+								Transitioned.emit(self,next_state)
 
 										
 				previous_pos = 	life_entity.position

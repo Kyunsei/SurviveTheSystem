@@ -8,7 +8,7 @@ var wander_time : float
 var isHungry = false
 var nest: LifeEntity
 @export var nest_distance: float
-
+@export var friend_distance: float = 500
 
 func choose_direction_and_time():
 	direction = Vector2(randi_range(-1,1),randi_range(-1,1))
@@ -57,7 +57,8 @@ func Physics_Update(delta: float):
 			
 			elif check_Enemy():
 				Transitioned.emit(self,"getcloser_state")
-				
+			elif  check_Friend():
+				Transitioned.emit(self,"getcloser_state")	
 					#get_parent().get_node("getcloser_state").target = nest
 					#Transitioned.emit(self,"getcloser_state")
 				
@@ -100,6 +101,7 @@ func check_Food():
 		if alive_array.size() > 0:
 			get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
 			get_parent().get_node("getcloser_state").action_type = "FOOD"
+			get_parent().get_node("getcloser_state").next_state = "dash_state" # = "FRIEND"					
 			
 			'if life_entity.getCenterPos().distance_to(alive_array[0].getCenterPos()) <= life_entity.vision_distance:
 				get_parent().get_node("avoid_state").target =  alive_array[0]'
@@ -144,3 +146,20 @@ func check_Enemy():
 		
 		return false
 	return false
+
+func check_Friend():
+	if life_entity.vision_array["friend"].size() > 0:
+			var alive_array = life_entity.vision_array["friend"].filter(func(obj): return obj.isDead == false)
+			if alive_array.size() > 0:
+				if life_entity.position.distance_to(getClosestLife(alive_array).position) < friend_distance:
+					get_parent().get_node("getcloser_state").target = getClosestLife(alive_array)
+					get_parent().get_node("getcloser_state").next_state = "" # = "FRIEND"	
+					#get_parent().get_node("getcloser_state").next_state = "dash_state" # = "FRIEND"					
+					print("going to friend")		
+					return true
+				else:
+					return false
+			else:
+				return false
+	else:
+		return false

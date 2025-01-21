@@ -343,16 +343,10 @@ func _on_vision_body_entered(body):
 			if body.current_life_cycle < 2:
 				vision_array["food"].append(body)
 
-		if body.species== "sheep" and body!= self:
-			if item_array.size() > 0 :
-				if item_array[0].species == "berry" :
-					vision_array["danger"].append(body)
-			elif body.item_array.size() > 0 :
-				if body.item_array[0].species == "berry" :
-					vision_array["danger"].append(body)
-			else :
-			#getAway(body.position)
-				vision_array["friend"].append(body)
+		'if body.species== "sheep" and body!= self:
+				vision_array["friend"].append(body)'
+
+
 		if body.species == "catronaute" or body.species == "spidercrab" or body.species == "fox"  :
 			vision_array["danger"].append(body)
 

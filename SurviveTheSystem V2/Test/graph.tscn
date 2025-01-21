@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://xdsybkgw4pm4"]
+
+[ext_resource type="Script" path="res://testgraph.gd" id="1_qf54w"]
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_qf54w")
+connectivity = 0.4
+weighted_edges = false
+
+[node name="NodeContainer" type="Node2D" parent="."]

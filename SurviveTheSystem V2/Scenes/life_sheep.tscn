@@ -81,6 +81,7 @@ initial_state = NodePath("getcloser_state")
 
 [node name="idle_state" type="Node" parent="Brainy"]
 script = ExtResource("3_hk7l5")
+friend_distance = 128.0
 
 [node name="getcloser_state" type="Node" parent="Brainy"]
 script = ExtResource("4_8o44k")

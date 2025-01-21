@@ -20,7 +20,7 @@ func _on_button_pressed():
 
 
 func _on_button_play_pressed():
-	get_tree().change_scene_to_file("res://Scenes/challenge_" + str(World.ID_chal)+ ".tscn")
+	get_tree().change_scene_to_file("res://Scenes/Challenges/challenge_" + str(World.ID_chal)+ ".tscn")
 
 
 func _on_check_box_2_toggled(toggled_on):
@@ -40,3 +40,13 @@ func _on_button_3_pressed():
 func _on_button_4_pressed():
 	World.ID_chal = 4
 	$Level_text.text = "JellyBee Testing ground"
+
+
+func _on_button_5_pressed():
+	World.ID_chal = 5
+	$Level_text.text = "Procedural Testing ground"
+
+
+func _on_button_6_pressed():
+	World.ID_chal = 6
+	$Level_text.text = "TigerFox Testing ground"
