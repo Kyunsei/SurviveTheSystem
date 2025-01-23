@@ -21,7 +21,7 @@ func initChallenges(ID):
 			Life.player = pl
 			Life.player.age = 0
 			Life.player.isPlayer = true 
-			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+			Life.player.global_position = Vector2(int(25*World.tile_size),int(25*World.tile_size))
 			
 	if ID == 2:
 		Life.red = 0
@@ -33,7 +33,7 @@ func initChallenges(ID):
 			Life.player = pl
 			Life.player.age = 0
 			Life.player.isPlayer = true 
-			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+			Life.player.global_position = Vector2(int(25*World.tile_size),int(25*World.tile_size))
 		for i in range(0):
 			var life = Life.build_life("grass")
 			life.sub_species = 1
@@ -54,7 +54,7 @@ func initChallenges(ID):
 			Life.player = pl
 			Life.player.age = 0
 			Life.player.isPlayer = true 
-			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+			Life.player.global_position = Vector2(int(25*World.tile_size),int(25*World.tile_size))
 		for i in range(0):
 			var life = Life.build_life("grass")
 			life.sub_species = 2
@@ -72,25 +72,30 @@ func initChallenges(ID):
 			Life.player = pl
 			Life.player.age = 0
 			Life.player.isPlayer = true 
-			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+			Life.player.global_position = Vector2(int(25*World.tile_size),int(25*World.tile_size))
 
 
 	if ID == 5:
 		$World_TileMap.procedural()
-		Life.Instantiate_emptyLife_pool($Life, 300, "grass")
-		Life.Instantiate_emptyLife_pool($Life, 100, "berry")
+		$World_TileMap/NavigationRegion2D.bake_navigation_polygon(true)
+		
+		Life.Instantiate_emptyLife_pool($Life, 2000, "grass")
+		Life.Instantiate_emptyLife_pool($Life, 300, "berry")
 		Life.Instantiate_emptyLife_pool($Life, 100, "spiky_grass")
-		Life.Instantiate_emptyLife_pool($Life, 10, "sheep")
+		Life.Instantiate_emptyLife_pool($Life, 30, "sheep")
 		Life.Instantiate_emptyLife_pool($Life, 5, "spidercrab")
-		Life.Instantiate_emptyLife_pool($Life, 5, "jellybee")
+		Life.Instantiate_emptyLife_pool($Life, 20, "jellybee")
 		Life.Instantiate_emptyLife_pool($Life, 15, "fox")
-		Life.Instantiate_emptyLife_pool($Life, 15, "bigtree")
-		var pl = Life.build_life("cat")
+		Life.Instantiate_emptyLife_pool($Life, 250, "bigtree")
+		
+		Life.Procedural()
+		
+		var pl = Life.pool_scene["cat"][0] #Life.build_life("cat")
 		if pl:
 			Life.player = pl
 			Life.player.age = 0
 			Life.player.isPlayer = true 
-			Life.player.global_position = Vector2(320,320)#Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
+			Life.player.global_position = Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 	
 	if ID == 6:
 		Life.Instantiate_emptyLife_pool($Life, 300, "spiky_grass")
@@ -108,7 +113,7 @@ func initChallenges(ID):
 			Life.player.global_position = Vector2(320,320)#Vector2(int(World.world_size*World.tile_size/2),int(World.world_size*World.tile_size/2))
 																								
 func _ready(): 
-	World.world_size = 200
+	World.world_size = 500
 	InitNewGame()
 
 	

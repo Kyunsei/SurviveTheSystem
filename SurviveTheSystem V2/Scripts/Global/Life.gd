@@ -155,6 +155,116 @@ func fill_with_empty_entity_pool_lifes(folder):
 	Life.Instantiate_emptyLife_pool(folder, 100, "bigtree")
 
 
+func Procedural():
+	var number = [1,2,3,4,5,6,7,8,9,10]
+	var species_list = pool_state.keys()
+	var nl = Life.build_life("cat")
+
+	
+	#grass + random berry
+	World.list_island_position.shuffle()
+	for pos in World.list_island_position:
+		for n in range(3):
+			nl = Life.build_life("grass")
+			if nl:
+				var newpos = nl.PickRandomPlaceWithRange(pos,5 * World.tile_size)
+				nl.global_position = newpos
+				nl.energy= 5
+				nl.age = 18
+				nl.Growth()
+		
+		if randf_range(0,1) > 0.9:
+			nl = Life.build_life("berry")
+			if nl:
+				var newpos = nl.PickRandomPlaceWithRange(pos,5 * World.tile_size)
+				nl.global_position = newpos
+				nl.energy= 15
+				nl.age = 4*9
+				nl.current_life_cycle = 2
+				nl.Growth()
+		if randf_range(0,1) > 0.9:
+			nl = Life.build_life("spiky_grass")
+			if nl:
+				var newpos = nl.PickRandomPlaceWithRange(pos,5 * World.tile_size)
+				nl.global_position = newpos
+				nl.energy= 15
+				nl.age = 2*9
+				nl.current_life_cycle = 1
+				nl.Growth()
+				
+	#jelly nest
+
+	for n in range(10):
+		var rand_island = World.list_island_position[randi_range(0,World.list_island_position.size()-1)]
+		nl = Life.build_life("jellybee")
+		if nl:
+			var newpos = nl.PickRandomPlaceWithRange(rand_island,5 * World.tile_size)
+			nl.global_position = newpos
+			nl.energy= 15
+			nl.Growth()
+	for n in range(2):
+		var rand_island = World.list_island_position[randi_range(0,World.list_island_position.size()-1)]
+		nl = Life.build_life("berry")
+		if nl:
+			var newpos = nl.PickRandomPlaceWithRange(rand_island,5 * World.tile_size)
+			nl.global_position = newpos
+			nl.energy= 15
+			nl.current_life_cycle = 2
+
+			nl.age = 4*9
+			nl.Growth()		
+	#sheep
+	for i in range(3):
+		var rand_island = World.list_island_position[randi_range(0,World.list_island_position.size()-1)]
+		for n in range(3):
+			nl = Life.build_life("sheep")
+			if nl:
+				var newpos = nl.PickRandomPlaceWithRange(rand_island,5 * World.tile_size)
+				nl.global_position = newpos
+				nl.energy= 50
+				nl.age = 2*9
+				nl.current_life_cycle = 1
+				nl.Growth()
+	#spider
+	for i in range(2):
+		var rand_island = World.list_island_position[randi_range(0,World.list_island_position.size()-1)]
+		nl = Life.build_life("spidercrab")
+		if nl:
+			var newpos = nl.PickRandomPlaceWithRange(rand_island,5 * World.tile_size)
+			nl.global_position = newpos
+			nl.age = 0
+			nl.energy = 50
+	#fox
+	for i in range(3):
+		var rand_island = World.list_island_position[randi_range(0,World.list_island_position.size()-1)]
+		nl = Life.build_life("fox")
+		if nl:
+			var newpos = nl.PickRandomPlaceWithRange(rand_island,5 * World.tile_size)
+			nl.global_position = newpos
+			nl.energy = 50
+	
+	#forest
+	for i in range(2):
+		var rand_island = World.list_island_position[randi_range(0,World.list_island_position.size()-1)]
+		for n in range(5):
+			nl = Life.build_life("bigtree")
+			if nl:
+				var newpos = nl.PickRandomPlaceWithRange(rand_island,3 * World.tile_size)
+				nl.global_position = newpos
+				nl.current_life_cycle = 0
+				nl.age = 4*9
+				nl.energy = 100
+				nl.Growth()
+				for n2 in range(3):
+					nl = Life.build_life("grass")
+					if nl:
+						var newnewpos = nl.PickRandomPlaceWithRange(newpos,5 * World.tile_size)
+						nl.sub_species = 1	
+						nl.global_position = newnewpos
+						nl.Build_Stat()
+						nl.set_sun_occupation(2,1)
+						nl.current_life_cycle = 0
+						nl.Growth()
 
 #THIS ONE IS USED
 func Instantiate_emptyLife_pool(folder, N, ID):

@@ -66,6 +66,8 @@ var diffusion_block_limit = 2 #how many block energy move. #not implemented.
 var block_diffusion_par = []
 
 
+#PROCEDURAL
+var list_island_position = []
 
 func Init_World(folder):
 	Init_matrix()

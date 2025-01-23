@@ -72,44 +72,57 @@ func procedural1():
 			else:
 				set_cell(0, Vector2i(x, y), 0, Vector2i(3, 0))
 
-func procedural(x=World.world_size/2,y=World.world_size/2,radius=10,n_island=8, count=0, maxcount= 5):
+
+
+
+func procedural(x=World.world_size/2,y=World.world_size/2,radius=30, n_island=8, count=0, maxcount= 5):
 	#var n_island =1 # randi_range(5,10) 
 	#var island_dic = {}
-	count += 1
-	var child_pos = [Vector2(1,0),Vector2(0,1),Vector2(-1,0),Vector2(0,-1),Vector2(1,-1),Vector2(-1,1),Vector2(1,1),Vector2(-1,-1)]
-	child_pos.shuffle()
-	
+	#print(n_island)
+	var child_pos = [Vector2(1,0),Vector2(0,1),Vector2(-1,0),Vector2(0,-1),Vector2(1,-1),Vector2(-1,1),Vector2(1,1),Vector2(-1,-1)]	
 	var jump_distance = 4
 	
-	if x+radius < World.world_size and   x-radius > 0 and y+radius < World.world_size and   y-radius > 0 :
-		draw_round_island(x,y,radius,0)
-		
-		var label = Label.new()
-		label.text = str(count)
-		label.position = Vector2(x*World.tile_size, y*World.tile_size)
-		add_child(label)
-	'if count == 0:
-		pass'
-
-	if count == 2:
-		maxcount =  randi_range(0,5)
-		
-	if count > maxcount:
-		return
-		
-	var x_parent = x
-	var y_parent = y
-	var r_parent = radius
-
-	for i in range(n_island):
-
-		n_island = randi_range(0,8)
-		radius = randi_range(5,10)
-		x = x_parent + (radius + jump_distance + r_parent) * child_pos[i].normalized().x   
-		y = y_parent + (radius + jump_distance + r_parent) * child_pos[i].normalized().y
-		procedural(x,y,radius,n_island, count, maxcount)
+	child_pos.shuffle()
+	count += 1
+	#if x+radius < World.world_size and   x-radius > 0 and y+radius < World.world_size and   y-radius > 0 :
+	draw_round_island(x,y,radius,0)
+	World.list_island_position.append(Vector2(x*World.tile_size,y*World.tile_size))
 
 		
+	var label = Label.new()
+	label.text = str(count) + " n:" + str(n_island)
+	label.position = Vector2(x*World.tile_size, y*World.tile_size)
+	label.add_theme_font_size_override("font_size", 100)
+	add_child(label)
+
+	if count == 2: #new branch
+		maxcount =  50# 0#randi_range(2,4)
+		
+	if count <= maxcount: #branch stop
+		
+		var x_parent = x
+		var y_parent = y
+		var r_parent = radius
+		var n_island_parent = n_island
+		
+		#print(n_island_parent)
+
+		for i in range(n_island_parent):
+			#print(i)
+			n_island = int(clamp(abs(randfn(1.0, 2)),0,7)) #randi_range(1,3) # randi_range(0,8)
+			radius = int(clamp(abs(randfn(5.0, 8.0)),10,50)) #randi_range(4,20)
+			x = x_parent + (radius + jump_distance + r_parent) * child_pos[i].normalized().x   
+			y = y_parent + (radius + jump_distance + r_parent) * child_pos[i].normalized().y
+			if x+radius < World.world_size and   x-radius > 0 and y+radius < World.world_size and   y-radius > 0 :
+				var posindex = y * World.world_size + x
+				if World.block_element_state[posindex] == -1:
+					procedural(x,y,radius,n_island, count, maxcount)
+				else:
+					pass
+
+				
+
+			
 
 
 func build_world():
@@ -170,6 +183,11 @@ func draw_round_island(x,y,radius,energy):
 							set_cell(0, Vector2i(x+w, y+h), 0, Vector2i(0, 1))
 						else:
 							set_cell(0, Vector2i(x+w, y+h), 0, Vector2i(0, 2))
+
+
+
+			
+
 
 func draw_energy_patch(x,y,radius,energy):
 	x=  x-radius
