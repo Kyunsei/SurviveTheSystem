@@ -303,9 +303,9 @@ tracks/5/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_wt5qk"]
 _data = {
-"RESET": SubResource("Animation_klc0m"),
-"attack": SubResource("Animation_d40rx"),
-"walk": SubResource("Animation_hnfyr")
+&"RESET": SubResource("Animation_klc0m"),
+&"attack": SubResource("Animation_d40rx"),
+&"walk": SubResource("Animation_hnfyr")
 }
 
 [node name="Node2D" type="Node2D"]

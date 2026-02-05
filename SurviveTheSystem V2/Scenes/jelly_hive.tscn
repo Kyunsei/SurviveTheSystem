@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://bpk13twi1ueal"]
 
-[ext_resource type="Script" path="res://Scripts/Jelly_hive.gd" id="1_j3ssc"]
+[ext_resource type="Script" uid="uid://4615rhhv64ar" path="res://Scripts/Jelly_hive.gd" id="1_j3ssc"]
 [ext_resource type="Texture2D" uid="uid://bb3i85tiy02hb" path="res://Art/jelly_hive.png" id="2_122po"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_e6eyv"]

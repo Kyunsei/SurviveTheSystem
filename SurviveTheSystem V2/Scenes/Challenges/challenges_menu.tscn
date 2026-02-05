@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://chjgfuxfq4tps"]
 
-[ext_resource type="Script" path="res://Scripts/challenges_menu.gd" id="1_x3dac"]
+[ext_resource type="Script" uid="uid://ct4pffa0sk3rt" path="res://Scripts/challenges_menu.gd" id="1_x3dac"]
 
 [node name="Challenges_Menu" type="Control"]
 layout_mode = 3

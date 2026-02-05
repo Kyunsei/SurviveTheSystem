@@ -1,10 +1,10 @@
 [gd_scene load_steps=6 format=3 uid="uid://dc76b7k2evprp"]
 
-[ext_resource type="Script" path="res://Test/diffusion_scene.gd" id="1_12x8v"]
+[ext_resource type="Script" uid="uid://b4t2eusvvbddo" path="res://Test/diffusion_scene.gd" id="1_12x8v"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_335vg"]
 [ext_resource type="PackedScene" uid="uid://cgax0tyixs3og" path="res://Scenes/pause_menu.tscn" id="3_uuggl"]
 [ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="4_hcm0q"]
-[ext_resource type="Script" path="res://Test/DiffussionPanel.gd" id="5_ifk4t"]
+[ext_resource type="Script" uid="uid://dk34evpoimu40" path="res://Test/DiffussionPanel.gd" id="5_ifk4t"]
 
 [node name="DiffusionScene" type="Node2D"]
 process_mode = 1

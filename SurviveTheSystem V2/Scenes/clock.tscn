@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://dx8j1h6gp20xq"]
 
-[ext_resource type="Script" path="res://Scripts/Clock.gd" id="1_8agj4"]
+[ext_resource type="Script" uid="uid://df0lewtdweykb" path="res://Scripts/Clock.gd" id="1_8agj4"]
 [ext_resource type="Texture2D" uid="uid://bc43hv07fijyd" path="res://Art/moon.png" id="2_i61qd"]
 [ext_resource type="Texture2D" uid="uid://elg0p52jee1r" path="res://Art/sun.png" id="3_q12hb"]
 

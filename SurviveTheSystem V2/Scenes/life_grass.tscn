@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://bb0jwatsbquk5"]
 
-[ext_resource type="Script" path="res://Scripts/Life_grass.gd" id="1_fmpul"]
+[ext_resource type="Script" uid="uid://bl6e33ygj6obj" path="res://Scripts/Life_grass.gd" id="1_fmpul"]
 [ext_resource type="Texture2D" uid="uid://bbletb5j0buo8" path="res://Art/grass_1.png" id="2_ienmr"]
 [ext_resource type="Texture2D" uid="uid://bfae5syr2y1x4" path="res://Art/grass_2.png" id="3_rfk3m"]
 [ext_resource type="Texture2D" uid="uid://cqvae5p2edsqf" path="res://Art/grass_dead.png" id="4_burn3"]

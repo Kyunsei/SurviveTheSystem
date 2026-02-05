@@ -1,11 +1,11 @@
 [gd_scene load_steps=12 format=3 uid="uid://dfy55q0tpbtav"]
 
-[ext_resource type="Script" path="res://Scripts/Life_sheep.gd" id="1_ftmai"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/brainy.gd" id="2_7k25x"]
+[ext_resource type="Script" uid="uid://ch8na8qn4nomf" path="res://Scripts/Life_sheep.gd" id="1_ftmai"]
+[ext_resource type="Script" uid="uid://dkldcwuwlfl21" path="res://Scripts/Finite State Machine/brainy.gd" id="2_7k25x"]
 [ext_resource type="Texture2D" uid="uid://ba3ghrf00sjvg" path="res://Art/sheep1.png" id="2_boq77"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="3_hk7l5"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="4_8o44k"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="5_feg8t"]
+[ext_resource type="Script" uid="uid://bd8ili0o6c5nq" path="res://Scripts/Finite State Machine/idle.gd" id="3_hk7l5"]
+[ext_resource type="Script" uid="uid://c00tfr1dpbso6" path="res://Scripts/Finite State Machine/getcloser.gd" id="4_8o44k"]
+[ext_resource type="Script" uid="uid://bdfu1hsrv5wkw" path="res://Scripts/Finite State Machine/avoid.gd" id="5_feg8t"]
 [ext_resource type="AudioStream" uid="uid://b1dpx0iw66003" path="res://Sound/belementV1.mp3" id="7_2nfa8"]
 [ext_resource type="AudioStream" uid="uid://dfsab7dl67vwy" path="res://Sound/sheep3.mp3" id="8_05sa3"]
 

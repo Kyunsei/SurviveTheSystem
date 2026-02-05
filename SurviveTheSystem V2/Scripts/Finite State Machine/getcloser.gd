@@ -126,5 +126,3 @@ func remove_target():
 				if n == "food":
 					life_entity.vision_array[n].erase(target)
 				target = null
-
-

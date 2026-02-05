@@ -1,7 +1,7 @@
 [gd_scene load_steps=8 format=3 uid="uid://clx5yxipfcf8l"]
 
 [ext_resource type="Texture2D" uid="uid://cicqy5v6205k1" path="res://Art/player_sleep.png" id="1_1vkjr"]
-[ext_resource type="Script" path="res://Scripts/intro_story.gd" id="1_gumkr"]
+[ext_resource type="Script" uid="uid://dyn467ptjos7u" path="res://Scripts/intro_story.gd" id="1_gumkr"]
 [ext_resource type="Texture2D" uid="uid://lcpu470pvb6d" path="res://Art/player_bulbi.png" id="2_ja232"]
 [ext_resource type="Texture2D" uid="uid://1go6qx6r661l" path="res://Art/player_bulbi_scythe.png" id="3_qcbfd"]
 [ext_resource type="Texture2D" uid="uid://b2uflijcgxb2d" path="res://Art/spacecraft_placeholder.png" id="4_dv3o7"]
