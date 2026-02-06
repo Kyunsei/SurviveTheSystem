@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bbug4errj8rkt"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
+albedo_color = Color(0.3569829, 0.63304657, 0.24205121, 1)
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_oukle"]
+material = SubResource("StandardMaterial3D_11t0l")
+size = Vector2(5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kgs41"]
+albedo_color = Color(0.49737066, 0.36778373, 0.119802706, 1)
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_hxiwo"]
+material = SubResource("StandardMaterial3D_kgs41")
+size = Vector2(1, 5)
+
+[node name="grass" type="Node3D" unique_id=455347701]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.4550467, 0)
+mesh = SubResource("QuadMesh_oukle")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1314921017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.495504, 0)
+mesh = SubResource("QuadMesh_hxiwo")
