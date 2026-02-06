@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cx8myhkgjy4fp"]
+
+[ext_resource type="Script" uid="uid://vmjbgjbpdq6g" path="res://Alife/PLAYER/player_hud.gd" id="1_50gt6"]
+
+[node name="Player_HUD" type="CanvasLayer" unique_id=1065555217]
+script = ExtResource("1_50gt6")
+
+[node name="Label" type="Label" parent="." unique_id=1392581439]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "[Tutorial]
+WASD: Move
+Mouse: Camera
+Arrow: camera offset
+Wheel or -,=: zoom_in_out
+ESC: free mouse
+"

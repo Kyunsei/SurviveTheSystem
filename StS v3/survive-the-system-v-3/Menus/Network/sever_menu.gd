@@ -17,7 +17,7 @@ func _ready() -> void:
 	'multiplayer.connected_to_server
 	multiplayer.connection_failed
 	multiplayer.server_disconnected'
-
+	#call_deferred("_on_button_pressed")
 
 
 func _on_button_pressed() -> void:

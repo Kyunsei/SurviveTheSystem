@@ -14,7 +14,6 @@ func on_game_started():
 
 @rpc("any_peer","call_local")
 func spawn_player(id):
-	print(id)
 	pass
 	var new_player = player_scene.instantiate()
 	new_player.name = str(id)
