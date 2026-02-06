@@ -7,6 +7,8 @@ var peer: ENetMultiplayerPeer
 
 var isconnected = false
 
+signal client_started
+
 func _ready() -> void:
 		#connect signal of connection with function
 	#multiplayer.peer_connected.connect(on_connection)
@@ -30,7 +32,7 @@ func check_connection():
 
 func _process(delta: float) -> void:
 	pass
-	check_connection()
+	#check_connection()
 
 func connect_to_server(IP_ADDRESS, PORT):
 	peer = ENetMultiplayerPeer.new()
@@ -42,19 +44,24 @@ func connect_to_server(IP_ADDRESS, PORT):
 func on_client_connection():
 	pass
 	$Label_server.text = "Connected to server"
+	$VBoxContainer/Button_Play.disabled = false
 
 func on_connection_failed():
 	pass
 	$Label_server.text = "Connection failed"
-
+	$VBoxContainer/Button_Play.disabled = true
 
 
 	
 func on_server_disconnected():
 	$Label_server.text = "Server OFFLINE"
+	$VBoxContainer/Button_Play.disabled = true
+
 	#print("here SERVER")
 	connect_to_server(IP_ADDRESS, PORT)
 
 
 func _on_button_play_pressed() -> void:
-	get_tree().change_scene_to_file("res://main_game.tscn")
+	hide()
+	client_started.emit()
+	#get_tree().change_scene_to_file("res://main_game.tscn")

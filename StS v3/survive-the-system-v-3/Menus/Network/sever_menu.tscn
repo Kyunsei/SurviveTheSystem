@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://dlmqilve4y502"]
+
+[ext_resource type="Script" uid="uid://by2bosylwn5ip" path="res://Menus/Network/sever_menu.gd" id="1_s1xjv"]
+
+[node name="server_menu" type="Control" unique_id=1363508961]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_s1xjv")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=434145954]
+layout_mode = 0
+offset_right = 1154.0
+offset_bottom = 650.0
+color = Color(0, 0, 0, 1)
+
+[node name="Label" type="Label" parent="." unique_id=1536158679]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Button" type="Button" parent="." unique_id=547815757]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 581.0
+offset_top = 337.0
+offset_right = 672.0
+offset_bottom = 368.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Start -Host"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

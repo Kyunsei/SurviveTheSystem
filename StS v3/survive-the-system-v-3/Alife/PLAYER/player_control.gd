@@ -5,13 +5,15 @@ var player : Node3D
 
 var direction = Vector3(0,0,0)
 
+
 func _ready() -> void:
 	player = get_parent()
 	
 
 func _physics_process(delta: float) -> void:
-	direction = Vector3(0,0,0)
-	if is_multiplayer_authority():
+	if player.is_multiplayer_authority():
+		direction = Vector3(0,0,0)
+		#print("yes")
 		if Input.is_action_pressed("down"):
 			direction.z = 1
 		if Input.is_action_pressed("up"):
@@ -22,5 +24,5 @@ func _physics_process(delta: float) -> void:
 			direction.x = -1	
 		if direction != Vector3.ZERO:
 			direction = direction.normalized()
-		
+
 		player.direction = direction

@@ -1,10 +1,13 @@
 [gd_scene format=3 uid="uid://c8lsw0h6j5fd6"]
 
 [ext_resource type="PackedScene" uid="uid://crmvnx4y35myr" path="res://World/TEST_MAP/test_map.tscn" id="1_1oj5k"]
+[ext_resource type="Script" uid="uid://b4p30j8y0ogt7" path="res://main_game.gd" id="1_dugkq"]
 [ext_resource type="PackedScene" uid="uid://bqydh3n7b1h18" path="res://Alife/AlifeManager.tscn" id="2_yx7mw"]
 [ext_resource type="PackedScene" uid="uid://cpxqisxofmb36" path="res://Alife/PLAYER/player.tscn" id="3_ykeeq"]
+[ext_resource type="PackedScene" uid="uid://bpc6fr4hgno76" path="res://Menus/Network/network.tscn" id="5_2pltu"]
 
-[node name="main_game" type="Node" unique_id=505857694]
+[node name="main_game" type="Node3D" unique_id=753049365]
+script = ExtResource("1_dugkq")
 
 [node name="test_map" parent="." unique_id=747631985 instance=ExtResource("1_1oj5k")]
 
@@ -14,3 +17,5 @@ player_scene = ExtResource("3_ykeeq")
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2004899452]
 _spawnable_scenes = PackedStringArray("uid://cpxqisxofmb36")
 spawn_path = NodePath("../Alife manager")
+
+[node name="Network" parent="." unique_id=1782053974 instance=ExtResource("5_2pltu")]

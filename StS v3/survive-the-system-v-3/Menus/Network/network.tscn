@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bpc6fr4hgno76"]
+
+[ext_resource type="Script" uid="uid://deksc8i0xknro" path="res://Menus/Network/network.gd" id="1_t15e0"]
+[ext_resource type="PackedScene" uid="uid://bb1hqefmi6dcq" path="res://Menus/Network/client_menu.tscn" id="2_lgc1p"]
+[ext_resource type="PackedScene" uid="uid://dlmqilve4y502" path="res://Menus/Network/sever_menu.tscn" id="3_5leiv"]
+
+[node name="Network" type="CanvasLayer" unique_id=1782053974]
+script = ExtResource("1_t15e0")
+
+[node name="server_menu" parent="." unique_id=1363508961 instance=ExtResource("3_5leiv")]
+visible = false
+
+[node name="client_menu" parent="." unique_id=1071819256 instance=ExtResource("2_lgc1p")]

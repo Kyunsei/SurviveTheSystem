@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://bb1hqefmi6dcq"]
 
-[ext_resource type="Script" uid="uid://bglwtgf3pf65h" path="res://Menus/launcher_menu/landing_client_menu.gd" id="1_gvlmv"]
+[ext_resource type="Script" uid="uid://bglwtgf3pf65h" path="res://Menus/Network/client_menu.gd" id="1_gvlmv"]
 
-[node name="Landing_menu" type="Control" unique_id=1071819256]
+[node name="client_menu" type="Control" unique_id=1071819256]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -40,6 +40,7 @@ offset_bottom = 441.0
 [node name="Button_Play" type="Button" parent="VBoxContainer" unique_id=722948366]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
+disabled = true
 text = "Play"
 
 [node name="Button_Settings" type="Button" parent="VBoxContainer" unique_id=1419502925]
