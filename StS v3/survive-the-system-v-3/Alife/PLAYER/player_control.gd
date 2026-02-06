@@ -30,7 +30,7 @@ func _physics_process(delta: float) -> void:
 			direction = direction.normalized()
 		if camera_anchor:
 			var cam_basis = camera_anchor.transform.basis
-			direction = (cam_basis *direction).normalized()
+			direction = (cam_basis *direction).normalized() #THIS MAKE ONE DIRECTION SLOWERr
 
 		player.direction = direction
 		#player.get_node("MeshInstance3D").look_at(-direction)
