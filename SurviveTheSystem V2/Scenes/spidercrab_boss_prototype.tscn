@@ -1,13 +1,13 @@
 [gd_scene load_steps=19 format=3 uid="uid://dbrkbo21hsu0x"]
 
-[ext_resource type="Script" path="res://Scripts/spidercrab_boss_prototype.gd" id="1_cooma"]
+[ext_resource type="Script" uid="uid://c5la76q3gole4" path="res://Scripts/spidercrab_boss_prototype.gd" id="1_cooma"]
 [ext_resource type="Texture2D" uid="uid://d4ken0m8v5kmw" path="res://Art/crab_claw.png" id="2_5i7c0"]
 [ext_resource type="Texture2D" uid="uid://c0l0p4s6l782" path="res://Art/Spider_right_1.png" id="2_fdibr"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/brainy.gd" id="4_isbqm"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/getcloser.gd" id="5_x8eas"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/avoid.gd" id="6_0qxhs"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/dash.gd" id="7_dj0sa"]
-[ext_resource type="Script" path="res://Scripts/Finite State Machine/idle.gd" id="8_0uwn0"]
+[ext_resource type="Script" uid="uid://dkldcwuwlfl21" path="res://Scripts/Finite State Machine/brainy.gd" id="4_isbqm"]
+[ext_resource type="Script" uid="uid://c00tfr1dpbso6" path="res://Scripts/Finite State Machine/getcloser.gd" id="5_x8eas"]
+[ext_resource type="Script" uid="uid://bdfu1hsrv5wkw" path="res://Scripts/Finite State Machine/avoid.gd" id="6_0qxhs"]
+[ext_resource type="Script" uid="uid://0yujb78ctbc0" path="res://Scripts/Finite State Machine/dash.gd" id="7_dj0sa"]
+[ext_resource type="Script" uid="uid://bd8ili0o6c5nq" path="res://Scripts/Finite State Machine/idle.gd" id="8_0uwn0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_f6j4u"]
 radius = 64.0
@@ -101,9 +101,9 @@ tracks/1/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_vqo64"]
 _data = {
-"RESET": SubResource("Animation_70fai"),
-"heavy_attack": SubResource("Animation_iptgu"),
-"reset": SubResource("Animation_badhj")
+&"RESET": SubResource("Animation_70fai"),
+&"heavy_attack": SubResource("Animation_iptgu"),
+&"reset": SubResource("Animation_badhj")
 }
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lpqrx"]

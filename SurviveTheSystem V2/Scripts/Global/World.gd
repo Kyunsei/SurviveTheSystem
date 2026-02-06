@@ -425,6 +425,3 @@ func SunLayerFillGPU():
 	var output_bytes2 := rd.buffer_get_data(sun_energy_block_array_buffer_2)
 	var output2 := output_bytes2.to_float32_array()
 	sun_energy_block_array[2] = output2	
-
-
-

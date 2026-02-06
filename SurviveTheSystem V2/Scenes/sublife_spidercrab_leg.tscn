@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://bxlj56vbn5rrk"]
 
-[ext_resource type="Script" path="res://Scripts/spidercrab_leg.gd" id="1_vnhej"]
+[ext_resource type="Script" uid="uid://bntafhj8bufiq" path="res://Scripts/spidercrab_leg.gd" id="1_vnhej"]
 [ext_resource type="Texture2D" uid="uid://deacu702ktmt2" path="res://Art/crab_leg.png" id="2_msxlx"]
 [ext_resource type="Texture2D" uid="uid://cc5vpu3ul86y4" path="res://Art/crab_leg_broken.png" id="3_6kwly"]
 
@@ -113,8 +113,8 @@ tracks/3/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_s4iyh"]
 _data = {
-"Attack_animation": SubResource("Animation_36jid"),
-"RESET": SubResource("Animation_08kl5")
+&"Attack_animation": SubResource("Animation_36jid"),
+&"RESET": SubResource("Animation_08kl5")
 }
 
 [node name="spidercrab_leg" type="CharacterBody2D"]

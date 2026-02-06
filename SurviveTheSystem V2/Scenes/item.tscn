@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://dvgvvt7cl7ihx"]
 
-[ext_resource type="Script" path="res://Scripts/item_entity.gd" id="1_oi086"]
+[ext_resource type="Script" uid="uid://cysg836ffpahy" path="res://Scripts/item_entity.gd" id="1_oi086"]
 [ext_resource type="Texture2D" uid="uid://dsd3tqfjj3ia7" path="res://Art/scythe_attack_up_1.png" id="2_dbue3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m8y2g"]

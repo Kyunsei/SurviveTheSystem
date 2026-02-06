@@ -1,9 +1,9 @@
 [gd_scene load_steps=10 format=3 uid="uid://70nvaotwt61o"]
 
-[ext_resource type="Script" path="res://Scripts/challenge_1.gd" id="1_6bn8n"]
+[ext_resource type="Script" uid="uid://bgq5g77r0enae" path="res://Scripts/challenge_1.gd" id="1_6bn8n"]
 [ext_resource type="Texture2D" uid="uid://drw315ju84ks3" path="res://Art/star_background.jpg" id="2_t3o0o"]
 [ext_resource type="TileSet" uid="uid://da3qv5bqnia2y" path="res://Scenes/tilemap_world.tres" id="3_4ipcx"]
-[ext_resource type="Script" path="res://Scripts/World_TileMap.gd" id="4_0dfk6"]
+[ext_resource type="Script" uid="uid://cilc4vetttfyo" path="res://Scripts/World_TileMap.gd" id="4_0dfk6"]
 [ext_resource type="PackedScene" uid="uid://cgax0tyixs3og" path="res://Scenes/pause_menu.tscn" id="5_yy47t"]
 [ext_resource type="PackedScene" uid="uid://mx5gsy2v5cj0" path="res://Scenes/game_over.tscn" id="6_33wqg"]
 [ext_resource type="PackedScene" uid="uid://dx8j1h6gp20xq" path="res://Scenes/clock.tscn" id="7_c7ixd"]

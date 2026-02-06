@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://btgdq7l0plg7j"]
 
-[ext_resource type="Script" path="res://Test/test.gd" id="1_b3jwv"]
+[ext_resource type="Script" uid="uid://n2yks3fggyqh" path="res://Test/test.gd" id="1_b3jwv"]
 [ext_resource type="PackedScene" uid="uid://bkvttykvie6wd" path="res://Scenes/life_spidercrab.tscn" id="1_bm3gd"]
 [ext_resource type="PackedScene" uid="uid://e2vhj8gjm240" path="res://Scenes/life_cat.tscn" id="2_thwgs"]
 

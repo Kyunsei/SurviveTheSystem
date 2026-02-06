@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://cpxqisxofmb36"]
+
+[ext_resource type="Script" uid="uid://g8f1lj1jedxl" path="res://Alife/PLAYER/player_control.gd" id="1_31v8x"]
+[ext_resource type="Script" uid="uid://cr5xulv4uju01" path="res://Alife/PLAYER/player.gd" id="1_qrp1o"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6t5sv"]
+albedo_color = Color(0.093700476, 0.10681253, 0.21656331, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_31v8x"]
+material = SubResource("StandardMaterial3D_6t5sv")
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_qrp1o"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qrp1o"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[node name="Player" type="CharacterBody3D" unique_id=1092654110]
+script = ExtResource("1_qrp1o")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=175010637]
+mesh = SubResource("CylinderMesh_31v8x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=649620016]
+shape = SubResource("CylinderShape3D_qrp1o")
+
+[node name="Player_control" type="Node" parent="." unique_id=1336833191]
+script = ExtResource("1_31v8x")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=243803890]
+transform = Transform3D(1, 0, 0, 0, 0.9811344, 0.19332686, 0, -0.19332686, 0.9811344, 0.5102363, 1.7858232, 2.4058506)
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1350252593]
+replication_config = SubResource("SceneReplicationConfig_qrp1o")

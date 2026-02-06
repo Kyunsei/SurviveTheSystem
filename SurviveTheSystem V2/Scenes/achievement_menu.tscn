@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bo826ra4ofd13"]
 
-[ext_resource type="Script" path="res://Scripts/achievement_menu.gd" id="1_ba3ph"]
+[ext_resource type="Script" uid="uid://ce6dmap3kihnx" path="res://Scripts/achievement_menu.gd" id="1_ba3ph"]
 
 [node name="Achievement_Menu" type="Control"]
 layout_mode = 3
