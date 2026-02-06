@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bqydh3n7b1h18"]
+
+[ext_resource type="Script" uid="uid://8lx6v731p21o" path="res://Alife/alife_manager.gd" id="1_yx3o6"]
+
+[node name="Alife manager" type="Node3D" unique_id=1345180502]
+script = ExtResource("1_yx3o6")

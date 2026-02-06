@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://bb1hqefmi6dcq"]
+
+[ext_resource type="Script" uid="uid://bglwtgf3pf65h" path="res://Menus/launcher_menu/landing_client_menu.gd" id="1_gvlmv"]
+
+[node name="Landing_menu" type="Control" unique_id=1071819256]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gvlmv")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=131612150]
+layout_mode = 0
+offset_right = 1154.0
+offset_bottom = 650.0
+color = Color(0.5975669, 0.71357876, 0.7646785, 1)
+
+[node name="Label" type="Label" parent="." unique_id=107063769]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -354.0
+offset_top = 76.0
+offset_right = 354.0
+offset_bottom = 159.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 60
+text = "Survive The System v 0.3"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=340213268]
+layout_mode = 0
+offset_left = 517.0
+offset_top = 283.0
+offset_right = 641.0
+offset_bottom = 441.0
+
+[node name="Button_Play" type="Button" parent="VBoxContainer" unique_id=722948366]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Play"
+
+[node name="Button_Settings" type="Button" parent="VBoxContainer" unique_id=1419502925]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Settings"
+
+[node name="Button_Quit" type="Button" parent="VBoxContainer" unique_id=1912832244]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Quit"
+
+[node name="Label_server" type="Label" parent="." unique_id=730387435]
+layout_mode = 0
+offset_left = 521.0
+offset_top = 241.0
+offset_right = 625.0
+offset_bottom = 264.0
+text = "Server offline"
+
+[connection signal="pressed" from="VBoxContainer/Button_Play" to="." method="_on_button_play_pressed"]
