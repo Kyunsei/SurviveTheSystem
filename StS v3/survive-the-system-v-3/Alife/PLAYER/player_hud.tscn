@@ -28,4 +28,3 @@ offset_right = 53.0
 offset_bottom = 610.0
 
 [node name="Char_select" parent="." unique_id=372255549 instance=ExtResource("2_ivssi")]
-visible = false

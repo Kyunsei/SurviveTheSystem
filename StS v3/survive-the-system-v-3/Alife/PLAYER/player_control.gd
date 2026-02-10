@@ -48,8 +48,9 @@ func _physics_process(delta: float) -> void:
 		
 		if Input.is_action_just_pressed("action1"):
 			#var LIFE_SCENE = preload("res://Alife/Plant/Grass/grass.tscn")
-			player.get_parent().Spawn_life.rpc_id(1,player.global_position, "sheep")
-			player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
+			player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
+			
+			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
 			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
 			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
 

@@ -11,7 +11,7 @@ var max_life = 15000
 var life_pool = []
 var life_pool_index = 0
 var life_inactive_index =[]
-
+var life_no_pool_index = 0
 
 
 
@@ -101,6 +101,30 @@ func Spawn_life(new_position: Vector3,alife_type:String):
 	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
 	newlife.Activate()
 
+@rpc("any_peer","call_local")
+func Spawn_life_without_pool(new_position: Vector3,alife_type:String):
+	var newlife : Alife
+	var alife_scene : PackedScene
+	if alife_type == "grass":
+		alife_scene = plant_scene
+	elif alife_type == "sheep":
+		alife_scene = sheep_scene
+
+
+	newlife = alife_scene.instantiate()
+	newlife.ID = life_no_pool_index
+	newlife.LifeManager = self
+	newlife.World = World
+	newlife.name = "noPool" + str(life_no_pool_index)
+	newlife.reproduction_asked.connect(Spawn_life)
+	#newlife.desactivated.connect(on_desactivation)
+	add_child.call_deferred(newlife)	
+	#life_pool.append(newlife)
+	life_no_pool_index +=1
+
+	#current_life_number += 1
+	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+	newlife.Activate()
 
 func on_desactivation():
 	current_life_number -= 1

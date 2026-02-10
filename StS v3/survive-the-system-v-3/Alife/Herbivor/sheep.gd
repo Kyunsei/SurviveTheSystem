@@ -16,11 +16,11 @@ func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():
 			Homeostasis()
-			if current_energy < 10:
+			if current_energy < 100000000000:
 				target = checkfood_around()
 					
 			if target:
-				if position.distance_to(target.global_position) < 2:
+				if position.distance_to(target.position) < 2:
 					Eat(target)
 					target = null
 				else:
@@ -46,7 +46,7 @@ func find_closest(from_position: Vector3, array: Array) -> Node3D:
 	var closest_distance = INF
 	
 	for element in array:
-		var distance = from_position.distance_to(element.global_position)
+		var distance = from_position.distance_to(element.position)
 		if distance < closest_distance:
 			closest_distance = distance
 			closest = element
@@ -54,12 +54,12 @@ func find_closest(from_position: Vector3, array: Array) -> Node3D:
 	return closest	
 
 func checkfood_around():
-	var targets = alife_manager.get_alife_in_area(global_position,size)
+	var targets = alife_manager.get_alife_in_area(position,size)
 	if targets.size() > 0 :
-		return find_closest(global_position,targets)
+		return find_closest(position,targets)
 													
 func GoTo(t,delta):
-	direction = (t.global_position - global_position).normalized()
+	direction = (t.position - position).normalized()
 	global_position += direction * speed * delta * GlobalSimulationParameter.simulation_speed
 
 func Eat(t):
