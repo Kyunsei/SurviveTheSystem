@@ -17,6 +17,7 @@ var current_energy: float
 #PHENOTYPE
 @export var color:Color
 @export var size:Vector3
+var species: String
 
 #MOUVEMENT
 var current_speed: float
@@ -44,6 +45,8 @@ func Activate():
 func special_activation():
 	pass
 
+func Die():
+	Desactivate()
 
 func Desactivate():
 	hide()

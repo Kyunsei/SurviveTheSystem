@@ -18,5 +18,5 @@ func on_server_started():
 	if multiplayer.is_server():
 		$World.generate_world.rpc()
 		#$"Alife manager".Spawn_life.rpc_id(1,Vector3(5,0,5),$"Alife manager".plant_scene)
-		#$"Alife manager".Spawn_life.rpc_id(1,Vector3(-15,0,-15),$"Alife manager".plant_scene)
+		$"Alife manager".Spawn_life.rpc_id(1,Vector3(-15,0,-15),"grass")
 		GlobalSimulationParameter.SimulationStarted = true

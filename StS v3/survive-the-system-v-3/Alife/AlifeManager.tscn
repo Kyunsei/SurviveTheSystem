@@ -1,12 +1,16 @@
 [gd_scene format=3 uid="uid://bqydh3n7b1h18"]
 
 [ext_resource type="Script" uid="uid://8lx6v731p21o" path="res://Alife/alife_manager.gd" id="1_yx3o6"]
+[ext_resource type="PackedScene" uid="uid://cpxqisxofmb36" path="res://Alife/PLAYER/player.tscn" id="2_1bxti"]
 [ext_resource type="PackedScene" uid="uid://bpl70g08sxw37" path="res://Alife/Plant/Grass/grass.tscn" id="2_r1ws6"]
 [ext_resource type="Script" uid="uid://u8iu2usi8f3f" path="res://Alife/metabolism.gd" id="3_syi62"]
+[ext_resource type="PackedScene" uid="uid://bba3or5r3sxn1" path="res://Alife/Herbivor/sheep.tscn" id="4_ruoec"]
 
 [node name="Alife manager" type="Node3D" unique_id=1345180502]
 script = ExtResource("1_yx3o6")
+player_scene = ExtResource("2_1bxti")
 plant_scene = ExtResource("2_r1ws6")
+sheep_scene = ExtResource("4_ruoec")
 
 [node name="Metabolism" type="Node" parent="." unique_id=1259570145]
 script = ExtResource("3_syi62")

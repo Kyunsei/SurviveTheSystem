@@ -3,6 +3,7 @@ extends Node3D
 @export var World : Node3D
 @export var player_scene: PackedScene
 @export var plant_scene: PackedScene
+@export var sheep_scene: PackedScene
 
 #POOL SYSTEM
 var current_life_number = 0
@@ -65,6 +66,9 @@ func Spawn_life(new_position: Vector3,alife_type:String):
 	var alife_scene : PackedScene
 	if alife_type == "grass":
 		alife_scene = plant_scene
+	elif alife_type == "sheep":
+		alife_scene = sheep_scene
+
 	if current_life_number >= max_life:
 		return
 	#print(current_alife_number)
