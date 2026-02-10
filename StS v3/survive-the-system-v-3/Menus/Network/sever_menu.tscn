@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dlmqilve4y502"]
 
 [ext_resource type="Script" uid="uid://by2bosylwn5ip" path="res://Menus/Network/sever_menu.gd" id="1_s1xjv"]
+[ext_resource type="PackedScene" uid="uid://bvi5of21ge52k" path="res://Menus/data/life_data_menu.tscn" id="2_15i2s"]
 
 [node name="server_menu" type="Control" unique_id=1363508961]
 layout_mode = 3
@@ -42,5 +43,12 @@ offset_top = 35.0
 offset_right = 1088.0
 offset_bottom = 58.0
 grow_vertical = 0
+
+[node name="LifeDataMenu" parent="." unique_id=1757348478 instance=ExtResource("2_15i2s")]
+layout_mode = 0
+offset_left = 769.0
+offset_top = 292.0
+offset_right = 769.0
+offset_bottom = 292.0
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

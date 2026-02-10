@@ -17,7 +17,7 @@ var current_energy: float
 #PHENOTYPE
 @export var color:Color
 @export var size:Vector3
-var species: String
+#var species: String
 
 #MOUVEMENT
 var current_speed: float
@@ -52,7 +52,7 @@ func Desactivate():
 	hide()
 	isActive = false
 	remove_from_world_bin()
-	desactivated.emit()
+	desactivated.emit(self)
 	LifeManager.life_inactive_index.append(ID)
 
 

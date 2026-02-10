@@ -7,7 +7,8 @@ layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_qt2jt")
 
-[node name="Panel" type="Panel" parent="." unique_id=976789386]
+[node name="Graph_population" type="Panel" parent="." unique_id=976789386]
 layout_mode = 0
+offset_top = 2.0
 offset_right = 304.0
-offset_bottom = 159.0
+offset_bottom = 161.0

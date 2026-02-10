@@ -13,8 +13,11 @@ var life_pool_index = 0
 var life_inactive_index =[]
 var life_no_pool_index = 0
 
+var current_life_count_by_species = [0,0]
 
 
+#DATA
+var timer = 1
 
 #OLD
 var plant_array = []
@@ -34,13 +37,18 @@ var max_plant  = 10000
 
 func _ready() -> void:
 	$Metabolism.World = World
-
+	#set_multiplayer_authority(1)
 
 
 func _process(delta: float) -> void:
-	pass
-	#$Metabolism.Update()
-
+	if multiplayer.is_server():
+		timer -= delta
+		if timer < 0:
+			GlobalSimulationParameter.sheep_number_data.append(current_life_count_by_species[1])
+			GlobalSimulationParameter.grass_number_data.append(current_life_count_by_species[0])
+			timer = 5
+		pass
+		#$Metabolism.Update()
 
 
 func duplicate_life(alife):
@@ -99,6 +107,10 @@ func Spawn_life(new_position: Vector3,alife_type:String):
 		position = %World.wrap_around(position)'
 	current_life_number += 1
 	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+	if newlife.species =="grass":
+		current_life_count_by_species[0] += 1
+	if newlife.species =="sheep":
+		current_life_count_by_species[1] += 1
 	newlife.Activate()
 
 @rpc("any_peer","call_local")
@@ -125,9 +137,17 @@ func Spawn_life_without_pool(new_position: Vector3,alife_type:String):
 	#current_life_number += 1
 	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
 	newlife.Activate()
+	if newlife.species =="grass":
+		current_life_count_by_species[0] += 1
+	if newlife.species =="sheep":
+		current_life_count_by_species[1] += 1
 
-func on_desactivation():
+func on_desactivation(life):
 	current_life_number -= 1
+	if life.species =="grass":
+		current_life_count_by_species[0] -= 1
+	if life.species =="sheep":
+		current_life_count_by_species[1] -= 1
 	
 func get_desactivated_life():
 	var idx = life_inactive_index.pop_back()  

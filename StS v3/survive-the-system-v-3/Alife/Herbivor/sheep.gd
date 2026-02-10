@@ -4,11 +4,12 @@ var target: Node3D
 var alife_manager: Node3D
 var direction : Vector3
 var speed = 10
-
+var species = "sheep"
+var wandertimer = 0
 func _ready() -> void:
 	print("hello Mr sheep")
 	size = Vector3(1,1,1) #Temporary...
-	species = "sheep"
+
 	max_energy = 1000
 	alife_manager = get_parent()
 
@@ -27,7 +28,12 @@ func _process(delta: float) -> void:
 					#print(target)
 				
 			else:
-				direction = Vector3(0,0,0)
+				wandertimer -= delta
+				if wandertimer <= 0:
+					wandertimer = 5
+					direction = Vector3(randf_range(-1,1),0,randf_range(-1,1))
+				global_position += direction * speed * delta * GlobalSimulationParameter.simulation_speed
+
 				#print(direction)
 			Reproduction()
 			Homeostasis()
@@ -44,6 +50,7 @@ func Die():
 
 func Desactivate():
 	hide()
+	LifeManager.current_life_count_by_species[1] -= 1
 	#isActive = false
 	#remove_from_world_bin()
 	#desactivated.emit()
@@ -51,7 +58,6 @@ func Desactivate():
 
 func Homeostasis():
 	current_energy -= 5 * size.x * size.z * GlobalSimulationParameter.simulation_speed
-	print(current_energy)
 	#current_energy = max(0,current_energy)
 	if current_energy < 0:
 		pass
