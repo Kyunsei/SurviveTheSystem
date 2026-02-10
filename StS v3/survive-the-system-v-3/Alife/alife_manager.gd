@@ -9,6 +9,7 @@ var current_life_number = 0
 var max_life = 5000
 var life_pool = []
 var life_pool_index = 0
+var life_inactive_index =[]
 
 
 
@@ -66,6 +67,8 @@ func Spawn_life(new_position: Vector3,alife_scene):
 	#print(current_alife_number)
 	if life_pool.size() < max_life:
 		newlife = alife_scene.instantiate()
+		newlife.ID = life_pool_index
+		newlife.LifeManager = self
 		newlife.World = World
 		newlife.name = str(life_pool_index)
 		newlife.reproduction_asked.connect(Spawn_life)
@@ -96,9 +99,11 @@ func on_desactivation():
 	current_life_number -= 1
 	
 func get_desactivated_life():
-	for a in life_pool:
+	var idx = life_inactive_index.pop_back()  
+	return life_pool[idx]
+	'for a in life_inactive_index:
 		if a.isActive == false:
-			return a
+			return a'
 	
 
 

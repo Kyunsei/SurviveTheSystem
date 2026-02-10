@@ -17,7 +17,7 @@ func _ready() -> void:
 	multiplayer.connection_failed.connect(on_connection_failed)
 
 
-	connect_to_server(IP_ADDRESS, PORT)
+	#connect_to_server(IP_ADDRESS, PORT)
 
 func check_connection():
 	if multiplayer.multiplayer_peer:
@@ -67,6 +67,12 @@ func _on_button_play_pressed() -> void:
 	#get_tree().change_scene_to_file("res://main_game.tscn")
 
 
-func _on_button_play_solo_pressed() -> void:
-	hide()
-	client_started.emit()
+
+
+func _on_button_localconnect_pressed() -> void:
+	connect_to_server(IP_ADDRESS, PORT)
+
+
+func _on_button_onlineconnect_pressed() -> void:
+	var newIP = "158.41.57.177"
+	connect_to_server(newIP, PORT)

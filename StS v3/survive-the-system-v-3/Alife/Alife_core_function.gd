@@ -28,6 +28,8 @@ var current_speed: float
 
 
 #POOLSYSTEM
+var ID: int
+var LifeManager : Node3D
 var isActive:bool
 signal reproduction_asked
 signal desactivated
@@ -38,11 +40,15 @@ func Activate():
 	isActive = true
 	put_in_world_bin()
 
+
+
+
 func Desactivate():
 	hide()
 	isActive = false
 	remove_from_world_bin()
 	desactivated.emit()
+	LifeManager.life_inactive_index.append(ID)
 
 
 func put_in_world_bin():

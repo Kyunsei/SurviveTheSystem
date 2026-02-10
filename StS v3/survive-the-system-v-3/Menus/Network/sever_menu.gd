@@ -22,8 +22,9 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if multiplayer.is_server():
-		$FPS.text ="Peer ID: " + str(multiplayer.get_unique_id()) + "\nfps: " + str(Engine.get_frames_per_second())
+	if peer:
+		if multiplayer.is_server():
+			$FPS.text ="Peer ID: " + str(multiplayer.get_unique_id()) + "\nfps: " + str(Engine.get_frames_per_second())
 
 
 func _on_button_pressed() -> void:

@@ -20,7 +20,6 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if player.is_multiplayer_authority():
 		direction = Vector3(0,0,0)
-		#print("yes")
 		if Input.is_action_pressed("down"):
 			direction.z = 1
 		if Input.is_action_pressed("up"):
