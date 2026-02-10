@@ -1,7 +1,7 @@
 extends Alife
 
 var Photosynthesis_absorbtion = 1.0
-
+var light_index : int
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	size = Vector3(1,1,1) #Temporary...
@@ -11,14 +11,19 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():
-			Photosynthesis()
-			Reproduction()
-			Homeostasis()
+			if isActive:
+				Photosynthesis()
+				Reproduction()
+				Homeostasis()
 
 
 func Die():
 	#print("heelo")
 	Desactivate()
+
+func special_activation():
+	var w_pos = World.get_PositionInGrid(position,World.light_tile_size)
+	light_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
 	
 
 func Homeostasis():
@@ -29,14 +34,15 @@ func Homeostasis():
 		Die()
 
 func Photosynthesis():
-	var w_pos = World.get_PositionInGrid(position,World.light_tile_size)
-	var w_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
-	if w_index <  World.light_array.size():
-		var energy_absorbed = World.light_array[w_index] * Photosynthesis_absorbtion * GlobalSimulationParameter.simulation_speed 
-		energy_absorbed = min(World.light_array[w_index],energy_absorbed)
+
+	if light_index <  World.light_array.size():
+		var energy_absorbed = World.light_array[light_index] * Photosynthesis_absorbtion * GlobalSimulationParameter.simulation_speed 
+		energy_absorbed = min(World.light_array[light_index],energy_absorbed)
 		#print(energy_absorbed)
+		if energy_absorbed <= 0:
+			return
 		current_energy += energy_absorbed
-		World.light_array[w_index] = max(World.light_array[w_index]-energy_absorbed,0)
+		World.light_array[light_index] = max(World.light_array[light_index]-energy_absorbed,0)
 
 func Reproduction():
 	if current_energy > 10:# reproduction_stock + energy_stock:

@@ -39,8 +39,10 @@ func Activate():
 	show()
 	isActive = true
 	put_in_world_bin()
-
-
+	special_activation()
+	
+func special_activation():
+	pass
 
 
 func Desactivate():
