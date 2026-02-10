@@ -115,7 +115,7 @@ func Spawn_life_without_pool(new_position: Vector3,alife_type:String):
 	newlife.ID = life_no_pool_index
 	newlife.LifeManager = self
 	newlife.World = World
-	newlife.name = "noPool" + str(life_no_pool_index)
+	newlife.name = "noPool_" + str(life_no_pool_index)
 	newlife.reproduction_asked.connect(Spawn_life)
 	#newlife.desactivated.connect(on_desactivation)
 	add_child.call_deferred(newlife)	

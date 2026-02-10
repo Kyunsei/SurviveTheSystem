@@ -16,7 +16,7 @@ func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():
 			Homeostasis()
-			if current_energy < 100000000000:
+			if current_energy < 500:
 				target = checkfood_around()
 					
 			if target:
@@ -30,7 +30,7 @@ func _process(delta: float) -> void:
 			else:
 				direction = Vector3(0,0,0)
 				#print(direction)
-		
+			Reproduction()
 
 
 func Homeostasis():
@@ -66,4 +66,15 @@ func Eat(t):
 	current_energy += t.current_energy
 	t.current_energy = 0
 	t.Die()
-	
+
+func Reproduction():
+	if current_energy > 400:# reproduction_stock + energy_stock:
+		var newpos = position + Vector3(randf_range(-15,15),
+											0,
+											randf_range(-15,15)
+											) 
+		#var scene = load(get_scene_file_path())
+		alife_manager.Spawn_life_without_pool.rpc_id(1,newpos, "sheep")
+		#reproduction_asked.emit(newpos,"sheep")
+		current_energy -= 400
+		
