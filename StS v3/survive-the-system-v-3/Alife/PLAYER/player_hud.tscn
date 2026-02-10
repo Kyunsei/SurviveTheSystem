@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cx8myhkgjy4fp"]
 
 [ext_resource type="Script" uid="uid://vmjbgjbpdq6g" path="res://Alife/PLAYER/player_hud.gd" id="1_50gt6"]
+[ext_resource type="PackedScene" uid="uid://6qrypffsftey" path="res://Menus/char_select.tscn" id="2_ivssi"]
 
 [node name="Player_HUD" type="CanvasLayer" unique_id=1065555217]
 script = ExtResource("1_50gt6")
@@ -25,3 +26,5 @@ offset_left = 13.0
 offset_top = 587.0
 offset_right = 53.0
 offset_bottom = 610.0
+
+[node name="Char_select" parent="." unique_id=372255549 instance=ExtResource("2_ivssi")]

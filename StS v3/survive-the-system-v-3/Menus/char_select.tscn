@@ -1,0 +1,277 @@
+[gd_scene format=3 uid="uid://6qrypffsftey"]
+
+[ext_resource type="Script" uid="uid://b0ccs7r1o0q0y" path="res://Menus/char_select.gd" id="1_jotqc"]
+[ext_resource type="Texture2D" uid="uid://bke7l668o7ms7" path="res://Menus/picture_random/cat.jpg" id="1_wfsx2"]
+[ext_resource type="Texture2D" uid="uid://cm32s6x03t3y7" path="res://Menus/picture_random/buttely.jpg" id="2_jotqc"]
+[ext_resource type="Texture2D" uid="uid://kp02bbwmmoed" path="res://Menus/picture_random/mandrake.jpg" id="3_2clds"]
+[ext_resource type="Texture2D" uid="uid://dem3wpw4x1rg3" path="res://Menus/picture_random/robin.jpg" id="4_lxa7j"]
+[ext_resource type="Texture2D" uid="uid://ou3mbj4xghes" path="res://Menus/picture_random/sloth.jpg" id="5_db32l"]
+[ext_resource type="Texture2D" uid="uid://cpeip1vpn376u" path="res://Menus/picture_random/tortoise.jpg" id="6_wgp8q"]
+
+[node name="Char_select" type="Control" unique_id=372255549]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_jotqc")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=61083874]
+layout_mode = 0
+offset_right = 1151.0
+offset_bottom = 647.0
+color = Color(0.6853792, 0.80885816, 0.9607565, 1)
+
+[node name="Char_window" type="Control" parent="." unique_id=1771942363]
+anchors_preset = 0
+offset_left = 136.0
+offset_top = 28.0
+offset_right = 176.0
+offset_bottom = 68.0
+
+[node name="ColorRect" type="ColorRect" parent="Char_window" unique_id=1075486967]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.5
+offset_top = 23.0
+offset_right = 80.0
+offset_bottom = 163.0
+
+[node name="Cat" type="Sprite2D" parent="Char_window" unique_id=1617184174]
+position = Vector2(43, 113)
+texture = ExtResource("1_wfsx2")
+
+[node name="Label" type="Label" parent="Char_window" unique_id=2067620258]
+layout_mode = 0
+offset_left = -92.0
+offset_top = -21.0
+offset_right = 168.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+text = "The Catraunaute"
+
+[node name="Label3" type="Label" parent="Char_window" unique_id=443447094]
+layout_mode = 0
+offset_left = -101.0
+offset_top = 200.0
+offset_right = 210.0
+offset_bottom = 271.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "- Fierce Fighter
+- Need to loot for the CatEmpire"
+
+[node name="Char_window2" type="Control" parent="." unique_id=1153354069]
+anchors_preset = 0
+offset_left = 138.0
+offset_top = 342.0
+offset_right = 178.0
+offset_bottom = 382.0
+
+[node name="ColorRect" type="ColorRect" parent="Char_window2" unique_id=200609782]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.5
+offset_top = 23.0
+offset_right = 80.0
+offset_bottom = 163.0
+
+[node name="Buttely" type="Sprite2D" parent="Char_window2" unique_id=591864250]
+position = Vector2(39, 102)
+texture = ExtResource("2_jotqc")
+
+[node name="Label" type="Label" parent="Char_window2" unique_id=1479928803]
+layout_mode = 0
+offset_left = -75.0
+offset_top = -30.0
+offset_right = 185.0
+offset_bottom = 15.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+text = "The Butterfly"
+
+[node name="Label3" type="Label" parent="Char_window2" unique_id=2034622089]
+layout_mode = 0
+offset_left = -101.0
+offset_top = 200.0
+offset_right = 210.0
+offset_bottom = 271.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "- Cannot Fight
+- Looking for Something"
+
+[node name="Char_window3" type="Control" parent="." unique_id=706903391]
+anchors_preset = 0
+offset_left = 473.0
+offset_top = 38.0
+offset_right = 513.0
+offset_bottom = 78.0
+
+[node name="ColorRect" type="ColorRect" parent="Char_window3" unique_id=1272066541]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.5
+offset_top = 23.0
+offset_right = 80.0
+offset_bottom = 163.0
+
+[node name="Mandrake" type="Sprite2D" parent="Char_window3" unique_id=169648447]
+position = Vector2(38, 95)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("3_2clds")
+
+[node name="Label" type="Label" parent="Char_window3" unique_id=135451251]
+layout_mode = 0
+offset_left = -67.0
+offset_top = -25.0
+offset_right = 193.0
+offset_bottom = 20.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+text = "The Gardener"
+
+[node name="Label3" type="Label" parent="Char_window3" unique_id=658485312]
+layout_mode = 0
+offset_left = -41.0
+offset_top = 193.0
+offset_right = 130.0
+offset_bottom = 264.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "- Just living here
+- Has seed stock"
+
+[node name="Char_window4" type="Control" parent="." unique_id=1015521327]
+anchors_preset = 0
+offset_left = 472.0
+offset_top = 348.0
+offset_right = 512.0
+offset_bottom = 388.0
+
+[node name="ColorRect" type="ColorRect" parent="Char_window4" unique_id=1158645003]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.5
+offset_top = 23.0
+offset_right = 80.0
+offset_bottom = 163.0
+
+[node name="Robin" type="Sprite2D" parent="Char_window4" unique_id=467322945]
+position = Vector2(26, 107)
+texture = ExtResource("4_lxa7j")
+
+[node name="Label" type="Label" parent="Char_window4" unique_id=532746786]
+layout_mode = 0
+offset_left = -92.0
+offset_top = -21.0
+offset_right = 168.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+text = "The Robin (bird)"
+
+[node name="Label3" type="Label" parent="Char_window4" unique_id=53826555]
+layout_mode = 0
+offset_left = -81.0
+offset_top = 193.0
+offset_right = 230.0
+offset_bottom = 283.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "- Just Exploring
+- Cannot fight
+-Fly away from dnager"
+
+[node name="Char_window5" type="Control" parent="." unique_id=1870141656]
+anchors_preset = 0
+offset_left = 861.0
+offset_top = 34.0
+offset_right = 901.0
+offset_bottom = 74.0
+
+[node name="ColorRect" type="ColorRect" parent="Char_window5" unique_id=2126360801]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.5
+offset_top = 23.0
+offset_right = 80.0
+offset_bottom = 163.0
+
+[node name="Sloth" type="Sprite2D" parent="Char_window5" unique_id=350122591]
+position = Vector2(-8, 97)
+texture = ExtResource("5_db32l")
+
+[node name="Label" type="Label" parent="Char_window5" unique_id=562243834]
+layout_mode = 0
+offset_left = -92.0
+offset_top = -21.0
+offset_right = 168.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+text = "The Lost"
+
+[node name="Label3" type="Label" parent="Char_window5" unique_id=1788655013]
+layout_mode = 0
+offset_left = -101.0
+offset_top = 200.0
+offset_right = 210.0
+offset_bottom = 271.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "- Just lost
+- Trying to escape"
+
+[node name="Char_window6" type="Control" parent="." unique_id=1825250122]
+anchors_preset = 0
+offset_left = 854.0
+offset_top = 353.0
+offset_right = 894.0
+offset_bottom = 393.0
+
+[node name="ColorRect" type="ColorRect" parent="Char_window6" unique_id=1427525725]
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.5
+offset_top = 23.0
+offset_right = 80.0
+offset_bottom = 163.0
+
+[node name="Tortoise" type="Sprite2D" parent="Char_window6" unique_id=660869716]
+position = Vector2(26, 110)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("6_wgp8q")
+
+[node name="Label" type="Label" parent="Char_window6" unique_id=1268327519]
+layout_mode = 0
+offset_left = -92.0
+offset_top = -21.0
+offset_right = 168.0
+offset_bottom = 24.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 32
+text = "The Turtle"
+
+[node name="Label3" type="Label" parent="Char_window6" unique_id=1609987996]
+layout_mode = 0
+offset_left = -101.0
+offset_top = 200.0
+offset_right = 210.0
+offset_bottom = 271.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "- Need to save a key species
+"
+
+[node name="Button" type="Button" parent="." unique_id=1082786924]
+layout_mode = 0
+offset_left = 1082.0
+offset_top = 608.0
+offset_right = 1126.0
+offset_bottom = 639.0
+text = "Hide"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

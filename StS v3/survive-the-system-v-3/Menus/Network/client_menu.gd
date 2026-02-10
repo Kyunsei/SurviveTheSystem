@@ -75,4 +75,5 @@ func _on_button_localconnect_pressed() -> void:
 
 func _on_button_onlineconnect_pressed() -> void:
 	var newIP = "158.41.57.177"
+	newIP ="195.26.116.181"
 	connect_to_server(newIP, PORT)
