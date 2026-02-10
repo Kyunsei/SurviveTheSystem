@@ -4,6 +4,8 @@ extends CharacterBody3D
 @export var speed = 500
 @export var gravity = 1000
 @export var fly = false
+var crouched = false
+var gonna_jump = false
 var direction = Vector3(0,0,0)
 
 

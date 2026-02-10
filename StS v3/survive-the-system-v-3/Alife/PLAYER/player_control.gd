@@ -7,7 +7,7 @@ var camera_anchor : Node3D
 var alife_manager: Node3D
 
 var direction = Vector3(0,0,0)
-
+var total = 0
 
 func _ready() -> void:
 	player = get_parent()
@@ -53,6 +53,34 @@ func _physics_process(delta: float) -> void:
 			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
 			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
 			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
+		if Input.is_action_pressed("jump") :
+			total += delta
+
+		if Input.is_action_just_released("jump"):
+			total = 0
+			if player.gonna_jump == true :
+				print ("long jumped")
+				player.gonna_jump = false
+			else :
+				print ("jumped")
+			player.crouched = false
+			player.get_node("AnimationPlayer").play("RESET")
+			player.speed = 500
+		if total > 0.2:
+			player.speed = 0
+		if total > 1 :
+			if player.crouched == false :
+				player.get_node("AnimationPlayer").play("Crouch")
+				player.crouched = true
+		if total > 1.2 :
+				player.gonna_jump = true
+			#if Input.is_action_just_released("jump") and player.crouched == true:
+				#print("long jump")
+				#player.get_node("AnimationPlayer").play("RESET")
+				#player.crouched = false
+				#player.speed = 500
+
+
 
 
 @rpc("any_peer","call_local")

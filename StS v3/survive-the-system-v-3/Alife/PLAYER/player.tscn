@@ -10,10 +10,7 @@ albedo_color = Color(0.093700476, 0.10681253, 0.21656331, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_31v8x"]
 material = SubResource("StandardMaterial3D_6t5sv")
-
-[sub_resource type="SphereMesh" id="SphereMesh_geoiu"]
-radius = 0.1
-height = 0.5
+height = 1.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_geoiu"]
 transparency = 1
@@ -26,7 +23,17 @@ size = Vector3(1.2, 2, 2)
 [sub_resource type="BoxShape3D" id="BoxShape3D_geoiu"]
 size = Vector3(1.2, 2, 2)
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_qrp1o"]
+[sub_resource type="SphereMesh" id="SphereMesh_geoiu"]
+radius = 0.1
+height = 0.5
+
+[sub_resource type="PrismMesh" id="PrismMesh_geoiu"]
+left_to_right = 1.0
+size = Vector3(0.6, 0.4, 0.2)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_2y45n"]
+radius = 0.05
+height = 0.8
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qrp1o"]
 properties/0/path = NodePath(".:position")
@@ -39,6 +46,69 @@ properties/2/path = NodePath("MeshInstance3D/Area3D:visible")
 properties/2/spawn = true
 properties/2/replication_mode = 1
 
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_1iiag"]
+height = 1.0
+
+[sub_resource type="Animation" id="Animation_geoiu"]
+resource_name = "Crouch"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CollisionShape3D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(1, 1, 1), Vector3(1, 0.5, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(1, 1, 1), Vector3(1, 0.5, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_2y45n"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("CollisionShape3D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_1iiag"]
+_data = {
+&"Crouch": SubResource("Animation_geoiu"),
+&"RESET": SubResource("Animation_2y45n")
+}
+
 [node name="Player" type="CharacterBody3D" unique_id=1092654110]
 script = ExtResource("1_qrp1o")
 
@@ -46,14 +116,6 @@ script = ExtResource("1_qrp1o")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=175010637]
 mesh = SubResource("CylinderMesh_31v8x")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D" unique_id=1660529858]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.20800495, 0.65307355, -0.39909828)
-mesh = SubResource("SphereMesh_geoiu")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D" unique_id=1976340497]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16866833, 0.65307355, -0.40778136)
-mesh = SubResource("SphereMesh_geoiu")
 
 [node name="Area3D" type="Area3D" parent="MeshInstance3D" unique_id=970604991]
 unique_name_in_owner = true
@@ -67,8 +129,27 @@ mesh = SubResource("BoxMesh_geoiu")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.9303273)
 shape = SubResource("BoxShape3D_geoiu")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=649620016]
-shape = SubResource("CylinderShape3D_qrp1o")
+[node name="Decorum" type="Node3D" parent="MeshInstance3D" unique_id=1162204555]
+
+[node name="Eyes1" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=1660529858]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.20800495, 0.19331414, -0.39909828)
+mesh = SubResource("SphereMesh_geoiu")
+
+[node name="Eyes2" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=1976340497]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16866833, 0.19331414, -0.40778136)
+mesh = SubResource("SphereMesh_geoiu")
+
+[node name="ears1" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=666245996]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.17400604, 0.57784826, 0)
+mesh = SubResource("PrismMesh_geoiu")
+
+[node name="ears2" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=351004003]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -0.17599396, 0.57784826, 0)
+mesh = SubResource("PrismMesh_geoiu")
+
+[node name="tail" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=1726480256]
+transform = Transform3D(1, 0, 0, 0, 0.8660253, -0.49999997, 0, 0.49999997, 0.8660253, 0, 0, 0.63000005)
+mesh = SubResource("CapsuleMesh_2y45n")
 
 [node name="Player_control" type="Node" parent="." unique_id=1336833191]
 script = ExtResource("1_31v8x")
@@ -84,3 +165,9 @@ transform = Transform3D(1, 0, 0, 0, 0.9811344, 0.19332686, 0, -0.19332686, 0.981
 script = ExtResource("3_kppvm")
 pitch_anchor = NodePath("..")
 yaw_anchor = NodePath("..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=793034520]
+shape = SubResource("CylinderShape3D_1iiag")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=642195969]
+libraries/ = SubResource("AnimationLibrary_1iiag")
