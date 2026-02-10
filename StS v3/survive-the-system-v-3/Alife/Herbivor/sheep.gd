@@ -9,13 +9,12 @@ func _ready() -> void:
 	print("hello Mr sheep")
 	size = Vector3(1,1,1) #Temporary...
 	species = "sheep"
-	max_energy = 100
+	max_energy = 1000
 	alife_manager = get_parent()
 
 func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():
-			Homeostasis()
 			if current_energy < 500:
 				target = checkfood_around()
 					
@@ -31,14 +30,32 @@ func _process(delta: float) -> void:
 				direction = Vector3(0,0,0)
 				#print(direction)
 			Reproduction()
+			Homeostasis()
 
+func Activate():
+	#show()
+	isActive = true
+	#put_in_world_bin()
+	#special_activation()
+	
+func Die():
+	Desactivate()
+	queue_free()
+
+func Desactivate():
+	hide()
+	#isActive = false
+	#remove_from_world_bin()
+	#desactivated.emit()
+	#LifeManager.life_inactive_index.append(ID)
 
 func Homeostasis():
-	current_energy -= 0.2 * size.x * size.z * GlobalSimulationParameter.simulation_speed
+	current_energy -= 5 * size.x * size.z * GlobalSimulationParameter.simulation_speed
+	print(current_energy)
 	#current_energy = max(0,current_energy)
 	if current_energy < 0:
 		pass
-		#Die()
+		Die()
 
 
 func find_closest(from_position: Vector3, array: Array) -> Node3D:
@@ -55,8 +72,9 @@ func find_closest(from_position: Vector3, array: Array) -> Node3D:
 
 func checkfood_around():
 	var targets = alife_manager.get_alife_in_area(position,size)
-	if targets.size() > 0 :
-		return find_closest(position,targets)
+	if targets:
+		if targets.size() > 0 :
+			return find_closest(position,targets)
 													
 func GoTo(t,delta):
 	direction = (t.position - position).normalized()
@@ -76,5 +94,5 @@ func Reproduction():
 		#var scene = load(get_scene_file_path())
 		alife_manager.Spawn_life_without_pool.rpc_id(1,newpos, "sheep")
 		#reproduction_asked.emit(newpos,"sheep")
-		current_energy -= 400
+		current_energy -= 300
 		

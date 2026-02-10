@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bvi5of21ge52k"]
+
+[ext_resource type="Script" uid="uid://6qxhb6ud1ffi" path="res://Menus/data/life_data_menu.gd" id="1_qt2jt"]
+
+[node name="LifeDataMenu" type="Control" unique_id=1757348478]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_qt2jt")
+
+[node name="Panel" type="Panel" parent="." unique_id=976789386]
+layout_mode = 0
+offset_right = 304.0
+offset_bottom = 159.0
