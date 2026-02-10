@@ -6,11 +6,15 @@ extends Node3D
 
 #POOL SYSTEM
 var current_life_number = 0
-var max_life = 10000
+var max_life = 5000
 var life_pool = []
 var life_pool_index = 0
 
 
+
+
+
+#OLD
 var plant_array = []
 var plant_energy = []
 var plant_age = []
@@ -65,10 +69,11 @@ func Spawn_life(new_position: Vector3,alife_scene):
 		newlife.World = World
 		newlife.name = str(life_pool_index)
 		newlife.reproduction_asked.connect(Spawn_life)
+		newlife.desactivated.connect(on_desactivation)
 		add_child.call_deferred(newlife)	
 		life_pool.append(newlife)
 		life_pool_index +=1
-		newlife.Activate()
+		#newlife.Activate()
 	else:
 		newlife = get_desactivated_life()
 		if newlife == null:
@@ -82,11 +87,13 @@ func Spawn_life(new_position: Vector3,alife_scene):
 		position = %World.wrap_around(position)
 	if position.y <0 or position.y > %World.World_size*%World.tile_size:		
 		position = %World.wrap_around(position)'
-	newlife.Activate()
 	current_life_number += 1
 	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+	newlife.Activate()
 
 
+func on_desactivation():
+	current_life_number -= 1
 	
 func get_desactivated_life():
 	for a in life_pool:
@@ -107,3 +114,8 @@ func spawn_player(id):
 	self.call_deferred("add_child",new_player)
 	#if id == multiplayer.get_unique_id():
 	#new_player.set_multiplayer_authority(id)
+
+func get_alife_in_area(pos, area):
+	var w_pos = World.get_PositionInGrid(pos,World.bin_size)
+	var w_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+	return World.bin_array[w_index]

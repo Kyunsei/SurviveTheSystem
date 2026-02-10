@@ -7,7 +7,7 @@ albedo_color = Color(0.29064497, 0.57934064, 0.37795818, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_62w18"]
 material = SubResource("StandardMaterial3D_62w18")
-size = Vector2(20, 20)
+size = Vector2(50, 50)
 
 [sub_resource type="Environment" id="Environment_62w18"]
 background_mode = 1

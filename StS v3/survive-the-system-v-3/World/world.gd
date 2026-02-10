@@ -4,12 +4,14 @@ extends Node3D
 var World_Size = Vector3(100,1,100)
 
 ##### LIGHT MATRIX
-var light_tile_size = Vector3(2,World_Size.y,2) #in m?
+var light_tile_size = Vector3(1,World_Size.y,1) #in m?
 var light_array = []
 var light_flux_in = 1.0
 var light_max_value = 1.0
 
-
+#INTERACTION SYSTEM matrix
+var bin_array = []
+var bin_size = Vector3(5,World_Size.y,5)
 
 func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
@@ -25,10 +27,14 @@ func generate_world():
 	var calc_size = World_Size/light_tile_size
 	light_array.resize(calc_size.x * calc_size.y * calc_size.z)
 	fill_value_in_each_tile(light_array,light_flux_in)
-	#add_value_in_each_tile(light_array,light_flux_in,0,light_max_value)
+	var calc_size2 = World_Size/bin_size
+	bin_array.resize(calc_size2.x * calc_size2.y * calc_size2.z)
+	#fill_value_in_each_tile(bin_array,[])
+
 
 
 func get_PositionInGrid(pos,tile_size):
+	pos = pos + World_Size/2
 	return Vector3i(
 		floor(pos.x / tile_size.x),
 		floor(pos.y / tile_size.y),
@@ -36,10 +42,14 @@ func get_PositionInGrid(pos,tile_size):
 	)
 
 func index_3dto1d(x, y, z, tile_size):
+	'x = x + World_Size.x/2
+	y = y + World_Size.y/2
+	z = z + World_Size.z/2'
 	var array_size = World_Size/tile_size
 	return x + array_size.x * (y + array_size.y * z)
 
 func index_1dto3d(i, size_in3D) -> Vector3i:
+	print("2dto3d not fixed yet")
 	var x = i % size_in3D.x
 	var y = (i / size_in3D.x) % size_in3D.y
 	var z = i / (size_in3D.x * size_in3D.y)

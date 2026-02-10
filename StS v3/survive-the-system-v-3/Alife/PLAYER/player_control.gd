@@ -2,14 +2,17 @@ extends Node
 class_name player_control
 
 var player : Node3D
+var player_action_area : Node3D
 var camera_anchor : Node3D
+var alife_manager: Node3D
 
 var direction = Vector3(0,0,0)
 
 
-
 func _ready() -> void:
 	player = get_parent()
+	alife_manager = player.get_parent()
+	player_action_area = %Area3D
 	if player.has_node("camera_anchor"):
 		camera_anchor = player.get_node("camera_anchor")
 	
@@ -35,3 +38,19 @@ func _physics_process(delta: float) -> void:
 		player.direction = direction
 		#player.get_node("MeshInstance3D").look_at(-direction)
 		
+		
+		if Input.is_action_just_pressed("action0"):
+			DoAction.rpc_id(1)
+		
+
+@rpc("any_peer","call_local")
+func DoAction():
+	player_action_area.show()
+	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
+	 												player_action_area.get_node("CollisionShape3D").shape.size)
+	if targets:
+		for t in targets:
+			if t!= self:
+				t.Die()
+	await get_tree().create_timer(0.2).timeout
+	player_action_area.hide()
