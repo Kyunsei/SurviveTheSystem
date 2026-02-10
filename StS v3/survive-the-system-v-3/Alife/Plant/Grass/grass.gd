@@ -31,11 +31,12 @@ func Homeostasis():
 func Photosynthesis():
 	var w_pos = World.get_PositionInGrid(position,World.light_tile_size)
 	var w_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
-	var energy_absorbed = World.light_array[w_index] * Photosynthesis_absorbtion * GlobalSimulationParameter.simulation_speed 
-	energy_absorbed = min(World.light_array[w_index],energy_absorbed)
-	#print(energy_absorbed)
-	current_energy += energy_absorbed
-	World.light_array[w_index] = max(World.light_array[w_index]-energy_absorbed,0)
+	if w_index <  World.light_array.size():
+		var energy_absorbed = World.light_array[w_index] * Photosynthesis_absorbtion * GlobalSimulationParameter.simulation_speed 
+		energy_absorbed = min(World.light_array[w_index],energy_absorbed)
+		#print(energy_absorbed)
+		current_energy += energy_absorbed
+		World.light_array[w_index] = max(World.light_array[w_index]-energy_absorbed,0)
 
 func Reproduction():
 	if current_energy > 10:# reproduction_stock + energy_stock:
@@ -43,8 +44,8 @@ func Reproduction():
 											0,
 											randf_range(-5,5)
 											) 
-		var scene = load(get_scene_file_path())
-		reproduction_asked.emit(newpos,scene)
+		#var scene = load(get_scene_file_path())
+		reproduction_asked.emit(newpos,"grass")
 		current_energy -= 8
 		
 		

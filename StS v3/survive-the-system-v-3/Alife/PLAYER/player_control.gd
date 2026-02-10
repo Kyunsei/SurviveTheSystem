@@ -39,17 +39,24 @@ func _physics_process(delta: float) -> void:
 		
 		
 		if Input.is_action_just_pressed("action0"):
+			player_action_area.show()
+
 			DoAction.rpc_id(1)
+			await get_tree().create_timer(0.2).timeout
+			player_action_area.hide()
+			
 		
+		if Input.is_action_just_pressed("action1"):
+			#var LIFE_SCENE = preload("res://Alife/Plant/Grass/grass.tscn")
+			player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
+
 
 @rpc("any_peer","call_local")
 func DoAction():
-	player_action_area.show()
+
 	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
 	 												player_action_area.get_node("CollisionShape3D").shape.size)
 	if targets:
 		for t in targets:
 			if t!= self:
 				t.Die()
-	await get_tree().create_timer(0.2).timeout
-	player_action_area.hide()

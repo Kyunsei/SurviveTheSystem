@@ -60,8 +60,11 @@ func spawn_life(pos,scene):
 	self.call_deferred("add_child",new_life)'
 
 @rpc("any_peer","call_local")
-func Spawn_life(new_position: Vector3,alife_scene):
+func Spawn_life(new_position: Vector3,alife_type:String):
 	var newlife : Alife
+	var alife_scene : PackedScene
+	if alife_type == "grass":
+		alife_scene = plant_scene
 	if current_life_number >= max_life:
 		return
 	#print(current_alife_number)

@@ -54,7 +54,7 @@ func Desactivate():
 func put_in_world_bin():
 	var w_pos = World.get_PositionInGrid(position,World.bin_size)
 	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-	if new_bin_ID < 0:
+	if new_bin_ID < 0 or new_bin_ID > World.bin_array.size():
 		print("life out of world")
 		remove_from_world_bin()
 		return

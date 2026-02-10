@@ -14,6 +14,10 @@ Mouse: Camera
 Arrow: camera offset
 Wheel or -,=: zoom_in_out
 ESC: free mouse
+
+-------
+F or left click : attack
+R: plant a grass
 "
 
 [node name="FPS" type="Label" parent="." unique_id=1086284271]
