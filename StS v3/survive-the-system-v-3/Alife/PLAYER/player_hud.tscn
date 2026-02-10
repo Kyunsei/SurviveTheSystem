@@ -15,3 +15,9 @@ Arrow: camera offset
 Wheel or -,=: zoom_in_out
 ESC: free mouse
 "
+
+[node name="FPS" type="Label" parent="." unique_id=1086284271]
+offset_left = 13.0
+offset_top = 587.0
+offset_right = 53.0
+offset_bottom = 610.0

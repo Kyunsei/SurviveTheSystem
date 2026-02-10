@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://bpl70g08sxw37"]
+
+[ext_resource type="Script" uid="uid://cyvd8jyldyc55" path="res://Alife/Plant/Grass/grass.gd" id="1_u3naq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
+shading_mode = 2
+albedo_color = Color(0.27045736, 0.5658043, 0.3341278, 1)
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_oukle"]
+material = SubResource("StandardMaterial3D_11t0l")
+size = Vector2(0.5, 2)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_f4aqo"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[node name="grass" type="Node3D" unique_id=455347701]
+script = ExtResource("1_u3naq")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
+mesh = SubResource("QuadMesh_oukle")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=34745162]
+replication_config = SubResource("SceneReplicationConfig_f4aqo")

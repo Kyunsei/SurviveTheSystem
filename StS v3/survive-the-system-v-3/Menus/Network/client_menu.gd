@@ -65,3 +65,8 @@ func _on_button_play_pressed() -> void:
 	hide()
 	client_started.emit()
 	#get_tree().change_scene_to_file("res://main_game.tscn")
+
+
+func _on_button_play_solo_pressed() -> void:
+	hide()
+	client_started.emit()

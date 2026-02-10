@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://cicfknposytmm"]
+
+[ext_resource type="Script" uid="uid://cru2pgfnbsylb" path="res://Menus/game_ui.gd" id="1_63d25"]
+
+[node name="Game_UI" type="CanvasLayer" unique_id=1913232107]
+script = ExtResource("1_63d25")
+
+[node name="FPS" type="Label" parent="." unique_id=782818849]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -44.0
+offset_right = 40.0
+offset_bottom = -21.0
+grow_vertical = 0
+text = "FPS"

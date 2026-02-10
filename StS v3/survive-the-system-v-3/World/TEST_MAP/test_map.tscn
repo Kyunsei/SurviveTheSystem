@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://crmvnx4y35myr"]
 
-[ext_resource type="PackedScene" uid="uid://cijapmgwsv1qc" path="res://Alife/grass/bush.tscn" id="1_72kgx"]
-[ext_resource type="PackedScene" uid="uid://b0bstsakwdp1g" path="res://Alife/grass/flower.tscn" id="2_j6ho4"]
-[ext_resource type="PackedScene" uid="uid://bpl70g08sxw37" path="res://Alife/grass/grass.tscn" id="3_8yecn"]
-[ext_resource type="PackedScene" uid="uid://bbug4errj8rkt" path="res://Alife/grass/tree.tscn" id="4_ebvj5"]
+[ext_resource type="PackedScene" uid="uid://cijapmgwsv1qc" path="res://Alife/Plant/bush.tscn" id="1_72kgx"]
+[ext_resource type="PackedScene" uid="uid://b0bstsakwdp1g" path="res://Alife/Plant/flower.tscn" id="2_j6ho4"]
+[ext_resource type="PackedScene" uid="uid://bpl70g08sxw37" path="res://Alife/Plant/Grass/grass.tscn" id="3_8yecn"]
+[ext_resource type="PackedScene" uid="uid://bbug4errj8rkt" path="res://Alife/Plant/tree.tscn" id="4_ebvj5"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_d16a2"]
 albedo_color = Color(0.61826414, 0.8047162, 0.38998383, 1)
@@ -33,6 +33,7 @@ background_color = Color(0.35171163, 0.24703303, 0.3351028, 1)
 [node name="test_map" type="Node3D" unique_id=747631985]
 
 [node name="Node3D" type="Node3D" parent="." unique_id=826016526]
+visible = false
 
 [node name="grass" parent="Node3D" unique_id=455347701 instance=ExtResource("1_72kgx")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.80957, 1.3375745, 0)

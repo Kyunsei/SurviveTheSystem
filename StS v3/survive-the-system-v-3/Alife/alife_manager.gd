@@ -1,14 +1,101 @@
 extends Node3D
 
-
+@export var World : Node3D
 @export var player_scene: PackedScene
-	
+@export var plant_scene: PackedScene
+
+#POOL SYSTEM
+var current_life_number = 0
+var max_life = 10000
+var life_pool = []
+var life_pool_index = 0
+
+
+var plant_array = []
+var plant_energy = []
+var plant_age = []
+var index_plant = 0
+var max_plant  = 10000
+
+#three choice
+#1. all alife is instatiate individually
+#Pro: easy to do,cons: hard to optimise
+#2. alife are in a common matrix and use GPU or renderig server for visual (disconnected
+#pro: optimisation possible,  cons: difficult to have heterogeinity bc everything in same matrixx
+#3. hybrid... need to identifiy where to parallelise and where to not!
+
+#START WITH 1) because not a lot of time until demo in March
+
+func _ready() -> void:
+	$Metabolism.World = World
+
+
+
+func _process(delta: float) -> void:
+	pass
+	#$Metabolism.Update()
+
+
+
+func duplicate_life(alife):
+	var newpos = alife.global_position + Vector3(randf_range(-5,5),0,randf_range(-5,5))
+	Spawn_life.rpc_id(1,newpos,plant_scene)
 
 	
+'@rpc("any_peer","call_local")
+func spawn_life(pos,scene):
+	var new_life = plant_scene.instantiate()
+	new_life.position = pos
+	new_life.World = World
+	plant_array.append(new_life)
+	plant_age.append(0)
+	plant_energy.append(0)
+	new_life.name = str(index_plant)
+	index_plant +=1
+	self.call_deferred("add_child",new_life)'
+
+@rpc("any_peer","call_local")
+func Spawn_life(new_position: Vector3,alife_scene):
+	var newlife : Alife
+	if current_life_number >= max_life:
+		return
+	#print(current_alife_number)
+	if life_pool.size() < max_life:
+		newlife = alife_scene.instantiate()
+		newlife.World = World
+		newlife.name = str(life_pool_index)
+		newlife.reproduction_asked.connect(Spawn_life)
+		add_child.call_deferred(newlife)	
+		life_pool.append(newlife)
+		life_pool_index +=1
+		newlife.Activate()
+	else:
+		newlife = get_desactivated_life()
+		if newlife == null:
+			return
+		#nal.ID = life_ID_count
+		#life_ID_count += 1
+		
+	#position.x = clamp(position.x,0 ,%World.World_size*%World.tile_size)
+	#position.y = clamp(position.y,0 ,%World.World_size*%World.tile_size)
+	'if position.x <0 or position.x > %World.World_size*%World.tile_size:		
+		position = %World.wrap_around(position)
+	if position.y <0 or position.y > %World.World_size*%World.tile_size:		
+		position = %World.wrap_around(position)'
+	newlife.Activate()
+	current_life_number += 1
+	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+
+
 	
-func on_game_started():
-	if multiplayer.is_server() == false:
-		spawn_player.rpc_id(1,multiplayer.get_unique_id())
+func get_desactivated_life():
+	for a in life_pool:
+		if a.isActive == false:
+			return a
+	
+
+
+
 	
 
 
