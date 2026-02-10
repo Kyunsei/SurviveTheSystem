@@ -6,7 +6,7 @@ extends Node3D
 
 #POOL SYSTEM
 var current_life_number = 0
-var max_life = 5000
+var max_life = 15000
 var life_pool = []
 var life_pool_index = 0
 var life_inactive_index =[]

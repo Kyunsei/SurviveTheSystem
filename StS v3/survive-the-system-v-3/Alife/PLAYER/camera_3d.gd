@@ -42,6 +42,10 @@ func _process(delta: float) -> void:
 		if Input.is_action_pressed("Camera_zoom_in"):
 			position.z -= camera_speed*delta
 		if Input.is_action_pressed("Camera_zoom_out"):
+			position.z += camera_speed*delta
+		if Input.is_action_just_pressed("Mousewheel_in"):
+			position.z -= camera_speed*delta
+		if Input.is_action_just_pressed("Mousewheel_out"):
 			position.z += camera_speed*delta	
 		if Input.is_action_pressed("offset_camera_down"):
 			position.y -= camera_speed*delta
