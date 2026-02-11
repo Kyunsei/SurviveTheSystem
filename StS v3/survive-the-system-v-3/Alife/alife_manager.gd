@@ -175,3 +175,7 @@ func get_alife_in_area(pos, area):
 	var w_pos = World.get_PositionInGrid(pos,World.bin_size)
 	var w_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
 	return World.bin_array[w_index]
+	
+
+	
+ 

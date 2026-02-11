@@ -17,7 +17,7 @@ func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():
 			if current_energy < 500:
-				target = checkfood_around()
+				target = return_closest_target() #may eat sheep too...
 					
 			if target:
 				if position.distance_to(target.position) < 2:
@@ -90,6 +90,28 @@ func Eat(t):
 	current_energy += t.current_energy
 	t.current_energy = 0
 	t.Die()
+
+func return_closest_target():
+	var current_pos = position
+	var bin_index: int
+	var closest = null
+	var closest_in_bin = null
+	var closest_distance = INF
+	for i in [-1,0,1]:
+		for j in [-1,0,1]:
+			current_pos.x = position.x + World.bin_size.x*i
+			current_pos.z = position.z + World.bin_size.z*j		
+			var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
+			bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+			if World.bin_array[bin_index]:
+				closest_in_bin = find_closest(position, World.bin_array[bin_index])
+				var distance = position.distance_to(closest_in_bin.position)
+				if distance < closest_distance:
+					closest = closest_in_bin
+					closest_distance = distance
+	return closest
+
+
 
 func Reproduction():
 	if current_energy > 400:# reproduction_stock + energy_stock:
