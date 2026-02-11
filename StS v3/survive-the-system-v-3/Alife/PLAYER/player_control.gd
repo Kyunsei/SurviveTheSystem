@@ -1,6 +1,7 @@
 extends Node
 class_name player_control
 
+
 var player : Node3D
 var player_action_area : Node3D
 var camera_anchor : Node3D
@@ -19,6 +20,8 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if player.is_multiplayer_authority():
+		if not player.is_on_floor():
+			player.velocity.y -= player.gravity*delta
 		direction = Vector3(0,0,0)
 		if Input.is_action_pressed("down"):
 			direction.z = 1

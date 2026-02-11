@@ -110,6 +110,7 @@ _data = {
 }
 
 [node name="Player" type="CharacterBody3D" unique_id=1092654110]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("1_qrp1o")
 
 [node name="Player_HUD" parent="." unique_id=1065555217 instance=ExtResource("2_2y45n")]

@@ -23,7 +23,7 @@ func _process(delta: float) -> void:
 
 @rpc("any_peer","call_local")
 func generate_world():
-	$MeshInstance3D.mesh.size = Vector2(World_Size.x,World_Size.z) #THIS IS NOT SYNCH with client
+	#$Ground/ground.mesh.size = Vector2(World_Size.x,World_Size.z) #THIS IS NOT SYNCH with client
 	var calc_size = World_Size/light_tile_size
 	light_array.resize(calc_size.x * calc_size.y * calc_size.z)
 	fill_value_in_each_tile(light_array,light_flux_in)

@@ -9,6 +9,7 @@
 script = ExtResource("1_dugkq")
 
 [node name="Alife manager" parent="." unique_id=1345180502 node_paths=PackedStringArray("World") instance=ExtResource("2_yx7mw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 World = NodePath("../World")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2004899452]
