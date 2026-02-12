@@ -58,21 +58,38 @@ func _physics_process(delta: float) -> void:
 			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
 		if Input.is_action_pressed("jump") :
 			total += delta
-
+		player.currently_on_floor = player.is_on_floor()
 		if Input.is_action_just_released("jump"):
 			total = 0
 			if player.gonna_jump == true :
 				print ("long jumped")
+				player.is_jumping = true
+				player.velocity.y += player.base_jump/1.5
+				player.standing_up = true
+				player.velocity.x = -player.get_node("MeshInstance3D").transform.basis.z.x * player.long_jump
+				player.velocity.z = -player.get_node("MeshInstance3D").transform.basis.z.z * player.long_jump
+				print (player.velocity)
 				player.gonna_jump = false
+				await get_tree().create_timer(0.2).timeout 
+				player.is_jumping = false
 			else :
 				print ("jumped")
+				
+				player.velocity.y += player.base_jump
+				player.standing_up = true
+				print (player.velocity)
 			player.crouched = false
-			player.get_node("AnimationPlayer").play("RESET")
+			player.was_on_floor = player.currently_on_floor
 			player.speed = 500
+		#if not player.was_on_floor and player.currently_on_floor and player.standing_up == true:
+				#player.get_node("AnimationPlayer").speed_scale = 5.0
+				#player.get_node("AnimationPlayer").play_backwards("Crouch_2")
+				#player.standing_up = false
 		if total > 0.2:
 			player.speed = 0
 		if total > 1 :
 			if player.crouched == false :
+				player.get_node("AnimationPlayer").speed_scale = 1.0
 				player.get_node("AnimationPlayer").play("Crouch")
 				player.crouched = true
 		if total > 1.2 :

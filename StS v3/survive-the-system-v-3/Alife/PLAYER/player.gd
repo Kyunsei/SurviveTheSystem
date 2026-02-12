@@ -2,10 +2,16 @@ extends CharacterBody3D
 
 
 @export var speed = 500
-@export var gravity = 1000
+@export var gravity = 100
+@export var base_jump = 40
+@export var long_jump = 120
 @export var fly = false
 var crouched = false
 var gonna_jump = false
+var is_jumping = false
+var was_on_floor = false
+var currently_on_floor = false
+var standing_up = false
 var direction = Vector3(0,0,0)
 
 
@@ -18,9 +24,10 @@ func _ready() -> void:
 		%Camera3D.current = true
 
 func _physics_process(delta: float) -> void:
-	if is_multiplayer_authority():
-		velocity.x = direction.x *speed *delta
-		velocity.z = direction.z *speed *delta
+	if is_multiplayer_authority() :
+		if is_jumping == false:
+			velocity.x = direction.x *speed *delta
+			velocity.z = direction.z *speed *delta
 		if fly:
 			velocity.y = direction.y *speed *delta
 
