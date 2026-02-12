@@ -54,6 +54,9 @@ func Reproduction():
 											randf_range(-5,5)
 											) 
 		#var scene = load(get_scene_file_path())
+		newpos.x = clamp(newpos.x ,-World.World_Size.x/2+1,World.World_Size.x/2-1 )
+		newpos.z = clamp(newpos.z ,-World.World_Size.z/2+1,World.World_Size.z/2-1 )
+
 		reproduction_asked.emit(newpos,"grass")
 		current_energy -= 8
 		
