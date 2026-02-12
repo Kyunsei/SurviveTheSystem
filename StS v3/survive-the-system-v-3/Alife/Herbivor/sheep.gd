@@ -33,7 +33,8 @@ func _process(delta: float) -> void:
 					wandertimer = 5
 					direction = Vector3(randf_range(-1,1),0,randf_range(-1,1))
 				global_position += direction * speed * delta * GlobalSimulationParameter.simulation_speed
-
+				global_position.x = clamp(global_position.x ,-World.World_Size.x/2,World.World_Size.x/2 )
+				global_position.z = clamp(global_position.z ,-World.World_Size.z/2,World.World_Size.z/2 )
 				#print(direction)
 			Reproduction()
 			Homeostasis()
@@ -85,7 +86,8 @@ func checkfood_around():
 func GoTo(t,delta):
 	direction = (t.position - position).normalized()
 	global_position += direction * speed * delta * GlobalSimulationParameter.simulation_speed
-
+	global_position.x = clamp(global_position.x ,-World.World_Size.x/2,World.World_Size.x/2 )
+	global_position.z = clamp(global_position.z ,-World.World_Size.z/2,World.World_Size.z/2 )
 func Eat(t):
 	current_energy += t.current_energy
 	t.current_energy = 0
@@ -101,14 +103,18 @@ func return_closest_target():
 		for j in [-1,0,1]:
 			current_pos.x = position.x + World.bin_size.x*i
 			current_pos.z = position.z + World.bin_size.z*j		
-			var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
-			bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-			if World.bin_array[bin_index]:
-				closest_in_bin = find_closest(position, World.bin_array[bin_index])
-				var distance = position.distance_to(closest_in_bin.position)
-				if distance < closest_distance:
-					closest = closest_in_bin
-					closest_distance = distance
+			if current_pos.x > -World.World_Size.x/2 and current_pos.x < World.World_Size.x/2:
+				if current_pos.z > -World.World_Size.z/2 and current_pos.z < World.World_Size.x/2:
+					
+					var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
+					bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+					
+					if World.bin_array[bin_index]:
+						closest_in_bin = find_closest(position, World.bin_array[bin_index])
+						var distance = position.distance_to(closest_in_bin.position)
+						if distance < closest_distance:
+							closest = closest_in_bin
+							closest_distance = distance
 	return closest
 
 
