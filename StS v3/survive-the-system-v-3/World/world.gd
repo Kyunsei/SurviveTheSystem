@@ -14,9 +14,12 @@ var bin_array = []
 var bin_size = Vector3(5,World_Size.y,5)
 
 func _process(delta: float) -> void:
+	
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():
 			add_value_in_each_tile(light_array,light_flux_in,0,light_max_value)
+			%GridDebug/MultiMeshInstance3D.update(light_tile_size,light_array)
+
 
 
 

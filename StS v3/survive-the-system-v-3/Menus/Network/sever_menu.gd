@@ -34,7 +34,7 @@ func _on_button_pressed() -> void:
 	else:
 		start_server()
 		$Button.text = "Disconnect Server"
-		#hide()
+		hide()
 
 
 func start_server():
