@@ -1,0 +1,116 @@
+STS gamedev KYUN:
+
+1) Faire sprites ---> Fait
+2) Faire un bouton qui passe le chat en accroupi (Changement de sprite) et change le sprite à debout dès que laché  ---> Fait
+3) Faire de la gravité pour tout
+4) Faire un saut et un long saut
+
+
+
+
+
+
+
+
+
+
+-------------------------------
+
+un état crouch
+
+on peut si on est crouch ou pas (holding space)
+
+une animation.
+
+
+et on peut savoir quand on touche le sol.
+
+
+PROBLEME :
+L'animation fait toucher le sol. Si on touche le sol via l'animation, il faut que 
+--------------------------------------
+2/13/2026
+
+
+- Zara : Le chat, tu dois recolter le + possible, ça te convertit les ressources en validation. Tu reviens plus tard, et là tu vois le résultat de ce que tu as recolté.
+----> Chaque ressource a une valeur, et on te demande une valeur totale.
+----> Multijoueur. Oui mais que pour nous actuellement. Pour le demo, possibité p-e 2 joueurs, p-e +.
+----> Est qu'on peut mourir?
+----> Chaque run on te récompense (arme, robot convertisseur, upgrade entre les runs)
+----> Tu vas une fois chaque mois, donc il y a une timelapse entre chaque run, mais toi tu joues en "slow mode".
+----> Camera trépied qui fait le timelapse ? Que le chat peut acheter.
+
+
+Simulation .---> Zara
+timelapse ----> Zara (faire avancer la simulation + vite)
+Le controle du chat (player) :
+
+
+
+
+Action-list :
+
+-> Prendre et mettre objet dans son inventaire/backpack. Et les sortir de son inventaire/les utiliser.
+-> se déplacer
+-> sauter
+-> Sprinter
+-> Ramasser 
+-> Manger
+-> touche action
+-> Camera options (FPS/TPS ETC....)
+
+
+
+entity-list :
+- herbe (+ variantes)
+- mouton
+- arbre
+- prédateur
+- buisson
+(- fleur + variante)
+(- champignon)
+
+
+
+Factory-Robot fonctions :
+
+-> Faire le sprite du robot
+-> Tu lui amènes tes trucs tu gagnes des points.
+-> Une fois les points requis atteint, Fin de l'étape.
+-> Après un écran de fin, tu peux "acheter" des trucs dans un menu et revenir à ta prochaine partie avec.
+
+
+
+
+Factory Robot booth items purchasable :
+
+- Une arme ---> lance avec des fonctions un peu futuristique AKA une lance retractable ?
+- un sac? grand sac?
+- un meilleur saut? Jump pack? Echasses?
+- Une hache
+- débloquer le dash.
+- le double saut.
+- une armure?
+- des pièges
+- des petites barrières (fences)
+- Une houe pour ramasser herbe/ aspirateur "magique".
+
+
+
+
+écran de fin
+écran de continue / go next run
+
+
+
+
+
+
+
+
+
+
+
+
+
+
