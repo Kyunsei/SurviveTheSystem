@@ -102,7 +102,11 @@ Factory Robot booth items purchasable :
 écran de continue / go next run
 
 
-
+----------------
+Tu as un starter entre épée (tuer mouton/predateur) ou Hache (Couper bois) ou Houe ( Couper herbe en masse) pour atteindre la biomasse du quota.
+l'idée est de voir la catastrophe écologique du nouveau "prédateur" intrus dans le système écologique et de voir les répercussions.
+MAIS si on est smart, et qu'on ramasse les graines des arbres (exemple) tu peux t'en sortir et ne pas tout ruiner en les plantant au bon moment entre tes parties.
+La meme chose pourrait être possible avec les moutons et leurs oeufs (Domestications?).
 
 
 
