@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://cr5xulv4uju01" path="res://Alife/PLAYER/player.gd" id="1_qrp1o"]
 [ext_resource type="PackedScene" uid="uid://cx8myhkgjy4fp" path="res://Alife/PLAYER/player_hud.tscn" id="2_2y45n"]
 [ext_resource type="Script" uid="uid://b0jwhtwhk47rk" path="res://Alife/PLAYER/camera_3d.gd" id="3_kppvm"]
+[ext_resource type="Script" uid="uid://cwrvvywn7edre" path="res://Alife/PLAYER/debug_control.gd" id="5_2y45n"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6t5sv"]
 albedo_color = Color(0.093700476, 0.10681253, 0.21656331, 1)
@@ -202,3 +203,6 @@ shape = SubResource("CylinderShape3D_1iiag")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=642195969]
 libraries/ = SubResource("AnimationLibrary_1iiag")
+
+[node name="DEBUG_CONTROL" type="Node" parent="." unique_id=1175554298]
+script = ExtResource("5_2y45n")

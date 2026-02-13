@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://bqydh3n7b1h18" path="res://Alife/AlifeManager.tscn" id="2_yx7mw"]
 [ext_resource type="PackedScene" uid="uid://bpc6fr4hgno76" path="res://Menus/Network/network.tscn" id="5_2pltu"]
 [ext_resource type="PackedScene" uid="uid://bp0ipaboii0ae" path="res://World/world.tscn" id="5_dugkq"]
-[ext_resource type="PackedScene" uid="uid://dqfoudrb4fbpy" path="res://World/grid/gridDebug.tscn" id="5_f52ns"]
 
 [node name="main_game" type="Node3D" unique_id=753049365]
 script = ExtResource("1_dugkq")
@@ -20,6 +19,3 @@ spawn_path = NodePath("../Alife manager")
 [node name="Network" parent="." unique_id=1782053974 instance=ExtResource("5_2pltu")]
 
 [node name="World" parent="." unique_id=642165895 instance=ExtResource("5_dugkq")]
-
-[node name="GridDebug" parent="." unique_id=859121407 instance=ExtResource("5_f52ns")]
-unique_name_in_owner = true

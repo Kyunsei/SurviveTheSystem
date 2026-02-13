@@ -9,19 +9,8 @@ transform_format = 1
 use_colors = true
 mesh = SubResource("BoxMesh_4s7yo")
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_4s7yo"]
-
 [node name="GridDebug" type="Node3D" unique_id=859121407]
+script = ExtResource("1_rd2fe")
 
 [node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="." unique_id=877166073]
 multimesh = SubResource("MultiMesh_rd2fe")
-script = ExtResource("1_rd2fe")
-
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1639365334]
-transform = Transform3D(1, 0, 0, 0, 0.962984, 0.26955858, 0, -0.26955858, 0.962984, 4.386139, 29.180466, 34.29741)
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=476114047]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.623897, 17.838253)
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1326520129]
-replication_config = SubResource("SceneReplicationConfig_4s7yo")

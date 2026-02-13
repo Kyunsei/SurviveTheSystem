@@ -167,6 +167,8 @@ func spawn_player(id):
 	pass
 	var new_player = player_scene.instantiate()
 	new_player.name = str(id)
+	new_player.World = World
+
 	self.call_deferred("add_child",new_player)
 	#if id == multiplayer.get_unique_id():
 	#new_player.set_multiplayer_authority(id)

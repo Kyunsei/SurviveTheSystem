@@ -13,6 +13,8 @@ var was_on_floor = false
 var currently_on_floor = false
 var standing_up = false
 var direction = Vector3(0,0,0)
+var isdebuging = true
+var World : Node3D
 
 
 func _enter_tree() -> void:
@@ -22,6 +24,8 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	if is_multiplayer_authority():
 		%Camera3D.current = true
+		World = get_parent().get_parent().get_node("World")
+		print(World)
 
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :
