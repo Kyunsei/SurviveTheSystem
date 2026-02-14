@@ -1,10 +1,14 @@
 [gd_scene format=3 uid="uid://bbug4errj8rkt"]
 
 [ext_resource type="Script" uid="uid://djglenl8xcgse" path="res://Alife/Plant/tree/tree.gd" id="1_7cxhk"]
+[ext_resource type="Texture2D" uid="uid://belb5ipraimac" path="res://assets/assets kyun/grass_texture128.png" id="2_wrulr"]
+[ext_resource type="Texture2D" uid="uid://ohxtmwp66oew" path="res://assets/assets kyun/ground_texture128.png" id="3_ppuvk"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
+blend_mode = 3
 shading_mode = 0
 albedo_color = Color(0.3569829, 0.63304657, 0.24205121, 1)
+albedo_texture = ExtResource("2_wrulr")
 billboard_mode = 1
 
 [sub_resource type="QuadMesh" id="QuadMesh_oukle"]
@@ -17,6 +21,8 @@ size = Vector3(9, 6, 9)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kgs41"]
 shading_mode = 0
 albedo_color = Color(0.49737066, 0.36778373, 0.119802706, 1)
+albedo_texture = ExtResource("3_ppuvk")
+uv1_triplanar = true
 billboard_mode = 2
 
 [sub_resource type="QuadMesh" id="QuadMesh_hxiwo"]
