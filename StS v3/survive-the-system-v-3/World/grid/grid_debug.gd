@@ -76,10 +76,7 @@ func update(voxel_size,array):
 
 				
 
-@rpc("any_peer","call_remote")
-func ask_server(peer_id):
-	print(peer_id)
-	print(multiplayer.get_unique_id())
+
 
 @rpc("any_peer","call_remote")
 func request_light_grid(peer_id):

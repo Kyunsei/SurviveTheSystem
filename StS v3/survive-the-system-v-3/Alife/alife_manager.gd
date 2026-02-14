@@ -21,6 +21,9 @@ var current_life_count_by_species = [0,0,0]
 #DATA
 var timer = 1
 
+
+var tempbool = true
+
 #OLD
 var plant_array = []
 var plant_energy = []
@@ -36,23 +39,36 @@ var max_plant  = 10000
 #3. hybrid... need to identifiy where to parallelise and where to not!
 
 #START WITH 1) because not a lot of time until demo in March
+#NOW doing something else, Do matrix things on CPU and use multimesh to render very numerous entities (grass) 
+#and probably but the loop on a thread
 
 func _ready() -> void:
-	$Metabolism.World = World
+	$Grass_Manager.World = World
+	$Grass_Manager.spawn_grass(Vector3(-15,0,-15))
 	#set_multiplayer_authority(1)
+	#$"Alife manager".Spawn_life.rpc_id(1,Vector3(-15,0,-15),"grass")
 
 
 func _process(delta: float) -> void:
-	if multiplayer.is_server():
-		timer -= delta
-		if timer < 0:
-			GlobalSimulationParameter.sheep_number_data.append(current_life_count_by_species[1])
-			GlobalSimulationParameter.grass_number_data.append(current_life_count_by_species[0])
-			GlobalSimulationParameter.tree_number_data.append(current_life_count_by_species[2])
 
-			timer = 5
-		pass
-		#$Metabolism.Update()
+	if GlobalSimulationParameter.SimulationStarted: 
+		if multiplayer.is_server():
+			timer -= delta
+			if timer < 0:
+				GlobalSimulationParameter.sheep_number_data.append(current_life_count_by_species[1])
+				#GlobalSimulationParameter.grass_number_data.append(current_life_count_by_species[0])
+				GlobalSimulationParameter.tree_number_data.append(current_life_count_by_species[2])
+
+				GlobalSimulationParameter.grass_number_data.append($Grass_Manager.grass_array.size())
+
+				timer = 3
+			pass
+			$Grass_Manager.update()
+	elif GlobalSimulationParameter.ClientStarted:
+		if tempbool:
+			$Grass_Manager.draw_multimesh_on_client.rpc_id(1,multiplayer.get_unique_id())
+			tempbool = false
+		
 
 
 func duplicate_life(alife):

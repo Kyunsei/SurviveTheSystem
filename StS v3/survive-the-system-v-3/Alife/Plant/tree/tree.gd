@@ -29,6 +29,7 @@ func Desactivate():
 func Die():
 	#print("heelo")
 	Desactivate()
+	queue_free()
 
 func special_activation():
 	var pos = position

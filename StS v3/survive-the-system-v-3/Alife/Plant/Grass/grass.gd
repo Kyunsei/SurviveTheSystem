@@ -11,7 +11,6 @@ func _ready() -> void:
 	
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():
@@ -19,6 +18,8 @@ func _process(delta: float) -> void:
 				Photosynthesis()
 				Reproduction()
 				Homeostasis()
+
+
 
 
 func Die():
@@ -65,6 +66,7 @@ func Reproduction():
 func Cut():
 	Become_object.rpc_id(1)
 	Die()
+	
 @rpc("any_peer","call_local") 
 func Become_object():
 	var new_object = object_scene.instantiate()

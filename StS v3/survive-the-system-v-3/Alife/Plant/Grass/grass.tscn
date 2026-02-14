@@ -3,17 +3,7 @@
 [ext_resource type="Script" uid="uid://cyvd8jyldyc55" path="res://Alife/Plant/Grass/grass.gd" id="1_u3naq"]
 [ext_resource type="Texture2D" uid="uid://belb5ipraimac" path="res://assets/assets kyun/grass_texture128.png" id="2_xthal"]
 [ext_resource type="PackedScene" uid="uid://ygo4je6307vn" path="res://Alife/objects/object_grass.tscn" id="2_yamui"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
-shading_mode = 0
-albedo_color = Color(0.27045736, 0.5658043, 0.3341278, 1)
-albedo_texture = ExtResource("2_xthal")
-uv1_triplanar = true
-billboard_mode = 2
-
-[sub_resource type="QuadMesh" id="QuadMesh_oukle"]
-material = SubResource("StandardMaterial3D_11t0l")
-size = Vector2(0.5, 2)
+[ext_resource type="QuadMesh" uid="uid://cffer30oeavdl" path="res://Alife/Plant/Grass/grass.tres" id="3_q87mi"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xthal"]
 shading_mode = 0
@@ -39,7 +29,7 @@ object_scene = ExtResource("2_yamui")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("QuadMesh_oukle")
+mesh = ExtResource("3_q87mi")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=415100959]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
