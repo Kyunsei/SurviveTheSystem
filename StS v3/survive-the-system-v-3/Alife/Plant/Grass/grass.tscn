@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cyvd8jyldyc55" path="res://Alife/Plant/Grass/grass.gd" id="1_u3naq"]
 [ext_resource type="Texture2D" uid="uid://belb5ipraimac" path="res://assets/assets kyun/grass_texture128.png" id="2_xthal"]
+[ext_resource type="PackedScene" uid="uid://ygo4je6307vn" path="res://Alife/objects/object_grass.tscn" id="2_yamui"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
 shading_mode = 0
@@ -34,6 +35,7 @@ properties/1/replication_mode = 1
 
 [node name="grass" type="Node3D" unique_id=455347701]
 script = ExtResource("1_u3naq")
+object_scene = ExtResource("2_yamui")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://ygo4je6307vn"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_hsyjf"]
+load_path = "res://.godot/imported/grass_texture128.png-5f07295f70039042ad35223182080e18.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fvrd4"]
+shading_mode = 0
+albedo_color = Color(0.27045736, 0.5658043, 0.3341278, 1)
+albedo_texture = SubResource("CompressedTexture2D_hsyjf")
+uv1_triplanar = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_p6h1p"]
+material = SubResource("StandardMaterial3D_fvrd4")
+size = Vector2(0.5, 2)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_f4aqo"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:visible")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="object_grass" type="Node3D" unique_id=455347701]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
+transform = Transform3D(1, 0, 0, 0, 2.9802322e-08, 1, 0, -1, 2.9802322e-08, 0, 0.1, 0)
+mesh = SubResource("QuadMesh_p6h1p")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=34745162]
+replication_config = SubResource("SceneReplicationConfig_f4aqo")

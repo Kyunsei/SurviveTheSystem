@@ -1,4 +1,5 @@
 extends Alife
+@export var object_scene : PackedScene
 
 var Photosynthesis_absorbtion = 1.0
 var light_index : int
@@ -33,7 +34,6 @@ func Homeostasis():
 	current_energy -= 0.3 * size.x * size.z * GlobalSimulationParameter.simulation_speed
 	#current_energy = max(0,current_energy)
 	if current_energy < 0:
-		
 		Die()
 
 func Photosynthesis():
@@ -62,4 +62,11 @@ func Reproduction():
 		reproduction_asked.emit(newpos,"grass")
 		current_energy -= 8
 		
-		
+func Cut():
+	Become_object.rpc_id(1)
+	Die()
+@rpc("any_peer","call_local") 
+func Become_object():
+	var new_object = object_scene.instantiate()
+	new_object.position = position
+	get_parent().add_child(new_object, true)

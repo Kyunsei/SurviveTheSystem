@@ -86,7 +86,6 @@ func _physics_process(delta: float) -> void:
 				
 			player.velocity.y += player.base_jump
 			player.standing_up = true
-			print (player.velocity)
 			player.crouched = false
 			player.was_on_floor = player.currently_on_floor
 		#if not player.was_on_floor and player.currently_on_floor and player.standing_up == true:
@@ -119,4 +118,4 @@ func DoAction():
 	if targets:
 		for t in targets:
 			if t!= self:
-				t.Die()
+				t.Cut()
