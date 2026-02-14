@@ -181,10 +181,38 @@ func spawn_player(id):
 	#if id == multiplayer.get_unique_id():
 	#new_player.set_multiplayer_authority(id)
 
-func get_alife_in_area(pos, area):
-	var w_pos = World.get_PositionInGrid(pos,World.bin_size)
-	var w_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-	return World.bin_array[w_index]
+func get_alife_in_area(pos_center, area):
+	var results: Array = []
+	var min_pos = pos_center - area
+	var max_pos = pos_center + area
+	var min_grid: Vector3i = World.get_PositionInGrid(min_pos, World.bin_size)
+	var max_grid: Vector3i = World.get_PositionInGrid(max_pos, World.bin_size)
+		
+	for x in range(min_grid.x, max_grid.x + 1):
+			for y in range(min_grid.y, max_grid.y + 1):
+				for z in range(min_grid.z, max_grid.z + 1):
+
+					if not World.is_valid_bin(x, y, z,World.bin_size):
+						continue
+
+					var index: int = World.index_3dto1d(x, y, z, World.bin_size)
+			
+
+					var bin = World.bin_array[index]
+					if bin:
+						for element in bin:
+							var p: Vector3 = element.global_position
+
+							# Precise AABB check (important!)
+							if p.x >= min_pos.x and p.x <= max_pos.x \
+							and p.y >= min_pos.y and p.y <= max_pos.y \
+							and p.z >= min_pos.z and p.z <= max_pos.z:
+								results.append(element)
+
+	return results
+
+	
+
 	
 
 	

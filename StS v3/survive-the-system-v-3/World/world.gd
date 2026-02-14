@@ -70,3 +70,12 @@ func fill_value_in_each_tile(array,value):
 
 		array[i] = value
 	
+func is_valid_bin(x: int, y: int, z: int,voxel_size:Vector3) -> bool:
+	var grid_size := Vector3i(
+		floor(World_Size.x / voxel_size.x),
+		floor(World_Size.y / voxel_size.y),
+		floor(World_Size.z / voxel_size.z)
+	)
+	return x >= 0 and x < grid_size.x \
+	and y >= 0 and y < grid_size.y \
+	and z >= 0 and z < grid_size.z
