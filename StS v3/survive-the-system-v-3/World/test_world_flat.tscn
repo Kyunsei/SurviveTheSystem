@@ -2,7 +2,6 @@
 
 [ext_resource type="Texture2D" uid="uid://ohxtmwp66oew" path="res://assets/assets kyun/ground_texture128.png" id="1_05ma8"]
 [ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/Spider/Spidercrab.png" id="2_6ywjl"]
-[ext_resource type="PackedScene" uid="uid://dumarbxvbs7ui" path="res://Alife/Herbivor/sheep_3d.tscn" id="3_f3thf"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6ywjl"]
 albedo_texture = ExtResource("1_05ma8")
@@ -48,15 +47,3 @@ mesh = SubResource("QuadMesh_62c4f")
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D" unique_id=390077007]
 cast_shadow = 3
 mesh = SubResource("SphereMesh_6ywjl")
-
-[node name="Sheep3d" parent="." unique_id=367110432 instance=ExtResource("3_f3thf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.42, 0)
-
-[node name="Sheep3d2" parent="." unique_id=1411902408 instance=ExtResource("3_f3thf")]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 2.7, 1.42, 0)
-
-[node name="Sheep3d3" parent="." unique_id=1958455127 instance=ExtResource("3_f3thf")]
-transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 7.49, 1.42, 0)
-
-[node name="Sheep3d4" parent="." unique_id=767003015 instance=ExtResource("3_f3thf")]
-transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 15.549999, 1.42, 0)

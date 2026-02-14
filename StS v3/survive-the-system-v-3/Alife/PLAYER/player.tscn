@@ -153,6 +153,9 @@ _data = {
 &"RESET": SubResource("Animation_2y45n")
 }
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_2y45n"]
+size = Vector3(1.5, 1.2, 1.5)
+
 [node name="Player" type="CharacterBody3D" unique_id=1092654110]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("1_qrp1o")
@@ -231,5 +234,12 @@ libraries/ = SubResource("AnimationLibrary_1iiag")
 
 [node name="DEBUG_CONTROL" type="Node" parent="." unique_id=1175554298]
 script = ExtResource("5_2y45n")
+
+[node name="Action_Area3D" type="Area3D" parent="." unique_id=921750962]
+unique_name_in_owner = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Action_Area3D" unique_id=285623758]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+shape = SubResource("BoxShape3D_2y45n")
 
 [connection signal="area_entered" from="MeshInstance3D/Pick_up_Area3D" to="." method="_on_pick_up_area_3d_area_entered"]
