@@ -68,5 +68,8 @@ func Cut():
 @rpc("any_peer","call_local") 
 func Become_object():
 	var new_object = object_scene.instantiate()
-	new_object.position = position
+	new_object.position.y = position.y
+	new_object.position.x = position.x + randf_range(-1,1)
+	new_object.position.z = position.z + randf_range(-1,1)
+	new_object.rotation.y = randf_range(deg_to_rad(0),deg_to_rad(360))
 	get_parent().add_child(new_object, true)

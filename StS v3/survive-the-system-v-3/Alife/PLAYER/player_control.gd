@@ -118,4 +118,7 @@ func DoAction():
 	if targets:
 		for t in targets:
 			if t!= self:
-				t.Cut()
+				if t.species == "grass" :
+					t.Cut()
+				else:
+					pass
