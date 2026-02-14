@@ -19,6 +19,6 @@ func on_server_started():
 		$World.generate_world.rpc()
 		#$"Alife manager".Spawn_life.rpc_id(1,Vector3(5,0,5),$"Alife manager".plant_scene)
 		$"Alife manager".Spawn_life.rpc_id(1,Vector3(-15,0,-15),"grass")
-		$"Alife manager".Spawn_life.rpc_id(1,Vector3(-10,0,-15),"tree")
+		$"Alife manager".Spawn_life_without_pool.rpc_id(1,Vector3(20,0,15), "tree")
 
 		GlobalSimulationParameter.SimulationStarted = true

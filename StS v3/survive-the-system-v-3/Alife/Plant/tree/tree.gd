@@ -5,12 +5,12 @@ var light_index = []
 var Photosynthesis_range = 3
 var species = "tree"
 var total_light_tile = 0
-
+var alife_manager
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	size = Vector3(1,1,1) #Temporary...
-	
+	alife_manager = get_parent()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -76,8 +76,9 @@ func Reproduction():
 		#var scene = load(get_scene_file_path())
 		newpos.x = clamp(newpos.x ,-World.World_Size.x/2+1,World.World_Size.x/2-1 )
 		newpos.z = clamp(newpos.z ,-World.World_Size.z/2+1,World.World_Size.z/2-1 )
+		alife_manager.Spawn_life_without_pool.rpc_id(1,newpos, "tree")
 
-		reproduction_asked.emit(newpos,"tree")
+		#reproduction_asked.emit(newpos,"tree")
 		current_energy -= 180
 		
 		

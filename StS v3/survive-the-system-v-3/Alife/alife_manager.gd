@@ -48,6 +48,8 @@ func _process(delta: float) -> void:
 		if timer < 0:
 			GlobalSimulationParameter.sheep_number_data.append(current_life_count_by_species[1])
 			GlobalSimulationParameter.grass_number_data.append(current_life_count_by_species[0])
+			GlobalSimulationParameter.tree_number_data.append(current_life_count_by_species[2])
+
 			timer = 5
 		pass
 		#$Metabolism.Update()
