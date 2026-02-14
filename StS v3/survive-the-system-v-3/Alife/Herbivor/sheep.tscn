@@ -1,10 +1,13 @@
 [gd_scene format=3 uid="uid://bba3or5r3sxn1"]
 
 [ext_resource type="Script" uid="uid://dng4tmgsqripm" path="res://Alife/Herbivor/sheep.gd" id="1_61knv"]
+[ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/Herbivor/SHEEP.png" id="2_iieic"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
+transparency = 1
 shading_mode = 0
-albedo_color = Color(0.5906229, 0.4729396, 0.20522773, 1)
+albedo_texture = ExtResource("2_iieic")
+texture_filter = 0
 billboard_mode = 2
 
 [sub_resource type="QuadMesh" id="QuadMesh_oukle"]
@@ -34,6 +37,7 @@ mesh = SubResource("QuadMesh_oukle")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1993554647]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09449339, 0.8228116, 0.5884781)
+visible = false
 mesh = SubResource("QuadMesh_iieic")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=451120355]
