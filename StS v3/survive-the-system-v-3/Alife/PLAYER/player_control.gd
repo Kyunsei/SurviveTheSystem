@@ -59,7 +59,7 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_pressed("jump") :
 			total += delta
 		player.currently_on_floor = player.is_on_floor()
-		if Input.is_action_just_released("jump"):
+		if Input.is_action_just_released("jump") and player.is_on_floor():
 			total = 0
 			#if player.gonna_jump == true :
 				#print ("long jumped")
