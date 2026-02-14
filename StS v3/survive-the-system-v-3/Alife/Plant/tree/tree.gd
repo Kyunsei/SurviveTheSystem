@@ -22,6 +22,9 @@ func _process(delta: float) -> void:
 				Reproduction()
 				Homeostasis()
 
+func Desactivate():
+	hide()
+	LifeManager.current_life_count_by_species[2] -= 1
 
 func Die():
 	#print("heelo")
