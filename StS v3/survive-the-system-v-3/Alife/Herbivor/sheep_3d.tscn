@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://dumarbxvbs7ui"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_2rtek"]
+height = 0.6
+is_hemisphere = true
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_28wsm"]
+radius = 0.05
+height = 0.2
+
+[sub_resource type="BoxMesh" id="BoxMesh_kf654"]
+size = Vector3(0.3, 0.2, 0.2)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_y6g5c"]
+radius = 0.02
+height = 0.1
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_cuubu"]
+radius = 0.01
+height = 0.2
+
+[sub_resource type="SphereMesh" id="SphereMesh_ahbo4"]
+radius = 0.025
+height = 0.05
+
+[node name="Sheep3d" type="Node3D" unique_id=367110432]
+
+[node name="main_body" type="MeshInstance3D" parent="." unique_id=260460784]
+mesh = SubResource("SphereMesh_2rtek")
+
+[node name="legs" type="Node3D" parent="." unique_id=194466138]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="legs" unique_id=1177847385]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, 0.3)
+mesh = SubResource("CapsuleMesh_28wsm")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="legs" unique_id=871904618]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, -0.29999998)
+mesh = SubResource("CapsuleMesh_28wsm")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="legs" unique_id=344894796]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -0.29999998)
+mesh = SubResource("CapsuleMesh_28wsm")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="legs" unique_id=958334732]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, 0.3)
+mesh = SubResource("CapsuleMesh_28wsm")
+
+[node name="head" type="Node3D" parent="." unique_id=225818702]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="head" unique_id=1461644430]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0.4)
+mesh = SubResource("BoxMesh_kf654")
+
+[node name="eye" type="MeshInstance3D" parent="head" unique_id=499573748]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.07000001, 0.3, 0.5)
+mesh = SubResource("CapsuleMesh_y6g5c")
+
+[node name="eye2" type="MeshInstance3D" parent="head" unique_id=2104692329]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.07000001, 0.3, 0.5)
+mesh = SubResource("CapsuleMesh_y6g5c")
+
+[node name="antenna" type="Node3D" parent="head" unique_id=1464149909]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, -0.05)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="head/antenna" unique_id=1089658494]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.4, 0.5)
+mesh = SubResource("CapsuleMesh_cuubu")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="head/antenna" unique_id=293247354]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.5, 0.50000006)
+mesh = SubResource("SphereMesh_ahbo4")
+
+[node name="antenna2" type="Node3D" parent="head" unique_id=1955473750]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="head/antenna2" unique_id=459199975]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.4, 0.5)
+mesh = SubResource("CapsuleMesh_cuubu")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="head/antenna2" unique_id=1060338591]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.5, 0.50000006)
+mesh = SubResource("SphereMesh_ahbo4")
