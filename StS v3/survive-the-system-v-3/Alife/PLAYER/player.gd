@@ -45,3 +45,8 @@ func _physics_process(delta: float) -> void:
 			pass
 			#var target_yaw := atan2(direction.x, -direction.z)
 		move_and_slide()
+
+#func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
+	#if area.get_parent().is_in_group("object"):
+		#print("picked object")
+		#pass
