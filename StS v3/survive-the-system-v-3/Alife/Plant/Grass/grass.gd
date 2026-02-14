@@ -30,7 +30,7 @@ func special_activation():
 	
 
 func Homeostasis():
-	current_energy -= 0.2 * size.x * size.z * GlobalSimulationParameter.simulation_speed
+	current_energy -= 0.3 * size.x * size.z * GlobalSimulationParameter.simulation_speed
 	#current_energy = max(0,current_energy)
 	if current_energy < 0:
 		
@@ -45,7 +45,9 @@ func Photosynthesis():
 		if energy_absorbed <= 0:
 			return
 		current_energy += energy_absorbed
-		World.light_array[light_index] = max(World.light_array[light_index]-energy_absorbed,0)
+		var shadow_effect = 1.0
+		World.light_array[light_index] = max(World.light_array[light_index]-shadow_effect,0)
+		#print(World.light_array[light_index])
 
 func Reproduction():
 	if current_energy > 10:# reproduction_stock + energy_stock:

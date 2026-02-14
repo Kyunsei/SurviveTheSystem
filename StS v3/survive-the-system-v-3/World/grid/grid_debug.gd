@@ -12,6 +12,19 @@ func _ready() -> void:
 	mm = $MultiMeshInstance3D.multimesh
 	World_size = get_parent().World_Size
 	World =  get_parent()
+	
+	var box = BoxMesh.new()
+	box.size = World.light_tile_size#voxel_size
+	box.size.x -= space_btw_voxel
+	box.size.z -= space_btw_voxel
+	box.size.y -= space_btw_voxel
+	
+	mm.mesh = box   # ← VERY IMPORTANT
+	var mat = StandardMaterial3D.new()
+	#mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.vertex_color_use_as_albedo = true
+	box.material= mat	
+	mm.use_colors = true
 
 
 func showorhide():
@@ -30,27 +43,12 @@ func _process(delta: float) -> void:
 		request_light_grid.rpc_id(1,multiplayer.get_unique_id())
 
 		
-		
+
 
 func update(voxel_size,array):
-	#$MultiMeshInstance3D.show()
-	var box = BoxMesh.new()
-	box.size = voxel_size
-	box.size.x -= space_btw_voxel
-	box.size.z -= space_btw_voxel
-	box.size.y -= space_btw_voxel
-	
-
-	mm.mesh = box   # ← VERY IMPORTANT
-	
-
-
-	#multimesh.transform_format = MultiMesh.TRANSFORM_3D
-	#multimesh.color_format = MultiMesh.COLOR_8BIT 
-	# Then resize (otherwise, changing the format is not allowed).
 	mm.instance_count = array.size()#World_size.x * World_size.y * World_size.z
 	# Maybe not all of them should be visible at first.
-	mm.visible_instance_count = array.size()#World_size.x * World_size.y * World_size.z
+	mm.visible_instance_count = array.size()#World_size.x * World_size.y * World_size.z	
 
 	# Set the transform of the instances.
 	for i in World_size.x:
@@ -59,8 +57,12 @@ func update(voxel_size,array):
 				var index = i + j * World_size.x + k * World_size.x * World_size.y
 				var pos = Vector3(i +0.5 -World_size.x/2 , j+0.5 , k + 0.5-World_size.z/2) #$size
 				mm.set_instance_transform(index, Transform3D(Basis(), pos))
-				var col = Color()
+				var col = Color(1.0, 1.0, 1.0, 1.0)
 				col.r = array[index]
+				col.g = array[index]
+				col.b = array[index]
+				col.a = 0.5
+
 				mm.set_instance_color(index, col)
 
 

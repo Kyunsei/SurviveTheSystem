@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://bbug4errj8rkt"]
+
+[ext_resource type="Script" uid="uid://djglenl8xcgse" path="res://Alife/Plant/tree/tree.gd" id="1_7cxhk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
+shading_mode = 0
+albedo_color = Color(0.3569829, 0.63304657, 0.24205121, 1)
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_oukle"]
+material = SubResource("StandardMaterial3D_11t0l")
+size = Vector2(9, 6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7cxhk"]
+size = Vector3(9, 6, 9)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kgs41"]
+shading_mode = 0
+albedo_color = Color(0.49737066, 0.36778373, 0.119802706, 1)
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_hxiwo"]
+material = SubResource("StandardMaterial3D_kgs41")
+size = Vector2(1, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yl4y5"]
+shading_mode = 0
+albedo_color = Color(0.49737066, 0.36778373, 0.119802706, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_wrulr"]
+material = SubResource("StandardMaterial3D_yl4y5")
+size = Vector2(1, 10)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_7cxhk"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:visible")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="tree" type="Node3D" unique_id=455347701]
+script = ExtResource("1_7cxhk")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.330567, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_oukle")
+
+[node name="Shadow_mesh" type="MeshInstance3D" parent="." unique_id=1388790304]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.330567, 0)
+cast_shadow = 3
+mesh = SubResource("BoxMesh_7cxhk")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1314921017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0505614, 0)
+mesh = SubResource("QuadMesh_hxiwo")
+
+[node name="shadow_trunk" type="MeshInstance3D" parent="." unique_id=960360585]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0505614, 0)
+cast_shadow = 3
+mesh = SubResource("QuadMesh_wrulr")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1472732621]
+replication_config = SubResource("SceneReplicationConfig_7cxhk")

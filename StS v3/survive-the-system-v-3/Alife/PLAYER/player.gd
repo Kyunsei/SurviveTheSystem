@@ -24,8 +24,8 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	if is_multiplayer_authority():
 		%Camera3D.current = true
-		World = get_parent().get_parent().get_node("World")
-		print(World)
+		World = get_parent().get_parent().get_node("World") #NEED TO BE CHANGED TO ASK SERVER INFO
+		#print(World)
 
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :

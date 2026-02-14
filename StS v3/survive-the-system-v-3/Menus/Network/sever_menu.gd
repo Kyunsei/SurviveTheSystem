@@ -34,7 +34,7 @@ func _on_button_pressed() -> void:
 	else:
 		start_server()
 		$Button.text = "Disconnect Server"
-		hide()
+		#hide()
 
 
 func start_server():
@@ -60,3 +60,7 @@ func on_connection(id):
 func on_disconnection(id):
 	$Label.text = $Label.text + "\n" + str(id) + " disconnected to server"
 	
+
+
+func _on_line_edit_text_submitted(new_text: String) -> void:
+	GlobalSimulationParameter.simulation_speed = float(new_text)

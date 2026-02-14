@@ -51,4 +51,21 @@ offset_top = 292.0
 offset_right = 769.0
 offset_bottom = 292.0
 
+[node name="Label_speed" type="Label" parent="." unique_id=1743212148]
+layout_mode = 0
+offset_left = 562.0
+offset_top = 389.0
+offset_right = 697.0
+offset_bottom = 412.0
+text = "Simulation Speed"
+
+[node name="LineEdit" type="LineEdit" parent="." unique_id=1070152875]
+layout_mode = 0
+offset_left = 594.0
+offset_top = 414.0
+offset_right = 662.5
+offset_bottom = 445.0
+text = "0.1"
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="text_submitted" from="LineEdit" to="." method="_on_line_edit_text_submitted"]

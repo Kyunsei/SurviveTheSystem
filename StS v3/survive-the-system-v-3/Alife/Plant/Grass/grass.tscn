@@ -14,6 +14,16 @@ billboard_mode = 2
 material = SubResource("StandardMaterial3D_11t0l")
 size = Vector2(0.5, 2)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xthal"]
+shading_mode = 0
+albedo_color = Color(0.27045736, 0.5658043, 0.3341278, 1)
+albedo_texture = ExtResource("2_xthal")
+uv1_triplanar = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_yamui"]
+material = SubResource("StandardMaterial3D_xthal")
+size = Vector2(0.5, 2)
+
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_f4aqo"]
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
@@ -28,6 +38,11 @@ script = ExtResource("1_u3naq")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("QuadMesh_oukle")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=415100959]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+cast_shadow = 3
+mesh = SubResource("QuadMesh_yamui")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=34745162]
 replication_config = SubResource("SceneReplicationConfig_f4aqo")

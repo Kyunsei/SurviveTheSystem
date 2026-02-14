@@ -22,8 +22,7 @@ func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():
 			add_value_in_each_tile(light_array,light_flux_in,0,light_max_value)
-			#%GridDebug/MultiMeshInstance3D.update(light_tile_size,light_array)
-
+			pass
 
 
 
@@ -33,7 +32,7 @@ func generate_world():
 	#$Ground/ground.mesh.size = Vector2(World_Size.x,World_Size.z) #THIS IS NOT SYNCH with client
 	var calc_size = World_Size/light_tile_size
 	light_array.resize(calc_size.x * calc_size.y * calc_size.z)
-	fill_value_in_each_tile(light_array,light_flux_in)
+	fill_value_in_each_tile(light_array,light_flux_in )
 	var calc_size2 = World_Size/bin_size
 	bin_array.resize(calc_size2.x * calc_size2.y * calc_size2.z)
 	#fill_value_in_each_tile(bin_array,[])
@@ -49,9 +48,7 @@ func get_PositionInGrid(pos,tile_size):
 	)
 
 func index_3dto1d(x, y, z, tile_size):
-	'x = x + World_Size.x/2
-	y = y + World_Size.y/2
-	z = z + World_Size.z/2'
+
 	var array_size = World_Size/tile_size
 	return x + array_size.x * (y + array_size.y * z)
 
@@ -69,5 +66,7 @@ func add_value_in_each_tile(array,value,v_min,v_max):
 	
 func fill_value_in_each_tile(array,value):
 	for i in array.size():
+
+
 		array[i] = value
 	

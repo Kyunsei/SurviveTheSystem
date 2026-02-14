@@ -4,16 +4,18 @@ extends Node3D
 @export var player_scene: PackedScene
 @export var plant_scene: PackedScene
 @export var sheep_scene: PackedScene
+@export var tree_scene: PackedScene
+
 
 #POOL SYSTEM
 var current_life_number = 0
-var max_life = 15000
+var max_life = 40000
 var life_pool = []
 var life_pool_index = 0
 var life_inactive_index =[]
 var life_no_pool_index = 0
 
-var current_life_count_by_species = [0,0]
+var current_life_count_by_species = [0,0,0]
 
 
 #DATA
@@ -76,7 +78,8 @@ func Spawn_life(new_position: Vector3,alife_type:String):
 		alife_scene = plant_scene
 	elif alife_type == "sheep":
 		alife_scene = sheep_scene
-
+	elif alife_type == "tree":
+		alife_scene = tree_scene
 	if current_life_number >= max_life:
 		return
 	#print(current_alife_number)
@@ -121,7 +124,8 @@ func Spawn_life_without_pool(new_position: Vector3,alife_type:String):
 		alife_scene = plant_scene
 	elif alife_type == "sheep":
 		alife_scene = sheep_scene
-
+	elif alife_type == "tree":
+		alife_scene = tree_scene
 
 	newlife = alife_scene.instantiate()
 	newlife.ID = life_no_pool_index
@@ -141,14 +145,16 @@ func Spawn_life_without_pool(new_position: Vector3,alife_type:String):
 		current_life_count_by_species[0] += 1
 	if newlife.species =="sheep":
 		current_life_count_by_species[1] += 1
-
+	if newlife.species =="tree":
+		current_life_count_by_species[2] += 1
 func on_desactivation(life):
 	current_life_number -= 1
 	if life.species =="grass":
 		current_life_count_by_species[0] -= 1
 	if life.species =="sheep":
 		current_life_count_by_species[1] -= 1
-	
+	if life.species =="tree":
+		current_life_count_by_species[2] -= 1	
 func get_desactivated_life():
 	var idx = life_inactive_index.pop_back()  
 	return life_pool[idx]

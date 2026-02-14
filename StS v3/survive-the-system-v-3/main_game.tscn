@@ -13,7 +13,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 World = NodePath("../World")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2004899452]
-_spawnable_scenes = PackedStringArray("uid://cpxqisxofmb36", "uid://bpl70g08sxw37", "uid://bba3or5r3sxn1")
+_spawnable_scenes = PackedStringArray("uid://cpxqisxofmb36", "uid://bpl70g08sxw37", "uid://bba3or5r3sxn1", "uid://bbug4errj8rkt")
 spawn_path = NodePath("../Alife manager")
 
 [node name="Network" parent="." unique_id=1782053974 instance=ExtResource("5_2pltu")]
