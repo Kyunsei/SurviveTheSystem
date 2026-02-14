@@ -106,6 +106,8 @@ func _physics_process(delta: float) -> void:
 				#player.get_node("AnimationPlayer").play("RESET")
 				#player.crouched = false
 				#player.speed = 500
+		if Input.is_action_pressed("pick_up") :
+			pick_up.rpc_id(1)
 
 
 
@@ -122,3 +124,16 @@ func DoAction():
 					t.Cut()
 				else:
 					pass
+
+@rpc("any_peer","call_local")
+func pick_up() :
+			var Area3d = %Pick_up_Area3D
+			Area3d.show()
+			await get_tree().create_timer(0.1).timeout
+			Area3d.hide()
+			
+						
+						
+						
+						
+						

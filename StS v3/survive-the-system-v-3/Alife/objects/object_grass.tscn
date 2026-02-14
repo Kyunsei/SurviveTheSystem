@@ -25,7 +25,10 @@ properties/2/path = NodePath(".:rotation")
 properties/2/spawn = true
 properties/2/replication_mode = 1
 
-[node name="object_grass" type="Node3D" unique_id=455347701]
+[sub_resource type="SphereShape3D" id="SphereShape3D_hsyjf"]
+radius = 1.2
+
+[node name="object_grass" type="Node3D" unique_id=455347701 groups=["object"]]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
 transform = Transform3D(1, 0, 0, 0, 2.9802322e-08, 1, 0, -1, 2.9802322e-08, 0, 0.1, 0)
@@ -33,3 +36,9 @@ mesh = SubResource("QuadMesh_p6h1p")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=34745162]
 replication_config = SubResource("SceneReplicationConfig_f4aqo")
+
+[node name="Area3D" type="Area3D" parent="." unique_id=1974860931]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=283652852]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("SphereShape3D_hsyjf")
