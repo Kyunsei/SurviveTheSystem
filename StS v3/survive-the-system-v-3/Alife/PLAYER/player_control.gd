@@ -9,6 +9,7 @@ var alife_manager: Node3D
 
 var direction = Vector3(0,0,0)
 var total = 0
+var total2 = 0
 
 func _ready() -> void:
 	player = get_parent()
@@ -58,8 +59,18 @@ func _physics_process(delta: float) -> void:
 			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
 		if Input.is_action_pressed("jump") :
 			total += delta
+		if Input.is_action_pressed("sprint") :
+			total2 += delta
+		if total2 > 0 :
+			player.speed = player.sprint_speed
+		if total2 == 0 :
+			player.speed = player.max_speed
+		if Input.is_action_pressed("sprint") == false:
+			total2 = 0
+		print (total2)
+		print (player.speed)
 		player.currently_on_floor = player.is_on_floor()
-		if Input.is_action_just_released("jump") and player.is_on_floor():
+		if Input.is_action_just_pressed("jump") and player.is_on_floor():
 			total = 0
 			#if player.gonna_jump == true :
 				#print ("long jumped")
@@ -80,7 +91,6 @@ func _physics_process(delta: float) -> void:
 			print (player.velocity)
 			player.crouched = false
 			player.was_on_floor = player.currently_on_floor
-			player.speed = 500
 		#if not player.was_on_floor and player.currently_on_floor and player.standing_up == true:
 				#player.get_node("AnimationPlayer").speed_scale = 5.0
 				#player.get_node("AnimationPlayer").play_backwards("Crouch_2")
