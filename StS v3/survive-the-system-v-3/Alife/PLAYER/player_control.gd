@@ -12,6 +12,8 @@ var total = 0
 var total2 = 0
 
 func _ready() -> void:
+	var collision = %pick_up_CollisionShape3D
+	collision.disabled = true
 	player = get_parent()
 	alife_manager = player.get_parent()
 	player_action_area = %Area3D
@@ -107,8 +109,11 @@ func _physics_process(delta: float) -> void:
 				#player.crouched = false
 				#player.speed = 500
 		if Input.is_action_pressed("pick_up") :
+			var Area3d = %Pick_up_Area3D
+			Area3d.show()
 			pick_up.rpc_id(1)
-
+			await get_tree().create_timer(0.2).timeout
+			Area3d.hide()
 
 
 
@@ -127,10 +132,11 @@ func DoAction():
 
 @rpc("any_peer","call_local")
 func pick_up() :
-			var Area3d = %Pick_up_Area3D
-			Area3d.show()
-			await get_tree().create_timer(0.1).timeout
-			Area3d.hide()
+			var collision = %pick_up_CollisionShape3D
+			collision.disabled = false
+			await get_tree().create_timer(0.2).timeout
+			collision.disabled = true
+
 			
 						
 						

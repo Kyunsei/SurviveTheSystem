@@ -18,6 +18,7 @@ var standing_up = false
 var direction = Vector3(0,0,0)
 var isdebuging = true
 var World : Node3D
+var grass_in_inventory = 0
 
 
 func _enter_tree() -> void:
@@ -46,7 +47,11 @@ func _physics_process(delta: float) -> void:
 			#var target_yaw := atan2(direction.x, -direction.z)
 		move_and_slide()
 
-#func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
-	#if area.get_parent().is_in_group("object"):
-		#print("picked object")
-		#pass
+func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
+	if area.get_parent().is_in_group("object"):
+		#print("picked object"+ str(area.get_parent().name))
+		grass_in_inventory +=1
+		print(grass_in_inventory)
+		area.get_parent().queue_free()
+		
+		pass
