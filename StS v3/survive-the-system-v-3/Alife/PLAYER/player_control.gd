@@ -1,7 +1,7 @@
 extends Node
 class_name player_control
 
-
+@onready var Action_area: Area3D = %Action_Area3D
 var player : Node3D
 var player_action_area : Node3D
 var camera_anchor : Node3D
@@ -108,13 +108,14 @@ func _physics_process(delta: float) -> void:
 				#player.get_node("AnimationPlayer").play("RESET")
 				#player.crouched = false
 				#player.speed = 500
-		if Input.is_action_pressed("pick_up") :
+		if Input.is_action_just_pressed("pick_up") :
 			var Area3d = %Pick_up_Area3D
 			Area3d.show()
 			pick_up.rpc_id(1)
 			await get_tree().create_timer(0.2).timeout
 			Area3d.hide()
-
+		if Input.is_action_just_pressed("Action") :
+			action.rpc_id(1)
 
 
 @rpc("any_peer","call_local")
@@ -136,9 +137,17 @@ func pick_up() :
 			collision.disabled = false
 			await get_tree().create_timer(0.2).timeout
 			collision.disabled = true
-
-			
-						
+@rpc("any_peer","call_local")
+func action():
+	var interacted_areas = Action_area.get_overlapping_areas()
+	for area in interacted_areas:
+		if area.is_in_group("Collector"):
+			area.get_parent().Biomass_collected += player.grass_in_inventory
+			area.get_parent().update_label()
+			player.grass_in_inventory = 0
+			print ("item collected")
+			print (area.get_parent().Biomass_collected)
+			#return
 						
 						
 						

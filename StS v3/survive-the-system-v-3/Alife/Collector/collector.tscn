@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://csp4534h7vmrb"]
+
+[ext_resource type="Script" uid="uid://5tfk6xkfrcja" path="res://Alife/Collector/collector.gd" id="1_0s0nn"]
+[ext_resource type="PackedScene" uid="uid://chtr6unxbbpef" path="res://Alife/Collector/collector_model.tscn" id="1_mrs3r"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0s0nn"]
+size = Vector3(2.5, 2, 2.5)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0s0nn"]
+properties/0/path = NodePath("collected_amount_Label3D:text")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[node name="Collector" type="Node3D" unique_id=987041243 groups=["Collector"]]
+script = ExtResource("1_0s0nn")
+
+[node name="Collector_model" parent="." unique_id=812750137 groups=["Collector"] instance=ExtResource("1_mrs3r")]
+
+[node name="Collecting_Area3D" type="Area3D" parent="." unique_id=601176491 groups=["Collector"]]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collecting_Area3D" unique_id=127582711 groups=["Collector"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_0s0nn")
+
+[node name="collected_amount_Label3D" type="Label3D" parent="." unique_id=590932852]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+billboard = 2
+text = "etetretetetetete"
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1293450470]
+replication_config = SubResource("SceneReplicationConfig_0s0nn")

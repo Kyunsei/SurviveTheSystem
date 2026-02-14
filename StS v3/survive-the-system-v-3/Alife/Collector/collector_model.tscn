@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://chtr6unxbbpef"]
+
+[ext_resource type="Texture2D" uid="uid://ccqqalfgiqc2i" path="res://assets/assets kyun/collector_texture.png" id="1_o6kp1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r5pjn"]
+albedo_texture = ExtResource("1_o6kp1")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_c8m64"]
+material = SubResource("StandardMaterial3D_r5pjn")
+size = Vector3(1, 2, 1)
+
+[node name="Collector_model" type="Node3D" unique_id=812750137]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1659619356]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("BoxMesh_c8m64")
