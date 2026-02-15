@@ -35,8 +35,8 @@ func _ready() -> void:
 
 
 func _update_on_thread():
-	print("Thread start — grass count: ", grass_dict.size())
-	var ss = Time.get_ticks_msec() 
+	#print("Thread start — grass count: ", grass_dict.size())
+	#var ss = Time.get_ticks_msec() 
 
 	World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
 	_pending_spawns.clear()
@@ -47,7 +47,7 @@ func _update_on_thread():
 		_thread_reproduction(g)
 		_thread_homeostasis(g)
 
-	print("end " + str(Time.get_ticks_msec() -ss))
+	#print("end " + str(Time.get_ticks_msec() -ss))
 	call_deferred("_on_work_finished")
 
 func update():
