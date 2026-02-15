@@ -12,7 +12,7 @@ func _ready() -> void:
 func on_game_started():
 	#if MultiplayerPeer.CONNECTION_CONNECTED == 1:
 	if multiplayer.is_server() == false:
-			$"Alife manager".spawn_player.rpc_id(1,multiplayer.get_unique_id())
+			$"Alife manager".spawn_player.rpc_id(1,multiplayer.get_unique_id(),$SPACESHIP.global_position)
 			GlobalSimulationParameter.ClientStarted = true
 
 func on_server_started():

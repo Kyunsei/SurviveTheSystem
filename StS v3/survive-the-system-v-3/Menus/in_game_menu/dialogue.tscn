@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://c0wfphs81elqo"]
+
+[ext_resource type="Script" uid="uid://bq7vos4a52d43" path="res://Menus/in_game_menu/dialogue.gd" id="1_dgiyb"]
+
+[node name="Dialogue" type="Control" unique_id=740396081]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_dgiyb")
+
+[node name="Panel" type="Panel" parent="." unique_id=1989460205]
+layout_mode = 0
+offset_right = 567.0
+offset_bottom = 162.0
+
+[node name="Label" type="Label" parent="Panel" unique_id=1958028333]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "TEST"
+
+[node name="Button" type="Button" parent="Panel" unique_id=1714428123]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -22.5
+offset_top = -37.0
+offset_right = 22.5
+offset_bottom = -6.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Next"
+
+[connection signal="pressed" from="Panel/Button" to="." method="_on_button_pressed"]

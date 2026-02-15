@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bpc6fr4hgno76" path="res://Menus/Network/network.tscn" id="5_2pltu"]
 [ext_resource type="PackedScene" uid="uid://bp0ipaboii0ae" path="res://World/world.tscn" id="5_dugkq"]
 [ext_resource type="PackedScene" uid="uid://csp4534h7vmrb" path="res://Alife/Collector/collector.tscn" id="5_f52ns"]
+[ext_resource type="PackedScene" uid="uid://cjq6scu5nepoj" path="res://World/spaceship/spaceship.tscn" id="6_2pltu"]
 
 [node name="main_game" type="Node3D" unique_id=753049365]
 script = ExtResource("1_dugkq")
@@ -23,3 +24,6 @@ spawn_path = NodePath("../Alife manager")
 
 [node name="Collector" parent="." unique_id=987041243 instance=ExtResource("5_f52ns")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.899909)
+
+[node name="SPACESHIP" parent="." unique_id=853925969 instance=ExtResource("6_2pltu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 178.67221)

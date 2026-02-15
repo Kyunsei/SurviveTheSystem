@@ -1,6 +1,5 @@
 extends MultiMeshInstance3D
 
-var World:Node3D
 
 var id_to_slot := {}
 var slot_to_id := {}

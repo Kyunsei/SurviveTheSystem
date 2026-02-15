@@ -211,7 +211,7 @@ func get_lightIndex(grass):
 
 
 func _thread_homeostasis(grass):
-	var area = max(0,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
+	var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
 	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed 
 	if grass["current_energy"] < 0:
 		_pending_kills.append(grass)
@@ -359,6 +359,8 @@ func draw_new_grass(g):
 			$grass.draw_new_grass(g)
 		Alifedata.enum_speciesID.TREE:
 			$tree.draw_new_grass(g)
+		Alifedata.enum_speciesID.BUSH:
+			$bush.draw_new_grass(g)
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(g):
 	#$grass_multimesh.remove_grass(g)
@@ -367,7 +369,8 @@ func erase_grass(g):
 			$grass.remove_grass(g)
 		Alifedata.enum_speciesID.TREE:
 			$tree.remove_grass(g)
-
+		Alifedata.enum_speciesID.BUSH:
+			$bush.remove_grass(g)
 
 @rpc("any_peer","call_remote")
 func draw_multimesh_on_client(peer_id):
@@ -382,6 +385,8 @@ func send_and_draw_array(dict):
 				$grass.draw_new_grass(g)
 			Alifedata.enum_speciesID.TREE:
 				$tree.draw_new_grass(g)
+			Alifedata.enum_speciesID.BUSH:
+				$bush.draw_new_grass(g)			
 	#$grass_multimesh.draw_all_grass(dict)	
 
 

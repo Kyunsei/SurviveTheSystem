@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://clskcb1rbjxo3"]
+
+[ext_resource type="Script" uid="uid://b6si7xb7ov78x" path="res://World/spaceship/npc.gd" id="1_25fy4"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ou8ut"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_25fy4"]
+
+[node name="NPC" type="Area3D" unique_id=2146363901]
+script = ExtResource("1_25fy4")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=167007335]
+mesh = SubResource("CapsuleMesh_ou8ut")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=954496273]
+shape = SubResource("CapsuleShape3D_25fy4")

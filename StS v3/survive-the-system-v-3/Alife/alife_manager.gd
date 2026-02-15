@@ -47,6 +47,8 @@ func _ready() -> void:
 	$Grass_Manager.World = World
 	$Grass_Manager.ask_for_spawn_grass(Vector3(-15,0,-15),Alifedata.enum_speciesID.GRASS)
 	$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
+	$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
+
 
 	#set_multiplayer_authority(1)
 	#$"Alife manager".Spawn_life.rpc_id(1,Vector3(-15,0,-15),"grass")
@@ -190,13 +192,18 @@ func get_desactivated_life():
 
 
 @rpc("any_peer","call_local")
-func spawn_player(id):
+func spawn_player(id,pos):
 	pass
 	var new_player = player_scene.instantiate()
 	new_player.name = str(id)
 	new_player.World = World
-
 	self.call_deferred("add_child",new_player)
+	
+	#add_child(new_player)
+	#new_player.position = pos
+	#new_player.global_position.x = -10000
+
+	#print(new_player.position)
 	#if id == multiplayer.get_unique_id():
 	#new_player.set_multiplayer_authority(id)
 

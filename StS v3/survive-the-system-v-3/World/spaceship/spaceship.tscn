@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://cjq6scu5nepoj"]
+
+[ext_resource type="PackedScene" uid="uid://clskcb1rbjxo3" path="res://World/spaceship/npc.tscn" id="1_1wtdp"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_hu12v"]
+size = Vector2(10, 20)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_1wtdp"]
+data = PackedVector3Array(5, 0, 10, -5, 0, 10, 5, 0, -10, -5, 0, 10, -5, 0, -10, 5, 0, -10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_l8se6"]
+size = Vector3(1, 20, 20)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_2gbrl"]
+data = PackedVector3Array(-0.5, 10, 10, 0.5, 10, 10, -0.5, -10, 10, 0.5, 10, 10, 0.5, -10, 10, -0.5, -10, 10, 0.5, 10, -10, -0.5, 10, -10, 0.5, -10, -10, -0.5, 10, -10, -0.5, -10, -10, 0.5, -10, -10, 0.5, 10, 10, 0.5, 10, -10, 0.5, -10, 10, 0.5, 10, -10, 0.5, -10, -10, 0.5, -10, 10, -0.5, 10, -10, -0.5, 10, 10, -0.5, -10, -10, -0.5, 10, 10, -0.5, -10, 10, -0.5, -10, -10, 0.5, 10, 10, -0.5, 10, 10, 0.5, 10, -10, -0.5, 10, 10, -0.5, 10, -10, 0.5, 10, -10, -0.5, -10, 10, 0.5, -10, 10, -0.5, -10, -10, 0.5, -10, 10, 0.5, -10, -10, -0.5, -10, -10)
+
+[node name="SPACESHIP" type="Node3D" unique_id=853925969]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=191741585]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=175242632]
+mesh = SubResource("PlaneMesh_hu12v")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=343591758]
+shape = SubResource("ConcavePolygonShape3D_1wtdp")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="." unique_id=2031477610]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -6.4633102, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D2" unique_id=1691110518]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.313051, 0.3476858, 0)
+mesh = SubResource("BoxMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2" unique_id=1154388679]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.313051, 15.328904, 0)
+shape = SubResource("ConcavePolygonShape3D_2gbrl")
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="." unique_id=1345530511]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.668139, -6.8926888, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D3" unique_id=963187419]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.313051, 0.3476858, 0)
+mesh = SubResource("BoxMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D3" unique_id=573029]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.313051, 13.536754, 0)
+shape = SubResource("ConcavePolygonShape3D_2gbrl")
+
+[node name="StaticBody3D4" type="StaticBody3D" parent="." unique_id=1610015018]
+transform = Transform3D(-0.0381611, 0, -0.9992716, 0, 1, 0, 0.9992716, 0, -0.0381611, -0.037111282, -6.750906, 15.300245)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D4" unique_id=39321858]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.313051, 0.3476858, 0)
+mesh = SubResource("BoxMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D4" unique_id=1644963336]
+transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, -5.313051, 15.305034, -5.9604645e-08)
+shape = SubResource("ConcavePolygonShape3D_2gbrl")
+
+[node name="StaticBody3D5" type="StaticBody3D" parent="." unique_id=1547774990]
+transform = Transform3D(-0.0381611, 0, -0.9992716, 0, 1, 0, 0.9992716, 0, -0.0381611, -0.037111282, -6.750906, -3.8779926)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D5" unique_id=258416778]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.313051, 0.3476858, 0)
+mesh = SubResource("BoxMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D5" unique_id=2064759330]
+transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, -5.3130517, 13.4801855, 0)
+shape = SubResource("ConcavePolygonShape3D_2gbrl")
+
+[node name="NPC" parent="." unique_id=2146363901 instance=ExtResource("1_1wtdp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -6)

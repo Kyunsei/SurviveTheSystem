@@ -44,21 +44,18 @@ func _physics_process(delta: float) -> void:
 		#player.get_node("MeshInstance3D").look_at(-direction)
 		
 		
-		if Input.is_action_just_pressed("action0"):
+		if Input.is_action_just_pressed("use"):
 			player_action_area.show()
 
-			DoAction.rpc_id(1)
+			UseITEM.rpc_id(1)
 			await get_tree().create_timer(0.2).timeout
 			player_action_area.hide()
 			
 		
-		if Input.is_action_just_pressed("action1"):
-			#var LIFE_SCENE = preload("res://Alife/Plant/Grass/grass.tscn")
+		if Input.is_action_just_pressed("action1"):			
 			player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
 			
-			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
-			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
-			#player.get_parent().Spawn_life.rpc_id(1,player.global_position, "grass")
+
 		if Input.is_action_pressed("jump") :
 			total += delta
 		if Input.is_action_pressed("sprint") :
@@ -115,11 +112,11 @@ func _physics_process(delta: float) -> void:
 			await get_tree().create_timer(0.2).timeout
 			Area3d.hide()
 		if Input.is_action_just_pressed("Action") :
-			action.rpc_id(1)
+			action()#.rpc_id(1)
 
 
 @rpc("any_peer","call_local")
-func DoAction():
+func UseITEM():
 
 	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
 	 												player_action_area.get_node("CollisionShape3D").shape.size)
@@ -137,17 +134,17 @@ func pick_up() :
 			collision.disabled = false
 			await get_tree().create_timer(0.2).timeout
 			collision.disabled = true
-@rpc("any_peer","call_local")
+			
+#@rpc("any_peer","call_local")
 func action():
 	var interacted_areas = Action_area.get_overlapping_areas()
 	for area in interacted_areas:
 		if area.is_in_group("Collector"):
-			area.get_parent().Biomass_collected += player.grass_in_inventory
-			area.get_parent().update_label()
-			player.grass_in_inventory = 0
-			print ("item collected")
-			print (area.get_parent().Biomass_collected)
+			area.get_parent().interact(player)
+
 			#return
+		elif area.name == "NPC":
+			area.interact(player)
 						
 						
 						

@@ -47,8 +47,8 @@ func Activate():
 	
 func Die():
 	pass
-	#Desactivate()
-	#queue_free()
+	Desactivate()
+	queue_free()
 
 func Desactivate():
 	hide()

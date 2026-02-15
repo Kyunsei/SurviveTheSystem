@@ -19,10 +19,24 @@ var direction = Vector3(0,0,0)
 var isdebuging = true
 var World : Node3D
 var grass_in_inventory = 0
+var dialogue_box 
+
+
+
+#INVENTORY HERE
+var inventory = {
+	0:null,
+	1:null,
+	2:null,
+	3:null
+}
+
 
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
+
+
 
 
 func _ready() -> void:
@@ -30,7 +44,9 @@ func _ready() -> void:
 		%Camera3D.current = true
 		World = get_parent().get_parent().get_node("World") #NEED TO BE CHANGED TO ASK SERVER INFO
 		#print(World)
-
+		position = get_parent().get_parent().get_node("SPACESHIP").position
+		dialogue_box = $Player_HUD/Dialogue
+		
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :
 		if is_jumping == false:

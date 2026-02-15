@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://c2cbqdyd7i5aw"]
+
+[ext_resource type="QuadMesh" uid="uid://dcrx4rno0mb02" path="res://Alife/Plant/Bush/bush_mesh.tres" id="1_enwmj"]
+
+[node name="bush" type="Node3D" unique_id=932327298]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1838897561]
+mesh = ExtResource("1_enwmj")

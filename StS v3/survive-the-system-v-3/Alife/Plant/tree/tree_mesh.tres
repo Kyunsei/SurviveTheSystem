@@ -9,7 +9,7 @@ alpha_antialiasing_mode = 0
 shading_mode = 0
 albedo_texture = ExtResource("1_bjfy8")
 texture_filter = 0
-billboard_mode = 1
+billboard_mode = 2
 
 [resource]
 material = SubResource("StandardMaterial3D_1hb0a")

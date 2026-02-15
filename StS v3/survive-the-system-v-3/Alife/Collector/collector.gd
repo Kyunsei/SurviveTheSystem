@@ -7,6 +7,13 @@ var Biomass_collected = 0
 func _ready() -> void:
 	update_label()
 
+func interact(p):
+	print(p.grass_in_inventory)
+	Biomass_collected += p.grass_in_inventory
+	update_label()
+	p.grass_in_inventory = 0
+	print ("item collected")
+	print (Biomass_collected)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

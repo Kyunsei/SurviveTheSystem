@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://214pm1q1i4uf"
-path.s3tc="res://.godot/imported/grass.png-cd683fb305e55ae6e979e548822a9bc7.s3tc.ctex"
+uid="uid://c3mhy3ho6ovbu"
+path.s3tc="res://.godot/imported/berry_5.png-b0448504c91c1dddf82f67f3bfab483d.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Alife/Plant/grass.png"
-dest_files=["res://.godot/imported/grass.png-cd683fb305e55ae6e979e548822a9bc7.s3tc.ctex"]
+source_file="res://Alife/Plant/Bush/berry_5.png"
+dest_files=["res://.godot/imported/berry_5.png-b0448504c91c1dddf82f67f3bfab483d.s3tc.ctex"]
 
 [params]
 
