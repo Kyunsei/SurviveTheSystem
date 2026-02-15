@@ -311,6 +311,7 @@ func Become_object(grass):
 		new_object.position.x = pos.x + randf_range(-1,1)
 		new_object.position.z = pos.z + randf_range(-1,1)
 		new_object.rotation.y = randf_range(deg_to_rad(0),deg_to_rad(360))
+		new_object.current_energy = grass["current_energy"]
 		get_parent().add_child(new_object, true)
 
 

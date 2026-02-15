@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://ygo4je6307vn"]
 
+[ext_resource type="Script" uid="uid://ch8ogyfm3ukum" path="res://Alife/objects/object_grass.gd" id="1_fvrd4"]
+
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_hsyjf"]
 load_path = "res://.godot/imported/grass_texture128.png-5f07295f70039042ad35223182080e18.s3tc.ctex"
 
@@ -29,6 +31,7 @@ properties/2/replication_mode = 1
 radius = 1.2
 
 [node name="object_grass" type="Node3D" unique_id=455347701 groups=["object"]]
+script = ExtResource("1_fvrd4")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
 transform = Transform3D(1, 0, 0, 0, 2.9802322e-08, 1, 0, -1, 2.9802322e-08, 0, 0.1, 0)
