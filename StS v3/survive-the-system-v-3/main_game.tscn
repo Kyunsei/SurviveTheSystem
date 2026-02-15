@@ -6,6 +6,22 @@
 [ext_resource type="PackedScene" uid="uid://bp0ipaboii0ae" path="res://World/world.tscn" id="5_dugkq"]
 [ext_resource type="PackedScene" uid="uid://csp4534h7vmrb" path="res://Alife/Collector/collector.tscn" id="5_f52ns"]
 [ext_resource type="PackedScene" uid="uid://cjq6scu5nepoj" path="res://World/spaceship/spaceship.tscn" id="6_2pltu"]
+[ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/Spider/Spidercrab.png" id="7_f52ns"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f3thf"]
+transparency = 1
+shading_mode = 0
+albedo_texture = ExtResource("7_f52ns")
+texture_filter = 0
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_l5ukw"]
+material = SubResource("StandardMaterial3D_f3thf")
+size = Vector2(5, 5)
+
+[sub_resource type="SphereMesh" id="SphereMesh_4srsv"]
+radius = 2.0
+height = 1.5
 
 [node name="main_game" type="Node3D" unique_id=753049365]
 script = ExtResource("1_dugkq")
@@ -27,3 +43,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5.899909)
 
 [node name="SPACESHIP" parent="." unique_id=853925969 instance=ExtResource("6_2pltu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 178.67221)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1422319514]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.488888, 2.6418567, 33.477547)
+mesh = SubResource("QuadMesh_l5ukw")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D" unique_id=318474683]
+cast_shadow = 3
+mesh = SubResource("SphereMesh_4srsv")

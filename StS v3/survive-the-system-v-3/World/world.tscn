@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bp0ipaboii0ae"]
 
 [ext_resource type="Script" uid="uid://begvcowxlb5yc" path="res://World/world.gd" id="1_62w18"]
-[ext_resource type="PackedScene" uid="uid://clbqsqdxx8cxm" path="res://World/test_world_flat.tscn" id="2_8a836"]
+[ext_resource type="PackedScene" uid="uid://b27blxvtjlwas" path="res://World/grid_map_3d/grid_map_3d.tscn" id="2_j8job"]
 [ext_resource type="PackedScene" uid="uid://dqfoudrb4fbpy" path="res://World/grid/gridDebug.tscn" id="3_j8job"]
 
 [sub_resource type="Environment" id="Environment_62w18"]
@@ -13,7 +13,7 @@ background_color = Color(0.35171163, 0.24703303, 0.3351028, 1)
 [node name="World" type="Node3D" unique_id=642165895]
 script = ExtResource("1_62w18")
 
-[node name="Ground" parent="." unique_id=845350824 instance=ExtResource("2_8a836")]
+[node name="ground" parent="." unique_id=1721372565 instance=ExtResource("2_j8job")]
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=382943421]
 transform = Transform3D(1, 0, 0, 0, 0.21050583, 0.9775926, 0, -0.9775926, 0.21050583, 0, 1.8617637, 0.9828254)

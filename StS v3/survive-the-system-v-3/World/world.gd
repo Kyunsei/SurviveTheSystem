@@ -1,7 +1,7 @@
 extends Node3D
 
 #WORLD SETUP
-var World_Size = Vector3(100,1,100)
+var World_Size = Vector3(250,1,250)
 
 ##### LIGHT MATRIX
 var light_tile_size = Vector3(1,World_Size.y,1) #in m?
@@ -79,3 +79,4 @@ func is_valid_bin(x: int, y: int, z: int,voxel_size:Vector3) -> bool:
 	return x >= 0 and x < grid_size.x \
 	and y >= 0 and y < grid_size.y \
 	and z >= 0 and z < grid_size.z
+	
