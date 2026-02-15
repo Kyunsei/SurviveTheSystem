@@ -51,7 +51,7 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 	if area.get_parent().is_in_group("object"):
 		#print("picked object"+ str(area.get_parent().name))
 		GlobalSimulationParameter.object_grass_number -= 1
-		grass_in_inventory +=1
+		grass_in_inventory += area.get_parent().current_energy
 		print(grass_in_inventory)
 		area.get_parent().queue_free()
 		
