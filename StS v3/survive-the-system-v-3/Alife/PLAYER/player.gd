@@ -64,9 +64,10 @@ func drop(id, number):
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 
-
+@rpc("any_peer","call_remote")
 func go_back_to_ship():
-		position = get_parent().get_parent().get_node("SPACESHIP").position
+	print(multiplayer.get_unique_id())
+	position = get_parent().get_parent().get_node("SPACESHIP").position
 
 
 

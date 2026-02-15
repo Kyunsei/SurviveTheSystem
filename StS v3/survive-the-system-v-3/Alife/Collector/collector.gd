@@ -2,7 +2,7 @@ extends Node3D
 
 var Biomass_collected = 0
 
-var factor =  0.001
+var factor = 1# 0.001
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	update_label()
@@ -17,7 +17,8 @@ func interact(player):
 	update_label()
 	if Biomass_collected >= 100:
 		print("BRAVO")
-		end_of_quest.rpc_id(int(player.name),player)
+		player.go_back_to_ship.rpc_id(int(player.name))
+		#end_of_quest.rpc_id(int(player.name),player)
 	#p.grass_in_inventory = 0
 	#print ("item collected")
 	#print (Biomass_collected)'
@@ -26,6 +27,8 @@ func interact(player):
 func end_of_quest(player):
 	player.go_back_to_ship()
 	
+
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

@@ -8,7 +8,8 @@ func display_text(dialogue_box, text):
 
 func interact(p):
 	player = p
-	player.dialogue_box.button_pressed.connect(_on_next)
+	if not player.dialogue_box.button_pressed.is_connected(_on_next):
+		player.dialogue_box.button_pressed.connect(_on_next)
 	display_text(p.dialogue_box, "Welcome Catraunaute! \n We need you to collect bioressources for the magnificient catempire! \n Are you READY ?!!?!")
 
 
