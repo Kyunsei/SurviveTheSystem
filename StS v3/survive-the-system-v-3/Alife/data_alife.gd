@@ -47,12 +47,12 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Homeostasis_cost"] = 0.8
 			new_life["Photosynthesis_absorbtion"] = 1.
 			new_life["Photosynthesis_range"] = 3
-			new_life["Reproduction_cost"] = 400
+			new_life["Reproduction_cost"] = 200
 			new_life["Reproduction_spread"] = 15
 		enum_speciesID.BUSH:
-			new_life["Homeostasis_cost"] = 0.8
+			new_life["Homeostasis_cost"] = 0.6
 			new_life["Photosynthesis_absorbtion"] = 1.
 			new_life["Photosynthesis_range"] = 2
 			new_life["Reproduction_cost"] = 200
-			new_life["Reproduction_spread"] = 15
+			new_life["Reproduction_spread"] = 35
 	return new_life

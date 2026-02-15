@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://vmjbgjbpdq6g" path="res://Alife/PLAYER/player_hud.gd" id="1_50gt6"]
 [ext_resource type="PackedScene" uid="uid://6qrypffsftey" path="res://Menus/char_select.tscn" id="2_ivssi"]
 [ext_resource type="PackedScene" uid="uid://c0wfphs81elqo" path="res://Menus/in_game_menu/dialogue.tscn" id="3_44h10"]
+[ext_resource type="PackedScene" uid="uid://dtgeb6wmjm6a2" path="res://Menus/in_game_menu/inventory.tscn" id="4_0cxu6"]
 
 [node name="Player_HUD" type="CanvasLayer" unique_id=1065555217]
 script = ExtResource("1_50gt6")
@@ -37,3 +38,5 @@ offset_left = 253.0
 offset_top = 231.0
 offset_right = 253.0
 offset_bottom = 231.0
+
+[node name="Inventory" parent="." unique_id=687898771 instance=ExtResource("4_0cxu6")]

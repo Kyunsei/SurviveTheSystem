@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ygo4je6307vn"]
 
-[ext_resource type="Script" uid="uid://ch8ogyfm3ukum" path="res://Alife/objects/object_grass.gd" id="1_fvrd4"]
+[ext_resource type="Script" uid="uid://ch8ogyfm3ukum" path="res://objects/object_grass.gd" id="1_fvrd4"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_hsyjf"]
 load_path = "res://.godot/imported/grass_texture128.png-5f07295f70039042ad35223182080e18.s3tc.ctex"

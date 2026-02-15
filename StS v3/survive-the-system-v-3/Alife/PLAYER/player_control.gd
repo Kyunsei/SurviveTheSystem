@@ -113,7 +113,8 @@ func _physics_process(delta: float) -> void:
 			Area3d.hide()
 		if Input.is_action_just_pressed("Action") :
 			action()#.rpc_id(1)
-
+		if Input.is_action_just_pressed("Drop"):
+			player.remove_from_inventory.rpc_id(1,0, 1)
 
 @rpc("any_peer","call_local")
 func UseITEM():
@@ -145,7 +146,17 @@ func action():
 			#return
 		elif area.name == "NPC":
 			area.interact(player)
-						
+	action_on_server.rpc_id(1)	
+
+@rpc("any_peer","call_local")
+func action_on_server():
+	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
+	 												player_action_area.get_node("CollisionShape3D").shape.size)
+	if targets:
+		for t in targets:
+			if t is Dictionary:
+					alife_manager.get_node("Grass_Manager").interact(t,player)
+					
 						
 						
 						

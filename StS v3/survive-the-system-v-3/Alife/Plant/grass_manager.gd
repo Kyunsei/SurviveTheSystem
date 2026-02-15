@@ -293,6 +293,12 @@ func _thread_reproduction(grass):
 		newgrass.light_index = get_lightIndex(newpos)
 		_pending_spawns.append(newgrass)
 		grass.current_energy -= 8'			
+
+	
+func interact(grass,player):
+	player.add_to_inventory(grass,1)
+	_pending_external_kills.append(grass)	
+
 			
 func Cut(grass):
 	Become_object.rpc_id(1,grass)

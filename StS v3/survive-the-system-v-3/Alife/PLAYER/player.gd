@@ -25,11 +25,34 @@ var dialogue_box
 
 #INVENTORY HERE
 var inventory = {
-	0:null,
-	1:null,
-	2:null,
-	3:null
+
 }
+var inventory_count = 0
+
+
+###########INVENTORY HELPER FUNCTION
+
+@rpc("any_peer","call_local")
+func add_to_inventory(object, number):
+	inventory[inventory_count] = object
+	inventory_count += 1
+	print(inventory)
+
+@rpc("any_peer","call_remote")
+func remove_from_inventory(id, number):
+	id = inventory.size() - 1
+	if inventory.has(id):
+		var obj = inventory[id]
+		var pos = position
+		pos.y = 0
+		get_parent().get_node("Grass_Manager").ask_for_spawn_grass(pos,obj["Species"])
+		inventory.erase(id)
+		inventory_count -= 1
+		print("removed")
+
+
+
+####################################
 
 
 

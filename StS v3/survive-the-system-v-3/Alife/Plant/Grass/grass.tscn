@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cyvd8jyldyc55" path="res://Alife/Plant/Grass/grass.gd" id="1_u3naq"]
 [ext_resource type="Texture2D" uid="uid://belb5ipraimac" path="res://assets/assets kyun/grass_texture128.png" id="2_xthal"]
-[ext_resource type="PackedScene" uid="uid://ygo4je6307vn" path="res://Alife/objects/object_grass.tscn" id="2_yamui"]
+[ext_resource type="PackedScene" uid="uid://ygo4je6307vn" path="res://objects/object_grass.tscn" id="2_yamui"]
 [ext_resource type="QuadMesh" uid="uid://cffer30oeavdl" path="res://Alife/Plant/Grass/grass.tres" id="3_q87mi"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xthal"]
