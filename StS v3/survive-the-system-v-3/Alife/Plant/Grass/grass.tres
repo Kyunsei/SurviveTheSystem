@@ -12,3 +12,4 @@ billboard_mode = 2
 [resource]
 material = SubResource("StandardMaterial3D_11t0l")
 size = Vector2(0.5, 2)
+center_offset = Vector3(0, 1, 0)

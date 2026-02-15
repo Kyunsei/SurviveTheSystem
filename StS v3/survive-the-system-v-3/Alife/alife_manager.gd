@@ -56,7 +56,7 @@ func _process(delta: float) -> void:
 			timer -= delta
 			if timer < 0:
 				GlobalSimulationParameter.sheep_number_data.append(current_life_count_by_species[1])
-				#GlobalSimulationParameter.grass_number_data.append(current_life_count_by_species[0])
+				GlobalSimulationParameter.grass_number_data.append($Grass_Manager.grass_dict.size())
 				GlobalSimulationParameter.tree_number_data.append(current_life_count_by_species[2])
 
 				GlobalSimulationParameter.grass_number_data.append($Grass_Manager.grass_array.size())
@@ -64,6 +64,7 @@ func _process(delta: float) -> void:
 				timer = 3
 			pass
 			$Grass_Manager.update()
+			
 	elif GlobalSimulationParameter.ClientStarted:
 		if tempbool:
 			$Grass_Manager.draw_multimesh_on_client.rpc_id(1,multiplayer.get_unique_id())
@@ -217,13 +218,14 @@ func get_alife_in_area(pos_center, area):
 					var bin = World.bin_array[index]
 					if bin:
 						for element in bin:
-							var p: Vector3 = element.global_position
+							if element is Dictionary:
+								var p: Vector3 = element["position"]#.global_position
 
-							# Precise AABB check (important!)
-							if p.x >= min_pos.x and p.x <= max_pos.x \
-							and p.y >= min_pos.y and p.y <= max_pos.y \
-							and p.z >= min_pos.z and p.z <= max_pos.z:
-								results.append(element)
+								# Precise AABB check (important!)
+								if p.x >= min_pos.x and p.x <= max_pos.x \
+								and p.y >= min_pos.y and p.y <= max_pos.y \
+								and p.z >= min_pos.z and p.z <= max_pos.z:
+									results.append(element)
 
 	return results
 

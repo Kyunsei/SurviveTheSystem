@@ -125,9 +125,9 @@ func DoAction():
 	 												player_action_area.get_node("CollisionShape3D").shape.size)
 	if targets:
 		for t in targets:
-			if t!= self:
-				if t.species == "grass" :
-					t.Cut()
+			if t is Dictionary:
+				if t["Species"] == "grass" :
+					alife_manager.get_node("Grass_Manager").Cut(t)
 				else:
 					pass
 

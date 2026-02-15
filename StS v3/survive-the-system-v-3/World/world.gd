@@ -21,7 +21,7 @@ func _process(delta: float) -> void:
 	
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():
-			add_value_in_each_tile(light_array,light_flux_in,0,light_max_value)
+			#add_value_in_each_tile(light_array,light_flux_in,0,light_max_value)
 			pass
 
 

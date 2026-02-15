@@ -70,7 +70,7 @@ func find_closest(from_position: Vector3, array: Array) -> Node3D:
 	var closest_distance = INF
 	
 	for element in array:
-		var distance = from_position.distance_to(element.position)
+		var distance = from_position.distance_to(element["position"])
 		if distance < closest_distance:
 			closest_distance = distance
 			closest = element
