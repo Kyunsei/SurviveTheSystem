@@ -36,14 +36,14 @@ var inventory_count = 0
 func add_to_inventory(object, number):
 	inventory[inventory_count] = object
 	inventory_count += 1
-	print(inventory)
+	#print(inventory)
 
 @rpc("any_peer","call_remote")
 func remove_from_inventory(id, number):
 	if inventory.has(id):
 		inventory.erase(id)
 		inventory_count -= 1
-		print("removed")
+		#print("removed")
 
 @rpc("any_peer","call_remote")
 func drop(id, number):
@@ -65,6 +65,9 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 
 
+func go_back_to_ship():
+		position = get_parent().get_parent().get_node("SPACESHIP").position
+
 
 
 func _ready() -> void:
@@ -72,7 +75,7 @@ func _ready() -> void:
 		%Camera3D.current = true
 		World = get_parent().get_parent().get_node("World") #NEED TO BE CHANGED TO ASK SERVER INFO
 		#print(World)
-		position = get_parent().get_parent().get_node("SPACESHIP").position
+		go_back_to_ship()
 		dialogue_box = $Player_HUD/Dialogue
 		
 func _physics_process(delta: float) -> void:
