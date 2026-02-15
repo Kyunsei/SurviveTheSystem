@@ -40,16 +40,21 @@ func add_to_inventory(object, number):
 
 @rpc("any_peer","call_remote")
 func remove_from_inventory(id, number):
-	id = inventory.size() - 1
 	if inventory.has(id):
-		var obj = inventory[id]
-		var pos = position
-		pos.y = 0
-		get_parent().get_node("Grass_Manager").ask_for_spawn_grass(pos,obj["Species"])
 		inventory.erase(id)
 		inventory_count -= 1
 		print("removed")
 
+@rpc("any_peer","call_remote")
+func drop(id, number):
+	id = inventory.size() - 1
+
+	if inventory.has(id):
+		var obj = inventory[id]
+		remove_from_inventory(id, number)
+		var pos = position
+		pos.y = 0
+		get_parent().get_node("Grass_Manager").ask_for_spawn_grass(pos,obj["Species"])
 
 
 ####################################
