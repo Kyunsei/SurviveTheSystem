@@ -5,6 +5,7 @@ var grass_dict = {}
 var grass_unique_id = 0
 var World : Node3D
 
+@export var max_grass_object = 100
 @export var object_scene : PackedScene
 
 var thread: Thread
@@ -202,13 +203,17 @@ func Cut(grass):
 	
 @rpc("any_peer","call_local") 
 func Become_object(grass):
-	var new_object = object_scene.instantiate()
-	var pos = grass["position"]
-	new_object.position.y = pos.y
-	new_object.position.x = pos.x + randf_range(-1,1)
-	new_object.position.z = pos.z + randf_range(-1,1)
-	new_object.rotation.y = randf_range(deg_to_rad(0),deg_to_rad(360))
-	get_parent().add_child(new_object, true)
+	if GlobalSimulationParameter.object_grass_number > max_grass_object :
+		pass
+	else :
+		GlobalSimulationParameter.object_grass_number += 1
+		var new_object = object_scene.instantiate()
+		var pos = grass["position"]
+		new_object.position.y = pos.y
+		new_object.position.x = pos.x + randf_range(-1,1)
+		new_object.position.z = pos.z + randf_range(-1,1)
+		new_object.rotation.y = randf_range(deg_to_rad(0),deg_to_rad(360))
+		get_parent().add_child(new_object, true)
 
 
 
