@@ -126,7 +126,7 @@ func DoAction():
 	if targets:
 		for t in targets:
 			if t is Dictionary:
-				if t["Species"] == "grass" :
+				if t["Species"] == Alifedata.enum_speciesID.GRASS :
 					alife_manager.get_node("Grass_Manager").Cut(t)
 				else:
 					pass
