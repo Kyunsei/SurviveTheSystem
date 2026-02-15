@@ -14,6 +14,7 @@ func on_game_started():
 	if multiplayer.is_server() == false:
 			$"Alife manager".spawn_player.rpc_id(1,multiplayer.get_unique_id(),$SPACESHIP.global_position)
 			GlobalSimulationParameter.ClientStarted = true
+		
 
 func on_server_started():
 	if multiplayer.is_server():
@@ -24,3 +25,4 @@ func on_server_started():
 		#$"Alife manager".Spawn_life_without_pool.rpc_id(1,Vector3(20,0,15), "tree")
 
 		GlobalSimulationParameter.SimulationStarted = true
+		GlobalSimulationParameter.simulation_speed = 0.5

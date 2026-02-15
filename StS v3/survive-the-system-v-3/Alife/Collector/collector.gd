@@ -1,8 +1,9 @@
 extends Node3D
 
 var Biomass_collected = 0
+var max_biomass = 100
 
-var factor = 1# 0.001
+var factor =  0.001
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	update_label()
@@ -15,9 +16,12 @@ func interact(player):
 		#player.remove_from_inventory(o,1)
 	player.inventory = {}
 	update_label()
-	if Biomass_collected >= 100:
+	if Biomass_collected >= max_biomass:
 		print("BRAVO")
 		player.go_back_to_ship.rpc_id(int(player.name))
+		#GlobalSimulationParameter.simulation_speed = 0.5
+		Biomass_collected = 0
+		max_biomass = max_biomass * 2
 		#end_of_quest.rpc_id(int(player.name),player)
 	#p.grass_in_inventory = 0
 	#print ("item collected")
@@ -36,4 +40,4 @@ func _process(delta: float) -> void:
 
 
 func update_label():
-	$collected_amount_Label3D.text = "Biomass collected " + str(round(Biomass_collected)) + " /100"
+	$collected_amount_Label3D.text = "Biomass collected " + str(round(Biomass_collected)) + " /" + str(max_biomass)

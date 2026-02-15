@@ -1,6 +1,6 @@
 extends Control
 
-@export var text_speed := 0.05  # seconds per character
+@export var text_speed := 0.001  # seconds per character
 
 var _typing := false
 signal button_pressed
@@ -8,7 +8,6 @@ signal button_pressed
 
 
 func show_text(new_text:String):
-	print("hello")
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	$Panel/Label.text = new_text
 	$Panel/Label.visible_characters = 0
