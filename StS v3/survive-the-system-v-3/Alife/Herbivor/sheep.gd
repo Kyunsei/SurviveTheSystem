@@ -1,6 +1,6 @@
 extends Alife
 
-var target: Node3D
+var target
 var alife_manager: Node3D
 var direction : Vector3
 var speed = 10
@@ -46,8 +46,9 @@ func Activate():
 	#special_activation()
 	
 func Die():
-	Desactivate()
-	queue_free()
+	pass
+	#Desactivate()
+	#queue_free()
 
 func Desactivate():
 	hide()
@@ -65,7 +66,7 @@ func Homeostasis():
 		Die()
 
 
-func find_closest(from_position: Vector3, array: Array) -> Node3D:
+func find_closest(from_position: Vector3, array: Array):
 	var closest = null
 	var closest_distance = INF
 	
@@ -74,7 +75,6 @@ func find_closest(from_position: Vector3, array: Array) -> Node3D:
 		if distance < closest_distance:
 			closest_distance = distance
 			closest = element
-	
 	return closest	
 
 func checkfood_around():
@@ -82,6 +82,10 @@ func checkfood_around():
 	if targets:
 		if targets.size() > 0 :
 			return find_closest(position,targets)
+
+
+
+
 													
 func GoTo(t,delta):
 	direction = (t.position - position).normalized()
@@ -89,9 +93,11 @@ func GoTo(t,delta):
 	global_position.x = clamp(global_position.x ,-World.World_Size.x/2,World.World_Size.x/2 )
 	global_position.z = clamp(global_position.z ,-World.World_Size.z/2,World.World_Size.z/2 )
 func Eat(t):
-	current_energy += t.current_energy
-	t.current_energy = 0
-	t.Die()
+	current_energy += t["current_energy"]
+	t["current_energy"]= 0
+	#t.Die()
+	alife_manager.get_node("Grass_Manager")._pending_external_kills.append(t)
+
 
 func return_closest_target():
 	var current_pos = position

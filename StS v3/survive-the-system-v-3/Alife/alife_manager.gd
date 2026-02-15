@@ -45,7 +45,9 @@ var max_plant  = 10000
 
 func _ready() -> void:
 	$Grass_Manager.World = World
-	$Grass_Manager.ask_for_spawn_grass(Vector3(-15,0,-15))
+	$Grass_Manager.ask_for_spawn_grass(Vector3(-15,0,-15),Alifedata.enum_speciesID.GRASS)
+	$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
+
 	#set_multiplayer_authority(1)
 	#$"Alife manager".Spawn_life.rpc_id(1,Vector3(-15,0,-15),"grass")
 

@@ -32,11 +32,22 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 	new_life["position"] = _pos
 	new_life["current_energy"] = 0.0
 	new_life["Species"] = sp
-	new_life["light_index"] = null
+	new_life["light_index"] = []
 	new_life["bin_ID"] = null
 	match sp:
 		enum_speciesID.GRASS:		
 			new_life["Homeostasis_cost"] = 0.3
 			new_life["Photosynthesis_absorbtion"] = 1.
+			new_life["Photosynthesis_range"] = 0
+			new_life["Reproduction_cost"] = 8
+			new_life["Reproduction_spread"] = 5
+
 			#light_index = []
+		enum_speciesID.TREE:
+			new_life["Homeostasis_cost"] = 0.8
+			new_life["Photosynthesis_absorbtion"] = 1.
+			new_life["Photosynthesis_range"] = 6
+			new_life["Reproduction_cost"] = 600
+			new_life["Reproduction_spread"] = 15
+
 	return new_life

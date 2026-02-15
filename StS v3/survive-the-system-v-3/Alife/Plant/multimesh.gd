@@ -14,17 +14,16 @@ func draw_all_grass(grass_dict):
 	instance_number = 0
 	id_to_slot.clear()
 	slot_to_id.clear()
-	multimesh.visible_instance_count = grass_dict.size() 
+	#multimesh.visible_instance_count = grass_dict.size() 
 	for g in grass_dict.values():
-		var slot = instance_number
+				var slot = instance_number
+				id_to_slot[g["ID"]] = slot
+				slot_to_id[slot] = g["ID"]
+				
+				multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
 
-		id_to_slot[g["ID"]] = slot
-		slot_to_id[slot] = g["ID"]
-		
-		multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
-
-		instance_number += 1
-
+				instance_number += 1
+	multimesh.visible_instance_count = instance_number
 	
 var instance_data: Array = []  # mirrors multimesh slots
 

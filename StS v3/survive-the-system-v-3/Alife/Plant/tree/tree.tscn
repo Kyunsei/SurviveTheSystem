@@ -1,19 +1,8 @@
 [gd_scene format=3 uid="uid://bbug4errj8rkt"]
 
 [ext_resource type="Script" uid="uid://djglenl8xcgse" path="res://Alife/Plant/tree/tree.gd" id="1_7cxhk"]
-[ext_resource type="Texture2D" uid="uid://belb5ipraimac" path="res://assets/assets kyun/grass_texture128.png" id="2_wrulr"]
+[ext_resource type="QuadMesh" uid="uid://nh4yv5p6sry0" path="res://Alife/Plant/tree/tree_mesh.tres" id="2_wrulr"]
 [ext_resource type="Texture2D" uid="uid://ohxtmwp66oew" path="res://assets/assets kyun/ground_texture128.png" id="3_ppuvk"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
-blend_mode = 3
-shading_mode = 0
-albedo_color = Color(0.3569829, 0.63304657, 0.24205121, 1)
-albedo_texture = ExtResource("2_wrulr")
-billboard_mode = 1
-
-[sub_resource type="QuadMesh" id="QuadMesh_oukle"]
-material = SubResource("StandardMaterial3D_11t0l")
-size = Vector2(9, 6)
 
 [sub_resource type="BoxMesh" id="BoxMesh_7cxhk"]
 size = Vector3(9, 6, 9)
@@ -51,7 +40,7 @@ script = ExtResource("1_7cxhk")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.330567, 0)
 cast_shadow = 0
-mesh = SubResource("QuadMesh_oukle")
+mesh = ExtResource("2_wrulr")
 
 [node name="Shadow_mesh" type="MeshInstance3D" parent="." unique_id=1388790304]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.330567, 0)

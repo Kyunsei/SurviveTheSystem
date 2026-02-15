@@ -58,7 +58,6 @@ func Homeostasis():
 		Die()
 
 func Photosynthesis():
-	
 	for l_i in light_index:
 		if l_i <  World.light_array.size():
 			var energy_absorbed = World.light_array[l_i] * Photosynthesis_absorbtion * GlobalSimulationParameter.simulation_speed 
