@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c3mhy3ho6ovbu"
 path.s3tc="res://.godot/imported/berry_5.png-b0448504c91c1dddf82f67f3bfab483d.s3tc.ctex"
+path.etc2="res://.godot/imported/berry_5.png-b0448504c91c1dddf82f67f3bfab483d.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://Alife/Plant/Bush/berry_5.png"
-dest_files=["res://.godot/imported/berry_5.png-b0448504c91c1dddf82f67f3bfab483d.s3tc.ctex"]
+dest_files=["res://.godot/imported/berry_5.png-b0448504c91c1dddf82f67f3bfab483d.s3tc.ctex", "res://.godot/imported/berry_5.png-b0448504c91c1dddf82f67f3bfab483d.etc2.ctex"]
 
 [params]
 

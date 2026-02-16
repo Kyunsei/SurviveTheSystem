@@ -19,9 +19,12 @@ func interact(player):
 	if Biomass_collected >= max_biomass:
 		print("BRAVO")
 		player.go_back_to_ship.rpc_id(int(player.name))
+		set_world_readiness.rpc(false)
 		#GlobalSimulationParameter.simulation_speed = 0.5
 		Biomass_collected = 0
 		max_biomass = max_biomass * 2
+		update_label()
+
 		#end_of_quest.rpc_id(int(player.name),player)
 	#p.grass_in_inventory = 0
 	#print ("item collected")
@@ -31,12 +34,9 @@ func interact(player):
 func end_of_quest(player):
 	player.go_back_to_ship()
 	
-
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+@rpc("any_peer","call_remote")
+func set_world_readiness(yesorno):
+		GlobalSimulationParameter.WorldReady = yesorno
 
 
 func update_label():

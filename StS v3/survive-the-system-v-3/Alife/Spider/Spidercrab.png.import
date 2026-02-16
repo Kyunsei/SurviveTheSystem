@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://b2cyk6idgpbe3"
 path.s3tc="res://.godot/imported/Spidercrab.png-00ec3b0f97b00a17bdf4833d559e05d6.s3tc.ctex"
+path.etc2="res://.godot/imported/Spidercrab.png-00ec3b0f97b00a17bdf4833d559e05d6.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://Alife/Spider/Spidercrab.png"
-dest_files=["res://.godot/imported/Spidercrab.png-00ec3b0f97b00a17bdf4833d559e05d6.s3tc.ctex"]
+dest_files=["res://.godot/imported/Spidercrab.png-00ec3b0f97b00a17bdf4833d559e05d6.s3tc.ctex", "res://.godot/imported/Spidercrab.png-00ec3b0f97b00a17bdf4833d559e05d6.etc2.ctex"]
 
 [params]
 

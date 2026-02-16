@@ -5,7 +5,11 @@ extends Control
 var _typing := false
 signal button_pressed
 
+func hide_button():
+	$Panel/Button.hide()
 
+func show_button():
+	$Panel/Button.show()
 
 func show_text(new_text:String):
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
