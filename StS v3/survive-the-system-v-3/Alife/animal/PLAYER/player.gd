@@ -48,8 +48,8 @@ func remove_from_inventory(id, number):
 @rpc("any_peer","call_remote")
 func drop(id, number):
 	id = inventory.size() - 1
-
 	if inventory.has(id):
+		print("hello")
 		var obj = inventory[id]
 		remove_from_inventory(id, number)
 		var pos = position

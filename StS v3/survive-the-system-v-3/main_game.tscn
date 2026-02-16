@@ -4,9 +4,9 @@
 [ext_resource type="PackedScene" uid="uid://bqydh3n7b1h18" path="res://Alife/AlifeManager.tscn" id="2_yx7mw"]
 [ext_resource type="PackedScene" uid="uid://bpc6fr4hgno76" path="res://Menus/Network/network.tscn" id="5_2pltu"]
 [ext_resource type="PackedScene" uid="uid://bp0ipaboii0ae" path="res://World/world.tscn" id="5_dugkq"]
-[ext_resource type="PackedScene" uid="uid://csp4534h7vmrb" path="res://Alife/Collector/collector.tscn" id="5_f52ns"]
+[ext_resource type="PackedScene" uid="uid://csp4534h7vmrb" path="res://Collector/collector.tscn" id="5_f52ns"]
 [ext_resource type="PackedScene" uid="uid://cjq6scu5nepoj" path="res://World/spaceship/spaceship.tscn" id="6_2pltu"]
-[ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/Spider/Spidercrab.png" id="7_f52ns"]
+[ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/animal/Spider/Spidercrab.png" id="7_f52ns"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f3thf"]
 transparency = 1

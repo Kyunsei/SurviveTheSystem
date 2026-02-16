@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://csp4534h7vmrb"]
 
-[ext_resource type="Script" uid="uid://5tfk6xkfrcja" path="res://Alife/Collector/collector.gd" id="1_0s0nn"]
-[ext_resource type="PackedScene" uid="uid://chtr6unxbbpef" path="res://Alife/Collector/collector_model.tscn" id="1_mrs3r"]
+[ext_resource type="Script" uid="uid://5tfk6xkfrcja" path="res://Collector/collector.gd" id="1_0s0nn"]
+[ext_resource type="PackedScene" uid="uid://chtr6unxbbpef" path="res://Collector/collector_model.tscn" id="1_mrs3r"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0s0nn"]
 size = Vector3(2.5, 2, 2.5)

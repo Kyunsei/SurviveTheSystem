@@ -2,13 +2,14 @@ extends Area3D
 
 var player
 
-var step = 0
+var step = 3 #0
 var time_to_load = 10
 var current_time = 0
 
 func display_text(dialogue_box, text):
 	dialogue_box.show()
 	dialogue_box.show_text(text)
+
 
 
 

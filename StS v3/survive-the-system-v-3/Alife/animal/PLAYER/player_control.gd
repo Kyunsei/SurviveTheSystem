@@ -114,6 +114,7 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("Action") :
 			action()#.rpc_id(1)
 		if Input.is_action_just_pressed("Drop"):
+			print("hey")
 			player.drop.rpc_id(1,0, 1)
 
 @rpc("any_peer","call_local")

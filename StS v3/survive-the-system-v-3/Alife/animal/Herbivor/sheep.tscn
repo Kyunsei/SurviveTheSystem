@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bba3or5r3sxn1"]
 
-[ext_resource type="Script" uid="uid://dng4tmgsqripm" path="res://Alife/Herbivor/sheep.gd" id="1_61knv"]
-[ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/Herbivor/SHEEP.png" id="2_iieic"]
+[ext_resource type="Script" uid="uid://dng4tmgsqripm" path="res://Alife/animal/Herbivor/sheep.gd" id="1_61knv"]
+[ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/animal/Herbivor/SHEEP.png" id="2_iieic"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
 transparency = 1

@@ -15,6 +15,7 @@ func interact(player):
 		Biomass_collected += player.inventory[o]["current_energy"]*factor
 		#player.remove_from_inventory(o,1)
 	player.inventory = {}
+	player.inventory_count = 0
 	update_label()
 	if Biomass_collected >= max_biomass:
 		print("BRAVO")

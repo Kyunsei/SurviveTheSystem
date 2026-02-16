@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cx8myhkgjy4fp"]
 
-[ext_resource type="Script" uid="uid://vmjbgjbpdq6g" path="res://Alife/PLAYER/player_hud.gd" id="1_50gt6"]
+[ext_resource type="Script" uid="uid://vmjbgjbpdq6g" path="res://Alife/animal/PLAYER/player_hud.gd" id="1_50gt6"]
 [ext_resource type="PackedScene" uid="uid://6qrypffsftey" path="res://Menus/char_select.tscn" id="2_ivssi"]
 [ext_resource type="PackedScene" uid="uid://c0wfphs81elqo" path="res://Menus/in_game_menu/dialogue.tscn" id="3_44h10"]
 [ext_resource type="PackedScene" uid="uid://dtgeb6wmjm6a2" path="res://Menus/in_game_menu/inventory.tscn" id="4_0cxu6"]
