@@ -3,7 +3,7 @@ extends Node3D
 var Biomass_collected = 0
 var max_biomass = 100
 
-var factor =  0.001
+var factor =  0.002
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	update_label()

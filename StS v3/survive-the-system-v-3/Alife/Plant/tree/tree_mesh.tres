@@ -1,6 +1,6 @@
 [gd_resource type="QuadMesh" format=3 uid="uid://nh4yv5p6sry0"]
 
-[ext_resource type="Texture2D" uid="uid://b6tkay5a8tfkp" path="res://Alife/Plant/tree/tree.png" id="1_bjfy8"]
+[ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="1_bjfy8"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1hb0a"]
 transparency = 2
@@ -13,5 +13,5 @@ billboard_mode = 2
 
 [resource]
 material = SubResource("StandardMaterial3D_1hb0a")
-size = Vector2(6, 12)
+size = Vector2(12, 12)
 center_offset = Vector3(0, 6, 0)
