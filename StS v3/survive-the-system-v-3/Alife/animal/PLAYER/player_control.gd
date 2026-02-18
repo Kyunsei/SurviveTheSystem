@@ -37,11 +37,19 @@ func _physics_process(delta: float) -> void:
 		if direction != Vector3.ZERO:
 			direction = direction.normalized()
 		if camera_anchor:
-			var cam_basis = camera_anchor.transform.basis
-			direction = (cam_basis *direction).normalized() #THIS MAKE ONE DIRECTION SLOWERr
-
-		player.direction = direction
-		#player.get_node("MeshInstance3D").look_at(-direction)
+			var cam_basis = camera_anchor.global_transform.basis
+			# Get camera forward and right
+			var forward = cam_basis.z
+			var right = cam_basis.x
+			# Remove vertical influence
+			forward.y = 0
+			right.y = 0
+			forward = forward.normalized()
+			right = right.normalized()
+			# Rebuild movement direction on horizontal plane
+			direction = (right * direction.x + forward * direction.z).normalized()
+			player.direction = direction
+				#player.get_node("MeshInstance3D").look_at(-direction)
 		
 		
 		if Input.is_action_just_pressed("use"):

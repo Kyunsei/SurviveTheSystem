@@ -3,7 +3,8 @@ extends Camera3D
 var player : Node3D
 var pitch : float = 0.0
 var mouse_captured = false
-
+@export var min_pitch : float = deg_to_rad(-40)
+@export var max_pitch : float = deg_to_rad(40)
 @export var mouse_sensitivity = 0.002
 
 @export var camera_speed = 5
@@ -81,10 +82,10 @@ func _unhandled_input(event):
 				
 				# Yaw (left/right)
 				yaw_anchor.rotate_y(-event.relative.x * mouse_sensitivity)
-
 				# Pitch (up/down)
 				pitch -= event.relative.y * mouse_sensitivity
-				#pitch = clamp(pitch, min_pitch, max_pitch)
+				# Clamp pitch
+				pitch = clamp(pitch, min_pitch, max_pitch)
 				pitch_anchor.rotation.x = pitch
 			
 func _input(event):
