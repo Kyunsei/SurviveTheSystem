@@ -4,10 +4,13 @@ extends MultiMeshInstance3D
 var id_to_slot := {}
 var slot_to_id := {}
 var instance_number := 0
+var shadow
 
 func _ready() -> void:
 	multimesh.instance_count = 100000
-
+	if has_node("shadow"):
+		shadow = $shadow
+		shadow.multimesh.instance_count = 100000
 
 func draw_all_grass(grass_dict):
 	instance_number = 0
@@ -36,8 +39,13 @@ func draw_new_grass(g):
 
 	multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
 
+
 	instance_number += 1
 	multimesh.visible_instance_count = instance_number 
+	
+	if shadow:
+		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
+		shadow.multimesh.visible_instance_count = instance_number
 
 
 func remove_grass(g):
@@ -53,6 +61,9 @@ func remove_grass(g):
 			slot,
 			multimesh.get_instance_transform(last_slot)
 		)
+		if shadow:
+			shadow.multimesh.set_instance_transform(
+				slot, multimesh.get_instance_transform(last_slot))
 		
 		# Update mappings
 		var moved_id = slot_to_id[last_slot]
@@ -65,7 +76,8 @@ func remove_grass(g):
 	
 	instance_number -= 1
 	multimesh.visible_instance_count = instance_number
-
+	if shadow:
+		shadow.multimesh.visible_instance_count = instance_number
 
 	
 	

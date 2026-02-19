@@ -1,6 +1,10 @@
 [gd_scene format=3 uid="uid://bgxwmxoqmnoki"]
 
 [ext_resource type="QuadMesh" uid="uid://nh4yv5p6sry0" path="res://Alife/Plant/tree/tree_mesh.tres" id="1_5w4al"]
+[ext_resource type="SphereMesh" uid="uid://c0f8vwlqbesnh" path="res://Alife/Plant/tree/shadow_mesh.tres" id="2_2ehfy"]
 
 [node name="Tree" type="MeshInstance3D" unique_id=314223625]
 mesh = ExtResource("1_5w4al")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=745418586]
+mesh = ExtResource("2_2ehfy")

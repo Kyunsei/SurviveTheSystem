@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://d3ia50ysrfoi6" path="res://Alife/Plant/multimesh.gd" id="3_mcq2d"]
 [ext_resource type="QuadMesh" uid="uid://cffer30oeavdl" path="res://Alife/Plant/Grass/grass.tres" id="4_lfald"]
 [ext_resource type="QuadMesh" uid="uid://nh4yv5p6sry0" path="res://Alife/Plant/tree/tree_mesh.tres" id="5_lqx4p"]
+[ext_resource type="SphereMesh" uid="uid://c0f8vwlqbesnh" path="res://Alife/Plant/tree/shadow_mesh.tres" id="6_mcq2d"]
 [ext_resource type="QuadMesh" uid="uid://dcrx4rno0mb02" path="res://Alife/Plant/Bush/bush_mesh.tres" id="6_wac1v"]
 
 [sub_resource type="MultiMesh" id="MultiMesh_c0kpp"]
@@ -14,6 +15,10 @@ mesh = ExtResource("4_lfald")
 [sub_resource type="MultiMesh" id="MultiMesh_48f2q"]
 transform_format = 1
 mesh = ExtResource("5_lqx4p")
+
+[sub_resource type="MultiMesh" id="MultiMesh_wac1v"]
+transform_format = 1
+mesh = ExtResource("6_mcq2d")
 
 [sub_resource type="MultiMesh" id="MultiMesh_mcq2d"]
 transform_format = 1
@@ -30,6 +35,11 @@ script = ExtResource("3_mcq2d")
 [node name="tree" type="MultiMeshInstance3D" parent="." unique_id=63557357]
 multimesh = SubResource("MultiMesh_48f2q")
 script = ExtResource("3_mcq2d")
+
+[node name="shadow" type="MultiMeshInstance3D" parent="tree" unique_id=932312739]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+cast_shadow = 3
+multimesh = SubResource("MultiMesh_wac1v")
 
 [node name="bush" type="MultiMeshInstance3D" parent="." unique_id=643886886]
 multimesh = SubResource("MultiMesh_mcq2d")
