@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://c01142moamqri"]
+
+[ext_resource type="PackedScene" uid="uid://bgxwmxoqmnoki" path="res://Alife/Plant/tree/tree2.tscn" id="1_ute06"]
+[ext_resource type="Texture2D" uid="uid://coot4x0p7byyk" path="res://assets/assets kyun/feuille1test.png" id="2_wq3kk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_04he4"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+shading_mode = 0
+albedo_texture = ExtResource("2_wq3kk")
+texture_filter = 0
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_o28d1"]
+material = SubResource("StandardMaterial3D_04he4")
+size = Vector2(3, 3)
+
+[node name="arbretest" type="Node3D" unique_id=1278083632]
+
+[node name="Tree" parent="." unique_id=314223625 instance=ExtResource("1_ute06")]
+
+[node name="brushes" type="MeshInstance3D" parent="." unique_id=1620707829]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 10.400001, 0)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes2" type="MeshInstance3D" parent="." unique_id=764581582]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8000002, 10.400001, 0)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes3" type="MeshInstance3D" parent="." unique_id=298830736]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3000002, 10.400001, 0.7)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes4" type="MeshInstance3D" parent="." unique_id=682706452]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3000002, 10.400001, -0.7)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes5" type="MeshInstance3D" parent="." unique_id=1246014052]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3000002, 11.8, 0.3)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes6" type="MeshInstance3D" parent="." unique_id=147570138]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1999998, 11.8, 0.3)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes7" type="MeshInstance3D" parent="." unique_id=1486629587]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5999998, 11.8, 0.3)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes8" type="MeshInstance3D" parent="." unique_id=945910842]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 11.8, 0.3)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes9" type="MeshInstance3D" parent="." unique_id=8773592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.29999995, 11.8, -0.8)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes10" type="MeshInstance3D" parent="." unique_id=2144921283]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.29999995, 11.8, 2)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes11" type="MeshInstance3D" parent="." unique_id=86281936]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 11.8, 2)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes12" type="MeshInstance3D" parent="." unique_id=363715623]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6000001, 11.8, 2)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes13" type="MeshInstance3D" parent="." unique_id=448057492]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6000001, 11.8, -1.6000001)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes14" type="MeshInstance3D" parent="." unique_id=1495948215]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6000001, 11.8, -3.1000001)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes15" type="MeshInstance3D" parent="." unique_id=793198443]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5999999, 11.8, -3.1000001)
+mesh = SubResource("QuadMesh_o28d1")
+
+[node name="brushes16" type="MeshInstance3D" parent="." unique_id=5841713]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9, 11.8, -2.1000001)
+mesh = SubResource("QuadMesh_o28d1")
