@@ -4,8 +4,10 @@ extends CharacterBody3D
 
 @export var max_speed = 500
 @export var sprint_speed = 1000
-@export var gravity = 100
-@export var base_jump = 40
+@export var gravity = 60
+@export var base_jump = 25
+@export var fall_gravity := 90
+@export var low_jump_gravity := 240
 @export var long_jump = 120
 @export var fly = false
 var speed = max_speed

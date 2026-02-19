@@ -23,8 +23,8 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	if player.is_multiplayer_authority():
-		if not player.is_on_floor():
-			player.velocity.y -= player.gravity*delta
+		#if not player.is_on_floor():
+			#player.velocity.y -= player.gravity*delta
 		direction = Vector3(0,0,0)
 		if Input.is_action_pressed("down"):
 			direction.z = 1
@@ -75,44 +75,17 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_pressed("sprint") == false:
 			total2 = 0
 		player.currently_on_floor = player.is_on_floor()
+		if not player.is_on_floor():
+			if player.velocity.y > 0:
+				if Input.is_action_pressed("jump") :
+					player.velocity.y -= player.gravity*delta
+				else:
+					player.velocity.y -= player.low_jump_gravity * delta
+			else :
+				player.velocity.y -= player.fall_gravity*delta
 		if Input.is_action_just_pressed("jump") and player.is_on_floor():
-			total = 0
-			#if player.gonna_jump == true :
-				#print ("long jumped")
-				#player.is_jumping = true
-				#player.velocity.y += player.base_jump/1.5
-				#player.standing_up = true
-				#player.velocity.x = -player.get_node("MeshInstance3D").transform.basis.z.x * player.long_jump
-				#player.velocity.z = -player.get_node("MeshInstance3D").transform.basis.z.z * player.long_jump
-				#print (player.velocity)
-				#player.gonna_jump = false
-				#await get_tree().create_timer(0.2).timeout 
-				#player.is_jumping = false
-			#else :
-				#print ("jumped")
-				
-			player.velocity.y += player.base_jump
-			player.standing_up = true
-			player.crouched = false
-			player.was_on_floor = player.currently_on_floor
-		#if not player.was_on_floor and player.currently_on_floor and player.standing_up == true:
-				#player.get_node("AnimationPlayer").speed_scale = 5.0
-				#player.get_node("AnimationPlayer").play_backwards("Crouch_2")
-				#player.standing_up = false
-		#if total > 0.2:
-			#player.speed = 0
-		#if total > 1 :
-			#if player.crouched == false :
-				#player.get_node("AnimationPlayer").speed_scale = 1.0
-				#player.get_node("AnimationPlayer").play("Crouch")
-				#player.crouched = true
-		#if total > 1.2 :
-				#player.gonna_jump = true
-			#if Input.is_action_just_released("jump") and player.crouched == true:
-				#print("long jump")
-				#player.get_node("AnimationPlayer").play("RESET")
-				#player.crouched = false
-				#player.speed = 500
+			player.velocity.y = player.base_jump
+	
 		if Input.is_action_just_pressed("pick_up") :
 			var Area3d = %Pick_up_Area3D
 			Area3d.show()
