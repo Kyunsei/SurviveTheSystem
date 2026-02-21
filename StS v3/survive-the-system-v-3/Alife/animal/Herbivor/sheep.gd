@@ -1,20 +1,58 @@
 extends Alife
 
-var target
-var alife_manager: Node3D
+
+var isInit = false
+
+#MOUVMENT
+var speed = 5 #* 1000 # gamespeed is 0.001
+var maxspeed = 100 * 1000
 var direction : Vector3
-var speed = 10
+
+
+#SIMULATION
+var alife_manager: Node3D
+
+
+#DNA
 var species = "sheep"
+
+
+#VISON array
+var vision_dangers = []
+var vision_foods = []
+var vision_friends = []
+
+
+
+var target
 var wandertimer = 0
-func _ready() -> void:
+
+
+
+func _enter_tree() -> void:
+	current_speed = 0.05
 	print("hello Mr sheep")
 	size = Vector3(1,1,1) #Temporary...
 
 	max_energy = 1000
 	alife_manager = get_parent()
+	isInit = true
+
+
+func choose_action():
+	$StateManager.choose_action()
+
+
+
+##################OLD
+
+
+
+
 
 func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
+		return
 		if multiplayer.is_server():
 			if current_energy < 500:
 				target = return_closest_target() #may eat sheep too...
@@ -32,12 +70,13 @@ func _process(delta: float) -> void:
 				if wandertimer <= 0:
 					wandertimer = 5
 					direction = Vector3(randf_range(-1,1),0,randf_range(-1,1))
-				global_position += direction * speed * delta * GlobalSimulationParameter.simulation_speed
+				global_position += direction * speed * delta #* GlobalSimulationParameter.simulation_speed
 				global_position.x = clamp(global_position.x ,-World.World_Size.x/2,World.World_Size.x/2 )
 				global_position.z = clamp(global_position.z ,-World.World_Size.z/2,World.World_Size.z/2 )
 				#print(direction)
 			Reproduction()
 			Homeostasis()
+
 
 func Activate():
 	#show()
@@ -47,8 +86,8 @@ func Activate():
 	
 func Die():
 	pass
-	Desactivate()
-	queue_free()
+	#Desactivate()
+	#queue_free()
 
 func Desactivate():
 	hide()
@@ -96,7 +135,7 @@ func Eat(t):
 	current_energy += t["current_energy"]
 	t["current_energy"]= 0
 	#t.Die()
-	alife_manager.get_node("Grass_Manager")._pending_external_kills.append(t)
+#	alife_manager.get_node("Grass_Manager")._pending_external_kills.append(t)
 
 
 func return_closest_target():
@@ -109,18 +148,18 @@ func return_closest_target():
 		for j in [-1,0,1]:
 			current_pos.x = position.x + World.bin_size.x*i
 			current_pos.z = position.z + World.bin_size.z*j		
-			if current_pos.x > -World.World_Size.x/2 and current_pos.x < World.World_Size.x/2:
-				if current_pos.z > -World.World_Size.z/2 and current_pos.z < World.World_Size.x/2:
+			if current_pos.x > -World.World_Size.x/2  and current_pos.x < World.World_Size.x/2 :
+				if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.x/2 :
 					
 					var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
 					bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-					
-					if World.bin_array[bin_index]:
-						closest_in_bin = find_closest(position, World.bin_array[bin_index])
-						var distance = position.distance_to(closest_in_bin.position)
-						if distance < closest_distance:
-							closest = closest_in_bin
-							closest_distance = distance
+					if bin_index < World.bin_array.size():
+						if World.bin_array[bin_index]:
+							closest_in_bin = find_closest(position, World.bin_array[bin_index])
+							var distance = position.distance_to(closest_in_bin.position)
+							if distance < closest_distance:
+								closest = closest_in_bin
+								closest_distance = distance
 	return closest
 
 

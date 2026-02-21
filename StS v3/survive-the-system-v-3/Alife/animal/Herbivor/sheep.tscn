@@ -2,6 +2,11 @@
 
 [ext_resource type="Script" uid="uid://dng4tmgsqripm" path="res://Alife/animal/Herbivor/sheep.gd" id="1_61knv"]
 [ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/animal/Herbivor/SHEEP.png" id="2_iieic"]
+[ext_resource type="Script" uid="uid://dovwjxpu3l7pm" path="res://Alife/AI/StateManager.gd" id="3_t1rd4"]
+[ext_resource type="Script" uid="uid://b1ed7n1e5j12v" path="res://Alife/AI/states/move.gd" id="4_oulcr"]
+[ext_resource type="Script" uid="uid://blwiuyhycfj5j" path="res://Alife/AI/states/dying.gd" id="5_gjfga"]
+[ext_resource type="Script" uid="uid://befcqr7hv7m5r" path="res://Alife/AI/states/eat.gd" id="6_voeaq"]
+[ext_resource type="Script" uid="uid://d1vorrs2hlill" path="res://Alife/AI/states/reproduce.gd" id="7_dndam"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11t0l"]
 transparency = 1
@@ -27,6 +32,9 @@ size = Vector2(1, 2)
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
+properties/1/path = NodePath("debugLabel:text")
+properties/1/spawn = true
+properties/1/replication_mode = 1
 
 [node name="sheep" type="Node3D" unique_id=455347701 groups=["sheep"]]
 script = ExtResource("1_61knv")
@@ -42,3 +50,30 @@ mesh = SubResource("QuadMesh_iieic")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=451120355]
 replication_config = SubResource("SceneReplicationConfig_61knv")
+
+[node name="StateManager" type="Node" parent="." unique_id=1904113523]
+script = ExtResource("3_t1rd4")
+metadata/_custom_type_script = "uid://dovwjxpu3l7pm"
+
+[node name="move_state" type="Node" parent="StateManager" unique_id=1167051338]
+script = ExtResource("4_oulcr")
+metadata/_custom_type_script = "uid://b1ed7n1e5j12v"
+
+[node name="dying_state" type="Node" parent="StateManager" unique_id=1374954193]
+script = ExtResource("5_gjfga")
+metadata/_custom_type_script = "uid://blwiuyhycfj5j"
+
+[node name="eat_state" type="Node" parent="StateManager" unique_id=821047457]
+script = ExtResource("6_voeaq")
+metadata/_custom_type_script = "uid://befcqr7hv7m5r"
+
+[node name="reproduce_state" type="Node" parent="StateManager" unique_id=2114404148]
+script = ExtResource("7_dndam")
+metadata/_custom_type_script = "uid://d1vorrs2hlill"
+
+[node name="debugLabel" type="Label3D" parent="." unique_id=2100566420]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3257527, 0)
+billboard = 1
+text = "TEST"
+font_size = 100

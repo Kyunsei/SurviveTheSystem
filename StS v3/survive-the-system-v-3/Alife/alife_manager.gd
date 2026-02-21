@@ -7,6 +7,9 @@ extends Node3D
 @export var tree_scene: PackedScene
 
 
+#
+var IsInit = false
+
 #POOL SYSTEM
 var current_life_number = 0
 var max_life = 40000
@@ -43,21 +46,25 @@ var max_plant  = 10000
 #and probably but the loop on a thread
 #USE DICTIONARY structure currently, but for more optimisation should be replaced by array -ECS system
 
-func _ready() -> void:
-	$Grass_Manager.World = World
-	$Grass_Manager.ask_for_spawn_grass(Vector3(-15,0,-15),Alifedata.enum_speciesID.GRASS)
-	$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
-	$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
 
+func init():
+			$Grass_Manager.World = World
+			$beast_manager.World = World
+			$Grass_Manager.ask_for_spawn_grass(Vector3(25,0,-15),Alifedata.enum_speciesID.GRASS)
 
-	#set_multiplayer_authority(1)
-	#$"Alife manager".Spawn_life.rpc_id(1,Vector3(-15,0,-15),"grass")
+			$Grass_Manager.ask_for_spawn_grass(Vector3(-15,0,-15),Alifedata.enum_speciesID.GRASS)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
+			$beast_manager.Spawn_Beast(Vector3(-10,0,-15),Alifedata.enum_speciesID.SHEEP)
 
 
 func _process(delta: float) -> void:
 
 	if GlobalSimulationParameter.SimulationStarted: 
 		if multiplayer.is_server():
+			if ! IsInit:
+				init()
+				IsInit = true
 			timer -= delta
 			if timer < 0:
 				GlobalSimulationParameter.sheep_number_data.append(current_life_count_by_species[1])
@@ -68,6 +75,7 @@ func _process(delta: float) -> void:
 				timer = 3
 			pass
 			$Grass_Manager.update()
+			$beast_manager.update()
 			
 	elif GlobalSimulationParameter.ClientStarted:
 		if tempbool:
@@ -75,6 +83,9 @@ func _process(delta: float) -> void:
 			tempbool = false
 		
 
+
+
+###################################################################
 
 func duplicate_life(alife):
 	var newpos = alife.global_position + Vector3(randf_range(-5,5),0,randf_range(-5,5))

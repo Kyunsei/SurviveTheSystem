@@ -1,25 +1,17 @@
 extends Node3D
 
 
-###########################
-#
-#
-# HERE GRASS MEANS PLANT !!!!!!!!! just dont want ot change it everywhere
-#
-#
-#
-#############################
-
 #var grass_array = []
-var grass_dict = {}
-var grass_unique_id = 0
+var beast_dict = {}
+var beast_instance_dict = {}
+
+var beast_unique_id = 0
 var alifedata :Alifedata
 var World : Node3D
 
-@export var max_grass_object = 100
-@export var object_scene : PackedScene
+@export var sheep_scene : PackedScene
 
-var thread: Thread
+var thread_beast: Thread
 var mutex: Mutex = Mutex.new()
 var thread_is_running: bool = false
 var _pending_spawns: Array = []
@@ -30,68 +22,70 @@ var _pending_external_spawns: Array = []
 #var _pending_light_changes: Dictionary = {}  # index -> new value
 var free_id_array = []
 
-var grass_dna = {
+var beast_dna = {
 	"ID":0,
 	"bin_ID":null,
-	"Species": "grass",
+	"Species": "sheep",
 	"position":Vector3(),
 	"current_energy": 0,
 	"Homeostasis_cost":0.3,
-	"Photosynthesis_absorbtion": 1.0,
-	"light_index": []
+	#"Photosynthesis_absorbtion": 1.0,
+	#"light_index": []
 }
 
 
 
 func _ready() -> void:
 	if multiplayer.is_server():
-		thread = Thread.new()
+		thread_beast = Thread.new()
 		alifedata = Alifedata.new()
 		
 
 
 func _update_on_thread():
-	#print("Thread start — grass count: ", grass_dict.size())
-	#var ss = Time.get_ticks_msec() 
 
-	World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
+	#World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
 	_pending_spawns.clear()
 	_pending_kills.clear()
-	#_pending_light_changes.clear()	
-	for g in grass_dict.values():
-		Photosynthesis(g)
-		_thread_reproduction(g)
-		_thread_homeostasis(g)
+	for g in beast_dict.values():
+		#Photosynthesis(g)
+		#_thread_reproduction(g)
+		homeostasis(g)
+	
+	for b in beast_instance_dict.values():
+		b.move()
 
 	#print("end " + str(Time.get_ticks_msec() -ss))
 	call_deferred("_on_work_finished")
 
-func update():
-	start_thread()
-	#_update_on_thread()
-	'for g in grass_array:
-		Photosynthesis(g)
-		Reproduction(g)
-		Homeostasis(g)'
 
+func update():
+	#start_thread()
+	'for g in beast_dict.values():
+		homeostasis(g)'
+	for b in beast_instance_dict.values():
+		vision(b)
+		choose_action(b)
+		homeostasis(b)
+
+		#move(b)
 
 
 func start_thread():
 	mutex.lock()
 	if thread_is_running:
 		mutex.unlock()
-		#print("Already running!")
 		return
 	thread_is_running = true
 	mutex.unlock()
 	
-	thread = Thread.new()
-	thread.start(_update_on_thread)
+	thread_beast = Thread.new()
+	thread_beast.start(_update_on_thread)
 
 	
 
 func _on_work_finished():
-	thread.wait_to_finish()  # Clean up
+	thread_beast.wait_to_finish()  # Clean up
 
 	var unique_spawn := {}
 	
@@ -102,9 +96,7 @@ func _on_work_finished():
 
 	for g in unique_spawn.values():
 		g["ID"] = get_free_id()
-		grass_dict[g["ID"]] = g
-		#g.ID = get_free_id()
-		#grass_dict[g.ID] = g
+		beast_dict[g["ID"]] = g
 		put_in_world_bin(g)
 		draw_new_grass.rpc(g)
 	
@@ -112,12 +104,10 @@ func _on_work_finished():
 
 	for g in _pending_external_kills:
 		unique_kills[g["ID"]] = g
-		#unique_kills[g.ID] = g
-
+		
 	for g in _pending_kills:
 		unique_kills[g["ID"]] = g
-		#unique_kills[g.ID] = g
-
+	
 	for g in unique_kills.values() :
 		Kill(g)
 		erase_grass.rpc(g)
@@ -129,9 +119,62 @@ func _on_work_finished():
 	thread_is_running = false
 	mutex.unlock()
 
+################
+
+func choose_action(b):
+	b.choose_action()
+
+func move(b):
+	b.direction = Vector3(randf_range(-1,1),0,randf_range(-1,1))
+	b.position += b.direction * b.current_speed  #* GlobalSimulationParameter.simulation_speed
+	b.position.x = clamp(b.position.x ,-World.World_Size.x/2,World.World_Size.x/2 )
+	b.position.z = clamp(position.z ,-World.World_Size.z/2,World.World_Size.z/2 )
+
+func vision(b):
+	#got closest element in friend/danger and food
+	var target = return_closest_target(b)
+	var array =[]
+	b.target = target
+	#return target
 
 
 
+
+func return_closest_target(b):
+	var current_pos = b.position
+	var bin_index: int
+	var closest = null
+	var closest_in_bin = null
+	var closest_distance = INF
+	for i in [-1,0,1]:
+		for j in [-1,0,1]:
+			current_pos.x = b.position.x + World.bin_size.x*i
+			current_pos.z = b.position.z + World.bin_size.z*j		
+			if current_pos.x > -World.World_Size.x/2  and current_pos.x < World.World_Size.x/2 :
+				if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.x/2 :
+					
+					var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
+					bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+					if bin_index < World.bin_array.size():
+						if World.bin_array[bin_index]:
+							closest_in_bin = find_closest(b.position, World.bin_array[bin_index])
+							var distance = b.position.distance_to(closest_in_bin.position)
+							if distance < closest_distance:
+								closest = closest_in_bin
+								closest_distance = distance
+	return closest
+
+
+func find_closest(from_position: Vector3, array: Array):
+	var closest = null
+	var closest_distance = INF
+	
+	for element in array:
+		var distance = from_position.distance_to(element["position"])
+		if distance < closest_distance:
+			closest_distance = distance
+			closest = element
+	return closest	
 ############
 
 func get_free_id():
@@ -139,51 +182,46 @@ func get_free_id():
 	if free_id_array.size()>0:
 		return free_id_array.pop_back()
 	else:
-		id = grass_unique_id
-		grass_unique_id += 1
+		id = beast_unique_id
+		beast_unique_id += 1
 		return id
 
-func spawn_grass(pos, sp):
-	#var newgrass = grass_dna.duplicate()
+@rpc("any_peer","call_local")
+func add_grass(pos, sp):
 	var newgrass = alifedata.build_lifedata(get_free_id(),pos,sp)
-	#newgrass["position"] = pos
-	get_lightIndex(newgrass)
-	#newgrass["ID"] = get_free_id()
-	#grass_dict[newgrass["ID"]] = newgrass
-	_pending_spawns.append(newgrass)
-	
-	
-	#var newgrass:= Alifedata.new(get_free_id(),pos,Alifedata.enum_speciesID.GRASS)
-	#newgrass.light_index = get_lightIndex(pos)
-	#grass_dict[newgrass.ID] = newgrass
+	_pending_spawns.append(newgrass)	
+	#get_lightIndex(newgrass)
 
-func ask_for_spawn_grass(pos, sp):
-	#var newgrass = grass_dna.duplicate()
+@rpc("any_peer","call_local")
+func ask_for_adding_grass(pos, sp):
 	var newgrass = alifedata.build_lifedata(get_free_id(),pos,sp)
-	#newgrass["position"] = pos
-	get_lightIndex(newgrass)
-	#newgrass["ID"] = get_free_id()
-	#grass_dict[newgrass["ID"]] = newgrass
-	_pending_external_spawns.append(newgrass)		
+	_pending_external_spawns.append(newgrass)
+
+@rpc("any_peer","call_local")
+
+func Kill_Beast(beast):
+	print("DDDD")
+	var ID = int(beast.name)
+	'if beast_dict.has(ID):
+		free_id_array.append(ID)
+		beast_dict.erase(ID)
+		#remove_from_world_bin(grass)
+		
+		#beast_instance_dict[grass["ID"]].queue_free()
+		beast_instance_dict.erase(ID)
+		#beast.queue_free()'
 
 func Kill(grass):
-	if grass_dict.has(grass["ID"]):
+	if beast_dict.has(grass["ID"]):
 		free_id_array.append(grass["ID"])
-		grass_dict.erase(grass["ID"])
+		beast_dict.erase(grass["ID"])
 		remove_from_world_bin(grass)
 		
-	'if grass_dict.has(grass.ID):
-		free_id_array.append(grass.ID)
-		grass_dict.erase(grass.ID)
-		remove_from_world_bin(grass)'	
-
-
-
-'func get_lightIndex_old(pos):
-	var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
-	return World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)	'
-
-func get_lightIndex(grass):
+		#beast_instance_dict[grass["ID"]].queue_free()
+		beast_instance_dict.erase(grass["ID"])
+		
+	
+'func get_lightIndex(grass):
 	var pos = grass["position"]
 	grass["light_index"] = []
 	if grass["Photosynthesis_range"] == 0:
@@ -201,69 +239,23 @@ func get_lightIndex(grass):
 					
 				var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
 				var idx =  World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
-				grass["light_index"].append(idx)	 
+				grass["light_index"].append(idx)'	 
 	
-'func Homeostasis(grass):
-	grass["current_energy"] -= grass["Homeostasis_cost"]  * GlobalSimulationParameter.simulation_speed
-	#current_energy = max(0,current_energy)
-	if grass["current_energy"] < 0:
-		Kill(grass)'
 
 
-func _thread_homeostasis(grass):
-	var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
+
+func homeostasis_TRUE(grass):
+	var area = 1# max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
 	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed 
 	if grass["current_energy"] < 0:
 		_pending_kills.append(grass)
-	#grass.current_energy -= grass.Homeostasis_cost * GlobalSimulationParameter.simulation_speed
-	#if grass.current_energy < 0:
+
+func homeostasis(grass):
+	var area = 1# max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
+	grass.current_energy -= 0.5 * GlobalSimulationParameter.simulation_speed 
+	#if grass["current_energy"] < 0:
 	#	_pending_kills.append(grass)
 
-func Photosynthesis(grass):
-	for l_i in grass["light_index"]:		
-		if l_i <  World.light_array.size():
-			var energy_absorbed = World.light_array[l_i] * grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed 
-			energy_absorbed = min(World.light_array[l_i],energy_absorbed)
-			if energy_absorbed <= 0:
-				return
-			grass["current_energy"]  += energy_absorbed
-			var shadow_effect = 1.0
-			World.light_array[l_i] = max(World.light_array[l_i]-shadow_effect,0)
-		
-func Photosynthesis_old(grass):
-	
-	if grass["light_index"] <  World.light_array.size():
-		var energy_absorbed = World.light_array[grass["light_index"]] * grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed 
-		energy_absorbed = min(World.light_array[grass["light_index"]],energy_absorbed)
-		#print(energy_absorbed)
-		if energy_absorbed <= 0:
-			return
-		grass["current_energy"] += energy_absorbed
-		var shadow_effect = 1.0
-		World.light_array[grass["light_index"]] = max(World.light_array[grass["light_index"]]-shadow_effect,0)
-		#print(World.light_array[light_index])
-		
-		
-	'if grass.light_index <  World.light_array.size():
-		var energy_absorbed = World.light_array[grass.light_index] * grass.Photosynthesis_absorbtion * GlobalSimulationParameter.simulation_speed 
-		energy_absorbed = min(World.light_array[grass.light_index],energy_absorbed)
-		#print(energy_absorbed)
-		if energy_absorbed <= 0:
-			return
-		grass.current_energy += energy_absorbed
-		var shadow_effect = 1.0
-		World.light_array[grass.light_index] = max(World.light_array[grass.light_index]-shadow_effect,0)'
-
-'func Reproduction(grass):
-	if grass["current_energy"]  > 10:# reproduction_stock + energy_stock:
-		var newpos = grass["position"] + Vector3(randf_range(-5,5),
-											0,
-											randf_range(-5,5)
-											) 
-		newpos.x = clamp(newpos.x ,-World.World_Size.x/2+1,World.World_Size.x/2-1 )
-		newpos.z = clamp(newpos.z ,-World.World_Size.z/2+1,World.World_Size.z/2-1 )
-		spawn_grass(newpos)
-		grass["current_energy"] -= 8'
 		
 func _thread_reproduction(grass):
 	if grass["current_energy"] > grass["Reproduction_cost"]*2:
@@ -274,26 +266,10 @@ func _thread_reproduction(grass):
 		)
 		newpos.x = clamp(newpos.x, -World.World_Size.x / 2 + 1, World.World_Size.x / 2 - 1)
 		newpos.z = clamp(newpos.z, -World.World_Size.z / 2 + 1, World.World_Size.z / 2 - 1)
-		spawn_grass(newpos, grass["Species"])
-		#var newgrass = grass_dna.duplicate()
-		#newgrass["position"] = newpos
-		#newgrass["light_index"] = get_lightIndex(newpos)
-		#_pending_spawns.append(newgrass)
-		grass["current_energy"] -= grass["Reproduction_cost"]	
-	'if grass.current_energy > 10:
-		var newpos = grass.position + Vector3(
-			randf_range(-5, 5),
-			0,
-			randf_range(-5, 5)
-		)
-		newpos.x = clamp(newpos.x, -World.World_Size.x / 2 + 1, World.World_Size.x / 2 - 1)
-		newpos.z = clamp(newpos.z, -World.World_Size.z / 2 + 1, World.World_Size.z / 2 - 1)
-		var newgrass = grass_dna.duplicate()
-		newgrass.position = newpos
-		newgrass.light_index = get_lightIndex(newpos)
-		_pending_spawns.append(newgrass)
-		grass.current_energy -= 8'			
+		add_grass(newpos, grass["Species"])
 
+		grass["current_energy"] -= grass["Reproduction_cost"]	
+		
 	
 func interact(grass,player):
 	player.add_to_inventory(grass,1)
@@ -301,11 +277,11 @@ func interact(grass,player):
 
 			
 func Cut(grass):
-	Become_object.rpc_id(1,grass)
+	#Become_object.rpc_id(1,grass)
 	_pending_external_kills.append(grass)
 	#Kill(grass)
 	
-@rpc("any_peer","call_local") 
+'@rpc("any_peer","call_local") 
 func Become_object(grass):
 	if GlobalSimulationParameter.object_grass_number > max_grass_object :
 		pass
@@ -318,7 +294,37 @@ func Become_object(grass):
 		new_object.position.z = pos.z + randf_range(-1,1)
 		new_object.rotation.y = randf_range(deg_to_rad(0),deg_to_rad(360))
 		new_object.current_energy = grass["current_energy"]
-		get_parent().add_child(new_object, true)
+		get_parent().add_child(new_object, true)'
+
+#########################
+
+@rpc("any_peer","call_local")
+func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
+	var alife_scene : PackedScene
+	match sp:
+		Alifedata.enum_speciesID.SHEEP:
+			alife_scene = sheep_scene
+			var newlife = alife_scene.instantiate()
+			var id = get_free_id()
+			newlife.name = str(id)
+			print(newlife.name)
+			newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+			newlife.World = World #temp
+			newlife.current_energy = 50
+			add_child.call_deferred(newlife)	
+			var newgrass = alifedata.build_lifedata(get_free_id(),new_position,sp)
+			
+			beast_dict[id] = newgrass
+			beast_instance_dict[id] = newlife
+			
+			
+			#_pending_spawns.append(newgrass)
+
+
+
+			
+	
+
 
 
 
@@ -380,14 +386,11 @@ func erase_grass(g):
 
 @rpc("any_peer","call_remote")
 func draw_multimesh_on_client(peer_id):
-	var dict = grass_dict
+	var dict = beast_dict
 	send_and_draw_array.rpc_id(peer_id, dict)
 
 @rpc("any_peer","call_remote")
 func send_and_draw_array(dict):
-	$grass.multimesh.visible_instance_count = 0
-	$tree.multimesh.visible_instance_count = 0
-	$bush.multimesh.visible_instance_count = 0
 	for g in dict.values():
 		match g["Species"]:
 			Alifedata.enum_speciesID.GRASS:
@@ -402,5 +405,5 @@ func send_and_draw_array(dict):
 
 
 func _exit_tree() -> void:
-	if thread and thread.is_alive():
-		thread.wait_to_finish()
+	if thread_beast and thread_beast.is_alive():
+		thread_beast.wait_to_finish()

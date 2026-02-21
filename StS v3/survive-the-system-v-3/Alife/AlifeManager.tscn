@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bba3or5r3sxn1" path="res://Alife/animal/Herbivor/sheep.tscn" id="4_ruoec"]
 [ext_resource type="PackedScene" uid="uid://bbug4errj8rkt" path="res://Alife/Plant/tree/tree.tscn" id="5_ruoec"]
 [ext_resource type="PackedScene" uid="uid://thsj6h0d3ou" path="res://Alife/Plant/Grass_Manager.tscn" id="6_ruoec"]
+[ext_resource type="PackedScene" uid="uid://dsidfhuppxvrw" path="res://Alife/animal/beast_manager.tscn" id="7_1roai"]
 
 [node name="Alife manager" type="Node3D" unique_id=1345180502]
 script = ExtResource("1_yx3o6")
@@ -15,3 +16,5 @@ sheep_scene = ExtResource("4_ruoec")
 tree_scene = ExtResource("5_ruoec")
 
 [node name="Grass_Manager" parent="." unique_id=291917329 instance=ExtResource("6_ruoec")]
+
+[node name="beast_manager" parent="." unique_id=1821176039 instance=ExtResource("7_1roai")]

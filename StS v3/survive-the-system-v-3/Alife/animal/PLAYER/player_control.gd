@@ -61,8 +61,9 @@ func _physics_process(delta: float) -> void:
 			
 		
 		if Input.is_action_just_pressed("action1"):			
-			player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
-			
+			#player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
+			player.get_parent().get_node("beast_manager").Spawn_Beast.rpc_id(1, player.global_position, Alifedata.enum_speciesID.SHEEP)
+		
 
 		if Input.is_action_pressed("jump") :
 			total += delta
@@ -95,7 +96,6 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("Action") :
 			action()#.rpc_id(1)
 		if Input.is_action_just_pressed("Drop"):
-			print("hey")
 			player.drop.rpc_id(1,0, 1)
 
 @rpc("any_peer","call_local")
