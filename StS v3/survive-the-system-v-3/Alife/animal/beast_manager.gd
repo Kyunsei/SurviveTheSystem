@@ -258,7 +258,7 @@ func Ask_to_spawn(b: Dictionary):
 #########################
 
 	
-func interact(grass,player):
+'func interact(grass,player):
 	print("sheep picked")
 	player.add_to_inventory(grass,1)
 	_pending_kills.append(grass)	
@@ -268,7 +268,7 @@ func Cut(grass):
 	print("attack")
 	#print(grass)
 	#Become_object.rpc_id(1,grass)
-	_pending_kills.append(grass)
+	_pending_kills.append(grass)'
 	#Kill(grass)
 	
 ##########################################################

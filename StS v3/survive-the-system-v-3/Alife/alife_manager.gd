@@ -260,7 +260,22 @@ func spawn_player(id,pos):
 	self.call_deferred("add_child",new_player)
 
 	
-	
+func interact(grass,player):
+	player.add_to_inventory(grass,1)
+	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
+		$beast_manager._pending_kills.append(grass)	
+	else:
+		$Grass_Manager._pending_external_kills.append(grass)
+
+
+			
+func Cut(grass):
+	if grass["Species"] == Alifedata.enum_speciesID.SHEEP:	
+		$beast_manager._pending_kills.append(grass)	
+	else:
+		$Grass_Manager._pending_external_kills.append(grass)
+
+
 	
 	
 	
@@ -286,7 +301,6 @@ func get_alife_in_area(pos_center, area):
 					var bin = World.bin_array[index]
 					if bin:
 						for element in bin:
-							print(element["Species"])
 							if element is Dictionary:
 								var p: Vector3 = element["position"]#.global_position
 

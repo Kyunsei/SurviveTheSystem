@@ -57,7 +57,6 @@ func remove_from_inventory(id, number):
 func drop(id, number):
 	id = inventory.size() - 1
 	if inventory.has(id):
-		print("hello")
 		var obj = inventory[id]
 		remove_from_inventory(id, number)
 		var pos = position
@@ -77,7 +76,7 @@ func _enter_tree() -> void:
 
 @rpc("any_peer","call_remote")
 func go_back_to_ship():
-	print(multiplayer.get_unique_id())
+	#print(multiplayer.get_unique_id())
 	position = get_parent().get_parent().get_node("SPACESHIP").position
 
 
@@ -131,7 +130,6 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 		#print("picked object"+ str(area.get_parent().name))
 		GlobalSimulationParameter.object_grass_number -= 1
 		grass_in_inventory += area.get_parent().current_energy
-		print(grass_in_inventory)
 		area.get_parent().queue_free()
 		
 		pass

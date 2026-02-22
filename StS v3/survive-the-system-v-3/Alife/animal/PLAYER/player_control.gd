@@ -120,12 +120,11 @@ func UseITEM():
 	if targets:
 		for t in targets:
 			if t is Dictionary:
-				if t["Species"] == Alifedata.enum_speciesID.GRASS :
-					alife_manager.get_node("Grass_Manager").Cut(t)
-					alife_manager.get_node("beast_manager").Cut(t)
+				#if t["Species"] == Alifedata.enum_speciesID.GRASS :
+					#alife_manager.get_node("Grass_Manager").Cut(t)
+				alife_manager.Cut(t)
 
-				else:
-					pass
+				
 
 @rpc("any_peer","call_local")
 func pick_up() :
@@ -160,8 +159,8 @@ func action_on_server():
 	if targets:
 		for t in targets:
 			if t is Dictionary:
-					alife_manager.get_node("Grass_Manager").interact(t,player)
-					alife_manager.get_node("beast_manager").interact(t,player)
+					#alife_manager.get_node("Grass_Manager").interact(t,player)
+					alife_manager.interact(t,player)
 						
 						
 						
