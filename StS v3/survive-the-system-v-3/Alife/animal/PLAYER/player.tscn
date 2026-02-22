@@ -201,6 +201,7 @@ mesh = SubResource("CapsuleMesh_2y45n")
 
 [node name="Pick_up_Area3D" type="Area3D" parent="MeshInstance3D" unique_id=466998613]
 unique_name_in_owner = true
+visible = false
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D/Pick_up_Area3D" unique_id=513375016]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
