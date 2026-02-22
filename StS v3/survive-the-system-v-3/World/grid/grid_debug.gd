@@ -47,11 +47,13 @@ func _process(delta: float) -> void:
 
 func update(voxel_size,array):
 	var new_size = World_size/voxel_size
-	print(new_size)
+	#print(new_size)
 	mm.mesh.size = voxel_size
 	mm.mesh.size.x -= space_btw_voxel
 	mm.mesh.size.z -= space_btw_voxel
 	mm.mesh.size.y -= space_btw_voxel
+	mm.mesh.size.y = 0.6
+
 	mm.instance_count = array.size()#World_size.x * World_size.y * World_size.z
 	# Maybe not all of them should be visible at first.
 	mm.visible_instance_count = array.size()#World_size.x * World_size.y * World_size.z	
@@ -64,13 +66,15 @@ func update(voxel_size,array):
 					return
 				var pos = Vector3(i*voxel_size.x +voxel_size.x/2 -World_size.x/2 , j+0.5 , k*voxel_size.z + voxel_size.z/2-World_size.z/2) #$size
 				mm.set_instance_transform(index, Transform3D(Basis(), pos))
-				var col = Color(1.0, 1.0, 1.0, 1.0)
+				var col = Color(0.0, 0.0, 0.0, 1.0)
+				col.g = clamp(float(array[index])/25.0,0,1)
+				#print(array[index])
 				'col.r = array[index]
 				col.g = array[index]
 				col.b = array[index]
-				col.a = 0.5
+				col.a = 0.5'
 
-				mm.set_instance_color(index, col)'
+				mm.set_instance_color(index, col)
 
 
 
@@ -89,7 +93,7 @@ func request_light_grid(peer_id):
 @rpc("any_peer","call_remote")
 func request_bin_grid(peer_id):
 	var voxel_size = World.bin_size
-	var array = World.bin_array
+	var array = World.bin_sum_array[0]
 	send_grid.rpc_id(peer_id, voxel_size, array)
 
 @rpc("any_peer","call_remote")

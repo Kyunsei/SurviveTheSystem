@@ -97,7 +97,7 @@ func _on_work_finished():
 	for g in unique_spawn.values():
 		g["ID"] = get_free_id()
 		beast_dict[g["ID"]] = g
-		put_in_world_bin(g)
+		get_parent().put_in_world_bin(g)
 		draw_new_grass.rpc(g)
 	
 	var unique_kills := {}
@@ -215,7 +215,7 @@ func Kill(grass):
 	if beast_dict.has(grass["ID"]):
 		free_id_array.append(grass["ID"])
 		beast_dict.erase(grass["ID"])
-		remove_from_world_bin(grass)
+		get_parent().remove_from_world_bin(grass)
 		
 		#beast_instance_dict[grass["ID"]].queue_free()
 		beast_instance_dict.erase(grass["ID"])
@@ -328,38 +328,6 @@ func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
 
 
 
-
-################################ BIN GESTION
-
-func put_in_world_bin(g):
-	var bin_ID = 0
-	var w_pos = World.get_PositionInGrid(g["position"],World.bin_size)
-	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
-
-	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-	if new_bin_ID < 0 or new_bin_ID >= World.bin_array.size():
-		print("life out of world")
-		remove_from_world_bin(g)
-		return
-	if bin_ID != new_bin_ID:
-		remove_from_world_bin(g)
-		#g["bin_ID"] = new_bin_ID
-	if World.bin_array[new_bin_ID] == null:
-		World.bin_array[new_bin_ID] = [g]
-	else:	
-		World.bin_array[new_bin_ID].append(g) 
-	g["bin_ID"] = new_bin_ID
-	#g.bin_ID = new_bin_ID
-
-func remove_from_world_bin(g):
-	if g["bin_ID"]:
-		if World.bin_array[g["bin_ID"]].has(g):
-			World.bin_array[g["bin_ID"]].erase(g)
-			g["bin_ID"] = null
-	#if g.bin_ID:
-	#	if World.bin_array[g.bin_ID].has(g):
-	#		World.bin_array[g.bin_ID].erase(g)
-	#		g.bin_ID = null
 
 
 ##########################MULTIMESH GESTION

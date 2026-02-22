@@ -85,6 +85,51 @@ func _process(delta: float) -> void:
 
 
 
+
+
+
+################################ BIN GESTION
+
+func put_in_world_bin(g):
+	var bin_ID = 0
+	var w_pos = World.get_PositionInGrid(g["position"],World.bin_size)
+	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
+
+	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+	if new_bin_ID < 0 or new_bin_ID >= World.bin_array.size():
+		print("life out of world")
+		remove_from_world_bin(g)
+		return
+	if bin_ID != new_bin_ID:
+		remove_from_world_bin(g)
+		#g["bin_ID"] = new_bin_ID
+	if World.bin_array[new_bin_ID] == null:
+		World.bin_array[new_bin_ID] = [g]
+		World.bin_sum_array[g["Species"]][new_bin_ID] += 1
+	else:	
+		World.bin_array[new_bin_ID].append(g) 
+		World.bin_sum_array[g["Species"]][new_bin_ID] += 1
+
+	g["bin_ID"] = new_bin_ID
+	#g.bin_ID = new_bin_ID
+
+func remove_from_world_bin(g):
+	if g["bin_ID"]:
+		if World.bin_array[g["bin_ID"]].has(g):
+			World.bin_array[g["bin_ID"]].erase(g)
+			World.bin_sum_array[g["Species"]][g["bin_ID"]] -= 1
+
+			g["bin_ID"] = null
+
+
+
+
+
+
+
+
+##################################################################
+#OLD
 ###################################################################
 
 func duplicate_life(alife):

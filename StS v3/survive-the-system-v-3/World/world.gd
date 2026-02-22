@@ -42,6 +42,7 @@ func generate_world():
 	for a in Alifedata.enum_speciesID:
 		var arr = []
 		arr.resize(calc_size2.x * calc_size2.y * calc_size2.z)
+		arr.fill(0)
 		bin_sum_array.append(arr)
 
 
