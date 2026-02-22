@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ynyts1j15fyd"
+path="res://.godot/imported/sheep.mp3-88eb9ae4f3c2236a9715d75cedb290d1.mp3str"
+
+[deps]
+
+source_file="res://assets/Art from STS2/sheep.mp3"
+dest_files=["res://.godot/imported/sheep.mp3-88eb9ae4f3c2236a9715d75cedb290d1.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

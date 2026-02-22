@@ -1,8 +1,17 @@
 [gd_scene format=3 uid="uid://clskcb1rbjxo3"]
 
 [ext_resource type="Script" uid="uid://b6si7xb7ov78x" path="res://World/spaceship/npc.gd" id="1_25fy4"]
+[ext_resource type="Texture2D" uid="uid://cg8jna1y730qc" path="res://assets/Art from STS2/player_cat.png" id="2_jw0rf"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_ou8ut"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jsy1l"]
+transparency = 1
+shading_mode = 0
+albedo_texture = ExtResource("2_jw0rf")
+texture_filter = 0
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_tl2id"]
+material = SubResource("StandardMaterial3D_jsy1l")
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_25fy4"]
 
@@ -10,7 +19,7 @@
 script = ExtResource("1_25fy4")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=167007335]
-mesh = SubResource("CapsuleMesh_ou8ut")
+mesh = SubResource("QuadMesh_tl2id")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=954496273]
 shape = SubResource("CapsuleShape3D_25fy4")

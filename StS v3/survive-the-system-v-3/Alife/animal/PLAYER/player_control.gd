@@ -22,6 +22,9 @@ func _ready() -> void:
 	
 
 func _physics_process(delta: float) -> void:
+	if Input.is_action_just_pressed("fullscreen"):
+		var is_fullscreen = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if is_fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
 	if player.is_multiplayer_authority():
 		#if not player.is_on_floor():
 			#player.velocity.y -= player.gravity*delta
@@ -68,7 +71,8 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("refresh"):			
 			#player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
 			player.get_parent().get_node("Grass_Manager").draw_multimesh_on_client.rpc_id(1,multiplayer.get_unique_id())
-		
+		if player.position.y < -200:
+			player.position = Vector3(1,1,1)
 		if Input.is_action_pressed("jump") :
 			total += delta
 		if Input.is_action_pressed("sprint") :

@@ -1,15 +1,16 @@
 [gd_scene format=3 uid="uid://b27blxvtjlwas"]
 
-[ext_resource type="MeshLibrary" uid="uid://8j11vn5u32m7" path="res://World/grid_map_3d/gridmap0.2m.meshlib" id="1_b1wnf"]
-[ext_resource type="MeshLibrary" uid="uid://cgbip5drkuwsb" path="res://World/grid_map_3d/gridmap1m.meshlib" id="2_1ostd"]
-[ext_resource type="MeshLibrary" uid="uid://dm3fiericufdp" path="res://World/grid_map_3d/gridmap2m.meshlib" id="3_oghx4"]
+[ext_resource type="MeshLibrary" uid="uid://b15kvx27o5fie" path="res://World/grid_map_3d/meshlibraries/2.meshlib" id="1_1ostd"]
+[ext_resource type="MeshLibrary" uid="uid://cgbip5drkuwsb" path="res://World/grid_map_3d/meshlibraries/gridmap1m.meshlib" id="2_1ostd"]
+[ext_resource type="MeshLibrary" uid="uid://dm3fiericufdp" path="res://World/grid_map_3d/meshlibraries/gridmap2m.meshlib" id="3_oghx4"]
 [ext_resource type="Script" uid="uid://d4flha16nf4i5" path="res://World/grid_map_3d/grid_map_0_2m.gd" id="3_r0kn5"]
+[ext_resource type="Script" uid="uid://bfxjhw52hitgc" path="res://World/grid_map_3d/grid_map_2m.gd" id="5_oghx4"]
 
 [node name="Grid_map_3D" type="Node3D" unique_id=1721372565]
 
 [node name="GridMap0_2m" type="GridMap" parent="." unique_id=1724544082]
-mesh_library = ExtResource("1_b1wnf")
-cell_size = Vector3(1, 0.2, 1)
+mesh_library = ExtResource("1_1ostd")
+cell_size = Vector3(5, 0.2, 5)
 script = ExtResource("3_r0kn5")
 
 [node name="GridMap1m" type="GridMap" parent="." unique_id=1622438411]
@@ -26,3 +27,5 @@ cell_size = Vector3(1, 2, 1)
 data = {
 "cells": PackedInt32Array(0, 3, 1310720, 1, 65532, 1310720, 9, 0, 1310720, 65529, 3, 1310720, 65529, 9, 1310720, 65526, 65534, 1310720, 65520, 8, 1310720, 65532, 20, 1310720, 65528, 65522, 1310720, 65519, 65531, 1310720, 5, 65521, 1310720)
 }
+script = ExtResource("5_oghx4")
+tile_ids = Array[int]([1, 0])
