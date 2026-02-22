@@ -30,7 +30,7 @@ var wandertimer = 0
 
 
 func _enter_tree() -> void:
-	current_speed = 0.05
+	current_speed = 50
 	print("hello Mr sheep")
 	size = Vector3(1,1,1) #Temporary...
 

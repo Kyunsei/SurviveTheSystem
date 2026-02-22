@@ -3,7 +3,7 @@ class_name eat_state
 
 var target 
 
-var timer = 0.5
+var timer = 0.5 * 1000 * GlobalSimulationParameter.simulation_speed
 
 
 func evaluate():
@@ -18,7 +18,7 @@ func evaluate():
 
 
 func enter():
-	timer = 0.5
+	timer = 0.5 / (1000 * GlobalSimulationParameter.simulation_speed)
 
 func exit():
 	pass
@@ -34,4 +34,4 @@ func update(delta):
 			player.current_energy = clamp(player.current_energy ,0, player.max_energy)
 			player.target["current_energy"]= 0
 			get_parent().get_parent().get_parent().get_parent().get_node("Grass_Manager")._pending_external_kills.append(player.target)
-			timer = 0.5
+			timer = 0.5 / (1000 * GlobalSimulationParameter.simulation_speed)

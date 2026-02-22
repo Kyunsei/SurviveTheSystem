@@ -1,7 +1,7 @@
 extends Node
 
 
-var simulation_speed = .1
+var simulation_speed = .01
 var SimulationStarted = false
 var ClientStarted = false
 var WorldReady = false

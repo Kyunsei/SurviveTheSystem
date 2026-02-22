@@ -64,7 +64,11 @@ func _physics_process(delta: float) -> void:
 			#player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
 			player.get_parent().get_node("beast_manager").Spawn_Beast.rpc_id(1, player.global_position, Alifedata.enum_speciesID.SHEEP)
 		
-
+		
+		if Input.is_action_just_pressed("refresh"):			
+			#player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
+			player.get_parent().get_node("Grass_Manager").draw_multimesh_on_client.rpc_id(1,multiplayer.get_unique_id())
+		
 		if Input.is_action_pressed("jump") :
 			total += delta
 		if Input.is_action_pressed("sprint") :

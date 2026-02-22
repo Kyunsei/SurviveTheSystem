@@ -384,10 +384,15 @@ func draw_multimesh_on_client(peer_id):
 	send_and_draw_array.rpc_id(peer_id, dict)
 
 @rpc("any_peer","call_remote")
+
 func send_and_draw_array(dict):
-	$grass.multimesh.visible_instance_count = 0
-	$tree.multimesh.visible_instance_count = 0
-	$bush.multimesh.visible_instance_count = 0
+	#$grass.multimesh.visible_instance_count = 0
+	#$tree.multimesh.visible_instance_count = 0
+	#$bush.multimesh.visible_instance_count = 0
+	$grass.init()
+	$tree.init()
+	$bush.init()
+
 	for g in dict.values():
 		match g["Species"]:
 			Alifedata.enum_speciesID.GRASS:

@@ -31,9 +31,9 @@ func update(delta):
 	else:
 		wandertimer -= delta
 		if wandertimer <= 0:
-			wandertimer = 5
+			wandertimer = 5 / (1000 * GlobalSimulationParameter.simulation_speed)
 			player.direction = Vector3(randf_range(-1,1),0,randf_range(-1,1))
 			
-	player.position += player.direction * player.current_speed # * delta * GlobalSimulationParameter.simulation_speed
+	player.position += player.direction * player.current_speed * GlobalSimulationParameter.simulation_speed
 	player.position.x = clamp(player.position.x ,-player.World.World_Size.x/2,player.World.World_Size.x/2 )
 	player.position.z = clamp(player.position.z ,-player.World.World_Size.z/2,player.World.World_Size.z/2 )

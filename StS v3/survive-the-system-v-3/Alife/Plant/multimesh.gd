@@ -6,6 +6,11 @@ var slot_to_id := {}
 var instance_number := 0
 var shadow
 
+func init():
+	id_to_slot = {}
+	slot_to_id = {}
+	instance_number = 0
+
 func _ready() -> void:
 	multimesh.instance_count = 100000
 	if has_node("shadow"):
