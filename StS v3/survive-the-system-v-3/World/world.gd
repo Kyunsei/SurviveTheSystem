@@ -15,6 +15,8 @@ var light_grid_visible = false
 var bin_array = []
 var bin_size = Vector3(5,World_Size.y,5)
 
+var bin_sum_array = [] #array of sum of each alifeelement by bin
+
 
 
 func _process(delta: float) -> void:
@@ -33,10 +35,14 @@ func generate_world():
 	var calc_size = World_Size/light_tile_size
 	light_array.resize(calc_size.x * calc_size.y * calc_size.z)
 	fill_value_in_each_tile(light_array,light_flux_in )
+	################
 	var calc_size2 = World_Size/bin_size
 	bin_array.resize(calc_size2.x * calc_size2.y * calc_size2.z)
 	#fill_value_in_each_tile(bin_array,[])
-
+	for a in Alifedata.enum_speciesID:
+		var arr = []
+		arr.resize(calc_size2.x * calc_size2.y * calc_size2.z)
+		bin_sum_array.append(arr)
 
 
 func get_PositionInGrid(pos,tile_size):

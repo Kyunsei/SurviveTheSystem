@@ -43,10 +43,11 @@ func draw_new_grass(g):
 	
 	var newtransform = Transform3D.IDENTITY
 
-	#var random_scale = randf_range(0.5, 2.0)
+	#var random_scale = randf_range(1, 5.0)
+	var scale = clamp(g["current_energy"]/10,0.2,2)
 	newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
 	#newtransform.basis = Basis().scaled(Vector3(2, 2, 2))
-	#newtransform = newtransform.scaled(Vector3.ONE * random_scale)
+	newtransform.basis = Basis().scaled(Vector3.ONE * scale)
 
 	#multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
 	multimesh.set_instance_transform(slot, newtransform)
