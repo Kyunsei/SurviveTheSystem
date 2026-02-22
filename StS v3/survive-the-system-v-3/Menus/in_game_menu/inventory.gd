@@ -31,7 +31,7 @@ func prep_item(new_item):
 	#print(new_item.item_ressources.stack_amount)
 	item["name"] = new_item.item_ressources.name
 	item["inventory_icon"] = new_item.item_ressources.inventory_icon
-	item["inventory_patch"] = new_item.item_ressources.item_path
+	item["inventory_path"] = new_item.item_ressources.item_path
 	item["stack_amount"] = new_item.item_ressources.stack_amount
 	#print(item)
 	return item
