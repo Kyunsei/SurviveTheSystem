@@ -156,7 +156,7 @@ _data = {
 [sub_resource type="BoxShape3D" id="BoxShape3D_2y45n"]
 size = Vector3(1.5, 1.2, 1.5)
 
-[node name="Player" type="CharacterBody3D" unique_id=1092654110]
+[node name="Player" type="CharacterBody3D" unique_id=1092654110 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("1_qrp1o")
 

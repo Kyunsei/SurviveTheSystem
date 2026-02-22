@@ -25,6 +25,7 @@ var World : Node3D
 var grass_in_inventory = 0
 var current_health = max_health
 var current_hunger = max_hunger
+var inventory_HUD 
 
 var dialogue_box 
 
@@ -89,6 +90,7 @@ func _ready() -> void:
 		#print(World)
 		go_back_to_ship()
 		dialogue_box = $Player_HUD/Dialogue
+		inventory_HUD = $Player_HUD/Inventory
 		
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :

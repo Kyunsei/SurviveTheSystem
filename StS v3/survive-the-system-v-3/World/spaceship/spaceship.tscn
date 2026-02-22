@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://clskcb1rbjxo3" path="res://World/spaceship/npc.tscn" id="1_1wtdp"]
 [ext_resource type="Texture2D" uid="uid://dccyyitvcai6a" path="res://assets/assets kyun/shiptexture_1.png" id="1_l8se6"]
+[ext_resource type="PackedScene" uid="uid://qj4cuppwu5or" path="res://objects/cat_ration.tscn" id="3_2gbrl"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2gbrl"]
 albedo_texture = ExtResource("1_l8se6")
@@ -87,3 +88,12 @@ shape = SubResource("ConcavePolygonShape3D_2gbrl")
 
 [node name="NPC" parent="." unique_id=2146363901 instance=ExtResource("1_1wtdp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -6)
+
+[node name="Cat_Ration" parent="." unique_id=1352666552 instance=ExtResource("3_2gbrl")]
+transform = Transform3D(-0.9659258, 0, -0.25881913, 0, 1, 0, 0.25881913, 0, -0.9659258, 0, 1, 7)
+
+[node name="Cat_Ration2" parent="." unique_id=1726358132 instance=ExtResource("3_2gbrl")]
+transform = Transform3D(-0.9659258, 0, -0.25881913, 0, 1, 0, 0.25881913, 0, -0.9659258, -3, 1, 7)
+
+[node name="Cat_Ration3" parent="." unique_id=1617777927 instance=ExtResource("3_2gbrl")]
+transform = Transform3D(-0.9659258, 0, -0.25881913, 0, 1, 0, 0.25881913, 0, -0.9659258, 3, 1, 7)

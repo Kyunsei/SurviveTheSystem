@@ -2,9 +2,9 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bksfav3v0xjkn"
-path.s3tc="res://.godot/imported/catration1.png-d82f6771c4394f0ff1b3367bf9b42158.s3tc.ctex"
-path.etc2="res://.godot/imported/catration1.png-d82f6771c4394f0ff1b3367bf9b42158.etc2.ctex"
+uid="uid://djlp4e2nipxx5"
+path.s3tc="res://.godot/imported/empty_1.png-ff3bdacb0cca180ca4bff05e7b81b2f3.s3tc.ctex"
+path.etc2="res://.godot/imported/empty_1.png-ff3bdacb0cca180ca4bff05e7b81b2f3.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/assets kyun/catration1.png"
-dest_files=["res://.godot/imported/catration1.png-d82f6771c4394f0ff1b3367bf9b42158.s3tc.ctex", "res://.godot/imported/catration1.png-d82f6771c4394f0ff1b3367bf9b42158.etc2.ctex"]
+source_file="res://assets/assets kyun/empty_1.png"
+dest_files=["res://.godot/imported/empty_1.png-ff3bdacb0cca180ca4bff05e7b81b2f3.s3tc.ctex", "res://.godot/imported/empty_1.png-ff3bdacb0cca180ca4bff05e7b81b2f3.etc2.ctex"]
 
 [params]
 
