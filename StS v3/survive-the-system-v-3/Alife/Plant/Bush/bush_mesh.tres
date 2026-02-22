@@ -11,6 +11,7 @@ albedo_texture = ExtResource("1_acqjd")
 texture_filter = 0
 texture_repeat = false
 billboard_mode = 2
+billboard_keep_scale = true
 
 [resource]
 material = SubResource("StandardMaterial3D_diq4i")

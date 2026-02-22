@@ -17,7 +17,7 @@ func _ready() -> void:
 		shadow = $shadow
 		shadow.multimesh.instance_count = 100000
 
-func draw_all_grass(grass_dict):
+'func draw_all_grass(grass_dict):
 	instance_number = 0
 	id_to_slot.clear()
 	slot_to_id.clear()
@@ -32,7 +32,7 @@ func draw_all_grass(grass_dict):
 				instance_number += 1
 	multimesh.visible_instance_count = instance_number
 	
-var instance_data: Array = []  # mirrors multimesh slots
+var instance_data: Array = []  # mirrors multimesh slots'
 
 func draw_new_grass(g):
 	
@@ -41,8 +41,15 @@ func draw_new_grass(g):
 	id_to_slot[g["ID"]] = slot
 	slot_to_id[slot] = g["ID"]	
 	
+	var newtransform = Transform3D.IDENTITY
 
-	multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
+	#var random_scale = randf_range(0.5, 2.0)
+	newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
+	#newtransform.basis = Basis().scaled(Vector3(2, 2, 2))
+	#newtransform = newtransform.scaled(Vector3.ONE * random_scale)
+
+	#multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
+	multimesh.set_instance_transform(slot, newtransform)
 
 
 	instance_number += 1

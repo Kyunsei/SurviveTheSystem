@@ -11,6 +11,7 @@ backlight_enabled = true
 backlight = Color(1, 1, 1, 1)
 texture_filter = 0
 billboard_mode = 2
+billboard_keep_scale = true
 
 [resource]
 material = SubResource("StandardMaterial3D_cx5lr")
