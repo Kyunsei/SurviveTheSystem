@@ -14,17 +14,18 @@ var alife_manager: Node3D
 
 
 #DNA
-var species = "sheep"
+#var species = "sheep"
+var lifedata = {}
 
 
 #VISON array
-var vision_dangers = []
-var vision_foods = []
-var vision_friends = []
+var vision_danger ={ }
+var vision_food = {}
+var vision_friend ={ }
 
 
 
-var target
+#var target
 var wandertimer = 0
 
 
@@ -48,9 +49,7 @@ func choose_action():
 
 
 
-
-
-func _process(delta: float) -> void:
+'func _process(delta: float) -> void:
 	if GlobalSimulationParameter.SimulationStarted:
 		return
 		if multiplayer.is_server():
@@ -76,7 +75,7 @@ func _process(delta: float) -> void:
 				#print(direction)
 			Reproduction()
 			Homeostasis()
-
+'
 
 func Activate():
 	#show()

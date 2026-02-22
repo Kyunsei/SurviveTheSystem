@@ -44,7 +44,7 @@ func draw_new_grass(g):
 	var newtransform = Transform3D.IDENTITY
 
 	#var random_scale = randf_range(1, 5.0)
-	var scale = clamp(g["current_energy"]/10,0.2,2)
+	var scale = clamp(g["current_energy"]/10,0.5,1)
 	newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
 	#newtransform.basis = Basis().scaled(Vector3(2, 2, 2))
 	newtransform.basis = Basis().scaled(Vector3.ONE * scale)

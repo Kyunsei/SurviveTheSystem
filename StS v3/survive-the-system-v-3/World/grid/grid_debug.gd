@@ -67,7 +67,7 @@ func update(voxel_size,array):
 				var pos = Vector3(i*voxel_size.x +voxel_size.x/2 -World_size.x/2 , j+0.5 , k*voxel_size.z + voxel_size.z/2-World_size.z/2) #$size
 				mm.set_instance_transform(index, Transform3D(Basis(), pos))
 				var col = Color(0.0, 0.0, 0.0, 1.0)
-				col.g = clamp(float(array[index])/25.0,0,1)
+				col.g = clamp(float(array[index])/2.0,0,1)
 				#print(array[index])
 				'col.r = array[index]
 				col.g = array[index]
@@ -93,7 +93,7 @@ func request_light_grid(peer_id):
 @rpc("any_peer","call_remote")
 func request_bin_grid(peer_id):
 	var voxel_size = World.bin_size
-	var array = World.bin_sum_array[0]
+	var array = World.bin_sum_array[3]
 	send_grid.rpc_id(peer_id, voxel_size, array)
 
 @rpc("any_peer","call_remote")

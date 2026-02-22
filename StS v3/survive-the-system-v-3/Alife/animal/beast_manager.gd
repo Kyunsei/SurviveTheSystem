@@ -64,6 +64,7 @@ func update():
 	'for g in beast_dict.values():
 		homeostasis(g)'
 	for b in beast_instance_dict.values():
+		#vision(b)
 		vision(b)
 		choose_action(b)
 		homeostasis(b)
@@ -132,48 +133,108 @@ func move(b):
 
 func vision(b):
 	#got closest element in friend/danger and food
-	var target = return_closest_target(b)
-	var array =[]
-	b.target = target
+	for f in b.lifedata["Food_type"]:
+		var food = view_closest(b.lifedata["Vision_range"],World.bin_sum_array[f],b,f)
+		b.vision_food[f] = food  
+	for d in b.lifedata["Danger_type"]:
+		var danger = view_closest(b.lifedata["Vision_range"],World.bin_sum_array[d],b,d)
+		b.vision_danger[d] = danger
+
 	#return target
 
 
+########VISION CODE
 
 
-func return_closest_target(b):
+
+func view_closest(view_range,array_num,b,sp):
 	var current_pos = b.position
-	var bin_index: int
 	var closest = null
-	var closest_in_bin = null
+	var closest_in_bin =  null
 	var closest_distance = INF
-	for i in [-1,0,1]:
-		for j in [-1,0,1]:
-			current_pos.x = b.position.x + World.bin_size.x*i
-			current_pos.z = b.position.z + World.bin_size.z*j		
-			if current_pos.x > -World.World_Size.x/2  and current_pos.x < World.World_Size.x/2 :
-				if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.x/2 :
-					
-					var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
-					bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-					if bin_index < World.bin_array.size():
-						if World.bin_array[bin_index]:
-							closest_in_bin = find_closest(b.position, World.bin_array[bin_index])
-							var distance = b.position.distance_to(closest_in_bin.position)
-							if distance < closest_distance:
-								closest = closest_in_bin
-								closest_distance = distance
+
+	var origin_x = 0#int(current_pos.x)
+	var origin_y = 0#int(current_pos.y)
+	var bin_index
+
+	for r in range(view_range + 1):
+		# Special case: center bin
+		if r == 0:
+			current_pos.x = b.position.x 
+			current_pos.z = b.position.z
+			bin_index = get_worldbin_index(current_pos)
+			if bin_index and array_num[bin_index] >0:			
+				closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
+				var distance = b.position.distance_to(closest_in_bin.position)
+				if distance < closest_distance:
+					closest = closest_in_bin
+					closest_distance = distance			
+			
+			if closest != null:
+				break
+			continue
+
+		# Walk perimeter of square ring
+		for dx in range(-r, r + 1):
+			for dy in [-r, r]:
+				current_pos.x = b.position.x + World.bin_size.x*dx
+				current_pos.z = b.position.z + World.bin_size.z*dy
+				bin_index = get_worldbin_index(current_pos)
+				if bin_index and array_num[bin_index] >0:			
+					closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
+					var distance = b.position.distance_to(closest_in_bin.position)
+					if distance < closest_distance:
+						closest = closest_in_bin
+						closest_distance = distance			
+				#find_closest(b.position, World.bin_array[bin_index])
+				#check_bin(origin_x + dx, origin_y + dy)
+		for dy in range(-r + 1, r):
+			for dx in [-r, r]:
+				current_pos.x = b.position.x + World.bin_size.x*dx
+				current_pos.z = b.position.z + World.bin_size.z*dy
+				bin_index = get_worldbin_index(current_pos)
+				if bin_index and array_num[bin_index] >0:			
+					closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
+					var distance = b.position.distance_to(closest_in_bin.position)
+					if distance < closest_distance:
+						closest = closest_in_bin
+						closest_distance = distance
+				#check_bin(origin_x + dx, origin_y + dy)
+
+
+
+		if closest != null:
+			break
 	return closest
 
 
-func find_closest(from_position: Vector3, array: Array):
+
+func get_worldbin_index(current_pos):
+	var bin_index
+	if current_pos.x > -World.World_Size.x/2  and current_pos.x < World.World_Size.x/2 :
+		if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.z/2 :			
+			var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
+			bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+			if bin_index < World.bin_array.size():
+				return bin_index
+	return null
+
+
+
+
+
+
+
+func find_closest(from_position: Vector3, array: Array,sp):
 	var closest = null
 	var closest_distance = INF
 	
 	for element in array:
-		var distance = from_position.distance_to(element["position"])
-		if distance < closest_distance:
-			closest_distance = distance
-			closest = element
+		if element["Species"] == sp:
+			var distance = from_position.distance_to(element["position"])
+			if distance < closest_distance:
+				closest_distance = distance
+				closest = element
 	return closest	
 ############
 
@@ -307,16 +368,16 @@ func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
 			var newlife = alife_scene.instantiate()
 			var id = get_free_id()
 			newlife.name = str(id)
-			print(newlife.name)
 			newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
 			newlife.World = World #temp
 			newlife.current_energy = 50
 			add_child.call_deferred(newlife)	
 			var newgrass = alifedata.build_lifedata(get_free_id(),new_position,sp)
-			
+			newlife.lifedata = newgrass
 			beast_dict[id] = newgrass
 			beast_instance_dict[id] = newlife
-			
+			get_parent().put_in_world_bin(newgrass)
+
 			
 			#_pending_spawns.append(newgrass)
 
@@ -375,3 +436,39 @@ func send_and_draw_array(dict):
 func _exit_tree() -> void:
 	if thread_beast and thread_beast.is_alive():
 		thread_beast.wait_to_finish()
+		
+		
+		
+		
+		
+		
+		
+		
+		
+##################OLD
+
+
+
+'func return_closest_target(b):
+	var current_pos = b.position
+	var bin_index: int
+	var closest = null
+	var closest_in_bin = null
+	var closest_distance = INF
+	for i in [-1,0,1]:
+		for j in [-1,0,1]:
+			current_pos.x = b.position.x + World.bin_size.x*i
+			current_pos.z = b.position.z + World.bin_size.z*j		
+			if current_pos.x > -World.World_Size.x/2  and current_pos.x < World.World_Size.x/2 :
+				if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.z/2 :
+					
+					var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
+					bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+					if bin_index < World.bin_array.size():
+						if World.bin_array[bin_index]:
+							closest_in_bin = find_closest(b.position, World.bin_array[bin_index])
+							var distance = b.position.distance_to(closest_in_bin.position)
+							if distance < closest_distance:
+								closest = closest_in_bin
+								closest_distance = distance
+	return closest'

@@ -63,6 +63,11 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			#new_life["Photosynthesis_range"] = 2
 			new_life["Reproduction_cost"] = 100
 			new_life["Reproduction_spread"] = 2
-			new_life["Max_speed"] = 100 * 1000
+			new_life["Max_speed"] = 100 
+			new_life["Vision_range"] = 3
+			new_life["Food_type"] = [enum_speciesID.GRASS]
+			new_life["Love_type"] = [enum_speciesID.SHEEP]
+			new_life["Danger_type"] = [enum_speciesID.TREE]
+
 
 	return new_life
