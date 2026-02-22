@@ -2,12 +2,17 @@ extends Node3D
 
 #WORLD SETUP
 var World_Size = Vector3(250,1,250)
+var Radius = World_Size/2
+var Center_x = World_Size.x/2
+var Center_z = World_Size.z/2
+var Center_y = World_Size.y
 
 ##### LIGHT MATRIX
 var light_tile_size = Vector3(1,World_Size.y,1) #in m?
 var light_array = []
 var light_flux_in = 1.0
 var light_max_value = 1.0
+var array_path = []
 
 var light_grid_visible = false
 
@@ -87,3 +92,11 @@ func is_valid_bin(x: int, y: int, z: int,voxel_size:Vector3) -> bool:
 	and y >= 0 and y < grid_size.y \
 	and z >= 0 and z < grid_size.z
 	
+
+func array_path_creation():
+	for x in World_Size.x:
+		array_path.append([])
+		for y in World_Size.y:
+			array_path[x].append([])
+			for z in World_Size.z:
+				array_path[x][y].append(null)

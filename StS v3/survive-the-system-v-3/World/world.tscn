@@ -4,9 +4,17 @@
 [ext_resource type="PackedScene" uid="uid://b27blxvtjlwas" path="res://World/grid_map_3d/grid_map_3d.tscn" id="2_j8job"]
 [ext_resource type="PackedScene" uid="uid://dqfoudrb4fbpy" path="res://World/grid/gridDebug.tscn" id="3_j8job"]
 
-[sub_resource type="Environment" id="Environment_62w18"]
-background_mode = 1
-background_color = Color(0.35171163, 0.24703303, 0.3351028, 1)
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_j8job"]
+sky_curve = 0.13518764
+ground_bottom_color = Color(1, 0.8702482, 0.84821147, 1)
+ground_curve = 47.050606
+
+[sub_resource type="Sky" id="Sky_f52ns"]
+sky_material = SubResource("ProceduralSkyMaterial_j8job")
+
+[sub_resource type="Environment" id="Environment_bkhv4"]
+background_mode = 2
+sky = SubResource("Sky_f52ns")
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_62w18"]
 
@@ -23,8 +31,8 @@ transform = Transform3D(1, 0, 0, 0, 0.21050583, 0.9775926, 0, -0.9775926, 0.2105
 transform = Transform3D(1, 0, 0, 0, 0.026351461, 0.99965274, 0, -0.99965274, 0.026351463, 0, 28, 0)
 shadow_enabled = true
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1353197580]
-environment = SubResource("Environment_62w18")
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1561354168]
+environment = SubResource("Environment_bkhv4")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1051321285]
 replication_config = SubResource("SceneReplicationConfig_62w18")

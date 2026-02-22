@@ -12,7 +12,7 @@ material = SubResource("StandardMaterial3D_s51vh")
 size = Vector3(1, 2, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_gdi1g"]
-size = Vector3(1, 2, 1)
+size = Vector3(1, 30, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tx2ke"]
 albedo_texture = ExtResource("2_v87cs")
@@ -23,7 +23,7 @@ material = SubResource("StandardMaterial3D_tx2ke")
 size = Vector3(1, 2, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kg1an"]
-size = Vector3(1, 2, 1)
+size = Vector3(1, 30, 1)
 
 [node name="assets_2m" type="Node3D" unique_id=1953111637]
 
