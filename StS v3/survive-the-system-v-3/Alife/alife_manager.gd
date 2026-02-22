@@ -123,6 +123,17 @@ func remove_from_world_bin(g):
 
 
 
+func get_worldbin_index(current_pos):
+	var bin_index
+	if current_pos.x > -World.World_Size.x/2  and current_pos.x < World.World_Size.x/2 :
+		if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.z/2 :			
+			var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
+			bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+			if bin_index < World.bin_array.size() and bin_index >= 0 :
+				return bin_index
+	return null
+
+
 
 
 

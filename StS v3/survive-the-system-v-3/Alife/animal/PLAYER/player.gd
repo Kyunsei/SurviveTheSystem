@@ -104,15 +104,16 @@ func _physics_process(delta: float) -> void:
 			pass
 			#var target_yaw := atan2(direction.x, -direction.z)
 		move_and_slide()
-		#change_bin()
+		change_bin.rpc_id(1)
 
 	
-
+@rpc("any_peer","call_local")
 func change_bin():
 	if lifedata.size()>0:
+		lifedata["position"] = position
+
 		var old_bin = lifedata["bin_ID"]
 		var current_bin = get_parent().get_worldbin_index(position)
-
 
 		if old_bin == current_bin:
 			return

@@ -118,7 +118,7 @@ func view_closest(view_range,array_num,b,sp):
 		if r == 0:
 			current_pos.x = b.position.x 
 			current_pos.z = b.position.z
-			bin_index = get_worldbin_index(current_pos)
+			bin_index = get_parent().get_worldbin_index(current_pos)
 			if bin_index and array_num[bin_index] >0:			
 				closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
 				var distance = b.position.distance_to(closest_in_bin.position)
@@ -135,7 +135,7 @@ func view_closest(view_range,array_num,b,sp):
 			for dy in [-r, r]:
 				current_pos.x = b.position.x + World.bin_size.x*dx
 				current_pos.z = b.position.z + World.bin_size.z*dy
-				bin_index = get_worldbin_index(current_pos)
+				bin_index = get_parent().get_worldbin_index(current_pos)
 				if bin_index and array_num[bin_index] >0:			
 					closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
 					var distance = b.position.distance_to(closest_in_bin.position)
@@ -148,7 +148,7 @@ func view_closest(view_range,array_num,b,sp):
 			for dx in [-r, r]:
 				current_pos.x = b.position.x + World.bin_size.x*dx
 				current_pos.z = b.position.z + World.bin_size.z*dy
-				bin_index = get_worldbin_index(current_pos)
+				bin_index = get_parent().get_worldbin_index(current_pos)
 				if bin_index and array_num[bin_index] >0:			
 					closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
 					var distance = b.position.distance_to(closest_in_bin.position)
@@ -165,15 +165,6 @@ func view_closest(view_range,array_num,b,sp):
 
 
 
-func get_worldbin_index(current_pos):
-	var bin_index
-	if current_pos.x > -World.World_Size.x/2  and current_pos.x < World.World_Size.x/2 :
-		if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.z/2 :			
-			var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
-			bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-			if bin_index < World.bin_array.size() and bin_index >= 0 :
-				return bin_index
-	return null
 
 
 

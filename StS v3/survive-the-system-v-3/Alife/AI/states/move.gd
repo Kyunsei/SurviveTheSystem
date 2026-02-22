@@ -3,7 +3,8 @@ class_name move_state
 
 var wandertimer = 0
 var target 
-var direction = 1
+var direction = Vector3()
+var isFood = true
 
 func evaluate():
 	target = null
@@ -16,8 +17,9 @@ func evaluate():
 			var distance = player.position.distance_to(d["position"])		
 			if distance < 5:
 				score = 2.0
-				direction = -1
+				direction = (player.position - d["position"]).normalized()
 				player.current_speed =  player.lifedata["Max_speed"]*2
+				isFood = false
 				
 	for f in  player.vision_food.values():
 		if f:
@@ -27,7 +29,8 @@ func evaluate():
 					if distance_food_danger > 5:						
 						score = 0.8
 						target = f
-						direction = 1			
+						direction = (f["position"]- player.position ).normalized()	
+						isFood = true		
 						#var distance = player.position.distance_to(f["position"])		
 						#var maxDist = 5			
 					#dist_score = .8 #clamp(distance / maxDist, 0., 1)
@@ -35,8 +38,8 @@ func evaluate():
 				
 	#var energy_score = 1 - player.current_energy/player.max_energy
 
-
 	#score = dist_score * energy_scorew
+	direction.y = 0
 	return score
 
 func enter():
@@ -52,20 +55,20 @@ func update(delta):
 	var step = player.current_speed * GlobalSimulationParameter.simulation_speed
 	if target:
 		var dist_to_target	= (target["position"] - player.position).length()
-		if dist_to_target <= step:
+		if dist_to_target <= step and isFood:
 			player.position = target["position"]
 		
 		else:
-			player.direction = (target["position"] - player.position).normalized()	
-			player.position += player.direction * step	
+			#player.direction = (target["position"] - player.position).normalized()	
+			player.position += direction * step	
 				
 	else:
 		wandertimer -= delta
 		if wandertimer <= 0:
 			wandertimer = 5 / (1000 * GlobalSimulationParameter.simulation_speed)
-			player.direction = Vector3(randf_range(-1,1),0,randf_range(-1,1)) *direction
+			direction = Vector3(randf_range(-1,1),0,randf_range(-1,1)) *direction
 			
-		player.position += player.direction * step	
+		player.position += direction * step	
 
 	
 	player.position.x = clamp(player.position.x ,-player.World.World_Size.x/2,player.World.World_Size.x/2 )
@@ -75,7 +78,7 @@ func update(delta):
 
 func change_bin():
 	var old_bin = player.lifedata["bin_ID"]
-	var current_bin = player.get_parent().get_worldbin_index(player.position)
+	var current_bin = player.get_parent().get_parent().get_worldbin_index(player.position)
 
 
 	if old_bin == current_bin:

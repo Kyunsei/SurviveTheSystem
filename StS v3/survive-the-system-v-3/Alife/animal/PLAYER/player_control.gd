@@ -122,7 +122,8 @@ func UseITEM():
 			if t is Dictionary:
 				#if t["Species"] == Alifedata.enum_speciesID.GRASS :
 					#alife_manager.get_node("Grass_Manager").Cut(t)
-				alife_manager.Cut(t)
+				if t != player.lifedata:
+					alife_manager.Cut(t)
 
 				
 
