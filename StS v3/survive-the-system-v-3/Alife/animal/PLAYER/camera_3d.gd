@@ -8,6 +8,8 @@ var mouse_captured = false
 @export var mouse_sensitivity = 0.002
 
 @export var camera_speed = 5
+@export var camera_zoom_speed = 50
+
 
 @export var pitch_anchor : Node3D
 @export var yaw_anchor : Node3D
@@ -41,13 +43,13 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if player.is_multiplayer_authority():
 		if Input.is_action_pressed("Camera_zoom_in"):
-			position.z -= camera_speed*delta
+			position.z -= camera_zoom_speed*delta
 		if Input.is_action_pressed("Camera_zoom_out"):
-			position.z += camera_speed*delta
+			position.z += camera_zoom_speed*delta
 		if Input.is_action_just_pressed("Mousewheel_in"):
-			position.z -= camera_speed*delta
+			position.z -= camera_zoom_speed*delta
 		if Input.is_action_just_pressed("Mousewheel_out"):
-			position.z += camera_speed*delta	
+			position.z += camera_zoom_speed*delta	
 		if Input.is_action_pressed("offset_camera_down"):
 			position.y -= camera_speed*delta
 		if Input.is_action_pressed("offset_camera_up"):
