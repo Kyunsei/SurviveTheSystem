@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://cnldo3k3anko5"]
+
+[ext_resource type="PackedScene" uid="uid://cxahygrw7hg4l" path="res://World/grid_map_3d/sources for gridmap/tile_1_gridmap_0_2m.tscn" id="1_fduvt"]
+
+[node name="export_scene_for_MeshLibrary" type="Node3D" unique_id=183991240]
+
+[node name="tile_1_gridmap0_2m" parent="." unique_id=237064131 instance=ExtResource("1_fduvt")]

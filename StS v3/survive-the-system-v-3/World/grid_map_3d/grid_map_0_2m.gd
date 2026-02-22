@@ -2,13 +2,13 @@ extends GridMap
 var width = 1
 var height = 1
 var depth = 1
-@export var tile_id = 1   # The MeshLibrary item ID you want to use
+@export var tile_id = 0   # The MeshLibrary item ID you want to use
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	width = get_parent().get_parent().World_Size.x
+	width = get_parent().get_parent().World_Size.x/5
 	height = get_parent().get_parent().World_Size.y
-	depth = get_parent().get_parent().World_Size.z
+	depth = get_parent().get_parent().World_Size.z/5
 	make_gridmap()
 
 

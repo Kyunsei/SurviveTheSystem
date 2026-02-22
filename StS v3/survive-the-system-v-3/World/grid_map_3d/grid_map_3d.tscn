@@ -1,15 +1,15 @@
 [gd_scene format=3 uid="uid://b27blxvtjlwas"]
 
-[ext_resource type="MeshLibrary" uid="uid://8j11vn5u32m7" path="res://World/grid_map_3d/gridmap0.2m.meshlib" id="1_b1wnf"]
-[ext_resource type="MeshLibrary" uid="uid://cgbip5drkuwsb" path="res://World/grid_map_3d/gridmap1m.meshlib" id="2_1ostd"]
-[ext_resource type="MeshLibrary" uid="uid://dm3fiericufdp" path="res://World/grid_map_3d/gridmap2m.meshlib" id="3_oghx4"]
+[ext_resource type="MeshLibrary" uid="uid://b15kvx27o5fie" path="res://World/grid_map_3d/meshlibraries/2.meshlib" id="1_1ostd"]
+[ext_resource type="MeshLibrary" uid="uid://cgbip5drkuwsb" path="res://World/grid_map_3d/meshlibraries/gridmap1m.meshlib" id="2_1ostd"]
+[ext_resource type="MeshLibrary" uid="uid://dm3fiericufdp" path="res://World/grid_map_3d/meshlibraries/gridmap2m.meshlib" id="3_oghx4"]
 [ext_resource type="Script" uid="uid://d4flha16nf4i5" path="res://World/grid_map_3d/grid_map_0_2m.gd" id="3_r0kn5"]
 
 [node name="Grid_map_3D" type="Node3D" unique_id=1721372565]
 
 [node name="GridMap0_2m" type="GridMap" parent="." unique_id=1724544082]
-mesh_library = ExtResource("1_b1wnf")
-cell_size = Vector3(1, 0.2, 1)
+mesh_library = ExtResource("1_1ostd")
+cell_size = Vector3(5, 0.2, 5)
 script = ExtResource("3_r0kn5")
 
 [node name="GridMap1m" type="GridMap" parent="." unique_id=1622438411]

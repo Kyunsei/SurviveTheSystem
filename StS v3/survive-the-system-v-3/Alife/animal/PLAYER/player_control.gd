@@ -68,7 +68,8 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("refresh"):			
 			#player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
 			player.get_parent().get_node("Grass_Manager").draw_multimesh_on_client.rpc_id(1,multiplayer.get_unique_id())
-		
+		if player.position.y < -200:
+			player.position = Vector3(1,1,1)
 		if Input.is_action_pressed("jump") :
 			total += delta
 		if Input.is_action_pressed("sprint") :
