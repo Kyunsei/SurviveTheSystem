@@ -28,6 +28,7 @@ var current_hunger = max_hunger
 
 var dialogue_box 
 
+var lifedata = {}
 
 
 #INVENTORY HERE
@@ -61,7 +62,10 @@ func drop(id, number):
 		remove_from_inventory(id, number)
 		var pos = position
 		pos.y = 0
-		get_parent().get_node("Grass_Manager").ask_for_spawn_grass(pos,obj["Species"])
+		if obj["Species"] == Alifedata.enum_speciesID.SHEEP:
+			get_parent().get_node("beast_manager").Spawn_Beast.rpc_id(1, pos, Alifedata.enum_speciesID.SHEEP)
+		else:
+			get_parent().get_node("Grass_Manager").ask_for_spawn_grass(pos,obj["Species"])
 
 
 ####################################
@@ -101,6 +105,26 @@ func _physics_process(delta: float) -> void:
 			pass
 			#var target_yaw := atan2(direction.x, -direction.z)
 		move_and_slide()
+		#change_bin()
+
+	
+
+func change_bin():
+	if lifedata.size()>0:
+		var old_bin = lifedata["bin_ID"]
+		var current_bin = get_parent().get_worldbin_index(position)
+
+
+		if old_bin == current_bin:
+			return
+		else:		
+			get_parent().remove_from_world_bin(lifedata)
+			get_parent().put_in_world_bin(lifedata)
+
+
+
+
+
 
 func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 	if area.get_parent().is_in_group("object"):

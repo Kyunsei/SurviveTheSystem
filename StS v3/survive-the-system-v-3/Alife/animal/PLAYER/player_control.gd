@@ -122,6 +122,8 @@ func UseITEM():
 			if t is Dictionary:
 				if t["Species"] == Alifedata.enum_speciesID.GRASS :
 					alife_manager.get_node("Grass_Manager").Cut(t)
+					alife_manager.get_node("beast_manager").Cut(t)
+
 				else:
 					pass
 
@@ -153,11 +155,13 @@ func action_on_server():
 	
 	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
 	 												player_action_area.get_node("CollisionShape3D").shape.size)
+
+	#print(targets)
 	if targets:
 		for t in targets:
 			if t is Dictionary:
 					alife_manager.get_node("Grass_Manager").interact(t,player)
-					
+					alife_manager.get_node("beast_manager").interact(t,player)
 						
 						
 						

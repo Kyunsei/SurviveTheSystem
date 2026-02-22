@@ -2,7 +2,7 @@ extends Node
 class_name Alifedata
 
 
-enum enum_speciesID {GRASS,TREE,BUSH,SHEEP,SPIDERCRAB}
+enum enum_speciesID {GRASS,TREE,BUSH,SHEEP,SPIDERCRAB,CAT}
 
 var ID:int
 var bin_ID: int
@@ -67,7 +67,16 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Vision_range"] = 3
 			new_life["Food_type"] = [enum_speciesID.GRASS]
 			new_life["Love_type"] = [enum_speciesID.SHEEP]
-			new_life["Danger_type"] = [enum_speciesID.TREE]
+			new_life["Danger_type"] = [enum_speciesID.TREE, enum_speciesID.CAT]
 
+		enum_speciesID.CAT:
+			new_life["Homeostasis_cost"] = 0.6
+			new_life["Reproduction_cost"] = 100
+			new_life["Reproduction_spread"] = 2
+			new_life["Max_speed"] = 80 
+			new_life["Vision_range"] = 5
+			new_life["Food_type"] = [enum_speciesID.SHEEP]
+			new_life["Love_type"] = [enum_speciesID.CAT]
+			new_life["Danger_type"] = [enum_speciesID.SPIDERCRAB]
 
 	return new_life

@@ -253,15 +253,18 @@ func spawn_player(id,pos):
 	var new_player = player_scene.instantiate()
 	new_player.name = str(id)
 	new_player.World = World
+	var alifedata = Alifedata.new()
+	var new_life_data = alifedata.build_lifedata(id,pos,Alifedata.enum_speciesID.CAT)
+	new_player.lifedata = new_life_data
+	put_in_world_bin(new_life_data)	
 	self.call_deferred("add_child",new_player)
-	
-	#add_child(new_player)
-	#new_player.position = pos
-	#new_player.global_position.x = -10000
 
-	#print(new_player.position)
-	#if id == multiplayer.get_unique_id():
-	#new_player.set_multiplayer_authority(id)
+	
+	
+	
+	
+	
+	
 
 func get_alife_in_area(pos_center, area):
 	var results: Array = []
@@ -283,6 +286,7 @@ func get_alife_in_area(pos_center, area):
 					var bin = World.bin_array[index]
 					if bin:
 						for element in bin:
+							print(element["Species"])
 							if element is Dictionary:
 								var p: Vector3 = element["position"]#.global_position
 

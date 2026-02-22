@@ -35,8 +35,6 @@ func update(delta):
 	timer -= delta
 	if timer <= 0:
 		if target:
-			print("eat")
-
 			player.current_energy += target["current_energy"]
 			player.current_energy = clamp(player.current_energy ,0, player.max_energy)
 			target["current_energy"]= 0

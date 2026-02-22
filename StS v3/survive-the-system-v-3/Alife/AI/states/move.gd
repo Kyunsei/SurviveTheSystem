@@ -36,7 +36,7 @@ func evaluate():
 	#var energy_score = 1 - player.current_energy/player.max_energy
 
 
-	#score = dist_score * energy_score
+	#score = dist_score * energy_scorew
 	return score
 
 func enter():
@@ -49,15 +49,25 @@ func physics_update(delta):
 	pass
 
 func update(delta):
+	var step = player.current_speed * GlobalSimulationParameter.simulation_speed
 	if target:
-		player.direction = (target.position - player.position).normalized()	
+		var dist_to_target	= (target["position"] - player.position).length()
+		if dist_to_target <= step:
+			player.position = target["position"]
+		
+		else:
+			player.direction = (target["position"] - player.position).normalized()	
+			player.position += player.direction * step	
+				
 	else:
 		wandertimer -= delta
 		if wandertimer <= 0:
 			wandertimer = 5 / (1000 * GlobalSimulationParameter.simulation_speed)
 			player.direction = Vector3(randf_range(-1,1),0,randf_range(-1,1)) *direction
 			
-	player.position += player.direction * player.current_speed * GlobalSimulationParameter.simulation_speed
+		player.position += player.direction * step	
+
+	
 	player.position.x = clamp(player.position.x ,-player.World.World_Size.x/2,player.World.World_Size.x/2 )
 	player.position.z = clamp(player.position.z ,-player.World.World_Size.z/2,player.World.World_Size.z/2 )
 	player.lifedata["position"] = player.position

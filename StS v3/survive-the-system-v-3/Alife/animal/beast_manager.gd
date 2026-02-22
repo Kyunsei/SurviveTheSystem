@@ -68,68 +68,31 @@ func update():
 		vision(b)
 		choose_action(b)
 		homeostasis(b)
-
+		
+	Spawn_and_Kill()
+	
 		#move(b)
 
 
-func start_thread():
-	mutex.lock()
-	if thread_is_running:
-		mutex.unlock()
-		return
-	thread_is_running = true
-	mutex.unlock()
-	
-	thread_beast = Thread.new()
-	thread_beast.start(_update_on_thread)
-
-	
-
-func _on_work_finished():
-	thread_beast.wait_to_finish()  # Clean up
-
-	var unique_spawn := {}
-	
-	for g in _pending_external_spawns:
-		unique_spawn[g["ID"]] = g
+func Spawn_and_Kill():		
 	for g in _pending_spawns:
-		unique_spawn[g["ID"]] = g
-
-	for g in unique_spawn.values():
-		g["ID"] = get_free_id()
-		beast_dict[g["ID"]] = g
-		get_parent().put_in_world_bin(g)
-		draw_new_grass.rpc(g)
-	
-	var unique_kills := {}
-
-	for g in _pending_external_kills:
-		unique_kills[g["ID"]] = g
-		
-	for g in _pending_kills:
-		unique_kills[g["ID"]] = g
-	
-	for g in unique_kills.values() :
+		Spawn_Beast(g["position"],g["Species"])
+	for g in _pending_kills :
 		Kill(g)
-		erase_grass.rpc(g)
-	
+	_pending_spawns.clear()	
+	_pending_kills.clear()
 
-	_pending_external_spawns.clear()	
-	_pending_external_kills.clear()
-	mutex.lock()
-	thread_is_running = false
-	mutex.unlock()
+
+
+	
 
 ################
 
 func choose_action(b):
 	b.choose_action()
 
-func move(b):
-	b.direction = Vector3(randf_range(-1,1),0,randf_range(-1,1))
-	b.position += b.direction * b.current_speed  #* GlobalSimulationParameter.simulation_speed
-	b.position.x = clamp(b.position.x ,-World.World_Size.x/2,World.World_Size.x/2 )
-	b.position.z = clamp(position.z ,-World.World_Size.z/2,World.World_Size.z/2 )
+
+########VISION CODE
 
 func vision(b):
 	#got closest element in friend/danger and food
@@ -143,18 +106,11 @@ func vision(b):
 	#return target
 
 
-########VISION CODE
-
-
-
 func view_closest(view_range,array_num,b,sp):
 	var current_pos = b.position
 	var closest = null
 	var closest_in_bin =  null
 	var closest_distance = INF
-
-	var origin_x = 0#int(current_pos.x)
-	var origin_y = 0#int(current_pos.y)
 	var bin_index
 
 	for r in range(view_range + 1):
@@ -215,13 +171,9 @@ func get_worldbin_index(current_pos):
 		if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.z/2 :			
 			var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
 			bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-			if bin_index < World.bin_array.size():
+			if bin_index < World.bin_array.size() and bin_index >= 0 :
 				return bin_index
 	return null
-
-
-
-
 
 
 
@@ -236,7 +188,7 @@ func find_closest(from_position: Vector3, array: Array,sp):
 				closest_distance = distance
 				closest = element
 	return closest	
-############
+####################################################
 
 func get_free_id():
 	var id:int
@@ -258,30 +210,69 @@ func ask_for_adding_grass(pos, sp):
 	var newgrass = alifedata.build_lifedata(get_free_id(),pos,sp)
 	_pending_external_spawns.append(newgrass)
 
-@rpc("any_peer","call_local")
 
-func Kill_Beast(beast):
-	print("DDDD")
-	var ID = int(beast.name)
-	'if beast_dict.has(ID):
-		free_id_array.append(ID)
-		beast_dict.erase(ID)
-		#remove_from_world_bin(grass)
-		
-		#beast_instance_dict[grass["ID"]].queue_free()
-		beast_instance_dict.erase(ID)
-		#beast.queue_free()'
 
 func Kill(grass):
+	#print("kill")
 	if beast_dict.has(grass["ID"]):
 		free_id_array.append(grass["ID"])
 		beast_dict.erase(grass["ID"])
-		get_parent().remove_from_world_bin(grass)
-		
-		#beast_instance_dict[grass["ID"]].queue_free()
+		get_parent().remove_from_world_bin(grass)		
+		beast_instance_dict[grass["ID"]].queue_free()
 		beast_instance_dict.erase(grass["ID"])
-		
+
+
+@rpc("any_peer","call_local")
+func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
+	var alife_scene : PackedScene
+	match sp:
+		Alifedata.enum_speciesID.SHEEP:
+			alife_scene = sheep_scene
+			var newlife = alife_scene.instantiate()
+			var id = get_free_id()
+			newlife.name = str(id)
+			newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+			newlife.World = World #temp
+			newlife.current_energy = 50
+			add_child.call_deferred(newlife)	
+			var newgrass = alifedata.build_lifedata(id,new_position,sp)
+			newlife.lifedata = newgrass
+			beast_dict[id] = newgrass
+			beast_instance_dict[id] = newlife
+			get_parent().put_in_world_bin(newgrass)
+			#print(beast_dict)
+			#print(beast_instance_dict)
+
+			
+			#_pending_spawns.append(newgrass)
+
+@rpc("any_peer","call_local")
+func ask_for_Kill(b: Dictionary):
+	_pending_kills.append(b)	
+
+
+@rpc("any_peer","call_local")
+func Ask_to_spawn(b: Dictionary):
+	_pending_spawns.append(b)
+
+#########################
+
 	
+func interact(grass,player):
+	print("sheep picked")
+	player.add_to_inventory(grass,1)
+	_pending_kills.append(grass)	
+
+			
+func Cut(grass):
+	print("attack")
+	#print(grass)
+	#Become_object.rpc_id(1,grass)
+	_pending_kills.append(grass)
+	#Kill(grass)
+	
+##########################################################
+
 'func get_lightIndex(grass):
 	var pos = grass["position"]
 	grass["light_index"] = []
@@ -305,11 +296,11 @@ func Kill(grass):
 
 
 
-func homeostasis_TRUE(grass):
+'func homeostasis_TRUE(grass):
 	var area = 1# max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
 	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed 
 	if grass["current_energy"] < 0:
-		_pending_kills.append(grass)
+		_pending_kills.append(grass)'
 
 func homeostasis(grass):
 	var area = 1# max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
@@ -318,7 +309,7 @@ func homeostasis(grass):
 	#	_pending_kills.append(grass)
 
 		
-func _thread_reproduction(grass):
+'func _thread_reproduction(grass):
 	if grass["current_energy"] > grass["Reproduction_cost"]*2:
 		var newpos = grass["position"] + Vector3(
 			randf_range(-grass["Reproduction_spread"], grass["Reproduction_spread"]),
@@ -329,18 +320,9 @@ func _thread_reproduction(grass):
 		newpos.z = clamp(newpos.z, -World.World_Size.z / 2 + 1, World.World_Size.z / 2 - 1)
 		add_grass(newpos, grass["Species"])
 
-		grass["current_energy"] -= grass["Reproduction_cost"]	
+		grass["current_energy"] -= grass["Reproduction_cost"]'	
 		
-	
-func interact(grass,player):
-	player.add_to_inventory(grass,1)
-	_pending_external_kills.append(grass)	
 
-			
-func Cut(grass):
-	#Become_object.rpc_id(1,grass)
-	_pending_external_kills.append(grass)
-	#Kill(grass)
 	
 '@rpc("any_peer","call_local") 
 func Become_object(grass):
@@ -359,77 +341,12 @@ func Become_object(grass):
 
 #########################
 
-@rpc("any_peer","call_local")
-func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
-	var alife_scene : PackedScene
-	match sp:
-		Alifedata.enum_speciesID.SHEEP:
-			alife_scene = sheep_scene
-			var newlife = alife_scene.instantiate()
-			var id = get_free_id()
-			newlife.name = str(id)
-			newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
-			newlife.World = World #temp
-			newlife.current_energy = 50
-			add_child.call_deferred(newlife)	
-			var newgrass = alifedata.build_lifedata(get_free_id(),new_position,sp)
-			newlife.lifedata = newgrass
-			beast_dict[id] = newgrass
-			beast_instance_dict[id] = newlife
-			get_parent().put_in_world_bin(newgrass)
 
 			
-			#_pending_spawns.append(newgrass)
-
-
-
-			
-	
-
-
-
 
 
 
 ##########################MULTIMESH GESTION
-
-@rpc("authority", "call_remote", "reliable") 
-func draw_new_grass(g):
-	match g["Species"]:
-		Alifedata.enum_speciesID.GRASS:
-			$grass.draw_new_grass(g)
-		Alifedata.enum_speciesID.TREE:
-			$tree.draw_new_grass(g)
-		Alifedata.enum_speciesID.BUSH:
-			$bush.draw_new_grass(g)
-@rpc("authority", "call_remote", "reliable") 
-func erase_grass(g):
-	#$grass_multimesh.remove_grass(g)
-	match g["Species"]:
-		Alifedata.enum_speciesID.GRASS:
-			$grass.remove_grass(g)
-		Alifedata.enum_speciesID.TREE:
-			$tree.remove_grass(g)
-		Alifedata.enum_speciesID.BUSH:
-			$bush.remove_grass(g)
-
-@rpc("any_peer","call_remote")
-func draw_multimesh_on_client(peer_id):
-	var dict = beast_dict
-	send_and_draw_array.rpc_id(peer_id, dict)
-
-@rpc("any_peer","call_remote")
-func send_and_draw_array(dict):
-	for g in dict.values():
-		match g["Species"]:
-			Alifedata.enum_speciesID.GRASS:
-				$grass.draw_new_grass(g)
-			Alifedata.enum_speciesID.TREE:
-				$tree.draw_new_grass(g)
-			Alifedata.enum_speciesID.BUSH:
-				$bush.draw_new_grass(g)			
-	#$grass_multimesh.draw_all_grass(dict)	
-
 
 
 

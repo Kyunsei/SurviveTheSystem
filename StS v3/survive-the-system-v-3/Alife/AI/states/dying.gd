@@ -3,6 +3,8 @@ class_name dying_state
 
 'func _ready() -> void:
 	changecolor.rpc()'
+	
+var timer = 0.5
 
 func evaluate():
 	var score = 0
@@ -20,9 +22,8 @@ func changecolor():
 	mesh_instance.get_active_material(0).albedo_color =  Color(0.249, 0.24, 0.333, 1.0)
 
 func enter():
-	
-	print(player)
-	changecolor.rpc()
+	timer = 0.5
+	#changecolor.rpc()
 	
 
 	#print(player.get_parent().name)
@@ -36,4 +37,6 @@ func physics_update(delta):
 	pass
 
 func update(delta):
-	pass
+	timer -= delta
+	if timer <= 0:
+		player.get_parent().ask_for_Kill(player.lifedata)
