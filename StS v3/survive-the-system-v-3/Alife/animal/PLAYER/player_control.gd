@@ -94,7 +94,13 @@ func _physics_process(delta: float) -> void:
 				player.velocity.y -= player.fall_gravity*delta
 		if Input.is_action_just_pressed("jump") and player.is_on_floor():
 			player.velocity.y = player.base_jump
-	
+		player.current_hunger -= 1*delta
+		if player.current_hunger <= 0:
+			player.current_health -= 1*delta
+		if player.current_health <= 0:
+			print("death of player")
+		#print("player health is "+ str(player.current_health))
+		#print("player hunger is "+ str(player.current_hunger))
 		if Input.is_action_just_pressed("pick_up") :
 			var Area3d = %Pick_up_Area3D
 			Area3d.show()

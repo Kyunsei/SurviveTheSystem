@@ -10,6 +10,8 @@ extends CharacterBody3D
 @export var low_jump_gravity := 240
 @export var long_jump = 120
 @export var fly = false
+@export var max_health = 100
+@export var max_hunger = 100
 var speed = max_speed
 var crouched = false
 var gonna_jump = false
@@ -21,6 +23,9 @@ var direction = Vector3(0,0,0)
 var isdebuging = true
 var World : Node3D
 var grass_in_inventory = 0
+var current_health = max_health
+var current_hunger = max_hunger
+
 var dialogue_box 
 
 
