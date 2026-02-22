@@ -274,6 +274,7 @@ func Cut(grass):
 		$beast_manager._pending_kills.append(grass)	
 	else:
 		$Grass_Manager._pending_external_kills.append(grass)
+		$Grass_Manager.Become_object.rpc_id(1,grass)
 
 
 	
