@@ -295,7 +295,7 @@ func _thread_reproduction(grass):
 		grass.current_energy -= 8'			
 
 	
-func interact(grass,player):
+'func interact(grass,player):
 	player.add_to_inventory(grass,1)
 	_pending_external_kills.append(grass)	
 
@@ -303,7 +303,7 @@ func interact(grass,player):
 func Cut(grass):
 	Become_object.rpc_id(1,grass)
 	_pending_external_kills.append(grass)
-	#Kill(grass)
+	#Kill(grass)'
 	
 @rpc("any_peer","call_local") 
 func Become_object(grass):

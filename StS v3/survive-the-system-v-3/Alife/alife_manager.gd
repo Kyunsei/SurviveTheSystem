@@ -123,6 +123,17 @@ func remove_from_world_bin(g):
 
 
 
+func get_worldbin_index(current_pos):
+	var bin_index
+	if current_pos.x > -World.World_Size.x/2  and current_pos.x < World.World_Size.x/2 :
+		if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.z/2 :			
+			var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
+			bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+			if bin_index < World.bin_array.size() and bin_index >= 0 :
+				return bin_index
+	return null
+
+
 
 
 
@@ -260,7 +271,23 @@ func spawn_player(id,pos):
 	self.call_deferred("add_child",new_player)
 
 	
-	
+func interact(grass,player):
+	player.add_to_inventory(grass,1)
+	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
+		$beast_manager._pending_kills.append(grass)	
+	else:
+		$Grass_Manager._pending_external_kills.append(grass)
+
+
+			
+func Cut(grass):
+	if grass["Species"] == Alifedata.enum_speciesID.SHEEP:	
+		$beast_manager._pending_kills.append(grass)	
+	else:
+		$Grass_Manager._pending_external_kills.append(grass)
+		$Grass_Manager.Become_object.rpc_id(1,grass)
+
+
 	
 	
 	
@@ -286,7 +313,6 @@ func get_alife_in_area(pos_center, area):
 					var bin = World.bin_array[index]
 					if bin:
 						for element in bin:
-							print(element["Species"])
 							if element is Dictionary:
 								var p: Vector3 = element["position"]#.global_position
 
