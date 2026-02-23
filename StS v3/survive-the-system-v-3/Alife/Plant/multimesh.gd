@@ -5,6 +5,7 @@ var id_to_slot := {}
 var slot_to_id := {}
 var instance_number := 0
 var shadow
+@export var max_energy = 10
 
 func init():
 	id_to_slot = {}
@@ -35,31 +36,42 @@ func _ready() -> void:
 var instance_data: Array = []  # mirrors multimesh slots'
 
 
-func update_drawn_grass(g):
-	if id_to_slot.size() > g["ID"]:
-		var slot = id_to_slot[g["ID"]]
-		var newtransform = Transform3D.IDENTITY
-		#var random_scale = randf_range(1, 5.0)
-		var scale = clamp(g["current_energy"]/10,0.5,1)
-		newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
-		newtransform.basis = Basis().scaled(Vector3.ONE * scale)
-		multimesh.set_instance_transform(slot, newtransform)
+func update_drawn_grass(gen):
+	var ID = gen[0]
+	var current_energy = gen[1]
+	#if id_to_slot.size() > g["ID"]:
+	if !id_to_slot.has(ID):
+		print("strange")
+		return
+	var slot = id_to_slot[ID]
+	var current_transform = multimesh.get_instance_transform(slot)
+		
+	var newscale = clamp(current_energy /max_energy,0.25,1)
+		#newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
+	current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
+	multimesh.set_instance_transform(slot, current_transform)
+	if shadow:
+		shadow.multimesh.set_instance_transform(slot, current_transform)
+'if abs(last_scale[id] - new_scale) > 0.05:
+	update_transform()'
+
 
 func draw_new_grass(g):
-	
+
 	var slot = instance_number
 	
 	id_to_slot[g["ID"]] = slot
 	slot_to_id[slot] = g["ID"]	
-	
-	multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
+	var newscale = clamp(g["current_energy"] /max_energy,0.25,1)
+	#current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
+	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), g["position"]))
 
 
 	instance_number += 1
 	multimesh.visible_instance_count = instance_number 
 	
 	if shadow:
-		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
+		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), g["position"]))
 		shadow.multimesh.visible_instance_count = instance_number
 
 

@@ -33,6 +33,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 	new_life["position"] = _pos
 	new_life["current_energy"] = 0.0
 	new_life["current_speed"] = 0.0
+	new_life["current_life_state"] = 0
 
 	new_life["Species"] = sp
 	new_life["light_index"] = []
@@ -44,6 +45,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Photosynthesis_range"] = 0
 			new_life["Reproduction_cost"] = 8
 			new_life["Reproduction_spread"] = 5
+			new_life["Max_energy"] = 20
 
 			#light_index = []
 		enum_speciesID.TREE:
@@ -52,12 +54,16 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Photosynthesis_range"] = 3
 			new_life["Reproduction_cost"] = 200
 			new_life["Reproduction_spread"] = 20
+			new_life["Max_energy"] = 500
+
 		enum_speciesID.BUSH:
 			new_life["Homeostasis_cost"] = 0.6
 			new_life["Photosynthesis_absorbtion"] = 1.
 			new_life["Photosynthesis_range"] = 2
 			new_life["Reproduction_cost"] = 300
 			new_life["Reproduction_spread"] = 10
+			new_life["Max_energy"] = 1000
+
 		enum_speciesID.SHEEP:
 			new_life["Homeostasis_cost"] = 0.6
 			#new_life["Photosynthesis_absorbtion"] = 0.

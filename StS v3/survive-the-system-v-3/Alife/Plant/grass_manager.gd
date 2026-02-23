@@ -124,7 +124,7 @@ func _on_work_finished():
 		Kill(g)
 	erase_grass.rpc(unique_kills)
 	
-	
+	send_update_batch(_pending_update)
 	#update_drawn_grass.rpc(_pending_update)
 		
 	_pending_update.clear()
@@ -136,7 +136,13 @@ func _on_work_finished():
 
 
 
-
+	
+func send_update_batch(batch):
+	var CHUNK_SIZE = 100  # tune this
+	
+	for i in range(0, batch.size(), CHUNK_SIZE):
+		var slice = batch.slice(i, i + CHUNK_SIZE)
+		update_drawn_grass.rpc(slice)
 ############
 
 func get_free_id():
@@ -270,7 +276,10 @@ func Reproduction(grass):
 		
 
 func Growth(g):
-	_pending_update.append(g)
+	#if g["current_energy"] % 5 == 0:
+	if g["current_life_state"]*3 < g["current_energy"]:	
+		g["current_life_state"] += 1
+		_pending_update.append([g["ID"],g["current_energy"],g["Species"]])
 
 
 	
@@ -315,17 +324,17 @@ func draw_new_grass(g_array):
 			Alifedata.enum_speciesID.BUSH:
 				$bush.draw_new_grass(g)
 			
-@rpc("authority", "call_remote", "unreliable") 			
+@rpc("authority", "call_remote", "reliable") 			
 func update_drawn_grass(g_array):
-	for g in g_array:
-		match g["Species"]:
-			Alifedata.enum_speciesID.GRASS:
-				$grass.update_drawn_grass(g)
-			Alifedata.enum_speciesID.TREE:
-				$tree.update_drawn_grass(g)
-			Alifedata.enum_speciesID.BUSH:
-				$bush.update_drawn_grass(g)
-
+	for info in g_array:
+			match info[2]:
+				Alifedata.enum_speciesID.GRASS:
+					$grass.update_drawn_grass(info)
+				Alifedata.enum_speciesID.TREE:
+					$tree.update_drawn_grass(info)
+				Alifedata.enum_speciesID.BUSH:
+					$bush.update_drawn_grass(info)
+	
 
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(g_array):

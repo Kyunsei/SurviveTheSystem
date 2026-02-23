@@ -35,6 +35,7 @@ script = ExtResource("3_mcq2d")
 [node name="tree" type="MultiMeshInstance3D" parent="." unique_id=63557357]
 multimesh = SubResource("MultiMesh_48f2q")
 script = ExtResource("3_mcq2d")
+max_energy = 200
 
 [node name="shadow" type="MultiMeshInstance3D" parent="tree" unique_id=932312739]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
