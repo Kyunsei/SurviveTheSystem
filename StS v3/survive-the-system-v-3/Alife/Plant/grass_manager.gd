@@ -26,6 +26,7 @@ var _pending_spawns: Array = []
 var _pending_kills: Array = []
 var _pending_external_kills: Array = []
 var _pending_external_spawns: Array = []
+var _pending_update: Array = []
 
 #var _pending_light_changes: Dictionary = {}  # index -> new value
 var free_id_array = []
@@ -60,8 +61,9 @@ func _update_on_thread():
 	#_pending_light_changes.clear()	
 	for g in grass_dict.values():
 		Photosynthesis(g)
-		_thread_reproduction(g)
-		_thread_homeostasis(g)
+		Reproduction(g)
+		Homeostasis(g)
+		Growth(g)
 
 	#print("end " + str(Time.get_ticks_msec() -ss))
 	call_deferred("_on_work_finished")
@@ -106,7 +108,7 @@ func _on_work_finished():
 		#g.ID = get_free_id()
 		#grass_dict[g.ID] = g
 		get_parent().put_in_world_bin(g)
-		draw_new_grass.rpc(g)
+	draw_new_grass.rpc(unique_spawn)
 	
 	var unique_kills := {}
 
@@ -120,9 +122,12 @@ func _on_work_finished():
 
 	for g in unique_kills.values() :
 		Kill(g)
-		erase_grass.rpc(g)
+	erase_grass.rpc(unique_kills)
 	
-
+	
+	#update_drawn_grass.rpc(_pending_update)
+		
+	_pending_update.clear()
 	_pending_external_spawns.clear()	
 	_pending_external_kills.clear()
 	mutex.lock()
@@ -172,16 +177,7 @@ func Kill(grass):
 		grass_dict.erase(grass["ID"])
 		get_parent().remove_from_world_bin(grass)
 		
-	'if grass_dict.has(grass.ID):
-		free_id_array.append(grass.ID)
-		grass_dict.erase(grass.ID)
-		remove_from_world_bin(grass)'	
 
-
-
-'func get_lightIndex_old(pos):
-	var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
-	return World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)	'
 
 func get_lightIndex(grass):
 	var pos = grass["position"]
@@ -210,7 +206,7 @@ func get_lightIndex(grass):
 		Kill(grass)'
 
 
-func _thread_homeostasis(grass):
+func Homeostasis(grass):
 	var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
 	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed 
 	if grass["current_energy"] < 0:
@@ -230,7 +226,7 @@ func Photosynthesis(grass):
 			var shadow_effect = 1.0
 			World.light_array[l_i] = max(World.light_array[l_i]-shadow_effect,0)
 		
-func Photosynthesis_old(grass):
+'func Photosynthesis_old(grass):
 	
 	if grass["light_index"] <  World.light_array.size():
 		var energy_absorbed = World.light_array[grass["light_index"]] * grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed 
@@ -241,19 +237,10 @@ func Photosynthesis_old(grass):
 		grass["current_energy"] += energy_absorbed
 		var shadow_effect = 1.0
 		World.light_array[grass["light_index"]] = max(World.light_array[grass["light_index"]]-shadow_effect,0)
-		#print(World.light_array[light_index])
+		#print(World.light_array[light_index])'
 		
 		
-	'if grass.light_index <  World.light_array.size():
-		var energy_absorbed = World.light_array[grass.light_index] * grass.Photosynthesis_absorbtion * GlobalSimulationParameter.simulation_speed 
-		energy_absorbed = min(World.light_array[grass.light_index],energy_absorbed)
-		#print(energy_absorbed)
-		if energy_absorbed <= 0:
-			return
-		grass.current_energy += energy_absorbed
-		var shadow_effect = 1.0
-		World.light_array[grass.light_index] = max(World.light_array[grass.light_index]-shadow_effect,0)'
-
+	
 'func Reproduction(grass):
 	if grass["current_energy"]  > 10:# reproduction_stock + energy_stock:
 		var newpos = grass["position"] + Vector3(randf_range(-5,5),
@@ -265,7 +252,7 @@ func Photosynthesis_old(grass):
 		spawn_grass(newpos)
 		grass["current_energy"] -= 8'
 		
-func _thread_reproduction(grass):
+func Reproduction(grass):
 	if grass["current_energy"] > grass["Reproduction_cost"]*2:
 		var newpos = grass["position"] + Vector3(
 			randf_range(-grass["Reproduction_spread"], grass["Reproduction_spread"]),
@@ -280,30 +267,15 @@ func _thread_reproduction(grass):
 		#newgrass["light_index"] = get_lightIndex(newpos)
 		#_pending_spawns.append(newgrass)
 		grass["current_energy"] -= grass["Reproduction_cost"]	
-	'if grass.current_energy > 10:
-		var newpos = grass.position + Vector3(
-			randf_range(-5, 5),
-			0,
-			randf_range(-5, 5)
-		)
-		newpos.x = clamp(newpos.x, -World.World_Size.x / 2 + 1, World.World_Size.x / 2 - 1)
-		newpos.z = clamp(newpos.z, -World.World_Size.z / 2 + 1, World.World_Size.z / 2 - 1)
-		var newgrass = grass_dna.duplicate()
-		newgrass.position = newpos
-		newgrass.light_index = get_lightIndex(newpos)
-		_pending_spawns.append(newgrass)
-		grass.current_energy -= 8'			
+		
+
+func Growth(g):
+	_pending_update.append(g)
+
 
 	
-'func interact(grass,player):
-	player.add_to_inventory(grass,1)
-	_pending_external_kills.append(grass)	
 
-			
-func Cut(grass):
-	Become_object.rpc_id(1,grass)
-	_pending_external_kills.append(grass)
-	#Kill(grass)'
+
 	
 @rpc("any_peer","call_local") 
 func Become_object(grass):
@@ -332,24 +304,41 @@ func Become_object(grass):
 ##########################MULTIMESH GESTION
 
 @rpc("authority", "call_remote", "reliable") 
-func draw_new_grass(g):
-	match g["Species"]:
-		Alifedata.enum_speciesID.GRASS:
-			$grass.draw_new_grass(g)
-		Alifedata.enum_speciesID.TREE:
-			$tree.draw_new_grass(g)
-		Alifedata.enum_speciesID.BUSH:
-			$bush.draw_new_grass(g)
+func draw_new_grass(g_array):
+	for g in g_array.values():
+
+		match g["Species"]:
+			Alifedata.enum_speciesID.GRASS:
+				$grass.draw_new_grass(g)
+			Alifedata.enum_speciesID.TREE:
+				$tree.draw_new_grass(g)
+			Alifedata.enum_speciesID.BUSH:
+				$bush.draw_new_grass(g)
+			
+@rpc("authority", "call_remote", "unreliable") 			
+func update_drawn_grass(g_array):
+	for g in g_array:
+		match g["Species"]:
+			Alifedata.enum_speciesID.GRASS:
+				$grass.update_drawn_grass(g)
+			Alifedata.enum_speciesID.TREE:
+				$tree.update_drawn_grass(g)
+			Alifedata.enum_speciesID.BUSH:
+				$bush.update_drawn_grass(g)
+
+
 @rpc("authority", "call_remote", "reliable") 
-func erase_grass(g):
-	#$grass_multimesh.remove_grass(g)
-	match g["Species"]:
-		Alifedata.enum_speciesID.GRASS:
-			$grass.remove_grass(g)
-		Alifedata.enum_speciesID.TREE:
-			$tree.remove_grass(g)
-		Alifedata.enum_speciesID.BUSH:
-			$bush.remove_grass(g)
+func erase_grass(g_array):
+	for g in g_array.values():
+
+		#$grass_multimesh.remove_grass(g)
+		match g["Species"]:
+			Alifedata.enum_speciesID.GRASS:
+				$grass.remove_grass(g)
+			Alifedata.enum_speciesID.TREE:
+				$tree.remove_grass(g)
+			Alifedata.enum_speciesID.BUSH:
+				$bush.remove_grass(g)
 
 @rpc("any_peer","call_remote")
 func draw_multimesh_on_client(peer_id):

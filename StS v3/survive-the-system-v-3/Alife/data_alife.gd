@@ -1,6 +1,7 @@
-extends Node
+extends Resource
 class_name Alifedata
 
+#THIS COULD BE SPLIT BY SPECIES FOR CALRIFICATION 
 
 enum enum_speciesID {GRASS,TREE,BUSH,SHEEP,SPIDERCRAB,CAT}
 
@@ -80,3 +81,10 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Danger_type"] = [enum_speciesID.SPIDERCRAB]
 
 	return new_life
+
+
+
+
+
+func Growth():
+	print("growth")

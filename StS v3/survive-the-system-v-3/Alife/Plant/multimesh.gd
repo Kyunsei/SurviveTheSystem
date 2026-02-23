@@ -34,6 +34,17 @@ func _ready() -> void:
 	
 var instance_data: Array = []  # mirrors multimesh slots'
 
+
+func update_drawn_grass(g):
+	if id_to_slot.size() > g["ID"]:
+		var slot = id_to_slot[g["ID"]]
+		var newtransform = Transform3D.IDENTITY
+		#var random_scale = randf_range(1, 5.0)
+		var scale = clamp(g["current_energy"]/10,0.5,1)
+		newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
+		newtransform.basis = Basis().scaled(Vector3.ONE * scale)
+		multimesh.set_instance_transform(slot, newtransform)
+
 func draw_new_grass(g):
 	
 	var slot = instance_number
@@ -41,16 +52,7 @@ func draw_new_grass(g):
 	id_to_slot[g["ID"]] = slot
 	slot_to_id[slot] = g["ID"]	
 	
-	var newtransform = Transform3D.IDENTITY
-
-	#var random_scale = randf_range(1, 5.0)
-	var scale = clamp(g["current_energy"]/10,0.5,1)
-	newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
-	#newtransform.basis = Basis().scaled(Vector3(2, 2, 2))
-	newtransform.basis = Basis().scaled(Vector3.ONE * scale)
-
-	#multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
-	multimesh.set_instance_transform(slot, newtransform)
+	multimesh.set_instance_transform(slot, Transform3D(Basis(), g["position"]))
 
 
 	instance_number += 1
