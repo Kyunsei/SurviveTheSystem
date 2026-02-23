@@ -42,17 +42,28 @@ func prep_alife(alife):
 
 	item["name"] = str(alife["Species"])
 	item["inventory_icon"] = alife["Sprites"]
+	#item["Data"] = alife
 	#item["inventory_path"] = null
 	item["stack_amount"] = floori(100.0/alife["Max_energy"])
 	#print(item)
 	return item
 	
 func add_item(item, peer_id):
-	#print("item added")
 	for y in range(column_size):
 		for x in range(row_size):
 			var slot = items[x][y]
 			
 			if slot.add_item(item, peer_id):
+				return true
+	return false
+
+
+@rpc("authority","call_remote")
+func remove_last_item(peer_id):
+	for y in range(column_size):
+		for x in range(row_size):
+			var slot = items[x][y]
+			
+			if slot.remove_item(peer_id):
 				return true
 	return false

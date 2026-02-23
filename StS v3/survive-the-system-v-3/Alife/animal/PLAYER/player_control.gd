@@ -109,8 +109,11 @@ func _physics_process(delta: float) -> void:
 			Area3d.hide()
 		if Input.is_action_just_pressed("Action") :
 			action()#.rpc_id(1)
+			
 		if Input.is_action_just_pressed("Drop"):
 			player.drop.rpc_id(1,0, 1)
+			var inventory = player.get_node("Player_HUD").get_node("Inventory")
+			inventory.remove_last_item.rpc_id(1,int(player.name))
 
 @rpc("any_peer","call_local")
 func UseITEM():
@@ -171,5 +174,5 @@ func add_to_inventory(alife):
 		var inventory = player.get_node("Player_HUD").get_node("Inventory")
 		if inventory.add_item(inventory.prep_alife(alife),int(player.name)):
 			pass
-			#print("picked up "+ str(alife))
+			print("picked up ")
 			#queue_free()

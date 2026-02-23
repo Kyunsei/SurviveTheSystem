@@ -25,7 +25,15 @@ var World : Node3D
 var grass_in_inventory = 0
 var current_health = max_health
 var current_hunger = max_hunger
+
+
+#INVENTORY PART
 var inventory_HUD 
+var inventory = {}
+var inventory_count = 0
+
+
+
 
 var dialogue_box 
 
@@ -33,10 +41,7 @@ var lifedata = {}
 
 
 #INVENTORY HERE
-var inventory = {
 
-}
-var inventory_count = 0
 
 
 ###########INVENTORY HELPER FUNCTION

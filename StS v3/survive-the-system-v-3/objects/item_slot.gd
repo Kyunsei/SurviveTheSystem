@@ -14,12 +14,31 @@ func add_item(new_item, peer_id):
 		item = new_item
 		item_count += 1
 		Update_info_multiplayer.rpc_id(peer_id, new_item)
-		item_icon.texture = load(new_item["inventory_icon"])
+		if new_item["inventory_icon"] is String:
+			item_icon.texture = load(new_item["inventory_icon"])
+		else:
+			print("not yet implemnted or TRUN IT into alifedata...")
 		#print(item_icon.texture)
 		#refresh_label( )
 		return true
 	
 	return false
+	
+	
+func remove_item(peer_id):
+	print(item)
+	if item.size() > 0:
+		item_count -= 1
+		if item_count == 0:
+			item = {}
+			item_icon.texture = null
+		send_remove_info.rpc_id(peer_id)
+
+		return true
+	return false
+
+	
+
 
 func refresh_label():
 	item_label.text = str(item_count)
@@ -28,7 +47,16 @@ func refresh_label():
 func Update_info_multiplayer( new_item):
 	item = new_item
 	item_count += 1
-	item_icon.texture = load(new_item["inventory_icon"])
+	if new_item["inventory_icon"] is String:
+			item_icon.texture = load(new_item["inventory_icon"])
+
 	refresh_label( )
 
 	#item_count = count
+@rpc("any_peer", "call_remote")
+func send_remove_info():
+	item_count -= 1
+	if item_count == 0:
+		item = {}
+		item_icon.texture = null
+	refresh_label( )

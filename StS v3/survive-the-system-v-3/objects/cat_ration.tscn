@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://qj4cuppwu5or"]
+[gd_scene format=3 uid="uid://uhlobdlhytqk"]
 
 [ext_resource type="Texture2D" uid="uid://bksfav3v0xjkn" path="res://assets/assets kyun/catration1.png" id="1_hfdmw"]
 [ext_resource type="Script" uid="uid://ba1uyk25r8lmq" path="res://objects/cat_ration.gd" id="2_wqbnr"]

@@ -10,7 +10,7 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player"):
 		var inventory = body.get_node("Player_HUD").get_node("Inventory")
 		print(inventory)
-		if inventory.add_item(inventory.prep_item(self)):
+		if inventory.add_item(inventory.prep_item(self),int(body.name)):
 			print("Cat ration picked up")
 			queue_free()
 	else:
