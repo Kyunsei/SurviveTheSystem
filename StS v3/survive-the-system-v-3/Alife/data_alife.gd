@@ -78,6 +78,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Reproduction_spread"] = 20
 			new_life["Max_energy"] = 500
 			new_life["Max_age"] = 100.0
+			new_life["Sprites"] = "res://Alife/Plant/tree/tree.png"
 
 		enum_speciesID.BUSH:
 			new_life["Homeostasis_cost"] = 0.6
@@ -87,6 +88,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Reproduction_spread"] = 10
 			new_life["Max_energy"] = 1000
 			new_life["Max_age"] = 100.0
+			new_life["Sprites"] = "res://assets/Art from STS2/berry_1.png"
 
 		enum_speciesID.SHEEP:
 			new_life["Homeostasis_cost"] = 0.6
@@ -100,7 +102,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Love_type"] = [enum_speciesID.SHEEP]
 			new_life["Danger_type"] = [enum_speciesID.TREE, enum_speciesID.CAT]
 			new_life["Max_age"] = 100.0
-
+			new_life["Sprites"] = "res://assets/Art from STS2/sheep2.png"
 		enum_speciesID.CAT:
 			new_life["Homeostasis_cost"] = 0.6
 			new_life["Reproduction_cost"] = 100
@@ -111,6 +113,8 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Love_type"] = [enum_speciesID.CAT]
 			new_life["Danger_type"] = [enum_speciesID.SPIDERCRAB]
 			new_life["Max_age"] = 100.0
+			new_life["Sprites"] = "res://assets/Art from STS2/player_cat.png"
+
 
 	return new_life
 
