@@ -162,7 +162,14 @@ func action_on_server():
 			if t is Dictionary:
 				if t != player.lifedata:
 					#alife_manager.get_node("Grass_Manager").interact(t,player)
-					alife_manager.interact(t,player)
+					#alife_manager.interact(t,player)
+					add_to_inventory(t)
 						
 						
 						
+func add_to_inventory(alife):
+		var inventory = player.get_node("Player_HUD").get_node("Inventory")
+		if inventory.add_item(inventory.prep_alife(alife)):
+			pass
+			#print("picked up "+ str(alife))
+			#queue_free()

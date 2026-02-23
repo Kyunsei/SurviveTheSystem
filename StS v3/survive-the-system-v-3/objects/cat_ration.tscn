@@ -18,7 +18,7 @@ script = ExtResource("3_5kluo")
 name = "Cat_Ration"
 type = "Food"
 inventory_icon = ExtResource("1_hfdmw")
-stack_amount = 1
+stack_amount = 3
 item_path = "res://objects/cat_ration.tscn"
 metadata/_custom_type_script = "uid://udee2xxejlu"
 

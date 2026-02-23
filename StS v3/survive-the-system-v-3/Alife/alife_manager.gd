@@ -1,5 +1,5 @@
 extends Node3D
-
+@export var item_ressources : Item
 @export var World : Node3D
 @export var player_scene: PackedScene
 @export var plant_scene: PackedScene

@@ -36,9 +36,19 @@ func prep_item(new_item):
 	#print(item)
 	return item
 	
+func prep_alife(alife):
+
+	var item ={}
+
+	item["name"] = str(alife["Species"])
+	item["inventory_icon"] = alife["Sprites"]
+	#item["inventory_path"] = null
+	item["stack_amount"] = floori(100.0/alife["Max_energy"])
+	#print(item)
+	return item
 	
 func add_item(item):
-	print("item added")
+	#print("item added")
 	for y in range(column_size):
 		for x in range(row_size):
 			var slot = items[x][y]

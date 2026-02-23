@@ -1,6 +1,6 @@
 extends Resource
 class_name Alifedata
-
+@export var item_ressources : Item
 #THIS COULD BE SPLIT BY SPECIES FOR CALRIFICATION 
 
 enum enum_speciesID {GRASS,TREE,BUSH,SHEEP,SPIDERCRAB,CAT}
@@ -13,7 +13,6 @@ var current_energy: float
 var Homeostasis_cost: float
 var Photosynthesis_absorbtion: float
 var light_index: int
-
 
 'func _init(_id:int, _pos:Vector3, sp:enum_speciesID):
 	ID = _id
@@ -68,6 +67,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Reproduction_spread"] = 5
 			new_life["Max_energy"] = 20
 			new_life["Max_age"] = 100.0
+			new_life["Sprites"] = "res://Alife/Plant/Grass/grass.png"
 
 			#light_index = []
 		enum_speciesID.TREE:
