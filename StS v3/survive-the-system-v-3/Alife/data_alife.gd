@@ -29,15 +29,36 @@ var light_index: int
 
 func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 	var new_life : Dictionary
+	
+	#IDENTITY STUFF
 	new_life["ID"] = _id
+	new_life["Species"] = sp	
+	
+	#WORLDSTUF
 	new_life["position"] = _pos
-	new_life["current_energy"] = 0.0
+	new_life["size"] = 1
 	new_life["current_speed"] = 0.0
-	new_life["current_life_state"] = 0
-
-	new_life["Species"] = sp
 	new_life["light_index"] = []
 	new_life["bin_ID"] = null
+
+	#Metabolism/Growth
+	new_life["current_energy"] = 0.0
+	new_life["biomass"] = 0.0
+	new_life["current_energy"] = 0.0
+	new_life["current_age"] = 0.0
+
+	
+	#FIGHT
+	new_life["current_HP"] = 10.0
+	new_life["Max_HP"] = 10.0
+
+	
+	#PHENOTYPE
+	new_life["current_life_state"] = 0
+	new_life["Alive"] = 1
+
+
+
 	match sp:
 		enum_speciesID.GRASS:		
 			new_life["Homeostasis_cost"] = 0.3
@@ -46,6 +67,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Reproduction_cost"] = 8
 			new_life["Reproduction_spread"] = 5
 			new_life["Max_energy"] = 20
+			new_life["Max_age"] = 100.0
 
 			#light_index = []
 		enum_speciesID.TREE:
@@ -55,6 +77,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Reproduction_cost"] = 200
 			new_life["Reproduction_spread"] = 20
 			new_life["Max_energy"] = 500
+			new_life["Max_age"] = 100.0
 
 		enum_speciesID.BUSH:
 			new_life["Homeostasis_cost"] = 0.6
@@ -63,6 +86,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Reproduction_cost"] = 300
 			new_life["Reproduction_spread"] = 10
 			new_life["Max_energy"] = 1000
+			new_life["Max_age"] = 100.0
 
 		enum_speciesID.SHEEP:
 			new_life["Homeostasis_cost"] = 0.6
@@ -75,6 +99,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Food_type"] = [enum_speciesID.GRASS]
 			new_life["Love_type"] = [enum_speciesID.SHEEP]
 			new_life["Danger_type"] = [enum_speciesID.TREE, enum_speciesID.CAT]
+			new_life["Max_age"] = 100.0
 
 		enum_speciesID.CAT:
 			new_life["Homeostasis_cost"] = 0.6
@@ -85,6 +110,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Food_type"] = [enum_speciesID.SHEEP]
 			new_life["Love_type"] = [enum_speciesID.CAT]
 			new_life["Danger_type"] = [enum_speciesID.SPIDERCRAB]
+			new_life["Max_age"] = 100.0
 
 	return new_life
 
