@@ -47,12 +47,12 @@ func prep_alife(alife):
 	#print(item)
 	return item
 	
-func add_item(item):
+func add_item(item, peer_id):
 	#print("item added")
 	for y in range(column_size):
 		for x in range(row_size):
 			var slot = items[x][y]
 			
-			if slot.add_item(item):
+			if slot.add_item(item, peer_id):
 				return true
 	return false

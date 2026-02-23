@@ -169,7 +169,7 @@ func action_on_server():
 						
 func add_to_inventory(alife):
 		var inventory = player.get_node("Player_HUD").get_node("Inventory")
-		if inventory.add_item(inventory.prep_alife(alife)):
+		if inventory.add_item(inventory.prep_alife(alife),int(player.name)):
 			pass
 			#print("picked up "+ str(alife))
 			#queue_free()
