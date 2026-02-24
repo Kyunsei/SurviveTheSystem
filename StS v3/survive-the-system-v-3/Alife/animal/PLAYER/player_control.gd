@@ -170,7 +170,7 @@ func action_on_server():
 						
 						
 func add_to_inventory(alife):
-		print(alife["Species"])
+		#print(alife["Species"])
 		var inventory = player.get_node("Player_HUD").get_node("Inventory")
 		if inventory.add_item(inventory.prep_alife(alife),int(player.name)):
 			return true

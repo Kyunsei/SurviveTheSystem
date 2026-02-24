@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://clskcb1rbjxo3" path="res://World/spaceship/npc.tscn" id="1_1wtdp"]
 [ext_resource type="Texture2D" uid="uid://dccyyitvcai6a" path="res://assets/assets kyun/shiptexture_1.png" id="1_l8se6"]
-[ext_resource type="PackedScene" uid="uid://qj4cuppwu5or" path="res://objects/cat_ration.tscn" id="3_2gbrl"]
+[ext_resource type="PackedScene" uid="uid://uhlobdlhytqk" path="res://objects/cat_ration.tscn" id="3_2gbrl"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2gbrl"]
 albedo_texture = ExtResource("1_l8se6")
