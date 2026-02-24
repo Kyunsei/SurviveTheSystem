@@ -42,10 +42,8 @@ func prep_alife(alife):
 
 	item["name"] = str(alife["Species"])
 	item["inventory_icon"] = alife["Sprites"]
-	if item.has("Data"):
-		item["Data"].append(alife)
-	else:
-		item["Data"] = [alife]
+
+	item["Data"] = [alife]
 	#item["inventory_path"] = null
 	item["stack_amount"] = floori(100.0/alife["Max_energy"])
 	#print(item)
