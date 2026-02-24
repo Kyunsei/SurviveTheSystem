@@ -26,16 +26,15 @@ func add_item(new_item, peer_id):
 	
 	
 func remove_item(peer_id):
-	print(item)
 	if item.size() > 0:
+		var rmv_item = item["Data"].pop_back()
 		item_count -= 1
 		if item_count == 0:
 			item = {}
 			item_icon.texture = null
 		send_remove_info.rpc_id(peer_id)
-
-		return true
-	return false
+		return rmv_item
+	return null
 
 	
 

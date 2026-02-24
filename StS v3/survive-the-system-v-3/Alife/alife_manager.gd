@@ -279,6 +279,23 @@ func interact(grass,player):
 		$Grass_Manager._pending_external_kills.append(grass)
 
 
+
+func remove(grass):
+	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
+		$beast_manager.ask_for_Kill(grass)	
+	else:
+		$Grass_Manager._pending_external_kills.append(grass)
+
+
+func add(grass, pos):
+	pos.y = 0
+	grass["position"] = pos
+	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
+		$beast_manager.Ask_to_spawn(grass)	
+	else:
+		$Grass_Manager.Ask_for_spawn(grass)
+
+
 			
 func Cut(grass):
 	if grass["Species"] == Alifedata.enum_speciesID.SHEEP:	

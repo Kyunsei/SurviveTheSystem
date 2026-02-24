@@ -42,7 +42,10 @@ func prep_alife(alife):
 
 	item["name"] = str(alife["Species"])
 	item["inventory_icon"] = alife["Sprites"]
-	#item["Data"] = alife
+	if item.has("Data"):
+		item["Data"].append(alife)
+	else:
+		item["Data"] = [alife]
 	#item["inventory_path"] = null
 	item["stack_amount"] = floori(100.0/alife["Max_energy"])
 	#print(item)
@@ -64,6 +67,7 @@ func remove_last_item(peer_id):
 		for x in range(row_size):
 			var slot = items[x][y]
 			
-			if slot.remove_item(peer_id):
-				return true
-	return false
+			var item_rmv = slot.remove_item(peer_id)
+			if item_rmv:
+				return item_rmv
+	return null

@@ -111,9 +111,8 @@ func _physics_process(delta: float) -> void:
 			action()#.rpc_id(1)
 			
 		if Input.is_action_just_pressed("Drop"):
-			player.drop.rpc_id(1,0, 1)
-			var inventory = player.get_node("Player_HUD").get_node("Inventory")
-			inventory.remove_last_item.rpc_id(1,int(player.name))
+			Drop.rpc_id(1)
+
 
 @rpc("any_peer","call_local")
 func UseITEM():
@@ -147,6 +146,8 @@ func action():
 			area.interact(player)
 		action_on_server.rpc_id(1)	
 
+
+
 @rpc("any_peer","call_remote")
 func action_on_server():
 	var interacted_areas = Action_area.get_overlapping_areas()
@@ -164,15 +165,42 @@ func action_on_server():
 		for t in targets:
 			if t is Dictionary:
 				if t != player.lifedata:
-					#alife_manager.get_node("Grass_Manager").interact(t,player)
 					#alife_manager.interact(t,player)
-					add_to_inventory(t)
-						
+					if add_to_inventory(t):
+						alife_manager.remove(t)	
 						
 						
 func add_to_inventory(alife):
 		var inventory = player.get_node("Player_HUD").get_node("Inventory")
 		if inventory.add_item(inventory.prep_alife(alife),int(player.name)):
-			pass
-			print("picked up ")
+			return true
+		else:
+			return false
 			#queue_free()
+
+
+@rpc("any_peer","call_remote")
+func Drop():
+	var inventory = player.get_node("Player_HUD").get_node("Inventory")
+	var item_dropped = inventory.remove_last_item(int(player.name))
+	if item_dropped:
+		print("drop")
+		alife_manager.add(item_dropped,player.position)	
+
+		#player.drop(0, 1)
+
+
+
+'@rpc("any_peer","call_remote")
+func put_back_in_world(id, number):
+	id = inventory.size() - 1
+	if inventory.has(id):
+		var obj = inventory[id]
+		remove_from_inventory(id, number)
+		var pos = position
+		pos.y = 0
+		if obj["Species"] == Alifedata.enum_speciesID.SHEEP:
+			get_parent().get_node("beast_manager").Spawn_Beast.rpc_id(1, pos, Alifedata.enum_speciesID.SHEEP)
+		else:
+			get_parent().get_node("Grass_Manager").ask_for_spawn_grass(pos,obj["Species"])'
+	

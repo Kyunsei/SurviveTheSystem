@@ -175,7 +175,12 @@ func ask_for_spawn_grass(pos, sp):
 	get_lightIndex(newgrass)
 	#newgrass["ID"] = get_free_id()
 	#grass_dict[newgrass["ID"]] = newgrass
-	_pending_external_spawns.append(newgrass)		
+	_pending_external_spawns.append(newgrass)
+	
+func Ask_for_spawn(grass):
+	get_lightIndex(grass)
+	_pending_external_spawns.append(grass)		
+		
 
 func Kill(grass):
 	if grass_dict.has(grass["ID"]):

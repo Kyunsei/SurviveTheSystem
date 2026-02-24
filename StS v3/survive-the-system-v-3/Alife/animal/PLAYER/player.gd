@@ -46,7 +46,7 @@ var lifedata = {}
 
 ###########INVENTORY HELPER FUNCTION
 
-@rpc("any_peer","call_local")
+'@rpc("any_peer","call_local")
 func add_to_inventory(object, number):
 	inventory[inventory_count] = object
 	inventory_count += 1
@@ -70,7 +70,7 @@ func drop(id, number):
 		if obj["Species"] == Alifedata.enum_speciesID.SHEEP:
 			get_parent().get_node("beast_manager").Spawn_Beast.rpc_id(1, pos, Alifedata.enum_speciesID.SHEEP)
 		else:
-			get_parent().get_node("Grass_Manager").ask_for_spawn_grass(pos,obj["Species"])
+			get_parent().get_node("Grass_Manager").ask_for_spawn_grass(pos,obj["Species"])'
 
 
 ####################################
