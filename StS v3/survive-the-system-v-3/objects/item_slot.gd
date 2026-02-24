@@ -34,9 +34,7 @@ func add_item(new_item, peer_id):
 
 func remove_item(peer_id):
 	if  item != {}:
-		print(item["Data"].size())
 		var rmv_item = item["Data"].pop_back()
-		print(item["Data"].size())
 		item_count -= 1
 		if item_count == 0:
 			item = {}

@@ -5,6 +5,8 @@ extends MeshInstance3D
 
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
+	print("DESACTIVATED FOR NOW")
+	return
 	#print(inventory)
 	#print(body.get_node("../Inventory"))
 	if body.is_in_group("player"):

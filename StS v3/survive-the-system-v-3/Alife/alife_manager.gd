@@ -266,7 +266,9 @@ func spawn_player(id,pos):
 	new_player.World = World
 	var alifedata = Alifedata.new()
 	var new_life_data = alifedata.build_lifedata(id,pos,Alifedata.enum_speciesID.CAT)
+	#new_life_data["position"] = pos
 	new_player.lifedata = new_life_data
+	#new_player.position = pos
 	put_in_world_bin(new_life_data)	
 	self.call_deferred("add_child",new_player)
 
@@ -283,6 +285,8 @@ func interact(grass,player):
 func remove(grass):
 	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
 		$beast_manager.ask_for_Kill(grass)	
+	elif grass["Species"]== Alifedata.enum_speciesID.CAT:
+		print("not yet done for player")	
 	else:
 		$Grass_Manager._pending_external_kills.append(grass)
 
@@ -292,6 +296,9 @@ func add(grass, pos):
 	grass["position"] = pos
 	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
 		$beast_manager.Ask_to_spawn(grass)	
+	elif grass["Species"]== Alifedata.enum_speciesID.CAT:
+		#spawn_player(0,pos)
+		print("was a bit bugging sadly")
 	else:
 		$Grass_Manager.Ask_for_spawn(grass)
 

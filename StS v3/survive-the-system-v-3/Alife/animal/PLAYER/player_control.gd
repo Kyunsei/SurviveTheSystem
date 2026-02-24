@@ -160,7 +160,6 @@ func action_on_server():
 	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
 	 												player_action_area.get_node("CollisionShape3D").shape.size)
 
-	#print(targets)
 	if targets:
 		for t in targets:
 			if t is Dictionary:
@@ -171,6 +170,7 @@ func action_on_server():
 						
 						
 func add_to_inventory(alife):
+		print(alife["Species"])
 		var inventory = player.get_node("Player_HUD").get_node("Inventory")
 		if inventory.add_item(inventory.prep_alife(alife),int(player.name)):
 			return true
@@ -184,7 +184,6 @@ func Drop():
 	var inventory = player.get_node("Player_HUD").get_node("Inventory")
 	var item_dropped = inventory.remove_last_item(int(player.name))
 	if item_dropped:
-		print("drop")
 		alife_manager.add(item_dropped,player.position)	
 
 		#player.drop(0, 1)
