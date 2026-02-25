@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://uhlobdlhytqk"]
 
-[ext_resource type="Texture2D" uid="uid://bksfav3v0xjkn" path="res://assets/assets kyun/catration1.png" id="1_hfdmw"]
-[ext_resource type="Script" uid="uid://ba1uyk25r8lmq" path="res://objects/cat_ration.gd" id="2_wqbnr"]
+[ext_resource type="Texture2D" uid="uid://bksfav3v0xjkn" path="res://objects/cat_ration/catration1.png" id="1_hfdmw"]
+[ext_resource type="Script" uid="uid://ba1uyk25r8lmq" path="res://objects/cat_ration/cat_ration.gd" id="2_wqbnr"]
 [ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="3_5kluo"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
@@ -13,13 +13,13 @@ billboard_mode = 2
 [sub_resource type="QuadMesh" id="QuadMesh_5kluo"]
 material = SubResource("StandardMaterial3D_wqbnr")
 
-[sub_resource type="Resource" id="Resource_poufi"]
+[sub_resource type="Resource" id="Resource_8f30t"]
 script = ExtResource("3_5kluo")
-name = "Cat_Ration"
+name = "CatRation"
 type = "Food"
 inventory_icon = ExtResource("1_hfdmw")
-stack_amount = 3
-item_path = "res://objects/cat_ration.tscn"
+stack_amount = 10
+item_path = "res://objects/cat_ration/cat_ration.tscn"
 metadata/_custom_type_script = "uid://udee2xxejlu"
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_5kluo"]
@@ -28,7 +28,7 @@ radius = 1.0
 [node name="Cat_Ration" type="MeshInstance3D" unique_id=1352666552]
 mesh = SubResource("QuadMesh_5kluo")
 script = ExtResource("2_wqbnr")
-item_ressources = SubResource("Resource_poufi")
+item_ressources = SubResource("Resource_8f30t")
 
 [node name="Timer" type="Timer" parent="." unique_id=1629208419]
 wait_time = 0.1

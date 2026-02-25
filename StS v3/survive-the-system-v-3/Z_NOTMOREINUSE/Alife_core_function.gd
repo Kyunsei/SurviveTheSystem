@@ -1,5 +1,5 @@
 extends Node3D
-class_name Alife
+class_name NOTUSEDAlife
 
 #WORLD
 @export var World: Node3D 

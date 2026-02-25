@@ -1,5 +1,7 @@
 extends Resource
-class_name Item
+class_name ItemResource
+
+
 
 @export var name: String
 @export_enum("Tool", "Food","Biomass") var type:String

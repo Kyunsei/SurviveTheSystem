@@ -224,7 +224,7 @@ func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
 			newlife.name = str(id)
 			newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
 			newlife.World = World #temp
-			newlife.current_energy = 50
+			#newlife.current_energy = 50
 			add_child.call_deferred(newlife)	
 			var newgrass = alifedata.build_lifedata(id,new_position,sp)
 			newlife.lifedata = newgrass
@@ -295,7 +295,7 @@ func Cut(grass):
 
 func homeostasis(grass):
 	var area = 1# max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass.current_energy -= 0.5 * GlobalSimulationParameter.simulation_speed 
+	grass.lifedata["current_energy"] -= 0.5 * GlobalSimulationParameter.simulation_speed 
 	#if grass["current_energy"] < 0:
 	#	_pending_kills.append(grass)
 

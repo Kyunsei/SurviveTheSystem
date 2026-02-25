@@ -184,7 +184,10 @@ func Drop():
 	var inventory = player.get_node("Player_HUD").get_node("Inventory")
 	var item_dropped = inventory.remove_last_item(int(player.name))
 	if item_dropped:
-		alife_manager.add(item_dropped,player.position)	
+		if item_dropped["Species"] == Alifedata.enum_speciesID.ITEM:
+			alife_manager.get_node("Item_Manager").spawn_item.rpc(item_dropped,player.position)
+		else:
+			alife_manager.add(item_dropped,player.position)	
 
 		#player.drop(0, 1)
 

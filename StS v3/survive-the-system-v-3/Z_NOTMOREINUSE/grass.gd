@@ -1,4 +1,4 @@
-extends Alife
+extends NOTUSEDAlife
 @export var object_scene : PackedScene
 
 var Photosynthesis_absorbtion = 1.0

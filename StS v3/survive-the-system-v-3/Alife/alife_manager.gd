@@ -1,5 +1,4 @@
 extends Node3D
-@export var item_ressources : Item
 @export var World : Node3D
 @export var player_scene: PackedScene
 @export var plant_scene: PackedScene
@@ -52,7 +51,7 @@ func init():
 			$beast_manager.World = World
 			$Grass_Manager.ask_for_spawn_grass(Vector3(25,0,-15),Alifedata.enum_speciesID.GRASS)
 
-			$Grass_Manager.ask_for_spawn_grass(Vector3(-15,0,-15),Alifedata.enum_speciesID.GRASS)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(-25,0,-15),Alifedata.enum_speciesID.GRASS)
 			$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
 			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
 			$beast_manager.Spawn_Beast(Vector3(-10,0,-15),Alifedata.enum_speciesID.SHEEP)
@@ -90,11 +89,11 @@ func _process(delta: float) -> void:
 
 ################################ BIN GESTION
 
+@rpc("any_peer","call_local")
 func put_in_world_bin(g):
 	var bin_ID = 0
 	var w_pos = World.get_PositionInGrid(g["position"],World.bin_size)
 	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
-
 	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
 	if new_bin_ID < 0 or new_bin_ID >= World.bin_array.size():
 		print("life out of world")
@@ -134,128 +133,6 @@ func get_worldbin_index(current_pos):
 	return null
 
 
-
-
-
-
-
-##################################################################
-#OLD
-###################################################################
-
-func duplicate_life(alife):
-	var newpos = alife.global_position + Vector3(randf_range(-5,5),0,randf_range(-5,5))
-	Spawn_life.rpc_id(1,newpos,plant_scene)
-
-	
-'@rpc("any_peer","call_local")
-func spawn_life(pos,scene):
-	var new_life = plant_scene.instantiate()
-	new_life.position = pos
-	new_life.World = World
-	plant_array.append(new_life)
-	plant_age.append(0)
-	plant_energy.append(0)
-	new_life.name = str(index_plant)
-	index_plant +=1
-	self.call_deferred("add_child",new_life)'
-
-@rpc("any_peer","call_local")
-func Spawn_life(new_position: Vector3,alife_type:String):
-	var newlife : Alife
-	var alife_scene : PackedScene
-	if alife_type == "grass":
-		alife_scene = plant_scene
-	elif alife_type == "sheep":
-		alife_scene = sheep_scene
-	elif alife_type == "tree":
-		alife_scene = tree_scene
-	if current_life_number >= max_life:
-		return
-	#print(current_alife_number)
-	if life_pool.size() < max_life:
-		newlife = alife_scene.instantiate()
-		newlife.ID = life_pool_index
-		newlife.LifeManager = self
-		newlife.World = World
-		newlife.name = str(life_pool_index)
-		newlife.reproduction_asked.connect(Spawn_life)
-		newlife.desactivated.connect(on_desactivation)
-		add_child.call_deferred(newlife)	
-		life_pool.append(newlife)
-		life_pool_index +=1
-		#newlife.Activate()
-	else:
-		newlife = get_desactivated_life()
-		if newlife == null:
-			return
-		#nal.ID = life_ID_count
-		#life_ID_count += 1
-		
-	#position.x = clamp(position.x,0 ,%World.World_size*%World.tile_size)
-	#position.y = clamp(position.y,0 ,%World.World_size*%World.tile_size)
-	'if position.x <0 or position.x > %World.World_size*%World.tile_size:		
-		position = %World.wrap_around(position)
-	if position.y <0 or position.y > %World.World_size*%World.tile_size:		
-		position = %World.wrap_around(position)'
-	current_life_number += 1
-	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
-	if newlife.species =="grass":
-		current_life_count_by_species[0] += 1
-	if newlife.species =="sheep":
-		current_life_count_by_species[1] += 1
-	newlife.Activate()
-
-@rpc("any_peer","call_local")
-func Spawn_life_without_pool(new_position: Vector3,alife_type:String):
-	var newlife : Alife
-	var alife_scene : PackedScene
-	if alife_type == "grass":
-		alife_scene = plant_scene
-	elif alife_type == "sheep":
-		alife_scene = sheep_scene
-	elif alife_type == "tree":
-		alife_scene = tree_scene
-
-	newlife = alife_scene.instantiate()
-	newlife.ID = life_no_pool_index
-	newlife.LifeManager = self
-	newlife.World = World
-	newlife.name = "noPool_" + str(life_no_pool_index)
-	newlife.reproduction_asked.connect(Spawn_life)
-	#newlife.desactivated.connect(on_desactivation)
-	add_child.call_deferred(newlife)	
-	#life_pool.append(newlife)
-	life_no_pool_index +=1
-
-	#current_life_number += 1
-	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
-	newlife.Activate()
-	if newlife.species =="grass":
-		current_life_count_by_species[0] += 1
-	if newlife.species =="sheep":
-		current_life_count_by_species[1] += 1
-	if newlife.species =="tree":
-		current_life_count_by_species[2] += 1
-func on_desactivation(life):
-	current_life_number -= 1
-	if life.species =="grass":
-		current_life_count_by_species[0] -= 1
-	if life.species =="sheep":
-		current_life_count_by_species[1] -= 1
-	if life.species =="tree":
-		current_life_count_by_species[2] -= 1	
-func get_desactivated_life():
-	var idx = life_inactive_index.pop_back()  
-	return life_pool[idx]
-	'for a in life_inactive_index:
-		if a.isActive == false:
-			return a'
-	
-
-
-
-	
 
 
 @rpc("any_peer","call_local")
@@ -352,6 +229,124 @@ func get_alife_in_area(pos_center, area):
 	return results
 
 	
+
+
+
+
+##################################################################
+#OLD
+###################################################################
+
+'func duplicate_life(alife):
+	var newpos = alife.global_position + Vector3(randf_range(-5,5),0,randf_range(-5,5))
+	Spawn_life.rpc_id(1,newpos,plant_scene)'
+
+	
+'@rpc("any_peer","call_local")
+func spawn_life(pos,scene):
+	var new_life = plant_scene.instantiate()
+	new_life.position = pos
+	new_life.World = World
+	plant_array.append(new_life)
+	plant_age.append(0)
+	plant_energy.append(0)
+	new_life.name = str(index_plant)
+	index_plant +=1
+	self.call_deferred("add_child",new_life)'
+
+'@rpc("any_peer","call_local")
+func Spawn_life(new_position: Vector3,alife_type:String):
+	#var newlife : Alife
+	var alife_scene : PackedScene
+	if alife_type == "grass":
+		alife_scene = plant_scene
+	elif alife_type == "sheep":
+		alife_scene = sheep_scene
+	elif alife_type == "tree":
+		alife_scene = tree_scene
+	if current_life_number >= max_life:
+		return
+	#print(current_alife_number)
+	if life_pool.size() < max_life:
+		newlife = alife_scene.instantiate()
+		newlife.ID = life_pool_index
+		newlife.LifeManager = self
+		newlife.World = World
+		newlife.name = str(life_pool_index)
+		newlife.reproduction_asked.connect(Spawn_life)
+		newlife.desactivated.connect(on_desactivation)
+		add_child.call_deferred(newlife)	
+		life_pool.append(newlife)
+		life_pool_index +=1
+		#newlife.Activate()
+	else:
+		newlife = get_desactivated_life()
+		if newlife == null:
+			return
+		#nal.ID = life_ID_count
+		#life_ID_count += 1
+		
+	#position.x = clamp(position.x,0 ,%World.World_size*%World.tile_size)
+	#position.y = clamp(position.y,0 ,%World.World_size*%World.tile_size)
+
+	current_life_number += 1
+	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+	if newlife.species =="grass":
+		current_life_count_by_species[0] += 1
+	if newlife.species =="sheep":
+		current_life_count_by_species[1] += 1
+	newlife.Activate()'
+
+'@rpc("any_peer","call_local")
+func Spawn_life_without_pool(new_position: Vector3,alife_type:String):
+	var newlife : Alife
+	var alife_scene : PackedScene
+	if alife_type == "grass":
+		alife_scene = plant_scene
+	elif alife_type == "sheep":
+		alife_scene = sheep_scene
+	elif alife_type == "tree":
+		alife_scene = tree_scene
+
+	newlife = alife_scene.instantiate()
+	newlife.ID = life_no_pool_index
+	newlife.LifeManager = self
+	newlife.World = World
+	newlife.name = "noPool_" + str(life_no_pool_index)
+	newlife.reproduction_asked.connect(Spawn_life)
+	#newlife.desactivated.connect(on_desactivation)
+	add_child.call_deferred(newlife)	
+	#life_pool.append(newlife)
+	life_no_pool_index +=1
+
+	#current_life_number += 1
+	newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+	newlife.Activate()
+	if newlife.species =="grass":
+		current_life_count_by_species[0] += 1
+	if newlife.species =="sheep":
+		current_life_count_by_species[1] += 1
+	if newlife.species =="tree":
+		current_life_count_by_species[2] += 1'
+		
+'func on_desactivation(life):
+	current_life_number -= 1
+	if life.species =="grass":
+		current_life_count_by_species[0] -= 1
+	if life.species =="sheep":
+		current_life_count_by_species[1] -= 1
+	if life.species =="tree":
+		current_life_count_by_species[2] -= 1	
+func get_desactivated_life():
+	var idx = life_inactive_index.pop_back()  
+	return life_pool[idx]'
+
+	
+
+
+
+	
+
 
 	
 

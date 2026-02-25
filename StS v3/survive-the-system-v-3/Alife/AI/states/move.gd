@@ -10,7 +10,7 @@ func evaluate():
 	target = null
 	#var dist_score = 0
 	var score = 0.8
-	player.current_speed =  player.lifedata["Max_speed"]/2
+	player.lifedata["current_speed"] =  player.lifedata["Max_speed"]/2
 	
 	for d in  player.vision_danger.values():
 		if d:
@@ -18,7 +18,7 @@ func evaluate():
 			if distance < 5:
 				score = 2.0
 				direction = (player.position - d["position"]).normalized()
-				player.current_speed =  player.lifedata["Max_speed"]*2
+				player.lifedata["current_speed"] =  player.lifedata["Max_speed"]*2
 				isFood = false
 				
 	for f in  player.vision_food.values():
@@ -52,7 +52,7 @@ func physics_update(delta):
 	pass
 
 func update(delta):
-	var step = player.current_speed * GlobalSimulationParameter.simulation_speed
+	var step = player.lifedata["current_speed"] * GlobalSimulationParameter.simulation_speed
 	if target:
 		var dist_to_target	= (target["position"] - player.position).length()
 		if dist_to_target <= step and isFood:

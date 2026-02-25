@@ -11,7 +11,6 @@ var item_count = 0
 func add_item(new_item, peer_id):
 	if (item_count != 0 and (item["name"] == new_item["name"]) and item_count < item["stack_amount"]) or item == {}:
 		#item_icon.texture = item["inventory_icon"]
-		
 		if item_count != 0:
 			for d in item["Data"]:	
 				new_item["Data"].append(d)

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cq5gupw1joumj"]
 
 [ext_resource type="Texture2D" uid="uid://djlp4e2nipxx5" path="res://assets/assets kyun/empty_1.png" id="1_ngik4"]
-[ext_resource type="Script" uid="uid://bl06nxiss1cp0" path="res://objects/item_slot.gd" id="2_4hcyo"]
+[ext_resource type="Script" uid="uid://bl06nxiss1cp0" path="res://Menus/in_game_menu/Inventory/item_slot.gd" id="2_4hcyo"]
 
 [node name="ItemSlot" type="TextureRect" unique_id=1258232266]
 offset_right = 40.0

@@ -8,7 +8,7 @@ var timer = 0.5
 
 func evaluate():
 	var score = 0
-	if player.current_energy <= 0:
+	if player.lifedata["current_energy"] <= 0:
 		score = 1
 	return score
 

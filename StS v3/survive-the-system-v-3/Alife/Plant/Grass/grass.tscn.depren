@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://bpl70g08sxw37"]
 
+[ext_resource type="Script" uid="uid://cyvd8jyldyc55" path="res://Z_NOTMOREINUSE/grass.gd" id="1_u3naq"]
 [ext_resource type="Texture2D" uid="uid://belb5ipraimac" path="res://assets/assets kyun/grass_texture128.png" id="2_xthal"]
+[ext_resource type="PackedScene" uid="uid://ygo4je6307vn" path="res://objects/grass_object/object_grass.tscn" id="2_yamui"]
 [ext_resource type="QuadMesh" uid="uid://cffer30oeavdl" path="res://Alife/Plant/Grass/grass.tres" id="3_q87mi"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xthal"]
@@ -13,7 +15,17 @@ uv1_triplanar = true
 material = SubResource("StandardMaterial3D_xthal")
 size = Vector2(0.5, 2)
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_f4aqo"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:visible")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
 [node name="grass" type="Node3D" unique_id=455347701]
+script = ExtResource("1_u3naq")
+object_scene = ExtResource("2_yamui")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1.1979017)
@@ -23,3 +35,6 @@ mesh = ExtResource("3_q87mi")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 cast_shadow = 3
 mesh = SubResource("QuadMesh_yamui")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=34745162]
+replication_config = SubResource("SceneReplicationConfig_f4aqo")

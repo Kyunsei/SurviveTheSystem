@@ -1,4 +1,4 @@
-extends Alife
+extends NOTUSEDAlife
 
 var Photosynthesis_absorbtion = 1.0
 var light_index = []

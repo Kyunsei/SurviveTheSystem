@@ -9,7 +9,7 @@ var timer = 0.5 * 1000 * GlobalSimulationParameter.simulation_speed
 func evaluate():
 
 	target = null
-	var score = 1 - player.current_energy/player.max_energy
+	var score = 1 - player.lifedata["current_energy"]/player.lifedata["Max_energy"]
 	var dist_score = 0
 	for f in  player.vision_food.values():
 		if f:

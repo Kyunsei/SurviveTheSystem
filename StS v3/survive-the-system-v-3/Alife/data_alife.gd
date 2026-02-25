@@ -1,9 +1,8 @@
 extends Resource
 class_name Alifedata
-@export var item_ressources : Item
 #THIS COULD BE SPLIT BY SPECIES FOR CALRIFICATION 
 
-enum enum_speciesID {GRASS,TREE,BUSH,SHEEP,SPIDERCRAB,CAT}
+enum enum_speciesID {GRASS,TREE,BUSH,SHEEP,SPIDERCRAB,CAT,ITEM}
 
 var ID:int
 var bin_ID: int

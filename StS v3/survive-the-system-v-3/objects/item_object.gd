@@ -1,0 +1,39 @@
+extends Node3D
+class_name Item
+
+@export var item_ressources : ItemResource
+
+
+var itemData = {
+	"position": Vector3(),
+	"bin_ID": 0,
+	"inventory_path": "",
+	"Species": Alifedata.enum_speciesID.ITEM
+}
+
+@rpc("any_peer","call_local")
+func Add():
+	if multiplayer.is_server():
+		itemData["position"] = position
+		get_parent().get_parent().put_in_world_bin(itemData)
+
+@rpc("any_peer","call_local")
+func Remove():
+	get_parent().get_parent().remove_from_world_bin(itemData)
+	delete_item.rpc()
+	
+@rpc("authority", "call_local")
+func delete_item():
+	queue_free()
+
+
+#@rpc("any_peer","call_local")
+func add_to_player(body,peer_id):
+		var inventory = body.get_node("Player_HUD").get_node("Inventory")
+		if inventory.add_item(inventory.prep_item(self),peer_id):
+			#print("Cat ration picked up")
+			Remove()
+			
+
+func on_use(player):
+	print("dosomething with " + item_ressources.name )
