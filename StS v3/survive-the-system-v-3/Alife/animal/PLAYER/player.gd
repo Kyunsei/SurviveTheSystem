@@ -25,7 +25,8 @@ var World : Node3D
 var grass_in_inventory = 0
 var current_health = max_health
 var current_hunger = max_hunger
-@onready var health_bar = $Status_bar/SubViewport/ProgressBar
+@onready var health_bar = $Status_bar/SubViewport/ProgressBarHealth
+@onready var energy_bar = $Status_bar/SubViewport2/ProgressBarEnergy
 
 #INVENTORY PART
 var inventory_HUD 
@@ -136,7 +137,8 @@ func _process(delta: float) -> void:
 			lifedata["current_health"] -= 20*delta
 		if lifedata["current_health"] <= 0:
 			death()
-		update_bar.rpc_id(int(name), lifedata["current_health"])
+		update_bar.rpc_id(int(name),1, lifedata["current_health"])
+		update_bar.rpc_id(int(name),2, lifedata["current_energy"])
 
 	
 @rpc("any_peer","call_local")
@@ -171,5 +173,8 @@ func death():
 	print("died")
 	
 @rpc("any_peer","call_local")
-func update_bar(value):
+func update_bar(bartype,value):
+	if bartype ==1 :
 		health_bar.value = value
+	if bartype ==2 :
+		energy_bar.value = value
