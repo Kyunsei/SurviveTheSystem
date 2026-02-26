@@ -117,6 +117,7 @@ func _physics_process(delta: float) -> void:
 
 @rpc("any_peer","call_local")
 func UseITEM():	
+	#print(player.item_hold)
 	if player.item_hold:
 		if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
 			player.item_hold["Data"][0]["Use"].call(player)

@@ -86,21 +86,23 @@ func remove_selected(peer_id):
 	if current_index != null:
 		var slot = items[current_index][0]		
 		var item_rmv = slot.remove_item(peer_id)
-		print(items)
 		if item_rmv:
+			if slot.item == {}:
+				player.equip_item(null)
+				player.equip_item.rpc_id(peer_id,null)
 			return item_rmv
 		return null
 	else:
 		return null
 
 
-@rpc("authority","call_remote")
+'@rpc("authority","call_remote")
 func equip_item_at_index(idx):
 	var slot = items[idx][0]		
 	#var item_eqp = slot.remove_item(peer_id)
 	if slot:
 		return slot
-	return null
+	return null'
 
 func select_item(idx, peer_id):
 	if idx != null:   #mean unselected	
