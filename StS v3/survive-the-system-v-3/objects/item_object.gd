@@ -8,7 +8,8 @@ var itemData = {
 	"position": Vector3(),
 	"bin_ID": 0,
 	"inventory_path": "",
-	"Species": Alifedata.enum_speciesID.ITEM
+	"Species": Alifedata.enum_speciesID.ITEM,
+	"Use": on_use
 }
 
 @rpc("any_peer","call_local")
@@ -35,5 +36,5 @@ func add_to_player(body,peer_id):
 			Remove()
 			
 
-func on_use(player):
-	print("dosomething with " + item_ressources.name )
+static func on_use(player):
+	print("dosomething with " )

@@ -107,6 +107,7 @@ func _physics_process(delta: float) -> void:
 			pick_up.rpc_id(1)
 			await get_tree().create_timer(0.2).timeout
 			Area3d.hide()
+			
 		if Input.is_action_just_pressed("Action") :
 			action()#.rpc_id(1)
 			
@@ -115,17 +116,22 @@ func _physics_process(delta: float) -> void:
 
 
 @rpc("any_peer","call_local")
-func UseITEM():
-
-	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
-	 												player_action_area.get_node("CollisionShape3D").shape.size)
-	if targets:
-		for t in targets:
-			if t is Dictionary:
-				#if t["Species"] == Alifedata.enum_speciesID.GRASS :
-					#alife_manager.get_node("Grass_Manager").Cut(t)
-				if t != player.lifedata:
-					alife_manager.Cut(t)
+func UseITEM():	
+	if player.item_hold:
+		if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
+			player.item_hold["Data"][0]["Use"].call(player)
+		else:
+			print("alife entitity action")
+	else:
+		var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
+		 												player_action_area.get_node("CollisionShape3D").shape.size)
+		if targets:
+			for t in targets:
+				if t is Dictionary:
+					#if t["Species"] == Alifedata.enum_speciesID.GRASS :
+						#alife_manager.get_node("Grass_Manager").Cut(t)
+					if t != player.lifedata:
+						alife_manager.Cut(t)
 
 				
 

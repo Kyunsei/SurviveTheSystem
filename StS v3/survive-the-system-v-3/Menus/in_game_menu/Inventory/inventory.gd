@@ -3,12 +3,10 @@ extends Node2D
 const ITEM_SLOT = preload("res://Menus/in_game_menu/Inventory/item_slot.tscn")
 
 
-
 var row_size = 4
 var column_size = 1
 var items = []
 var player
-
 
 var current_index = null
 

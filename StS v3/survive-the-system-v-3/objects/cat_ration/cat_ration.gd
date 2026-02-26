@@ -32,5 +32,5 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 				pass
 
 
-func on_use(player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BEFORE
-	player.HP += 10
+static func on_use(player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BEFORE
+	print("EAT CAT RATIO")
