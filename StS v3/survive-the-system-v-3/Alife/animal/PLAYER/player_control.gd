@@ -109,7 +109,7 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("Drop"):
 			Drop.rpc_id(1)
 		if Input.is_action_just_pressed("eat"):
-			eat_holding_item.rpc_id(1, player.item_hold.lifedata["current_energy"])
+			eat_holding_item.rpc_id(1, 10)
 
 
 @rpc("any_peer","call_local")
@@ -142,18 +142,15 @@ func pick_up() :
 
 @rpc("any_peer","call_local")
 func eat_holding_item(value) :
-	
-	#if player.item_hold:
-		#if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
-			#player.item_hold["Data"][0]["Use"].call(player)
-		#var inventory = player.get_node("Player_HUD").get_node("Inventory")
-		#
-		#var item_eaten = inventory.remove_selected(int(player.name))
+	var inventory = player.get_node("Player_HUD").get_node("Inventory")
+	var item_eaten = inventory.remove_selected(int(player.name))
 		#print(item_eaten.alife["current_energy"])
-		#if item_eaten:
-			#if item_eaten["Species"] == Alifedata.enum_speciesID.ITEM:
-				#print(item_eaten.alife["current_energy"])
-				player.lifedata["current_energy"] += value
+	if item_eaten:
+		#if item_eaten["Species"] == Alifedata.enum_speciesID.ITEM:
+		player.lifedata["current_energy"] += value
+	else:
+		pass
+
 			#else:
 				#alife_manager.add(item_dropped,player.position)	
 				#pass
