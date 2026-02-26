@@ -108,6 +108,8 @@ func _physics_process(delta: float) -> void:
 			
 		if Input.is_action_just_pressed("Drop"):
 			Drop.rpc_id(1)
+		if Input.is_action_just_pressed("eat"):
+			eat_holding_item.rpc_id(1)
 
 
 @rpc("any_peer","call_local")
@@ -137,7 +139,22 @@ func pick_up() :
 			collision.disabled = false
 			await get_tree().create_timer(0.2).timeout
 			collision.disabled = true
-			
+
+@rpc("any_peer","call_local")
+func eat_holding_item() :
+	var inventory = player.get_node("Player_HUD").get_node("Inventory")
+	
+	var item_eaten = inventory.remove_selected(int(player.name))
+	#print(item_eaten.alife["current_energy"])
+	if item_eaten:
+		if item_eaten["Species"] == Alifedata.enum_speciesID.ITEM:
+			print(item_eaten.alife["current_energy"])
+			player.alife["current_energy"] += item_eaten.alife["current_energy"]
+		else:
+			#alife_manager.add(item_dropped,player.position)	
+			pass
+	pass
+
 #@rpc("any_peer","call_local")
 func action():
 	var interacted_areas = Action_area.get_overlapping_areas()
