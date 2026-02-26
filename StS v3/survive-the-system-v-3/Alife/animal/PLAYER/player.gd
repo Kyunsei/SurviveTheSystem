@@ -137,7 +137,6 @@ func _process(delta: float) -> void:
 		if lifedata["current_health"] <= 0:
 			death()
 		update_bar.rpc_id(int(name), lifedata["current_health"])
-		print(lifedata["current_health"])
 
 	
 @rpc("any_peer","call_local")
@@ -173,7 +172,4 @@ func death():
 	
 @rpc("any_peer","call_local")
 func update_bar(value):
-	if multiplayer.is_server():
-		print(lifedata["current_health"])
 		health_bar.value = value
-		print(health_bar)
