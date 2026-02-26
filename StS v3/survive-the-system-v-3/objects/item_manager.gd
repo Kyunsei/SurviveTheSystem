@@ -14,5 +14,5 @@ func spawn_new_item(path,pos):
 	var scene = load(path)
 	var newitem = scene.instantiate()
 	newitem.position = pos
-	add_child(newitem)
+	add_child(newitem,true)
 	newitem.Add()

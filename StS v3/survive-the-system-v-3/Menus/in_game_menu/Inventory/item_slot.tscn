@@ -15,3 +15,10 @@ offset_right = 40.0
 offset_bottom = 23.0
 text = "
 "
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1125119313]
+visible = false
+modulate = Color(1, 0.14901961, 1, 0.13333334)
+layout_mode = 0
+offset_right = 135.0
+offset_bottom = 126.0

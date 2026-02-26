@@ -31,7 +31,7 @@ var current_hunger = max_hunger
 var inventory_HUD 
 var inventory = {}
 var inventory_count = 0
-
+var item_hold = []
 
 
 
@@ -75,6 +75,9 @@ func drop(id, number):
 
 ####################################
 
+func equip_item(item):
+	item_hold = item
+	$MeshInstance3D/Sprite3D_holdItem.texture = load(item["inventory_icon"])
 
 
 func _enter_tree() -> void:

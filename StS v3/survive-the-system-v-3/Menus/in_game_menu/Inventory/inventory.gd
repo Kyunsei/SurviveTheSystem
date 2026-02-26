@@ -7,21 +7,28 @@ const ITEM_SLOT = preload("res://Menus/in_game_menu/Inventory/item_slot.tscn")
 var row_size = 4
 var column_size = 1
 var items = []
+var player
 
+
+var current_index = 0
 
 func _ready():
-	for x in range(row_size):
-		items.append([])
-		
-		for y in range(column_size):
-			items[x].append([])
-			var instance = ITEM_SLOT.instantiate()
-			instance.global_position = Vector2(x*150,y*150)
-			instance.slot_number = Vector2i(x,y)
-			add_child(instance)
-			items[x][y] = instance
+	player = get_parent().get_parent()
+	if player.is_multiplayer_authority() or multiplayer.is_server():
+
+		for x in range(row_size):
+			items.append([])
 			
+			for y in range(column_size):
+				items[x].append([])
+				var instance = ITEM_SLOT.instantiate()
+				instance.global_position = Vector2(x*150,y*150)
+				instance.slot_number = Vector2i(x,y)
+				add_child(instance)
+				items[x][y] = instance
 			
+
+				
 			
 func prep_item(new_item):
 	print("prep_item is working")
@@ -74,3 +81,65 @@ func remove_last_item(peer_id):
 			if item_rmv:
 				return item_rmv
 	return null
+
+
+@rpc("authority","call_remote")
+func remove_selected(peer_id):
+	if current_index != null:
+		var slot = items[current_index][0]		
+		var item_rmv = slot.remove_item(peer_id)
+		print(items)
+		if item_rmv:
+			return item_rmv
+		return null
+	else:
+		return null
+
+
+@rpc("authority","call_remote")
+func equip_item_at_index(idx):
+	var slot = items[idx][0]		
+	#var item_eqp = slot.remove_item(peer_id)
+	if slot:
+		return slot
+	return null
+
+func select_item(idx):
+	if idx != null:   #mean unselected	
+		var slot = items[idx][0]
+		if  slot:
+			slot.is_selected()
+			
+	if current_index  != null:
+		if current_index != idx:
+			items[current_index][0].is_deselected()	
+	
+	current_index = idx
+	change_index.rpc_id(1,idx)
+
+
+@rpc("authority","call_remote")
+func change_index(idx):
+	current_index = idx
+
+
+
+func _process(delta: float) -> void:
+	if player.is_multiplayer_authority():
+
+		if Input.is_action_just_pressed("slot1"):
+			print("slot1")
+			select_item(0)
+		if Input.is_action_just_pressed("slot3"):
+			print("slot3")
+			select_item(2)
+		if Input.is_action_just_pressed("slot2"):
+			print("slot2")
+			select_item(1)
+		if Input.is_action_just_pressed("slot4"):
+			print("slot4")
+			select_item(3)
+		if Input.is_action_just_pressed("unequip"):
+			print("unequip")
+			select_item(null)
+			#current_index = null

@@ -228,6 +228,8 @@ func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
 			add_child.call_deferred(newlife)	
 			var newgrass = alifedata.build_lifedata(id,new_position,sp)
 			newlife.lifedata = newgrass
+			#newlife.lifedata["current_energy"] = 50 #TEMPORARY HERE LIKE THIS
+
 			beast_dict[id] = newgrass
 			beast_instance_dict[id] = newlife
 			get_parent().put_in_world_bin(newgrass)

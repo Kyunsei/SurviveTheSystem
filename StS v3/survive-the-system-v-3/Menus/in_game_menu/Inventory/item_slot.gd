@@ -30,6 +30,11 @@ func add_item(new_item, peer_id):
 	return false
 
 
+func is_selected():
+	$ColorRect.show()
+
+func is_deselected():
+	$ColorRect.hide()
 
 func remove_item(peer_id):
 	if  item != {}:
