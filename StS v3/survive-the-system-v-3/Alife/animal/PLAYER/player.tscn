@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://g8f1lj1jedxl" path="res://Alife/animal/PLAYER/player_control.gd" id="1_31v8x"]
 [ext_resource type="Script" uid="uid://cr5xulv4uju01" path="res://Alife/animal/PLAYER/player.gd" id="1_qrp1o"]
 [ext_resource type="PackedScene" uid="uid://cx8myhkgjy4fp" path="res://Alife/animal/PLAYER/player_hud.tscn" id="2_2y45n"]
-[ext_resource type="Texture2D" uid="uid://bksfav3v0xjkn" path="res://objects/cat_ration/catration1.png" id="3_1vr6m"]
 [ext_resource type="Script" uid="uid://b0jwhtwhk47rk" path="res://Alife/animal/PLAYER/camera_3d.gd" id="3_kppvm"]
 [ext_resource type="Script" uid="uid://cwrvvywn7edre" path="res://Alife/animal/PLAYER/debug_control.gd" id="5_2y45n"]
 
@@ -215,7 +214,6 @@ shape = SubResource("SphereShape3D_2y45n")
 
 [node name="Sprite3D_holdItem" type="Sprite3D" parent="MeshInstance3D" unique_id=1393918006]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.26419193, 0, -0.7107303)
-texture = ExtResource("3_1vr6m")
 
 [node name="Player_control" type="Node" parent="." unique_id=1336833191]
 script = ExtResource("1_31v8x")

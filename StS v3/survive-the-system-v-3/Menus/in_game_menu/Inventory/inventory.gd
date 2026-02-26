@@ -10,7 +10,7 @@ var items = []
 var player
 
 
-var current_index = 0
+var current_index = null
 
 func _ready():
 	player = get_parent().get_parent()
@@ -104,7 +104,7 @@ func equip_item_at_index(idx):
 		return slot
 	return null
 
-func select_item(idx):
+func select_item(idx, peer_id):
 	if idx != null:   #mean unselected	
 		var slot = items[idx][0]
 		if  slot:
@@ -115,31 +115,32 @@ func select_item(idx):
 			items[current_index][0].is_deselected()	
 	
 	current_index = idx
-	change_index.rpc_id(1,idx)
+	change_index.rpc_id(1,peer_id,idx)
 
 
 @rpc("authority","call_remote")
-func change_index(idx):
+func change_index(peer_id,idx):
 	current_index = idx
+	var item
+	if idx != null:	
+		item = items[idx][0].item
+	player.equip_item(item)
+	player.equip_item.rpc_id(peer_id,item)
+
+
 
 
 
 func _process(delta: float) -> void:
 	if player.is_multiplayer_authority():
-
 		if Input.is_action_just_pressed("slot1"):
-			print("slot1")
-			select_item(0)
+			select_item(0,int(player.name))
 		if Input.is_action_just_pressed("slot3"):
-			print("slot3")
-			select_item(2)
+			select_item(2,int(player.name))
 		if Input.is_action_just_pressed("slot2"):
-			print("slot2")
-			select_item(1)
+			select_item(1,int(player.name))
 		if Input.is_action_just_pressed("slot4"):
-			print("slot4")
-			select_item(3)
+			select_item(3,int(player.name))
 		if Input.is_action_just_pressed("unequip"):
-			print("unequip")
-			select_item(null)
+			select_item(null,int(player.name))
 			#current_index = null

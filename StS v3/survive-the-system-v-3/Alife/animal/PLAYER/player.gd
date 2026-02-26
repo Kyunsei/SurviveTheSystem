@@ -75,10 +75,21 @@ func drop(id, number):
 
 ####################################
 
+@rpc("any_peer","call_local")
 func equip_item(item):
 	item_hold = item
-	$MeshInstance3D/Sprite3D_holdItem.texture = load(item["inventory_icon"])
+	if item_hold:
+		update_item_hold_texture.rpc(item["inventory_icon"])
+		#$MeshInstance3D/Sprite3D_holdItem.texture = load(item["inventory_icon"])
+	else:
+		update_item_hold_texture.rpc(null)
 
+@rpc("any_peer","call_local")
+func update_item_hold_texture(path):
+	if path:
+		$MeshInstance3D/Sprite3D_holdItem.texture = load(path)
+	else:
+		$MeshInstance3D/Sprite3D_holdItem.texture = null
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
