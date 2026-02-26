@@ -19,8 +19,8 @@ func interact(player):
 	var inventory = player.get_node("Player_HUD").get_node("Inventory")
 
 	if item_hold:
-		print(item_hold["Data"])
-		print("------")
+		#print(item_hold["Data"])
+		#print("------")
 
 		if item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
 			print("you try to give an item")
@@ -28,7 +28,7 @@ func interact(player):
 
 	
 		for o in item_hold["Data"]:
-			print(o)
+			#print(o)
 			Biomass_collected += o["current_energy"]*factor
 			inventory.remove_selected(int(player.name))
 

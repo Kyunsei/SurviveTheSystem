@@ -18,9 +18,20 @@ Arrow: camera offset
 Wheel or -,=: zoom_in_out
 ESC: free mouse
 
+F11: full screen
 -------
-F or left click : attack
-R: plant a grass
+F or left click : USE OBJECT
+Q: unequip
+R: interact /pick things
+E: [not yet here] Pick object
+T: Drop item
+
+1,2,3,4: equip item
+--------------
+debug part
+
+M: spawn a sheep
+F1: show bin
 "
 
 [node name="FPS" type="Label" parent="." unique_id=1086284271]
