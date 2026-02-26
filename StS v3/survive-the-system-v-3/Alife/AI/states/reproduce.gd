@@ -23,7 +23,7 @@ func enter():
 		var newalife = player.lifedata.duplicate()
 		newalife["position"] = newpos
 		player.get_parent().Ask_to_spawn.rpc_id(1, newalife)
-		player.current_energy -= clamp(player.current_energy/2,0,player.max_energy)
+		player.lifedata["current_energy"]  -= clamp(player.lifedata["current_energy"] /2,0,player.lifedata["Max_energy"] )
 
 func exit():
 	pass

@@ -225,10 +225,9 @@ func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
 			newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
 			newlife.World = World #temp
 			#newlife.current_energy = 50
-			add_child.call_deferred(newlife)	
 			var newgrass = alifedata.build_lifedata(id,new_position,sp)
 			newlife.lifedata = newgrass
-			#newlife.lifedata["current_energy"] = 50 #TEMPORARY HERE LIKE THIS
+			newlife.lifedata["current_energy"] = 50 #TEMPORARY HERE LIKE THIS
 
 			beast_dict[id] = newgrass
 			beast_instance_dict[id] = newlife
@@ -236,7 +235,8 @@ func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
 			#print(beast_dict)
 			#print(beast_instance_dict)
 
-			
+			add_child.call_deferred(newlife)	
+
 			#_pending_spawns.append(newgrass)
 
 @rpc("any_peer","call_local")
