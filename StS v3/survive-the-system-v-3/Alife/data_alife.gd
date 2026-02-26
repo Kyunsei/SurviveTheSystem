@@ -47,8 +47,8 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 
 	
 	#FIGHT
-	new_life["current_HP"] = 10.0
-	new_life["Max_HP"] = 10.0
+	new_life["current_health"] = 10.0
+	new_life["Max_health"] = 10.0
 
 	
 	#PHENOTYPE
