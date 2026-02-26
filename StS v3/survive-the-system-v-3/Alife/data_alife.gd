@@ -12,6 +12,8 @@ var current_energy: float
 var Homeostasis_cost: float
 var Photosynthesis_absorbtion: float
 var light_index: int
+@export var cat_max_health = 100
+@export var cat_max_energy = 100
 
 'func _init(_id:int, _pos:Vector3, sp:enum_speciesID):
 	ID = _id
@@ -115,6 +117,10 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Danger_type"] = [enum_speciesID.SPIDERCRAB]
 			new_life["Max_age"] = 100.0
 			new_life["Max_energy"] = 10
+			new_life["Max_energy"] = 100
+			new_life["Max_health"] = 100
+			new_life["current_energy"] = cat_max_energy
+			new_life["current_health"] = cat_max_health
 
 			new_life["Sprites"] = "res://assets/Art from STS2/player_cat.png"
 

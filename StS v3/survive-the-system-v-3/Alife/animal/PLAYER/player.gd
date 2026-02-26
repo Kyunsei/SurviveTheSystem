@@ -25,7 +25,7 @@ var World : Node3D
 var grass_in_inventory = 0
 var current_health = max_health
 var current_hunger = max_hunger
-
+@onready var health_bar = $Status_bar/SubViewport/ProgressBar
 
 #INVENTORY PART
 var inventory_HUD 
@@ -38,7 +38,6 @@ var item_hold = []
 var dialogue_box 
 
 var lifedata = {}
-
 
 #INVENTORY HERE
 
@@ -109,6 +108,9 @@ func _ready() -> void:
 		go_back_to_ship()
 		dialogue_box = $Player_HUD/Dialogue
 		inventory_HUD = $Player_HUD/Inventory
+	if multiplayer.is_server():
+		health_bar.max_value = lifedata["Max_health"]
+		#energy_bar.max_value = lifedata["Max_health"]
 		
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :
@@ -126,6 +128,16 @@ func _physics_process(delta: float) -> void:
 			#var target_yaw := atan2(direction.x, -direction.z)
 		move_and_slide()
 		change_bin.rpc_id(1)
+func _process(delta: float) -> void:
+	if multiplayer.is_server():
+		if lifedata["current_energy"] > 0:
+			lifedata["current_energy"] -= 20*delta
+		if lifedata["current_energy"] <= 0:
+			lifedata["current_health"] -= 20*delta
+		if lifedata["current_health"] <= 0:
+			death()
+		update_bar.rpc_id(int(name), lifedata["current_health"])
+		print(lifedata["current_health"])
 
 	
 @rpc("any_peer","call_local")
@@ -155,3 +167,13 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 		area.get_parent().queue_free()
 		
 		pass
+
+func death():
+	print("died")
+	
+@rpc("any_peer","call_local")
+func update_bar(value):
+	if multiplayer.is_server():
+		print(lifedata["current_health"])
+		health_bar.value = value
+		print(health_bar)
