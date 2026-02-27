@@ -25,6 +25,7 @@ Q: unequip
 R: interact /pick things
 E: [not yet here] Pick object
 T: Drop item
+C: Eat
 
 1,2,3,4: equip item
 --------------

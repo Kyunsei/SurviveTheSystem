@@ -60,10 +60,13 @@ func _update_on_thread():
 	_pending_kills.clear()
 	#_pending_light_changes.clear()	
 	for g in grass_dict.values():
-		Photosynthesis(g)
-		Reproduction(g)
-		Homeostasis(g)
-		Growth(g)
+		if g["Alive"]==1:
+			Photosynthesis(g)
+			Reproduction(g)
+			Homeostasis(g)
+			Growth(g)
+		else:
+			Decompose(g)
 
 	#print("end " + str(Time.get_ticks_msec() -ss))
 	call_deferred("_on_work_finished")
@@ -217,11 +220,19 @@ func get_lightIndex(grass):
 		Kill(grass)'
 
 
+func Decompose(grass):
+	#var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
+	grass["current_energy"] -= 0.1 * GlobalSimulationParameter.simulation_speed 
+	if grass["current_energy"] < 0:
+		_pending_kills.append(grass)
+
 func Homeostasis(grass):
 	var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
 	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed 
 	if grass["current_energy"] < 0:
-		_pending_kills.append(grass)
+		grass["Alive"] = 0
+		#_pending_kills.append(grass)
+		
 	#grass.current_energy -= grass.Homeostasis_cost * GlobalSimulationParameter.simulation_speed
 	#if grass.current_energy < 0:
 	#	_pending_kills.append(grass)

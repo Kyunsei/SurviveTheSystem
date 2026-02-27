@@ -50,6 +50,11 @@ func update_drawn_grass(gen):
 		#newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
 	current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
 	multimesh.set_instance_transform(slot, current_transform)
+	'if gen["Alive"]==0:
+		multimesh.set_instance_color(slot, Color(0.164, 0.164, 0.164, 1.0))
+	else:
+		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))'
+
 	if shadow:
 		shadow.multimesh.set_instance_transform(slot, current_transform)
 'if abs(last_scale[id] - new_scale) > 0.05:
@@ -65,10 +70,14 @@ func draw_new_grass(g):
 	var newscale = clamp(g["current_energy"] /max_energy,0.25,1)
 	#current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), g["position"]))
-
+	if g["Alive"]==0:
+		multimesh.set_instance_color(slot, Color(0.164, 0.164, 0.164, 1.0))
+	else:
+		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 
 	instance_number += 1
 	multimesh.visible_instance_count = instance_number 
+
 	
 	if shadow:
 		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), g["position"]))

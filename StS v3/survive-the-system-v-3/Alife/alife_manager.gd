@@ -149,6 +149,9 @@ func spawn_player(id,pos):
 	put_in_world_bin(new_life_data)	
 	self.call_deferred("add_child",new_player)
 
+
+
+	
 	
 func interact(grass,player):
 	player.add_to_inventory(grass,1)
@@ -185,13 +188,14 @@ func Cut(grass):
 	if grass["Species"] == Alifedata.enum_speciesID.SHEEP:	
 		$beast_manager._pending_kills.append(grass)	
 	else:
-		grass["current_energy"] = clamp(grass["current_energy"]-3, 0, grass["Max_energy"])
+		grass["Alive"]= 0
+		'grass["current_energy"] = clamp(grass["current_energy"]-3, 0, grass["Max_energy"])
 		#$Grass_Manager._pending_external_kills.append(grass)
 		#$Grass_Manager.Become_object.rpc_id(1,grass)
 		$Grass_Manager._pending_update.append([grass["ID"],grass["current_energy"],grass["Species"]])
 		if grass["current_energy"] == 0:
 			$Grass_Manager._pending_external_kills.append(grass)
-			$Grass_Manager.Become_object.rpc_id(1,grass)
+			$Grass_Manager.Become_object.rpc_id(1,grass)'
 	
 	
 	
