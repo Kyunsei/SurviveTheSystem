@@ -53,4 +53,14 @@ offset_bottom = 231.0
 
 [node name="Inventory" parent="." unique_id=687898771 instance=ExtResource("4_0cxu6")]
 unique_name_in_owner = true
-position = Vector2(507, 559)
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -600.0
+offset_top = -100.0
+offset_right = -600.0
+offset_bottom = -100.0
+grow_horizontal = 0
+grow_vertical = 0

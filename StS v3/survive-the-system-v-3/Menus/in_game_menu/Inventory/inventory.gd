@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 
 const ITEM_SLOT = preload("res://Menus/in_game_menu/Inventory/item_slot.tscn")
 
