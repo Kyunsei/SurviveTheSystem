@@ -66,8 +66,8 @@ func _update_on_thread(delta):
 			if g["Alive"]==1 :
 				if  g["current_life_state"]> 0:
 					Photosynthesis(g,delta)
-					Reproduction(g,delta)
 					Homeostasis(g,delta)
+					Reproduction(g,delta)
 					Growth(g,delta)
 				else:
 					Germination(g)
@@ -255,7 +255,7 @@ func Homeostasis(grass, delta):
 	#	_pending_kills.append(grass)
 
 func Photosynthesis(grass,delta):
-	var tt = 0
+	#var tt = 0
 	var time_value = grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed * delta
 	for l_i in grass["light_index"]:		
 		if l_i <  World.light_array.size():
@@ -266,7 +266,7 @@ func Photosynthesis(grass,delta):
 			grass["current_energy"]  += energy_absorbed
 			var shadow_effect = 1.0
 			World.light_array[l_i] = max(World.light_array[l_i]-shadow_effect,0)
-			tt += energy_absorbed
+			#tt += energy_absorbed
 	#print(tt)
 	#print(grass["current_energy"]) #* area * GlobalSimulationParameter.simulation_speed * delta)
 
@@ -321,7 +321,6 @@ func Germination(g):
 				light_available += 1
 	
 	if light_available == area:
-		print("Germinate")
 		g["current_life_state"] = 1
 			
 
