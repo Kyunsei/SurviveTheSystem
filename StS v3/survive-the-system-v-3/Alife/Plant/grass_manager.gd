@@ -54,7 +54,9 @@ func _ready() -> void:
 func _update_on_thread(delta):
 	#print("Thread start — grass count: ", grass_dict.size())
 	#var ss = Time.get_ticks_msec() 
-
+	var newvalue = World.light_flux_in*100 * GlobalSimulationParameter.simulation_speed * delta
+	#print(newvalue)
+	var newmaxvalue = World.light_max_value*100 * GlobalSimulationParameter.simulation_speed 
 	World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
 	_pending_spawns.clear()
 	_pending_kills.clear()
@@ -212,7 +214,7 @@ func get_lightIndex(grass):
 				var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
 				var idx =  World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
 				grass["light_index"].append(idx)	 
-	
+
 'func Homeostasis(grass):
 	grass["current_energy"] -= grass["Homeostasis_cost"]  * GlobalSimulationParameter.simulation_speed
 	#current_energy = max(0,current_energy)
@@ -222,14 +224,14 @@ func get_lightIndex(grass):
 
 func Decompose(grass,delta):
 	#var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass["current_energy"] -= 100 * GlobalSimulationParameter.simulation_speed  *delta
-	print(grass)
+	grass["current_energy"] -= 100 * GlobalSimulationParameter.simulation_speed  # *delta
+	#print(grass)
 	if grass["current_energy"] < 0:
 		_pending_kills.append(grass)
 
 func Homeostasis(grass, delta):
 	var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed * delta
+	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed #* delta
 	if grass["current_energy"] < 0:
 		grass["Alive"] = 0
 		#_pending_kills.append(grass)
@@ -241,14 +243,15 @@ func Homeostasis(grass, delta):
 func Photosynthesis(grass,delta):
 	for l_i in grass["light_index"]:		
 		if l_i <  World.light_array.size():
-			var energy_absorbed = World.light_array[l_i] * grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed * delta
+			var energy_absorbed = World.light_array[l_i] * grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed #* delta
 			energy_absorbed = min(World.light_array[l_i],energy_absorbed)
 			if energy_absorbed <= 0:
 				return
 			grass["current_energy"]  += energy_absorbed
 			var shadow_effect = 1.0
 			World.light_array[l_i] = max(World.light_array[l_i]-shadow_effect,0)
-		
+	#print(grass["current_energy"]) #* area * GlobalSimulationParameter.simulation_speed * delta)
+
 'func Photosynthesis_old(grass):
 	
 	if grass["light_index"] <  World.light_array.size():

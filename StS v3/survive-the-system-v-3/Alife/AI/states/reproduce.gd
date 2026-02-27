@@ -7,7 +7,7 @@ var target
 func evaluate():
 
 
-	var score = player.lifedata["current_energy"]/player.lifedata["Max_energy"]
+	var score = player.lifedata["current_energy"]/player.lifedata["Max_energy"] *0.5
 	return score
 
 

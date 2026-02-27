@@ -52,7 +52,7 @@ func physics_update(delta):
 	pass
 
 func update(delta):
-	var step = player.lifedata["current_speed"] * GlobalSimulationParameter.simulation_speed
+	var step = player.lifedata["current_speed"] * GlobalSimulationParameter.simulation_speed #*delta
 	if target:
 		var dist_to_target	= (target["position"] - player.position).length()
 		if dist_to_target <= step and isFood:
@@ -60,7 +60,7 @@ func update(delta):
 		
 		else:
 			#player.direction = (target["position"] - player.position).normalized()	
-			player.position += direction * step	* delta
+			player.position += direction * step	
 				
 	else:
 		wandertimer -= delta
@@ -68,7 +68,7 @@ func update(delta):
 			wandertimer = 5 / (1000 * GlobalSimulationParameter.simulation_speed)
 			direction = Vector3(randf_range(-1,1),0,randf_range(-1,1)) *direction
 			
-		player.position += direction * step	* delta
+		player.position += direction * step	
 
 	
 	player.position.x = clamp(player.position.x ,-player.World.World_Size.x/2,player.World.World_Size.x/2 )

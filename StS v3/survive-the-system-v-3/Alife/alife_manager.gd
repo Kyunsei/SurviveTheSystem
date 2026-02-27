@@ -55,6 +55,7 @@ func init():
 			$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
 			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
 			$beast_manager.Spawn_Beast(Vector3(-10,0,-15),Alifedata.enum_speciesID.SHEEP)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(10,0,15),Alifedata.enum_speciesID.TREE)
 
 
 func _process(delta: float) -> void:
