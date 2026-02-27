@@ -73,8 +73,8 @@ func _process(delta: float) -> void:
 
 				timer = 3
 			pass
-			$Grass_Manager.update()
-			$beast_manager.update()
+			$Grass_Manager.update(delta)
+			$beast_manager.update(delta)
 			
 	elif GlobalSimulationParameter.ClientStarted:
 		if tempbool:

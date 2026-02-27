@@ -3,7 +3,7 @@ extends Control
 var IP_ADDRESS = "127.0.0.1" #"158.41.57.177"
 var Local_address = "127.0.0.1"
 var V_address ="195.26.116.181" #92.107.162.231
-var K_address = "192.168.1.175"
+var K_address = "92.107.162.231"
 var PORT = 12345
 
 var peer: ENetMultiplayerPeer

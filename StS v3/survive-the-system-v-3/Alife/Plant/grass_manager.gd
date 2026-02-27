@@ -51,7 +51,7 @@ func _ready() -> void:
 		
 
 
-func _update_on_thread():
+func _update_on_thread(delta):
 	#print("Thread start — grass count: ", grass_dict.size())
 	#var ss = Time.get_ticks_msec() 
 
@@ -61,18 +61,18 @@ func _update_on_thread():
 	#_pending_light_changes.clear()	
 	for g in grass_dict.values():
 		if g["Alive"]==1:
-			Photosynthesis(g)
-			Reproduction(g)
-			Homeostasis(g)
-			Growth(g)
+			Photosynthesis(g,delta)
+			Reproduction(g,delta)
+			Homeostasis(g,delta)
+			Growth(g,delta)
 		else:
-			Decompose(g)
+			Decompose(g,delta)
 
 	#print("end " + str(Time.get_ticks_msec() -ss))
 	call_deferred("_on_work_finished")
 
-func update():
-	start_thread()
+func update(delta):
+	start_thread(delta)
 	#_update_on_thread()
 	'for g in grass_array:
 		Photosynthesis(g)
@@ -81,7 +81,7 @@ func update():
 
 
 
-func start_thread():
+func start_thread(delta):
 	mutex.lock()
 	if thread_is_running:
 		mutex.unlock()
@@ -91,7 +91,7 @@ func start_thread():
 	mutex.unlock()
 	
 	thread = Thread.new()
-	thread.start(_update_on_thread)
+	thread.start(_update_on_thread.bind(delta))
 
 	
 
@@ -220,15 +220,16 @@ func get_lightIndex(grass):
 		Kill(grass)'
 
 
-func Decompose(grass):
+func Decompose(grass,delta):
 	#var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass["current_energy"] -= 0.1 * GlobalSimulationParameter.simulation_speed 
+	grass["current_energy"] -= 100 * GlobalSimulationParameter.simulation_speed  *delta
+	print(grass)
 	if grass["current_energy"] < 0:
 		_pending_kills.append(grass)
 
-func Homeostasis(grass):
+func Homeostasis(grass, delta):
 	var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed 
+	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed * delta
 	if grass["current_energy"] < 0:
 		grass["Alive"] = 0
 		#_pending_kills.append(grass)
@@ -237,10 +238,10 @@ func Homeostasis(grass):
 	#if grass.current_energy < 0:
 	#	_pending_kills.append(grass)
 
-func Photosynthesis(grass):
+func Photosynthesis(grass,delta):
 	for l_i in grass["light_index"]:		
 		if l_i <  World.light_array.size():
-			var energy_absorbed = World.light_array[l_i] * grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed 
+			var energy_absorbed = World.light_array[l_i] * grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed * delta
 			energy_absorbed = min(World.light_array[l_i],energy_absorbed)
 			if energy_absorbed <= 0:
 				return
@@ -274,7 +275,7 @@ func Photosynthesis(grass):
 		spawn_grass(newpos)
 		grass["current_energy"] -= 8'
 		
-func Reproduction(grass):
+func Reproduction(grass,delta):
 	if grass["current_energy"] > grass["Reproduction_cost"]*2:
 		var newpos = grass["position"] + Vector3(
 			randf_range(-grass["Reproduction_spread"], grass["Reproduction_spread"]),
@@ -291,7 +292,7 @@ func Reproduction(grass):
 		grass["current_energy"] -= grass["Reproduction_cost"]	
 		
 
-func Growth(g):
+func Growth(g,delta):
 	#if g["current_energy"] % 5 == 0:
 	if g["current_life_state"]*3 < g["current_energy"]:	
 		g["current_life_state"] += 1

@@ -42,7 +42,7 @@ func _ready() -> void:
 		
 
 
-func _update_on_thread():
+func _update_on_thread(delta):
 
 	#World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
 	_pending_spawns.clear()
@@ -50,7 +50,7 @@ func _update_on_thread():
 	for g in beast_dict.values():
 		#Photosynthesis(g)
 		#_thread_reproduction(g)
-		homeostasis(g)
+		homeostasis(g,delta)
 	
 	for b in beast_instance_dict.values():
 		b.move()
@@ -59,7 +59,7 @@ func _update_on_thread():
 	call_deferred("_on_work_finished")
 
 
-func update():
+func update(delta):
 	#start_thread()
 	'for g in beast_dict.values():
 		homeostasis(g)'
@@ -67,7 +67,7 @@ func update():
 		#vision(b)
 		vision(b)
 		choose_action(b)
-		homeostasis(b)
+		homeostasis(b,delta)
 		
 	Spawn_and_Kill()
 	
@@ -295,9 +295,9 @@ func Cut(grass):
 	if grass["current_energy"] < 0:
 		_pending_kills.append(grass)'
 
-func homeostasis(grass):
+func homeostasis(grass, delta):
 	var area = 1# max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass.lifedata["current_energy"] -= 0.5 * GlobalSimulationParameter.simulation_speed 
+	grass.lifedata["current_energy"] -= 0.5 * GlobalSimulationParameter.simulation_speed * delta
 	#if grass["current_energy"] < 0:
 	#	_pending_kills.append(grass)
 
