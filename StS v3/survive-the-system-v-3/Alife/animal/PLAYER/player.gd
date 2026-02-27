@@ -28,6 +28,10 @@ var current_hunger = max_hunger
 @onready var health_bar = $MeshInstance3D/Status_bar/SubViewport/ProgressBarHealth
 @onready var energy_bar = $MeshInstance3D/Status_bar/SubViewport2/ProgressBarEnergy
 
+#upgrades variable here
+var capacity = 0.0
+var inventory_capacity_upgrade = capacity/5.0 + 1.0
+
 #INVENTORY PART
 var inventory_HUD 
 var inventory = {}
@@ -137,8 +141,8 @@ func _process(delta: float) -> void:
 			lifedata["current_health"] -= 1*delta
 		if lifedata["current_health"] <= 0:
 			death()
-		update_bar.rpc_id(int(name),1, lifedata["current_health"])
-		update_bar.rpc_id(int(name),2, lifedata["current_energy"])
+		update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
+		update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
 
 	
 @rpc("any_peer","call_local")
@@ -173,8 +177,10 @@ func death():
 	pass
 	
 @rpc("any_peer","call_local")
-func update_bar(bartype,value):
+func update_bar(bartype,value, MaxValue):
 	if bartype ==1 :
 		health_bar.value = value
+		health_bar.max_value = MaxValue
 	if bartype ==2 :
 		energy_bar.value = value
+		energy_bar.max_value = MaxValue

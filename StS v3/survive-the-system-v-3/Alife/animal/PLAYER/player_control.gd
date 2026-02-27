@@ -168,7 +168,8 @@ func action():
 				#return
 		if area.name == "NPC":
 			area.interact(player)
-		action_on_server.rpc_id(1)	
+	action_on_server.rpc_id(1)	
+
 
 
 
@@ -178,7 +179,9 @@ func action_on_server():
 	for area in interacted_areas:
 		if area.get_parent().is_in_group("Collector"):
 			area.get_parent().interact(player)
-	
+		if area.name == "Upgrade":
+			area.interact(player)
+
 	
 	
 	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,

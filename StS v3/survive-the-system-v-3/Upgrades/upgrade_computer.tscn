@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://cd48ktb2b6fg3"]
+
+[ext_resource type="Texture2D" uid="uid://cdthu0ij71nd" path="res://assets/assets kyun/upgrade_computer_text.png" id="1_1ie6i"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_d80et"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_wd2xx"]
+size = Vector3(1, 0.6, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rq74l"]
+transparency = 1
+albedo_texture = ExtResource("1_1ie6i")
+
+[sub_resource type="QuadMesh" id="QuadMesh_j3is7"]
+material = SubResource("StandardMaterial3D_rq74l")
+
+[node name="Upgrade Computer" type="Node3D" unique_id=1563605006]
+
+[node name="main_block" type="MeshInstance3D" parent="." unique_id=1465102125]
+mesh = SubResource("BoxMesh_d80et")
+
+[node name="Desk" type="MeshInstance3D" parent="." unique_id=295505700]
+transform = Transform3D(1, 0, 0, 0, 0.8660254, -0.5, 0, 0.5, 0.8660254, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_wd2xx")
+
+[node name="Screen" type="MeshInstance3D" parent="." unique_id=351316648]
+transform = Transform3D(1, 0, 0, 0, 0.49999997, 0.86602545, 0, -0.86602545, 0.49999997, 0, 0.8, 0.2)
+mesh = SubResource("QuadMesh_j3is7")

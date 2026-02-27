@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bi2piyyfepqdv"]
+
+[ext_resource type="Script" uid="uid://bf3f6r0kr6pcn" path="res://Upgrades/upgrades.gd" id="1_ildvx"]
+[ext_resource type="PackedScene" uid="uid://cd48ktb2b6fg3" path="res://Upgrades/upgrade_computer.tscn" id="1_lausf"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ildvx"]
+radius = 1.2
+
+[node name="Upgrade" type="Area3D" unique_id=323732360]
+script = ExtResource("1_ildvx")
+
+[node name="Upgrade Computer" parent="." unique_id=1563605006 instance=ExtResource("1_lausf")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1310062743]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("SphereShape3D_ildvx")
+
+[node name="PopupMenu" type="PopupMenu" parent="." unique_id=1809028952]
+oversampling_override = 1.0
+
+[connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
+[connection signal="popup_hide" from="PopupMenu" to="." method="_on_popup_menu_popup_hide"]

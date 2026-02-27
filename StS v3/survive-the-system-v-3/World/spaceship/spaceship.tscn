@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://clskcb1rbjxo3" path="res://World/spaceship/npc.tscn" id="1_1wtdp"]
 [ext_resource type="Script" uid="uid://bu08atrhw3mby" path="res://World/spaceship/spaceship.gd" id="1_2gbrl"]
 [ext_resource type="Texture2D" uid="uid://dccyyitvcai6a" path="res://assets/assets kyun/shiptexture_1.png" id="1_l8se6"]
+[ext_resource type="PackedScene" uid="uid://bi2piyyfepqdv" path="res://Upgrades/upgrades.tscn" id="4_ef02v"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2gbrl"]
 albedo_texture = ExtResource("1_l8se6")
@@ -89,3 +90,6 @@ shape = SubResource("ConcavePolygonShape3D_2gbrl")
 
 [node name="NPC" parent="." unique_id=2146363901 instance=ExtResource("1_1wtdp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -6)
+
+[node name="Upgrade" parent="." unique_id=323732360 instance=ExtResource("4_ef02v")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4, 0.19999999, 0)
