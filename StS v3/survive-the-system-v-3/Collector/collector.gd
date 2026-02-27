@@ -3,7 +3,7 @@ extends Node3D
 var Biomass_collected = 0
 var max_biomass = 100
 
-var factor = 0.05# 0.002
+var factor = 0.002
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	update_label()
@@ -26,8 +26,8 @@ func interact(player):
 			print("you try to give an item")
 			return
 
-	
-		for o in item_hold["Data"]:
+		var temp_duplicate_list = item_hold["Data"].duplicate()
+		for o in temp_duplicate_list:
 			#print(o)
 			Biomass_collected += o["current_energy"]*factor
 			inventory.remove_selected(int(player.name))
