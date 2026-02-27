@@ -57,10 +57,11 @@ func _update_on_thread(delta):
 	#var newvalue = World.light_flux_in * GlobalSimulationParameter.simulation_speed * delta
 	#print(newvalue)
 	#var newmaxvalue = World.light_max_value * GlobalSimulationParameter.simulation_speed 
+	_pending_spawns.clear()
+	_pending_kills.clear()
 	if GlobalSimulationParameter.simulation_speed > 0:
 		World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
-		_pending_spawns.clear()
-		_pending_kills.clear()
+		
 		#_pending_light_changes.clear()	
 		for g in grass_dict.values():
 			if g["Alive"]==1 :
