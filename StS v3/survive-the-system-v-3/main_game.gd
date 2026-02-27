@@ -25,4 +25,4 @@ func on_server_started():
 		#$"Alife manager".Spawn_life_without_pool.rpc_id(1,Vector3(20,0,15), "tree")
 
 		GlobalSimulationParameter.SimulationStarted = true
-		GlobalSimulationParameter.simulation_speed = 0.5
+		#GlobalSimulationParameter.simulation_speed = 0.5

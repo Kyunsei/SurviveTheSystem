@@ -62,7 +62,6 @@ func update_drawn_grass(gen):
 
 
 func draw_new_grass(g):
-
 	var slot = instance_number
 	
 	id_to_slot[g["ID"]] = slot

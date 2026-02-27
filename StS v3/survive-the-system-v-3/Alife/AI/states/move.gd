@@ -48,11 +48,13 @@ func enter():
 func exit():
 	pass
 
-func physics_update(delta):
-	pass
 
 func update(delta):
-	var step = player.lifedata["current_speed"] * GlobalSimulationParameter.simulation_speed #*delta
+	pass
+	
+func physics_update(delta):
+
+	var step = player.lifedata["current_speed"] * GlobalSimulationParameter.simulation_speed *delta
 	if target:
 		var dist_to_target	= (target["position"] - player.position).length()
 		if dist_to_target <= step and isFood:

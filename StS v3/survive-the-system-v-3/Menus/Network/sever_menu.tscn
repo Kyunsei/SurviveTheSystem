@@ -25,10 +25,10 @@ anchors_preset = -1
 anchor_left = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 581.0
-offset_top = 337.0
-offset_right = 672.0
-offset_bottom = 368.0
+offset_left = 452.0
+offset_top = 258.0
+offset_right = 543.0
+offset_bottom = 289.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Start -Host"
@@ -46,26 +46,26 @@ grow_vertical = 0
 
 [node name="LifeDataMenu" parent="." unique_id=1757348478 instance=ExtResource("2_15i2s")]
 layout_mode = 0
-offset_left = 769.0
-offset_top = 292.0
-offset_right = 769.0
-offset_bottom = 292.0
+offset_left = 640.0
+offset_top = 213.0
+offset_right = 640.0
+offset_bottom = 213.0
 
 [node name="Label_speed" type="Label" parent="." unique_id=1743212148]
 layout_mode = 0
-offset_left = 562.0
-offset_top = 389.0
-offset_right = 697.0
-offset_bottom = 412.0
+offset_left = 433.0
+offset_top = 310.0
+offset_right = 568.0
+offset_bottom = 333.0
 text = "Simulation Speed"
 
 [node name="LineEdit" type="LineEdit" parent="." unique_id=1070152875]
 layout_mode = 0
-offset_left = 594.0
-offset_top = 414.0
-offset_right = 662.5
-offset_bottom = 445.0
-text = "0.1"
+offset_left = 465.0
+offset_top = 335.0
+offset_right = 533.5
+offset_bottom = 366.0
+text = "1"
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="text_submitted" from="LineEdit" to="." method="_on_line_edit_text_submitted"]

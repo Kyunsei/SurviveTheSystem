@@ -3,6 +3,7 @@ extends Control
 
 var graph_size = Vector2(10,10)
 var data = [10., 25., 15., 30., 20.]
+var color_list = [Color(0.0, 0.345, 0.0, 1.0),Color(0.611, 0.0, 0.0, 1.0),Color(0.0, 0.117, 1.0, 1.0),Color(0.635, 0.635, 0.635, 1.0),Color(0.583, 0.583, 0.583, 1.0),Color(0.574, 0.574, 0.574, 1.0),Color(0.826, 0.826, 0.826, 1.0)]
 #var points = []
 
 func _ready() -> void:
@@ -11,15 +12,34 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if multiplayer.is_server():
 		queue_redraw()
+		update_number()
+
+func update_number():
+	$Label.text = ""
+	for n in GlobalSimulationParameter.life_numbers:
+		$Label.text += "[color=%s]%s: %s[/color]\n" % [color_list[n].to_html(),Alifedata.enum_speciesID.keys()[n],GlobalSimulationParameter.life_numbers[n][-1]]
+
+
 
 func draw_population():
-	var points1 = []
-	var points2 = []
-	var points3 = []
+	var points = []
 
 	var width = graph_size.x
 	var height = graph_size.y
-	var max_value = GlobalSimulationParameter.sheep_number_data.max()
+	var count = 0
+	for n in GlobalSimulationParameter.life_numbers.values():
+		points = []
+		var max_value = n.max()
+		for i in range(n.size()):
+				var x = (i / float(n.size() - 1)) * width
+				var y = height - (float(n[i]) / max_value) * height
+				points.append(Vector2(x, y))
+			# Draw lines between points
+		for i in range(points.size() - 1):
+			draw_line(points[i], points[i + 1],color_list[count], 2.0)
+		count += 1
+				
+	'var max_value = GlobalSimulationParameter.sheep_number_data.max()
 	for i in range(GlobalSimulationParameter.sheep_number_data.size()):
 		var x = (i / float(GlobalSimulationParameter.sheep_number_data.size() - 1)) * width
 		var y = height - (float(GlobalSimulationParameter.sheep_number_data[i]) / max_value) * height
@@ -45,7 +65,7 @@ func draw_population():
 		points3.append(Vector2(x, y))
 	# Draw lines between points
 	for i in range(points3.size() - 1):
-		draw_line(points3[i], points3[i + 1], Color(0.191, 0.536, 0.551, 1.0), 2.0)
+		draw_line(points3[i], points3[i + 1], Color(0.191, 0.536, 0.551, 1.0), 2.0)'
 
 func _draw():
 	draw_population()

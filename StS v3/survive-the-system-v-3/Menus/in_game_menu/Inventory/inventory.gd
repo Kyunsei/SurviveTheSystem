@@ -22,7 +22,7 @@ func _ready():
 				var instance = ITEM_SLOT.instantiate()
 				instance.global_position = Vector2(x*150,y*150)
 				instance.slot_number = Vector2i(x,y)
-				add_child(instance)
+				add_child(instance, true)
 				items[x][y] = instance
 			
 

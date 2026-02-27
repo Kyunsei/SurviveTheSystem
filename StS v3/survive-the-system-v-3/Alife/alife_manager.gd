@@ -17,11 +17,11 @@ var life_pool_index = 0
 var life_inactive_index =[]
 var life_no_pool_index = 0
 
-var current_life_count_by_species = [0,0,0]
+var current_life_count_by_species = {}
 
 
 #DATA
-var timer = 1
+var timer = 0.5
 
 
 var tempbool = true
@@ -49,14 +49,21 @@ var max_plant  = 10000
 func init():
 			$Grass_Manager.World = World
 			$beast_manager.World = World
-			$Grass_Manager.ask_for_spawn_grass(Vector3(25,0,-15),Alifedata.enum_speciesID.GRASS)
+			#$Grass_Manager.ask_for_spawn_grass(Vector3(25,0,-15),Alifedata.enum_speciesID.GRASS)
+			#$Grass_Manager.ask_for_spawn_grass(Vector3(-25,0,-15),Alifedata.enum_speciesID.GRASS)
+			#$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
+			#$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
+			#$beast_manager.Spawn_Beast(Vector3(-10,0,-15),Alifedata.enum_speciesID.SHEEP)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,0),Alifedata.enum_speciesID.TREE)
 
-			$Grass_Manager.ask_for_spawn_grass(Vector3(-25,0,-15),Alifedata.enum_speciesID.GRASS)
-			$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
-			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
-			$beast_manager.Spawn_Beast(Vector3(-10,0,-15),Alifedata.enum_speciesID.SHEEP)
-			$Grass_Manager.ask_for_spawn_grass(Vector3(10,0,15),Alifedata.enum_speciesID.TREE)
 
+func update_life_count():
+	for sp in Alifedata.enum_speciesID.size() :
+		if GlobalSimulationParameter.life_numbers.has(sp) == false:
+			if current_life_count_by_species.has(sp):
+				GlobalSimulationParameter.life_numbers[sp] = [current_life_count_by_species[sp]]
+		else:
+			GlobalSimulationParameter.life_numbers[sp].append(current_life_count_by_species[sp])
 
 func _process(delta: float) -> void:
 
@@ -67,12 +74,13 @@ func _process(delta: float) -> void:
 				IsInit = true
 			timer -= delta
 			if timer < 0:
-				GlobalSimulationParameter.sheep_number_data.append(current_life_count_by_species[1])
-				GlobalSimulationParameter.grass_number_data.append($Grass_Manager.grass_dict.size())
-				GlobalSimulationParameter.tree_number_data.append(current_life_count_by_species[2])
+				update_life_count()
+				#GlobalSimulationParameter.sheep_number_data.append(current_life_count_by_species[1])
+				#GlobalSimulationParameter.grass_number_data.append($Grass_Manager.grass_dict.size())
+				#GlobalSimulationParameter.tree_number_data.append(current_life_count_by_species[2])
 
 
-				timer = 3
+				timer = 1
 			pass
 			$Grass_Manager.update(delta)
 			$beast_manager.update(delta)
@@ -149,6 +157,12 @@ func spawn_player(id,pos):
 	#new_player.position = pos
 	put_in_world_bin(new_life_data)	
 	self.call_deferred("add_child",new_player)
+	if 	current_life_count_by_species.has(Alifedata.enum_speciesID.CAT):
+		current_life_count_by_species[Alifedata.enum_speciesID.CAT] += 1
+	else:
+		current_life_count_by_species[Alifedata.enum_speciesID.CAT] = 1
+
+
 
 
 

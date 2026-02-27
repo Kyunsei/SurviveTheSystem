@@ -54,21 +54,27 @@ func _ready() -> void:
 func _update_on_thread(delta):
 	#print("Thread start — grass count: ", grass_dict.size())
 	#var ss = Time.get_ticks_msec() 
-	var newvalue = World.light_flux_in*100 * GlobalSimulationParameter.simulation_speed * delta
+	#var newvalue = World.light_flux_in * GlobalSimulationParameter.simulation_speed * delta
 	#print(newvalue)
-	var newmaxvalue = World.light_max_value*100 * GlobalSimulationParameter.simulation_speed 
-	World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
-	_pending_spawns.clear()
-	_pending_kills.clear()
-	#_pending_light_changes.clear()	
-	for g in grass_dict.values():
-		if g["Alive"]==1:
-			Photosynthesis(g,delta)
-			Reproduction(g,delta)
-			Homeostasis(g,delta)
-			Growth(g,delta)
-		else:
-			Decompose(g,delta)
+	#var newmaxvalue = World.light_max_value * GlobalSimulationParameter.simulation_speed 
+	if GlobalSimulationParameter.simulation_speed > 0:
+		World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
+		_pending_spawns.clear()
+		_pending_kills.clear()
+		#_pending_light_changes.clear()	
+		for g in grass_dict.values():
+			if g["Alive"]==1 :
+				if  g["current_life_state"]> 0:
+					Photosynthesis(g,delta)
+					Reproduction(g,delta)
+					Homeostasis(g,delta)
+					Growth(g,delta)
+				else:
+					Germination(g)
+					if g["current_life_state"] == 0:
+						g["Alive"] = 0
+			else:
+				Decompose(g,delta)
 
 	#print("end " + str(Time.get_ticks_msec() -ss))
 	call_deferred("_on_work_finished")
@@ -113,6 +119,11 @@ func _on_work_finished():
 		#g.ID = get_free_id()
 		#grass_dict[g.ID] = g
 		get_parent().put_in_world_bin(g)
+		if 	get_parent().current_life_count_by_species.has(g["Species"]):
+			get_parent().current_life_count_by_species[g["Species"]] += 1
+		else:
+			get_parent().current_life_count_by_species[g["Species"]] = 1
+
 	draw_new_grass.rpc(unique_spawn)
 	
 	var unique_kills := {}
@@ -192,7 +203,10 @@ func Kill(grass):
 		free_id_array.append(grass["ID"])
 		grass_dict.erase(grass["ID"])
 		get_parent().remove_from_world_bin(grass)
-		
+		if 	get_parent().current_life_count_by_species.has(grass["Species"]):
+			get_parent().current_life_count_by_species[grass["Species"]] -= 1
+		#	get_parent().current_life_count_by_species[g["Species"]] = 1
+
 
 
 func get_lightIndex(grass):
@@ -224,32 +238,36 @@ func get_lightIndex(grass):
 
 func Decompose(grass,delta):
 	#var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass["current_energy"] -= 100 * GlobalSimulationParameter.simulation_speed  # *delta
+	grass["current_energy"] -= 10000 * GlobalSimulationParameter.simulation_speed   *delta
 	#print(grass)
 	if grass["current_energy"] < 0:
 		_pending_kills.append(grass)
 
 func Homeostasis(grass, delta):
 	var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed #* delta
+	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed * delta
 	if grass["current_energy"] < 0:
 		grass["Alive"] = 0
 		#_pending_kills.append(grass)
-		
+	#print("cost: " +str(grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed * delta))
 	#grass.current_energy -= grass.Homeostasis_cost * GlobalSimulationParameter.simulation_speed
 	#if grass.current_energy < 0:
 	#	_pending_kills.append(grass)
 
 func Photosynthesis(grass,delta):
+	var tt = 0
+	var time_value = grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed * delta
 	for l_i in grass["light_index"]:		
 		if l_i <  World.light_array.size():
-			var energy_absorbed = World.light_array[l_i] * grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed #* delta
-			energy_absorbed = min(World.light_array[l_i],energy_absorbed)
+			var energy_absorbed = World.light_array[l_i] * time_value
+			#energy_absorbed = min(World.light_array[l_i],energy_absorbed)
 			if energy_absorbed <= 0:
 				return
 			grass["current_energy"]  += energy_absorbed
 			var shadow_effect = 1.0
 			World.light_array[l_i] = max(World.light_array[l_i]-shadow_effect,0)
+			tt += energy_absorbed
+	#print(tt)
 	#print(grass["current_energy"]) #* area * GlobalSimulationParameter.simulation_speed * delta)
 
 'func Photosynthesis_old(grass):
@@ -279,21 +297,33 @@ func Photosynthesis(grass,delta):
 		grass["current_energy"] -= 8'
 		
 func Reproduction(grass,delta):
-	if grass["current_energy"] > grass["Reproduction_cost"]*2:
-		var newpos = grass["position"] + Vector3(
-			randf_range(-grass["Reproduction_spread"], grass["Reproduction_spread"]),
-			0,
-			randf_range(-grass["Reproduction_spread"], grass["Reproduction_spread"])
-		)
-		newpos.x = clamp(newpos.x, -World.World_Size.x / 2 + 1, World.World_Size.x / 2 - 1)
-		newpos.z = clamp(newpos.z, -World.World_Size.z / 2 + 1, World.World_Size.z / 2 - 1)
-		spawn_grass(newpos, grass["Species"])
-		#var newgrass = grass_dna.duplicate()
-		#newgrass["position"] = newpos
-		#newgrass["light_index"] = get_lightIndex(newpos)
-		#_pending_spawns.append(newgrass)
-		grass["current_energy"] -= grass["Reproduction_cost"]	
-		
+		if grass["current_energy"] > grass["Reproduction_cost"]*2:
+			var newpos = grass["position"] + Vector3(
+				randf_range(-grass["Reproduction_spread"], grass["Reproduction_spread"]),
+				0,
+				randf_range(-grass["Reproduction_spread"], grass["Reproduction_spread"])
+			)
+			newpos.x = clamp(newpos.x, -World.World_Size.x / 2 + 1, World.World_Size.x / 2 - 1)
+			newpos.z = clamp(newpos.z, -World.World_Size.z / 2 + 1, World.World_Size.z / 2 - 1)
+			spawn_grass(newpos, grass["Species"])
+			#var newgrass = grass_dna.duplicate()
+			#newgrass["position"] = newpos
+			#newgrass["light_index"] = get_lightIndex(newpos)
+			#_pending_spawns.append(newgrass)
+			grass["current_energy"] -= grass["Reproduction_cost"]	
+
+func Germination(g):
+	var area = max(1,(g["Photosynthesis_range"] * 2) * (g["Photosynthesis_range"] * 2 ))
+	var light_available = 0
+	for l_i in g["light_index"]:		
+		if l_i <  World.light_array.size():
+			if World.light_array[l_i] > 0:
+				light_available += 1
+	
+	if light_available == area:
+		print("Germinate")
+		g["current_life_state"] = 1
+			
 
 func Growth(g,delta):
 	#if g["current_energy"] % 5 == 0:
