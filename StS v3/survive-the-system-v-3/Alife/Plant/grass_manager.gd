@@ -284,7 +284,7 @@ func Growth(g):
 	#if g["current_energy"] % 5 == 0:
 	if g["current_life_state"]*3 < g["current_energy"]:	
 		g["current_life_state"] += 1
-		_pending_update.append([g["ID"],g["current_energy"],g["Species"]])
+		#_pending_update.append([g["ID"],g["current_energy"],g["Species"]])
 
 
 	
