@@ -2,6 +2,8 @@ extends Node3D
 
 #WORLD SETUP
 var World_Size = Vector3(250,1,250)
+var Wall_size = 0.9
+var World_Size_with_walls = World_Size/Wall_size
 var Radius = World_Size/2
 var Center_x = World_Size.x/2
 var Center_z = World_Size.z/2

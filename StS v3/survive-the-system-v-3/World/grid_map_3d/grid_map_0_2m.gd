@@ -6,9 +6,9 @@ var depth = 1
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	width = get_parent().get_parent().World_Size.x/5
+	width = get_parent().get_parent().World_Size_with_walls.x/5
 	height = get_parent().get_parent().World_Size.y
-	depth = get_parent().get_parent().World_Size.z/5
+	depth = get_parent().get_parent().World_Size_with_walls.z/5
 	make_gridmap()
 
 

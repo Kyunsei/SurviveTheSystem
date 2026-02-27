@@ -7,9 +7,9 @@ var depth = 1
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	width = get_parent().get_parent().World_Size.x
+	width = get_parent().get_parent().World_Size_with_walls.x
 	height = get_parent().get_parent().World_Size.y*2
-	depth = get_parent().get_parent().World_Size.z
+	depth = get_parent().get_parent().World_Size_with_walls.z
 	make_gridmap(6)
 
 
@@ -19,19 +19,21 @@ func _process(delta: float) -> void:
 	
 func make_gridmap(layers: int):
 	randomize()
-	var outer_radius = min(width, depth) / 2
-	var inner_radius = outer_radius * 0.89   # Adjust hole size here
+	
+	var outer_half = min(width, depth) / 2
+	var inner_half = outer_half * get_parent().get_parent().Wall_size   # Adjust hole size here
 	
 	for x in range(-width/2, width/2):
 		for y in range(layers):
 			for z in range(-depth/2, depth/2):
 				
-				var dist = sqrt(x*x + z*z)
+				var square_dist = max(abs(x), abs(z))
 				
-				if dist <= outer_radius and dist >= inner_radius:
+				# Keep only the square ring
+				if square_dist <= outer_half and square_dist >= inner_half:
+					
 					if randf() <= placement_density:
 						
-						# Pick random tile ID
 						if tile_ids.size() > 0:
 							var random_tile = tile_ids[randi() % tile_ids.size()]
 							set_cell_item(Vector3i(x, y, z), random_tile)
