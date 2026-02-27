@@ -9,7 +9,8 @@ var itemData = {
 	"bin_ID": 0,
 	"inventory_path": "",
 	"Species": Alifedata.enum_speciesID.ITEM,
-	"Use": on_use
+	"Use": on_use,
+	"Eat": eat
 }
 
 @rpc("any_peer","call_local")
@@ -37,4 +38,7 @@ func add_to_player(body,peer_id):
 			
 
 static func on_use(player):
-	print("dosomething with " )
+	print("used and did something" )
+
+static func eat(player):
+	print("eat something" )

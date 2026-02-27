@@ -109,7 +109,7 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("Drop"):
 			Drop.rpc_id(1)
 		if Input.is_action_just_pressed("eat"):
-			eat_holding_item.rpc_id(1, 10)
+			eat_holding_item.rpc_id(1)
 
 
 @rpc("any_peer","call_local")
@@ -141,13 +141,17 @@ func pick_up() :
 			collision.disabled = true
 
 @rpc("any_peer","call_local")
-func eat_holding_item(value) :
-	var inventory = player.get_node("Player_HUD").get_node("Inventory")
-	var item_eaten = inventory.remove_selected(int(player.name))
-		#print(item_eaten.alife["current_energy"])
-	if item_eaten:
-		#if item_eaten["Species"] == Alifedata.enum_speciesID.ITEM:
-		player.lifedata["current_energy"] += value
+func eat_holding_item() :
+	if player.item_hold:
+		if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
+			player.item_hold["Data"][0]["Eat"].call(player)
+		else:
+			var value = player.item_hold["Data"][0]["current_energy"]/15
+			var inventory = player.get_node("Player_HUD").get_node("Inventory")
+			var item_eaten = inventory.remove_selected(int(player.name))
+			if item_eaten:
+				player.lifedata["current_energy"] =clamp(player.lifedata["current_energy"]+value,0,player.lifedata["Max_energy"])
+				#print(value)
 	else:
 		pass
 
