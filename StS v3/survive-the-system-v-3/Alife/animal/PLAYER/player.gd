@@ -29,6 +29,7 @@ var current_hunger = max_hunger
 @onready var energy_bar = $MeshInstance3D/Status_bar/SubViewport2/ProgressBarEnergy
 
 #upgrades variable here
+var catnation_credits = 0
 var capacity = 0.0
 var inventory_capacity_upgrade = capacity/5.0 + 1.0
 

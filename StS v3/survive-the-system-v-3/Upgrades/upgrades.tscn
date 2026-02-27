@@ -17,6 +17,7 @@ shape = SubResource("SphereShape3D_ildvx")
 
 [node name="PopupMenu" type="PopupMenu" parent="." unique_id=1809028952]
 oversampling_override = 1.0
+hide_on_item_selection = false
 
 [connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
 [connection signal="popup_hide" from="PopupMenu" to="." method="_on_popup_menu_popup_hide"]

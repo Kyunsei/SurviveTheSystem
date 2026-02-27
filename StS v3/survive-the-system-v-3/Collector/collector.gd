@@ -3,7 +3,7 @@ extends Node3D
 var Biomass_collected = 0
 var max_biomass = 100
 
-var factor = 0.002
+var factor = 0.2
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	update_label()
@@ -45,6 +45,7 @@ func interact(player):
 		player.go_back_to_ship.rpc_id(int(player.name))
 		set_world_readiness.rpc(false)
 		#GlobalSimulationParameter.simulation_speed = 0.5
+		credit_player(player)
 		Biomass_collected = 0
 		max_biomass = max_biomass * 2
 		update_label()
@@ -65,3 +66,8 @@ func set_world_readiness(yesorno):
 
 func update_label():
 	$collected_amount_Label3D.text = "Biomass collected " + str(round(Biomass_collected)) + " /" + str(max_biomass)
+
+#@rpc("any_peer","call_local")
+func credit_player(player):
+	player.catnation_credits += int(Biomass_collected/10)
+	print(player.catnation_credits)
