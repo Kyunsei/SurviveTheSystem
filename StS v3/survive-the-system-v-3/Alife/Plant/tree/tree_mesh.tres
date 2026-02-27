@@ -8,6 +8,7 @@ transparency = 2
 alpha_scissor_threshold = 0.5
 alpha_antialiasing_mode = 0
 shading_mode = 0
+vertex_color_use_as_albedo = true
 albedo_texture = SubResource("CompressedTexture2D_ute06")
 texture_filter = 0
 billboard_mode = 2
