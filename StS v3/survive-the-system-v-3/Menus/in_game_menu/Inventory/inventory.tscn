@@ -2,5 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bf55wlngsl8rx" path="res://Menus/in_game_menu/Inventory/inventory.gd" id="1_8ngps"]
 
-[node name="Inventory" type="Node2D" unique_id=343602414]
+[node name="Inventory" type="Control" unique_id=1121704585]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("1_8ngps")
