@@ -117,8 +117,6 @@ func _on_work_finished():
 	for g in unique_spawn.values():
 		g["ID"] = get_free_id()
 		grass_dict[g["ID"]] = g
-		#g.ID = get_free_id()
-		#grass_dict[g.ID] = g
 		get_parent().put_in_world_bin(g)
 		if 	get_parent().current_life_count_by_species.has(g["Species"]):
 			get_parent().current_life_count_by_species[g["Species"]] += 1
@@ -141,8 +139,8 @@ func _on_work_finished():
 		Kill(g)
 	erase_grass.rpc(unique_kills)
 	
-	send_update_batch(_pending_update)
-	#update_drawn_grass.rpc(_pending_update)
+	#send_update_batch(_pending_update)
+	update_drawn_grass.rpc(_pending_update)
 		
 	_pending_update.clear()
 	_pending_external_spawns.clear()	
@@ -306,6 +304,7 @@ func Reproduction(grass,delta):
 			)
 			newpos.x = clamp(newpos.x, -World.World_Size.x / 2 + 1, World.World_Size.x / 2 - 1)
 			newpos.z = clamp(newpos.z, -World.World_Size.z / 2 + 1, World.World_Size.z / 2 - 1)
+			
 			spawn_grass(newpos, grass["Species"])
 			#var newgrass = grass_dna.duplicate()
 			#newgrass["position"] = newpos
@@ -313,6 +312,9 @@ func Reproduction(grass,delta):
 			#_pending_spawns.append(newgrass)
 			grass["current_energy"] -= grass["Reproduction_cost"]	
 
+
+
+	
 func Germination(g):
 	var area = max(1,(g["Photosynthesis_range"] * 2) * (g["Photosynthesis_range"] * 2 ))
 	var light_available = 0
@@ -323,6 +325,7 @@ func Germination(g):
 	
 	if light_available == area:
 		g["current_life_state"] = 1
+		_pending_update.append(g)
 			
 
 func Growth(g,delta):
@@ -376,14 +379,14 @@ func draw_new_grass(g_array):
 			
 @rpc("authority", "call_remote", "reliable") 			
 func update_drawn_grass(g_array):
-	for info in g_array:
-			match info[2]:
+	for g in g_array:
+			match g["Species"]:
 				Alifedata.enum_speciesID.GRASS:
-					$grass.update_drawn_grass(info)
+					$grass.update_drawn_grass(g)
 				Alifedata.enum_speciesID.TREE:
-					$tree.update_drawn_grass(info)
+					$tree.update_drawn_grass(g)
 				Alifedata.enum_speciesID.BUSH:
-					$bush.update_drawn_grass(info)
+					$bush.update_drawn_grass(g)
 	
 
 @rpc("authority", "call_remote", "reliable") 

@@ -1,8 +1,8 @@
 extends Node3D
 
 #WORLD SETUP
-var World_Size = Vector3(250,1,250)
-#var World_Size = Vector3(25,1,25)
+#var World_Size = Vector3(250,1,250)
+var World_Size = Vector3(50,1,50)
 
 var Wall_size = 0.9
 var World_Size_with_walls = World_Size/Wall_size
@@ -12,7 +12,7 @@ var Center_z = World_Size.z/2
 var Center_y = World_Size.y
 
 ##### LIGHT MATRIX
-var light_tile_size = Vector3(1,World_Size.y,1) #in m?
+var light_tile_size = Vector3(1.5,World_Size.y,1.5) #in m?
 var light_array = []
 var light_flux_in = 1.0
 var light_max_value = 1.0

@@ -36,27 +36,26 @@ func _ready() -> void:
 var instance_data: Array = []  # mirrors multimesh slots'
 
 
-func update_drawn_grass(gen):
-	var ID = gen[0]
-	var current_energy = gen[1]
+func update_drawn_grass(g):
+	#var ID = gen[0]
+	var current_energy = g["current_energy"]
 	#if id_to_slot.size() > g["ID"]:
-	if !id_to_slot.has(ID):
+	if !id_to_slot.has(g["ID"]):
 		print("strange")
 		return
-	var slot = id_to_slot[ID]
-	var current_transform = multimesh.get_instance_transform(slot)
-		
+	var slot = id_to_slot[g["ID"]]
+	#var current_transform = multimesh.get_instance_transform(slot)
 	var newscale = clamp(current_energy /max_energy,0.25,1)
 		#newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
-	current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
-	multimesh.set_instance_transform(slot, current_transform)
-	'if gen["Alive"]==0:
+	#current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
+	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale),  g["position"]))
+	if g["Alive"]==0:
 		multimesh.set_instance_color(slot, Color(0.164, 0.164, 0.164, 1.0))
 	else:
-		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))'
+		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 
 	if shadow:
-		shadow.multimesh.set_instance_transform(slot, current_transform)
+		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), g["position"]))
 'if abs(last_scale[id] - new_scale) > 0.05:
 	update_transform()'
 
@@ -67,8 +66,12 @@ func draw_new_grass(g):
 	id_to_slot[g["ID"]] = slot
 	slot_to_id[slot] = g["ID"]	
 	var newscale = clamp(g["current_energy"] /max_energy,0.25,1)
+	var pos = g["position"]
 	#current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
-	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), g["position"]))
+	if g["current_life_state"] == 0:
+		pos.y = -100
+		
+	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), pos))
 	if g["Alive"]==0:
 		multimesh.set_instance_color(slot, Color(0.164, 0.164, 0.164, 1.0))
 	else:
@@ -79,7 +82,7 @@ func draw_new_grass(g):
 
 	
 	if shadow:
-		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), g["position"]))
+		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), pos))
 		shadow.multimesh.visible_instance_count = instance_number
 
 
