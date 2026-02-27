@@ -2,11 +2,7 @@ extends Control
 
 var IP_ADDRESS = "127.0.0.1" #"158.41.57.177"
 var Local_address = "127.0.0.1"
-<<<<<<< HEAD
-var V_address ="195.26.116.181" #92.107.162.231
-=======
 var V_address ="195.26.116.181" 
->>>>>>> 71ddd0065c62ad085bbd67c17f6c4c27c8a83a55
 var K_address = "92.107.162.231"
 var PORT = 12345
 
