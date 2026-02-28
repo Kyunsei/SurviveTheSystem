@@ -3,6 +3,7 @@ class_name State
 
 var state_manager
 var player 
+var isFinish = true
 
 func evaluate():
 	pass

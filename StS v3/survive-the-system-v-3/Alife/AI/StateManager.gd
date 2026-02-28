@@ -46,8 +46,9 @@ func choose_action():
 					best_action = s
 	if best_action:
 		if best_action ==current_state:
-			return
-		get_parent().get_node("debugLabel").text =best_action.name
+			if current_state.isFinish == false:
+				return
+		#get_parent().get_node("debugLabel").text =best_action.name
 		if current_state:
 			current_state.exit()
 		best_action.enter()

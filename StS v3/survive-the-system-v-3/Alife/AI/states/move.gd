@@ -6,45 +6,145 @@ var target
 var direction = Vector3()
 var isFood = true
 
+
+
 func evaluate():
+	target = null
+	var score = 0.8
+	var debug = "WANDER"
+
+	#var wander_dir = get_wander_direction()
+	var final_dir = direction
+	player.lifedata["current_speed"] = player.lifedata["Max_speed"] / 2
+
+	# --- DANGER ---
+	var danger_data = compute_danger_vector()
+	var danger_strength = danger_data.strength
+	var danger_dir = danger_data.direction
+
+	if danger_strength > 0.0:
+		final_dir += danger_dir * 2.5   # weight of avoidance
+		debug = "AVOID"
+
+		# panic mode if very close
+	if danger_strength > 0.5:
+		score = 2.0
+		player.lifedata["current_speed"] = player.lifedata["Max_speed"] * 2
+		debug = "PANIC"
+
+	# --- FOOD ---
+	var food = find_safe_food()
+
+	if food:
+		var offset = food["position"] - player.position
+		var dist = offset.length()
+		var food_dir = offset.normalized()
+
+		var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
+		final_dir += food_dir * weight
+		target = food
+		debug = "FOOD"
+
+	# normalize final direction
+	direction = final_dir.normalized()
+	direction.y = 0
+
+	get_parent().get_parent().get_node("debugLabel").text = debug
+	return score
+	
+
+func get_wander_direction():
+	return Vector3(randf_range(-1,1),0,randf_range(-1,1)) 
+	
+	
+
+'func evaluate():
 	target = null
 	#var dist_score = 0
 	var score = 0.8
+	var center = Vector3.ZERO
 	player.lifedata["current_speed"] =  player.lifedata["Max_speed"]/2
 	
-	for d in  player.vision_danger.values():
-		if d:
-			var distance = player.position.distance_to(d["position"])		
-			if distance < 5:
-				score = 2.0
-				direction = (player.position - d["position"]).normalized()
-				player.lifedata["current_speed"] =  player.lifedata["Max_speed"]*2
-				isFood = false
+	if player.vision_danger.size()>0:
+		center = look_for_danger()	
+		if player.lifedata["position"].distance_to(center) < 5:
+			score = 2.0
+			direction = (player.position - center).normalized()
+			player.lifedata["current_speed"] =  player.lifedata["Max_speed"]*2
+			isFood = false
+			get_parent().get_parent().get_node("debugLabel").text = "DANGER"
+			return score
+
+
 				
 	for f in  player.vision_food.values():
 		if f:
 			for d in  player.vision_danger.values():
 				if d:
-					var distance_food_danger = d["position"].distance_to(f["position"])		
+					var distance_food_danger = center.distance_to(f["position"])		
 					if distance_food_danger > 5:						
 						score = 0.8
 						target = f
 						direction = (f["position"]- player.position ).normalized()	
 						isFood = true		
+						get_parent().get_parent().get_node("debugLabel").text = "FOOD"
+
 						#var distance = player.position.distance_to(f["position"])		
 						#var maxDist = 5			
 					#dist_score = .8 #clamp(distance / maxDist, 0., 1)
 
-				
+	if target == null:
+		get_parent().get_parent().get_node("debugLabel").text = "WANDER"
+		
 	#var energy_score = 1 - player.current_energy/player.max_energy
 
 	#score = dist_score * energy_scorew
 	direction.y = 0
 	#print(target)
-	return score
+	return score'
+
+
+func compute_danger_vector():
+	var avoidance = Vector3.ZERO
+	var max_radius = 10.0
+	var strongest = 0.0
+
+	for d in player.vision_danger.values():
+		if d:
+			var offset = player.position - d["position"]
+			var dist = offset.length()
+
+			if dist < max_radius:
+				var strength = (max_radius - dist) / max_radius
+				avoidance += offset.normalized() * strength
+				strongest = max(strongest, strength)
+
+	return {
+		"direction": avoidance.normalized() if avoidance.length() > 0 else Vector3.ZERO,
+		"strength": strongest
+	}
+
+
+func find_safe_food():
+	var safe_radius = 6.0
+
+	for f in player.vision_food.values():
+		if f:
+			var safe = true
+
+			for d in player.vision_danger.values():
+				if d:
+					if d["position"].distance_to(f["position"]) < safe_radius:
+						safe = false
+						break
+
+			if safe:
+				return f
+
+	return null
 
 func enter():
-	wandertimer = 0
+	pass#wandertimer = 0
 	
 func exit():
 	pass
@@ -57,9 +157,9 @@ func physics_update(delta):
 
 	var step = player.lifedata["current_speed"] * GlobalSimulationParameter.simulation_speed *delta
 	if target:
-		
 		var dist_to_target	= (target["position"] - player.position).length()
 		if dist_to_target <= step and isFood:
+
 			player.position = target["position"]
 		
 		else:
@@ -69,8 +169,8 @@ func physics_update(delta):
 	else:
 		wandertimer -= delta
 		if wandertimer <= 0:
-			wandertimer = 5 / (1000 * GlobalSimulationParameter.simulation_speed)
-			direction = Vector3(randf_range(-1,1),0,randf_range(-1,1)) *direction
+			wandertimer = 5.0 / ( GlobalSimulationParameter.simulation_speed)
+			direction = get_wander_direction()
 			
 		player.position += direction * step	
 

@@ -174,7 +174,7 @@ func change_bin():
 @rpc("any_peer","call_local")
 func Die():
 	lifedata["Alive"] = 0
-	$MeshInstance3D.get_active_material(0).albedo_color =Color()
+	#$MeshInstance3D.get_active_material(0).albedo_color =Color()
 	death()
 	
 

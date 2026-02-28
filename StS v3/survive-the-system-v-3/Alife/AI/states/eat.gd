@@ -2,8 +2,8 @@ extends State
 class_name eat_state
 
 var target 
-
-var timer = 0.5 * 1000 * GlobalSimulationParameter.simulation_speed
+@export var eating_time = 0.5
+var timer = 0.5  * GlobalSimulationParameter.simulation_speed
 
 
 func evaluate():
@@ -23,10 +23,12 @@ func evaluate():
 
 
 func enter():
-	timer = 0.5 / (1000 * GlobalSimulationParameter.simulation_speed)
+	isFinish = false
+	timer = eating_time / (GlobalSimulationParameter.simulation_speed)
 
 func exit():
-	pass
+	isFinish = true
+
 
 func physics_update(delta):
 	pass
@@ -40,4 +42,4 @@ func update(delta):
 			target["current_energy"]= 0
 			get_parent().get_parent().get_parent().get_parent().get_node("Grass_Manager")._pending_external_kills.append(target)
 			player.vision_food.erase(target)
-			timer = 0.5 / (1000 * GlobalSimulationParameter.simulation_speed)
+			timer = eating_time/ (GlobalSimulationParameter.simulation_speed)
