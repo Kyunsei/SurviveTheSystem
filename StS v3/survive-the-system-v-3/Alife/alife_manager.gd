@@ -55,6 +55,11 @@ func init():
 			#$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
 			#$beast_manager.Spawn_Beast(Vector3(-10,0,-15),Alifedata.enum_speciesID.SHEEP)
 			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,0),Alifedata.enum_speciesID.TREE)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(-5,0,0),Alifedata.enum_speciesID.TREE)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(5,0,5),Alifedata.enum_speciesID.TREE)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(10,0,0),Alifedata.enum_speciesID.TREE)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,10),Alifedata.enum_speciesID.TREE)
+
 
 
 func update_life_count():

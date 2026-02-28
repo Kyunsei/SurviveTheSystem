@@ -19,15 +19,6 @@ billboard_mode = 2
 material = SubResource("StandardMaterial3D_11t0l")
 size = Vector2(3, 3)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_61knv"]
-shading_mode = 0
-albedo_color = Color(0.20511743, 0.20511743, 0.20511743, 1)
-billboard_mode = 2
-
-[sub_resource type="QuadMesh" id="QuadMesh_iieic"]
-material = SubResource("StandardMaterial3D_61knv")
-size = Vector2(1, 2)
-
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_61knv"]
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
@@ -42,11 +33,6 @@ script = ExtResource("1_61knv")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5385876, 0)
 mesh = SubResource("QuadMesh_oukle")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1993554647]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.09449339, 0.8228116, 0.5884781)
-visible = false
-mesh = SubResource("QuadMesh_iieic")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=451120355]
 replication_config = SubResource("SceneReplicationConfig_61knv")

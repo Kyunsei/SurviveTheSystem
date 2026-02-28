@@ -65,9 +65,12 @@ func update(delta):
 		homeostasis(g)'
 	for b in beast_instance_dict.values():
 		#vision(b)
-		vision(b)
-		choose_action(b)
-		homeostasis(b,delta)
+		if b.lifedata["Alive"] == 1:
+			vision(b)
+			choose_action(b)
+			Homeostasis(b.lifedata,delta)
+		else:
+			Decompose(b.lifedata,delta)
 		
 	Spawn_and_Kill()
 	
@@ -107,6 +110,7 @@ func vision(b):
 
 
 func view_closest(view_range,array_num,b,sp):
+	
 	var current_pos = b.position
 	var closest = null
 	var closest_in_bin =  null
@@ -164,7 +168,11 @@ func view_closest(view_range,array_num,b,sp):
 	return closest
 
 
-
+'return {
+    "closest": closest,
+    "count": local_count,
+    "center": local_center
+}'
 
 
 
@@ -202,9 +210,20 @@ func ask_for_adding_grass(pos, sp):
 	_pending_external_spawns.append(newgrass)
 
 
-func Decompose(grass):
-	pass
+func Decompose(grass, delta):
+	grass["Biomass"] -= grass["Decomposition_speed"]  * GlobalSimulationParameter.simulation_speed   *delta
+		
+	var current_step = int(grass["Biomass"] / 10)
+	#print(current_step)
+	if  grass.has("last_step"):
+		if current_step != grass["last_step"]:
+			grass["last_step"] = current_step
+			#_pending_update.append(grass)
+	else:
+		grass["last_step"] = current_step
 
+	if grass["Biomass"] < 0:
+		_pending_kills.append(grass)
 
 func Kill(grass):
 	#print("kill")
@@ -298,13 +317,23 @@ func Cut(grass):
 	if grass["current_energy"] < 0:
 		_pending_kills.append(grass)'
 
-func homeostasis(grass, delta):
-	var area = 1# max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass.lifedata["current_energy"] -= 0.5 * GlobalSimulationParameter.simulation_speed * delta
-	#print(grass.lifedata["current_energy"])
-	#if grass["current_energy"] < 0:
-	#	_pending_kills.append(grass)
+func Homeostasis(grass, delta):
+	if grass["current_health"] < 0:
+		grass["Alive"] = 0
+		#grass["last_step"] = int(grass["Biomass"] / 10)
+		#_pending_update.append(grass)
+		return
+	grass["current_energy"] -= grass["Homeostasis_cost"]  * GlobalSimulationParameter.simulation_speed * delta
+	Regenerate_Health(grass,delta)
+	if grass["current_energy"] < 0:
+		grass["current_health"] -= grass["Homeostasis_cost"] * GlobalSimulationParameter.simulation_speed * delta
 
+
+func Regenerate_Health(grass,delta):
+	if grass["current_health"] != grass["Max_health"]:
+		var value_regen = min(grass["current_energy"]/2, grass["Max_health"] - grass["current_health"]) * GlobalSimulationParameter.simulation_speed * delta
+		grass["current_health"] += value_regen
+		grass["current_energy"] -= value_regen
 		
 'func _thread_reproduction(grass):
 	if grass["current_energy"] > grass["Reproduction_cost"]*2:
