@@ -43,7 +43,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 
 	#Metabolism/Growth
 	new_life["current_energy"] = 0.0
-	new_life["Biomass"] = 10.0
+	new_life["Biomass"] = 1.0
 	new_life["current_energy"] = 0.0
 	new_life["current_age"] = 0.0
 	new_life["Decomposition_speed"] = 1.0
@@ -65,11 +65,13 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Homeostasis_cost"] = 0.3
 			new_life["Photosynthesis_absorbtion"] = 1.
 			new_life["Photosynthesis_range"] = 0
-			new_life["Reproduction_cost"] = 8
+			new_life["Reproduction_cost"] = 4
 			new_life["Reproduction_spread"] = 5
-			new_life["Max_energy"] = 20
+			new_life["Max_energy"] = 10
 			new_life["Max_age"] = 100.0
 			new_life["Sprites"] = "res://Alife/Plant/Grass/grass.png"
+			new_life["current_health"] = 4.0
+			new_life["Max_health"] =4.0
 
 			#light_index = []
 		enum_speciesID.TREE:
@@ -136,15 +138,15 @@ static func Growth(alife):
 	match alife["Species"]:
 		enum_speciesID.TREE:
 			if alife["current_life_state"] < 6:
-				if alife["current_energy"] > 100:
+				if alife["current_energy"] > 300:
 					alife["current_life_state"] += 1
-					alife["current_energy"] -= 50
+					alife["current_energy"] -= 300
 					alife["Biomass"] += 50
 					return true
 		enum_speciesID.GRASS:
 			if alife["current_life_state"] < 6:
-				if alife["current_energy"] > 10:
+				if alife["current_energy"] > 5:
 					alife["current_life_state"] += 1
-					alife["current_energy"] -= 5
+					alife["current_energy"] -=  5
 					alife["Biomass"] += 5
 					return true

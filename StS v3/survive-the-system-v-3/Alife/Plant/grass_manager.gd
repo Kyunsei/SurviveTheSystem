@@ -68,8 +68,9 @@ func _update_on_thread(delta):
 				if  g["current_life_state"]> 0:
 					Photosynthesis(g,delta)
 					Homeostasis(g,delta)
-					Reproduction(g,delta)
 					Growth(g,delta)
+					Reproduction(g,delta)
+
 				else:
 					Germination(g)
 					if g["current_life_state"] == 0:
@@ -255,15 +256,17 @@ func Decompose(grass,delta):
 		_pending_kills.append(grass)
 
 func Homeostasis(grass, delta):
+	if grass["current_health"] < 0:
+		grass["Alive"] = 0
+		grass["last_step"] = int(grass["Biomass"] / 10)
+		_pending_update.append(grass)
+		return
 	var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
 	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed * delta
 	Regenerate_Health(grass,delta)
 	if grass["current_energy"] < 0:
 		grass["current_health"] -= grass["Homeostasis_cost"] * GlobalSimulationParameter.simulation_speed * delta
-	if grass["current_health"] < 0:
-		grass["Alive"] = 0
-		grass["last_step"] = int(grass["Biomass"] / 10)
-		_pending_update.append(grass)
+
 
 		
 	#print(grass["current_energy"])
