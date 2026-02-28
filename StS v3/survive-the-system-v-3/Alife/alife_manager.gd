@@ -49,11 +49,14 @@ var max_plant  = 10000
 func init():
 			$Grass_Manager.World = World
 			$beast_manager.World = World
-			$Grass_Manager.ask_for_spawn_grass(Vector3(20,0,-15),Alifedata.enum_speciesID.GRASS)
+			for i in range(20):
+				$Grass_Manager.ask_for_spawn_grass(Vector3(0+i,0,0+i),Alifedata.enum_speciesID.GRASS)
+			
+
 			#$Grass_Manager.ask_for_spawn_grass(Vector3(-25,0,-15),Alifedata.enum_speciesID.GRASS)
-			#$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
-			#$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
-			#$beast_manager.Spawn_Beast(Vector3(-10,0,-15),Alifedata.enum_speciesID.SHEEP)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
+			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
+			$beast_manager.Spawn_Beast(Vector3(21,0,-15),Alifedata.enum_speciesID.SHEEP)
 			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,0),Alifedata.enum_speciesID.TREE)
 			$Grass_Manager.ask_for_spawn_grass(Vector3(-5,0,0),Alifedata.enum_speciesID.TREE)
 			$Grass_Manager.ask_for_spawn_grass(Vector3(5,0,5),Alifedata.enum_speciesID.TREE)

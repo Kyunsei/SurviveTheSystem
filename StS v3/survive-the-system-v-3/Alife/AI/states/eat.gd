@@ -7,7 +7,7 @@ var timer = 0.5  * GlobalSimulationParameter.simulation_speed
 
 
 func evaluate():
-
+	#print( player.lifedata["current_energy"])
 	target = null
 	var score = 1 - player.lifedata["current_energy"]/player.lifedata["Max_energy"]
 	var dist_score = 0
@@ -19,7 +19,7 @@ func evaluate():
 			if distance < 2:
 				target = f
 				dist_score = 1.0 #clamp(distance / maxDist, 0., 1)
-	return dist_score
+	return dist_score #* score
 
 
 func enter():

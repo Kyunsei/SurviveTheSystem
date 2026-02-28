@@ -81,6 +81,7 @@ func Spawn_and_Kill():
 	for g in _pending_spawns:
 		#Respawn_Beast(alife, new_position)
 		Spawn_Beast(g["position"],g["Species"])
+		
 	for g in _pending_kills :
 		Kill(g)
 	_pending_spawns.clear()	
@@ -213,7 +214,7 @@ func ask_for_adding_grass(pos, sp):
 
 func Decompose(grass, delta):
 	grass["Biomass"] -= grass["Decomposition_speed"]  * GlobalSimulationParameter.simulation_speed   *delta
-	print(grass["Biomass"])
+	#print(grass["Biomass"])
 	
 
 	if grass["Biomass"] < 0:
@@ -227,7 +228,8 @@ func Kill(grass):
 		get_parent().remove_from_world_bin(grass)		
 		beast_instance_dict[grass["ID"]].queue_free()
 		beast_instance_dict.erase(grass["ID"])
-
+		if 	get_parent().current_life_count_by_species.has(grass["Species"]):
+			get_parent().current_life_count_by_species[grass["Species"]] -= 1
 
 @rpc("any_peer","call_local")
 func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
@@ -252,8 +254,11 @@ func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
 			#print(beast_instance_dict)
 
 			add_child.call_deferred(newlife)	
-
-			#_pending_spawns.append(newgrass)
+			if 	get_parent().current_life_count_by_species.has(sp):
+				get_parent().current_life_count_by_species[sp] += 1
+			else:
+				get_parent().current_life_count_by_species[sp] = 1
+				#_pending_spawns.append(newgrass)
 
 
 @rpc("any_peer","call_local")

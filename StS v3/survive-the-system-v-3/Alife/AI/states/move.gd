@@ -10,7 +10,7 @@ var isFood = true
 
 func evaluate():
 	target = null
-	var score = 0.8
+	var score = 0.5
 	var debug = "WANDER"
 
 	#var wander_dir = get_wander_direction()
