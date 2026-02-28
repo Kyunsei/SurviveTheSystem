@@ -49,11 +49,11 @@ var max_plant  = 10000
 func init():
 			$Grass_Manager.World = World
 			$beast_manager.World = World
-			$Grass_Manager.ask_for_spawn_grass(Vector3(25,0,-15),Alifedata.enum_speciesID.GRASS)
-			$Grass_Manager.ask_for_spawn_grass(Vector3(-25,0,-15),Alifedata.enum_speciesID.GRASS)
-			$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
-			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
-			$beast_manager.Spawn_Beast(Vector3(-10,0,-15),Alifedata.enum_speciesID.SHEEP)
+			#$Grass_Manager.ask_for_spawn_grass(Vector3(25,0,-15),Alifedata.enum_speciesID.GRASS)
+			#$Grass_Manager.ask_for_spawn_grass(Vector3(-25,0,-15),Alifedata.enum_speciesID.GRASS)
+			#$Grass_Manager.ask_for_spawn_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
+			#$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
+			#$beast_manager.Spawn_Beast(Vector3(-10,0,-15),Alifedata.enum_speciesID.SHEEP)
 			$Grass_Manager.ask_for_spawn_grass(Vector3(0,0,0),Alifedata.enum_speciesID.TREE)
 
 
@@ -199,12 +199,18 @@ func add(grass, pos):
 
 
 			
-func Cut(grass):
-	if grass["Species"] == Alifedata.enum_speciesID.SHEEP:	
+func Attack(grass,value):
+	grass["current_health"] -= value
+	print(grass["current_health"])
+	'if grass["current_health"] <= 0:
+		grass["Alive"]= 0'
+		
+	
+	'if grass["Species"] == Alifedata.enum_speciesID.SHEEP:	
 		$beast_manager._pending_kills.append(grass)	
 	else:
-		grass["Alive"]= 0
-		'grass["current_energy"] = clamp(grass["current_energy"]-3, 0, grass["Max_energy"])
+		grass["Alive"]= 0'
+	'grass["current_energy"] = clamp(grass["current_energy"]-3, 0, grass["Max_energy"])
 		#$Grass_Manager._pending_external_kills.append(grass)
 		#$Grass_Manager.Become_object.rpc_id(1,grass)
 		$Grass_Manager._pending_update.append([grass["ID"],grass["current_energy"],grass["Species"]])

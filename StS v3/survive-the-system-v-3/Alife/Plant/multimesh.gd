@@ -50,7 +50,8 @@ func update_drawn_grass(g):
 	#current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale),  g["position"]))
 	if g["Alive"]==0:
-		multimesh.set_instance_color(slot, Color(0.164, 0.164, 0.164, 1.0))
+		#print(color_from_biomass(g["Biomass"],200))
+		multimesh.set_instance_color(slot, color_from_biomass(g["Biomass"],500))
 	else:
 		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 
@@ -73,7 +74,7 @@ func draw_new_grass(g):
 		
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), pos))
 	if g["Alive"]==0:
-		multimesh.set_instance_color(slot, Color(0.164, 0.164, 0.164, 1.0))
+		multimesh.set_instance_color(slot, color_from_biomass(g["Biomass"],500))
 	else:
 		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 
@@ -85,6 +86,15 @@ func draw_new_grass(g):
 		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale), pos))
 		shadow.multimesh.visible_instance_count = instance_number
 
+
+func color_from_biomass(biomass: float, max_b: float) -> Color:
+	var t = clamp(biomass / max_b, 0.0, 1.0)
+
+	var hue = 0.08# lerp( 0.08,0.33, t)   # green → yellow/brown
+	var sat = lerp(.5, 0.1, t)
+	var val = lerp(0.2,1.0, t)
+
+	return Color.from_hsv(hue, sat, val)
 
 func remove_grass(g):
 	if !id_to_slot.has(g["ID"]):	

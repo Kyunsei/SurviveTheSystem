@@ -68,7 +68,7 @@ func _update_on_thread(delta):
 				if  g["current_life_state"]> 0:
 					Photosynthesis(g,delta)
 					Homeostasis(g,delta)
-					Reproduction(g,delta)
+					#Reproduction(g,delta)
 					Growth(g,delta)
 				else:
 					Germination(g)
@@ -236,22 +236,44 @@ func get_lightIndex(grass):
 
 
 func Decompose(grass,delta):
+	#print(grass["Biomass"])
 	#var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass["current_energy"] -= 10000 * GlobalSimulationParameter.simulation_speed   *delta
+	grass["Biomass"] -= grass["Decomposition_speed"]  * GlobalSimulationParameter.simulation_speed   *delta
 	#print(grass)
-	if grass["current_energy"] < 0:
+
+		
+	var current_step = int(grass["Biomass"] / 10)
+	#print(current_step)
+	if current_step != grass["last_step"]:
+		grass["last_step"] = current_step
+		_pending_update.append(grass)
+	if grass["Biomass"] < 0:
 		_pending_kills.append(grass)
 
 func Homeostasis(grass, delta):
 	var area = max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
 	grass["current_energy"] -= grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed * delta
+	Regenerate_Health(grass,delta)
 	if grass["current_energy"] < 0:
+		grass["current_health"] -= grass["Homeostasis_cost"] * GlobalSimulationParameter.simulation_speed * delta
+	if grass["current_health"] < 0:
 		grass["Alive"] = 0
+		grass["last_step"] = int(grass["Biomass"] / 10)
+		_pending_update.append(grass)
+
+		
+	#print(grass["current_energy"])
 		#_pending_kills.append(grass)
 	#print("cost: " +str(grass["Homeostasis_cost"] * area * GlobalSimulationParameter.simulation_speed * delta))
 	#grass.current_energy -= grass.Homeostasis_cost * GlobalSimulationParameter.simulation_speed
 	#if grass.current_energy < 0:
 	#	_pending_kills.append(grass)
+
+func Regenerate_Health(grass,delta):
+	if grass["current_health"] != grass["Max_health"]:
+		var value_regen = min(grass["current_energy"]/2, grass["Max_health"] - grass["current_health"]) * GlobalSimulationParameter.simulation_speed * delta
+		grass["current_health"] += value_regen
+		grass["current_energy"] -= value_regen
 
 func Photosynthesis(grass,delta):
 	#var tt = 0
@@ -262,7 +284,7 @@ func Photosynthesis(grass,delta):
 			#energy_absorbed = min(World.light_array[l_i],energy_absorbed)
 			if energy_absorbed <= 0:
 				return
-			grass["current_energy"]  += energy_absorbed
+			grass["current_energy"]  = clamp(grass["current_energy"] + energy_absorbed,0 ,grass["Max_energy"])
 			var shadow_effect = 1.0
 			World.light_array[l_i] = max(World.light_array[l_i]-shadow_effect,0)
 			#tt += energy_absorbed
@@ -332,7 +354,8 @@ func Growth(g,delta):
 	#if g["current_energy"] % 5 == 0:
 	if g["current_life_state"]*3 < g["current_energy"]:	
 		g["current_life_state"] += 1
-		#_pending_update.append([g["ID"],g["current_energy"],g["Species"]])
+		g["Biomass"] += 10
+		_pending_update.append(g)
 
 
 	

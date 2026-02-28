@@ -43,9 +43,10 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 
 	#Metabolism/Growth
 	new_life["current_energy"] = 0.0
-	new_life["biomass"] = 0.0
+	new_life["Biomass"] = 10.0
 	new_life["current_energy"] = 0.0
 	new_life["current_age"] = 0.0
+	new_life["Decomposition_speed"] = 1.0
 
 	
 	#FIGHT

@@ -129,7 +129,7 @@ func UseITEM():
 					#if t["Species"] == Alifedata.enum_speciesID.GRASS :
 						#alife_manager.get_node("Grass_Manager").Cut(t)
 					if t != player.lifedata:
-						alife_manager.Cut(t)
+						alife_manager.Attack(t,5)
 
 				
 
