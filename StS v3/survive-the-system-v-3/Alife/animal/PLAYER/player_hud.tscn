@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://6qrypffsftey" path="res://Menus/char_select.tscn" id="2_ivssi"]
 [ext_resource type="PackedScene" uid="uid://c0wfphs81elqo" path="res://Menus/in_game_menu/dialogue.tscn" id="3_44h10"]
 [ext_resource type="PackedScene" uid="uid://dtgeb6wmjm6a2" path="res://Menus/in_game_menu/Inventory/inventory.tscn" id="4_0cxu6"]
+[ext_resource type="Script" uid="uid://cndfvw6tbims7" path="res://Alife/animal/PLAYER/stats_panel.gd" id="5_7oqrd"]
 
 [node name="Player_HUD" type="CanvasLayer" unique_id=1065555217]
 script = ExtResource("1_50gt6")
@@ -64,3 +65,36 @@ offset_right = -600.0
 offset_bottom = -100.0
 grow_horizontal = 0
 grow_vertical = 0
+
+[node name="StatsPanel" type="Panel" parent="." unique_id=740362920]
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+script = ExtResource("5_7oqrd")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="StatsPanel" unique_id=1689403797]
+layout_mode = 0
+offset_left = 691.0
+offset_top = 237.0
+offset_right = 764.0
+offset_bottom = 368.0
+alignment = 1
+
+[node name="HealthLabel" type="Label" parent="StatsPanel/VBoxContainer" unique_id=1553771301]
+layout_mode = 2
+text = "sfuihdhfs"
+
+[node name="EnergyLabel" type="Label" parent="StatsPanel/VBoxContainer" unique_id=623758916]
+layout_mode = 2
+
+[node name="InventoryLabel" type="Label" parent="StatsPanel/VBoxContainer" unique_id=2140108920]
+layout_mode = 2
+text = "gsdfsgfd"
+
+[node name="RangeLabel" type="Label" parent="StatsPanel/VBoxContainer" unique_id=1549657234]
+layout_mode = 2
+
+[node name="CreditLabel" type="Label" parent="StatsPanel/VBoxContainer" unique_id=614826464]
+layout_mode = 2

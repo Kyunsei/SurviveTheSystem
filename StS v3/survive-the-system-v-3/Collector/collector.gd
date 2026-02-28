@@ -2,6 +2,7 @@ extends Node3D
 
 var Biomass_collected = 0
 var max_biomass = 100
+var credit_gain = 10
 
 var factor = 0.2
 # Called when the node enters the scene tree for the first time.
@@ -69,5 +70,6 @@ func update_label():
 
 #@rpc("any_peer","call_local")
 func credit_player(player):
-	player.catnation_credits += int(Biomass_collected/10)
+	player.catnation_credits += credit_gain 
+	credit_gain += 10
 	print(player.catnation_credits)

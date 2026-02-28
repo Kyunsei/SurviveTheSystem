@@ -104,6 +104,8 @@ func _physics_process(delta: float) -> void:
 				pick_up.rpc_id(1)
 				await get_tree().create_timer(0.2).timeout
 				Area3d.hide()
+			if Input.is_action_just_pressed("F2") :
+				show_stats_menu()
 				
 			if Input.is_action_just_pressed("Action") :
 				action()#.rpc_id(1)
@@ -220,7 +222,13 @@ func Drop():
 			alife_manager.add(item_dropped,player.position)	
 
 		#player.drop(0, 1)
-
+#@rpc("any_peer","call_remote")
+func show_stats_menu():
+	player.update_status_of_player()
+	if player.get_node("Player_HUD").get_node("StatsPanel").visible :
+		player.get_node("Player_HUD").get_node("StatsPanel").hide()
+	else :
+		player.get_node("Player_HUD").get_node("StatsPanel").show()
 
 
 '@rpc("any_peer","call_remote")

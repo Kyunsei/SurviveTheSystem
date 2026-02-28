@@ -117,6 +117,7 @@ func _ready() -> void:
 	if multiplayer.is_server():
 		health_bar.max_value = lifedata["Max_health"]
 		energy_bar.max_value = lifedata["Max_energy"]
+		update_status_of_player()
 		
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :
@@ -183,7 +184,13 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 
 func death():
 	pass
-	
+
+
+func update_status_of_player():
+		print("somethinf status")
+		get_node("Player_HUD").get_node("StatsPanel").update_status()
+
+
 @rpc("any_peer","call_local")
 func update_bar(bartype,value, MaxValue):
 	if bartype ==1 :
