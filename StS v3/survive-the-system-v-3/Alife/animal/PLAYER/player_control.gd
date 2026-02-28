@@ -108,7 +108,7 @@ func _physics_process(delta: float) -> void:
 				show_stats_menu()
 				
 			if Input.is_action_just_pressed("Action") :
-				action()#.rpc_id(1)
+				action()
 				
 			if Input.is_action_just_pressed("Drop"):
 				Drop.rpc_id(1)
@@ -167,6 +167,12 @@ func eat_holding_item() :
 
 #@rpc("any_peer","call_local")
 func action():
+	var collision = Action_area.get_node("CollisionShape3D")
+	collision.shape = collision.shape.duplicate()
+	var box_area = collision.shape
+	box_area.size = Vector3.ONE *player.pickup_range_upgrade
+	print(player.pickup_range_upgrade)
+	print(collision.shape.size)
 	var interacted_areas = Action_area.get_overlapping_areas()
 
 	for area in interacted_areas:

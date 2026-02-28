@@ -30,8 +30,14 @@ var current_hunger = max_hunger
 
 #upgrades variable here
 var catnation_credits = 0
-var capacity = 0.0
-var inventory_capacity_upgrade = capacity/5.0 + 1.0
+var inv_capacity = 0.0
+var inventory_capacity_upgrade = inv_capacity/5.0 + 1.0
+var pickup_capacity = 0.0
+var pickup_range_upgrade = pickup_capacity*5.0 + 1.0
+var health_upgrade_cost = 2
+var inventory_upgrade_cost = 2
+var energy_upgrade_cost = 2
+var range_upgrade_cost = 2
 
 #INVENTORY PART
 var inventory_HUD 
