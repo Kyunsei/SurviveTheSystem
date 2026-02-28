@@ -141,7 +141,9 @@ func _process(delta: float) -> void:
 		if lifedata["current_energy"] <= 0:
 			lifedata["current_health"] -= 1*delta
 		if lifedata["current_health"] <= 0:
-			death()
+			Die()
+			Die.rpc_id(int(name))
+
 		update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
 		update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
 
@@ -160,8 +162,11 @@ func change_bin():
 			get_parent().remove_from_world_bin(lifedata)
 			get_parent().put_in_world_bin(lifedata)
 
-
-
+@rpc("any_peer","call_local")
+func Die():
+	lifedata["Alive"] = 0
+	$MeshInstance3D.get_active_material(0).albedo_color =Color()
+	
 
 
 
