@@ -3,7 +3,7 @@ extends CharacterBody3D
 
 
 @export var max_speed = 500
-@export var sprint_speed = 1000
+@export var sprint_speed = max_speed*2
 @export var gravity = 60
 @export var base_jump = 25
 @export var fall_gravity := 90
@@ -169,6 +169,7 @@ func change_bin():
 func Die():
 	lifedata["Alive"] = 0
 	$MeshInstance3D.get_active_material(0).albedo_color =Color()
+	death()
 	
 
 
@@ -183,7 +184,10 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 		pass
 
 func death():
-	pass
+	max_speed = 0
+	base_jump = 0
+	$MeshInstance3D.hide()
+	$CatBones.show()
 
 
 func update_status_of_player():

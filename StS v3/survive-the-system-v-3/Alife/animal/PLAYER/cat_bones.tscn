@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://dv0s2jhvhfe0v"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ext32"]
+size = Vector3(0.1, 1, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_4nyxu"]
+size = Vector3(0.1, 0.1, 0.8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_66p47"]
+size = Vector3(0.3, 0.1, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rrq63"]
+size = Vector3(0.4, 0.2, 0.2)
+
+[sub_resource type="PrismMesh" id="PrismMesh_xbr7h"]
+left_to_right = 1.0
+size = Vector3(0.1, 0.1, 0.1)
+
+[node name="CatBones" type="Node3D" unique_id=853951407]
+
+[node name="column" type="MeshInstance3D" parent="." unique_id=1450192557]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+mesh = SubResource("BoxMesh_ext32")
+
+[node name="Vertebrea" type="MeshInstance3D" parent="." unique_id=374190593]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.2, 0)
+mesh = SubResource("BoxMesh_4nyxu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Vertebrea" unique_id=138501761]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20000002, 0, 0.35)
+mesh = SubResource("BoxMesh_66p47")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Vertebrea" unique_id=1633905309]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20000002, 0, -0.35)
+mesh = SubResource("BoxMesh_66p47")
+
+[node name="Vertebrea2" type="MeshInstance3D" parent="." unique_id=1989440235]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.4, 0)
+mesh = SubResource("BoxMesh_4nyxu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Vertebrea2" unique_id=386366343]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20000002, 0, 0.35)
+mesh = SubResource("BoxMesh_66p47")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Vertebrea2" unique_id=662801401]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20000002, 0, -0.35)
+mesh = SubResource("BoxMesh_66p47")
+
+[node name="Vertebrea3" type="MeshInstance3D" parent="." unique_id=2116220761]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.6, 0)
+mesh = SubResource("BoxMesh_4nyxu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Vertebrea3" unique_id=1387850085]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20000002, 0, 0.35)
+mesh = SubResource("BoxMesh_66p47")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Vertebrea3" unique_id=75733208]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20000002, 0, -0.35)
+mesh = SubResource("BoxMesh_66p47")
+
+[node name="Vertebrea4" type="MeshInstance3D" parent="." unique_id=713634573]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.1, 0.8, 0)
+mesh = SubResource("BoxMesh_4nyxu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Vertebrea4" unique_id=1625873150]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20000002, 0, 0.35)
+mesh = SubResource("BoxMesh_66p47")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Vertebrea4" unique_id=1132129977]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20000002, 0, -0.35)
+mesh = SubResource("BoxMesh_66p47")
+
+[node name="boneHead" type="MeshInstance3D" parent="." unique_id=1036963855]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 1, 0)
+mesh = SubResource("BoxMesh_rrq63")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="boneHead" unique_id=1526146788]
+transform = Transform3D(2.9802322e-08, 0, -1, 0, 1, 0, 1, 0, 2.9802322e-08, 0, 0.14999998, 0.05)
+mesh = SubResource("PrismMesh_xbr7h")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="boneHead" unique_id=818431376]
+transform = Transform3D(5.7620454e-08, 0, 1, 0, 1, 0, -1, 0, 5.7620454e-08, 0, 0.14999998, -0.05)
+mesh = SubResource("PrismMesh_xbr7h")
