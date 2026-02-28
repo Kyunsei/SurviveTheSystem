@@ -13,5 +13,5 @@ func _process(delta: float) -> void:
 
 func update_status():
 	print("statsPanel Updated")
-	if multiplayer.is_sevrer():
+	if multiplayer.is_server():
 		$VBoxContainer/HealthLabel.text = str(get_parent().get_parent().lifedata["current_health"]) + "/" + str(get_parent().get_parent().lifedata["Max_health"])
