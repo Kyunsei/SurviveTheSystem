@@ -79,6 +79,7 @@ func update(delta):
 
 func Spawn_and_Kill():		
 	for g in _pending_spawns:
+		#Respawn_Beast(alife, new_position)
 		Spawn_Beast(g["position"],g["Species"])
 	for g in _pending_kills :
 		Kill(g)
@@ -212,15 +213,8 @@ func ask_for_adding_grass(pos, sp):
 
 func Decompose(grass, delta):
 	grass["Biomass"] -= grass["Decomposition_speed"]  * GlobalSimulationParameter.simulation_speed   *delta
-		
-	var current_step = int(grass["Biomass"] / 10)
-	#print(current_step)
-	if  grass.has("last_step"):
-		if current_step != grass["last_step"]:
-			grass["last_step"] = current_step
-			#_pending_update.append(grass)
-	else:
-		grass["last_step"] = current_step
+	print(grass["Biomass"])
+	
 
 	if grass["Biomass"] < 0:
 		_pending_kills.append(grass)
@@ -249,7 +243,7 @@ func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
 			#newlife.current_energy = 50
 			var newgrass = alifedata.build_lifedata(id,new_position,sp)
 			newlife.lifedata = newgrass
-			newlife.lifedata["current_energy"] = 50 #TEMPORARY HERE LIKE THIS
+			#newlife.lifedata["current_energy"] = 50 #TEMPORARY HERE LIKE THIS
 
 			beast_dict[id] = newgrass
 			beast_instance_dict[id] = newlife
@@ -260,6 +254,33 @@ func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
 			add_child.call_deferred(newlife)	
 
 			#_pending_spawns.append(newgrass)
+
+
+@rpc("any_peer","call_local")
+func Respawn_Beast(alife, new_position):
+	var alife_scene : PackedScene
+	match alife["Species"]:
+		Alifedata.enum_speciesID.SHEEP:
+			alife_scene = sheep_scene
+			var newlife = alife_scene.instantiate()
+			var id = get_free_id()
+			newlife.name = str(id)
+			newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+			newlife.World = World #temp
+			#newlife.current_energy = 50
+			var newgrass = alifedata
+			newlife.lifedata = newgrass
+			#newlife.lifedata["current_energy"] = 50 #TEMPORARY HERE LIKE THIS
+			beast_dict[id] = newgrass
+			beast_instance_dict[id] = newlife
+			get_parent().put_in_world_bin(newgrass)
+			#print(beast_dict)
+			#print(beast_instance_dict)
+
+			add_child.call_deferred(newlife)	
+
+			#_pending_spawns.append(newgrass)
+
 
 @rpc("any_peer","call_local")
 func ask_for_Kill(b: Dictionary):

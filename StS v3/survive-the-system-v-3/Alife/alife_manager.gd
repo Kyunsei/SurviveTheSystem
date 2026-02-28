@@ -206,6 +206,7 @@ func add(grass, pos):
 			
 func Attack(grass,value):
 	grass["current_health"] -= value
+	print(grass["current_health"])
 	
 	#print(grass["current_health"])
 	'if grass["current_health"] <= 0:

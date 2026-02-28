@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ba3ghrf00sjvg"
-path="res://.godot/imported/sheep1.png-6c517ca1350cefc98365129ded8504bf.ctex"
+uid="uid://cmcupa8ir87f4"
+path="res://.godot/imported/sheep_dead1.png-d52a62502c4a9af8fe75b3f4d5e6b28a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/Art from STS2/sheep1.png"
-dest_files=["res://.godot/imported/sheep1.png-6c517ca1350cefc98365129ded8504bf.ctex"]
+source_file="res://Alife/animal/Herbivor/sheep_dead1.png"
+dest_files=["res://.godot/imported/sheep_dead1.png-d52a62502c4a9af8fe75b3f4d5e6b28a.ctex"]
 
 [params]
 

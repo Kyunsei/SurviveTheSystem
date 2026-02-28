@@ -41,7 +41,7 @@ func evaluate():
 		var food_dir = offset.normalized()
 
 		var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
-		final_dir += food_dir * weight
+		final_dir = food_dir # * weight
 		target = food
 		debug = "FOOD"
 

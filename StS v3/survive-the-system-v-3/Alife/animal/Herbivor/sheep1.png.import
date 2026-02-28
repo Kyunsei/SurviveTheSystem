@@ -2,9 +2,9 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cqy3pl3cheab1"
-path.s3tc="res://.godot/imported/sheep3.png-7035c50a647ba0f7ab645452a5d137a3.s3tc.ctex"
-path.etc2="res://.godot/imported/sheep3.png-7035c50a647ba0f7ab645452a5d137a3.etc2.ctex"
+uid="uid://ba3ghrf00sjvg"
+path.s3tc="res://.godot/imported/sheep1.png-ce0d1f40c8148524096d8542320f9e0b.s3tc.ctex"
+path.etc2="res://.godot/imported/sheep1.png-ce0d1f40c8148524096d8542320f9e0b.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/Art from STS2/sheep3.png"
-dest_files=["res://.godot/imported/sheep3.png-7035c50a647ba0f7ab645452a5d137a3.s3tc.ctex", "res://.godot/imported/sheep3.png-7035c50a647ba0f7ab645452a5d137a3.etc2.ctex"]
+source_file="res://Alife/animal/Herbivor/sheep1.png"
+dest_files=["res://.godot/imported/sheep1.png-ce0d1f40c8148524096d8542320f9e0b.s3tc.ctex", "res://.godot/imported/sheep1.png-ce0d1f40c8148524096d8542320f9e0b.etc2.ctex"]
 
 [params]
 

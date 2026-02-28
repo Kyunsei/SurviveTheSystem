@@ -20,7 +20,6 @@ billboard_mode = 2
 
 [sub_resource type="QuadMesh" id="QuadMesh_dndam"]
 material = SubResource("StandardMaterial3D_voeaq")
-size = Vector2(0.5, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gjfga"]
 

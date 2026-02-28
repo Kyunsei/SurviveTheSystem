@@ -100,17 +100,19 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			#new_life["Photosynthesis_range"] = 2
 			new_life["Reproduction_cost"] = 100
 			new_life["Reproduction_spread"] = 2
-			new_life["current_speed"] = 2
+			new_life["current_speed"] = 0
 
-			new_life["Max_speed"] = 5
+			new_life["Max_speed"] = 0
 			new_life["Vision_range"] = 3
 			new_life["Food_type"] = [enum_speciesID.GRASS]
 			new_life["Love_type"] = [enum_speciesID.SHEEP]
 			new_life["Danger_type"] = [enum_speciesID.TREE, enum_speciesID.CAT]
 			new_life["Max_age"] = 100.0
+			
+			new_life["current_energy"] = 20
 			new_life["Max_energy"] = 100
 
-			new_life["Sprites"] = "res://assets/Art from STS2/sheep2.png"
+			new_life["Sprites"] = "res://Alife/animal/Herbivor/sheep3.png"
 		enum_speciesID.CAT:
 			new_life["Homeostasis_cost"] = 0.6
 			new_life["Reproduction_cost"] = 100

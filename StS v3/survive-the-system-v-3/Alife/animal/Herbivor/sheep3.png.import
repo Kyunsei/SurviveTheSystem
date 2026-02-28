@@ -2,20 +2,22 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://gx2jomucefml"
-path="res://.godot/imported/sheep_dead3.png-dbc4f5afc53347b8fa15f5f9fdc1a587.ctex"
+uid="uid://cqy3pl3cheab1"
+path.s3tc="res://.godot/imported/sheep3.png-ad6545e6ff4988e85ce2f5e8570e7931.s3tc.ctex"
+path.etc2="res://.godot/imported/sheep3.png-ad6545e6ff4988e85ce2f5e8570e7931.etc2.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
+"vram_texture": true
 }
 
 [deps]
 
-source_file="res://assets/Art from STS2/sheep_dead3.png"
-dest_files=["res://.godot/imported/sheep_dead3.png-dbc4f5afc53347b8fa15f5f9fdc1a587.ctex"]
+source_file="res://Alife/animal/Herbivor/sheep3.png"
+dest_files=["res://.godot/imported/sheep3.png-ad6545e6ff4988e85ce2f5e8570e7931.s3tc.ctex", "res://.godot/imported/sheep3.png-ad6545e6ff4988e85ce2f5e8570e7931.etc2.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,7 +25,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""
@@ -37,4 +39,4 @@ process/normal_map_invert_y=false
 process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
-detect_3d/compress_to=1
+detect_3d/compress_to=0

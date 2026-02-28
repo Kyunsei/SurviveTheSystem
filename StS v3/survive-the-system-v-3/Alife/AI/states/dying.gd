@@ -4,25 +4,41 @@ class_name dying_state
 'func _ready() -> void:
 	changecolor.rpc()'
 	
+
+var dead_sprite = [
+	preload("res://Alife/animal/Herbivor/sheep_dead1.png"),
+	preload("res://Alife/animal/Herbivor/sheep_dead2.png"),
+	preload("res://Alife/animal/Herbivor/sheep_dead3.png"),
+	preload("res://Alife/animal/Herbivor/sheep_dead3.png")
+]	
+	
 var timer = 0.5
 
 func evaluate():
 	var score = 0
-	if player.lifedata["current_energy"] <= 0:
-		score = 1
+	if player.lifedata["current_health"] <= 0 or player.lifedata["Alive"] == 0:
+		score = 10.
 	return score
 
-@rpc("any_peer","call_local")
-func changecolor():
-	var mesh_instance = player.get_node("MeshInstance3D")
-	'var new_mat = StandardMaterial3D.new()
-	new_mat.albedo_color = Color(0.249, 0.24, 0.333, 1.0)
-	mesh_instance.set_surface_override_material(0, new_mat)'
-	
-	mesh_instance.get_active_material(0).albedo_color =  Color(0.249, 0.24, 0.333, 1.0)
+@rpc("any_peer","call_remote")
+func send_new_sprite(state):
+		var mi := player.get_node("MeshInstance3D") as MeshInstance3D
+		var src_mat := mi.get_active_material(0)
+		var unique_mat := src_mat.duplicate(true) as StandardMaterial3D
+		unique_mat.resource_local_to_scene = true
+		unique_mat.albedo_texture = dead_sprite[state]
+		mi.set_surface_override_material(0, unique_mat) 
+		#var q := QuadMesh.new()
+		#q.size = Vector2(size_array[state], size_array[state])
+		#mi.mesh = q                                     
+		#mi.position.y = (q.size.y-1) / 2.0
+
+
+
 
 func enter():
-	timer = 0.5
+	send_new_sprite.rpc(player.lifedata["current_life_state"])
+
 	#changecolor.rpc()
 	
 
@@ -37,6 +53,4 @@ func physics_update(delta):
 	pass
 
 func update(delta):
-	timer -= delta
-	if timer <= 0:
-		player.get_parent().ask_for_Kill(player.lifedata)
+	pass
