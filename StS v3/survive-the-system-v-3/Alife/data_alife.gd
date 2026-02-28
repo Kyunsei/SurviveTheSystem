@@ -132,5 +132,19 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 
 
 
-func Growth():
-	print("growth")
+static func Growth(alife):
+	match alife["Species"]:
+		enum_speciesID.TREE:
+			if alife["current_life_state"] < 6:
+				if alife["current_energy"] > 100:
+					alife["current_life_state"] += 1
+					alife["current_energy"] -= 50
+					alife["Biomass"] += 50
+					return true
+		enum_speciesID.GRASS:
+			if alife["current_life_state"] < 6:
+				if alife["current_energy"] > 10:
+					alife["current_life_state"] += 1
+					alife["current_energy"] -= 5
+					alife["Biomass"] += 5
+					return true

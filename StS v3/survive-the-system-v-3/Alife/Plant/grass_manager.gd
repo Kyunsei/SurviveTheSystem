@@ -68,7 +68,7 @@ func _update_on_thread(delta):
 				if  g["current_life_state"]> 0:
 					Photosynthesis(g,delta)
 					Homeostasis(g,delta)
-					#Reproduction(g,delta)
+					Reproduction(g,delta)
 					Growth(g,delta)
 				else:
 					Germination(g)
@@ -244,9 +244,13 @@ func Decompose(grass,delta):
 		
 	var current_step = int(grass["Biomass"] / 10)
 	#print(current_step)
-	if current_step != grass["last_step"]:
+	if  grass.has("last_step"):
+		if current_step != grass["last_step"]:
+			grass["last_step"] = current_step
+			_pending_update.append(grass)
+	else:
 		grass["last_step"] = current_step
-		_pending_update.append(grass)
+
 	if grass["Biomass"] < 0:
 		_pending_kills.append(grass)
 
@@ -352,9 +356,7 @@ func Germination(g):
 
 func Growth(g,delta):
 	#if g["current_energy"] % 5 == 0:
-	if g["current_life_state"]*3 < g["current_energy"]:	
-		g["current_life_state"] += 1
-		g["Biomass"] += 10
+	if Alifedata.Growth(g):
 		_pending_update.append(g)
 
 

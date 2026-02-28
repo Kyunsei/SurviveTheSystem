@@ -45,7 +45,7 @@ func update_drawn_grass(g):
 		return
 	var slot = id_to_slot[g["ID"]]
 	#var current_transform = multimesh.get_instance_transform(slot)
-	var newscale = clamp(current_energy /max_energy,0.25,1)
+	var newscale = clamp( float(g["current_life_state"])/5,0.2,1)
 		#newtransform.origin =  g["position"] #Vector3(slot * 2.0, 0, 0)
 	#current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * newscale),  g["position"]))
@@ -66,7 +66,7 @@ func draw_new_grass(g):
 	
 	id_to_slot[g["ID"]] = slot
 	slot_to_id[slot] = g["ID"]	
-	var newscale = clamp(g["current_energy"] /max_energy,0.25,1)
+	var newscale = clamp( float(g["current_life_state"])/5,0.2,1)
 	var pos = g["position"]
 	#current_transform.basis = Basis().scaled(Vector3.ONE * newscale)
 	if g["current_life_state"] == 0:

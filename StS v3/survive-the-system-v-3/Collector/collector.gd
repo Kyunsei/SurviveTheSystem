@@ -29,7 +29,7 @@ func interact(player):
 		var temp_duplicate_list = item_hold["Data"].duplicate()
 		for o in temp_duplicate_list:
 			#print(o)
-			Biomass_collected += o["current_energy"]*factor
+			Biomass_collected += o["Biomass"]*factor
 			inventory.remove_selected(int(player.name))
 
 
