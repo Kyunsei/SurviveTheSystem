@@ -40,6 +40,7 @@ func evaluate():
 
 	#score = dist_score * energy_scorew
 	direction.y = 0
+	#print(target)
 	return score
 
 func enter():
@@ -56,6 +57,7 @@ func physics_update(delta):
 
 	var step = player.lifedata["current_speed"] * GlobalSimulationParameter.simulation_speed *delta
 	if target:
+		
 		var dist_to_target	= (target["position"] - player.position).length()
 		if dist_to_target <= step and isFood:
 			player.position = target["position"]

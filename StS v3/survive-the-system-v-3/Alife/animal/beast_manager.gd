@@ -300,7 +300,8 @@ func Cut(grass):
 
 func homeostasis(grass, delta):
 	var area = 1# max(1,(grass["Photosynthesis_range"] * 2) * (grass["Photosynthesis_range"] * 2 ))
-	grass.lifedata["current_energy"] -= 0.5 * GlobalSimulationParameter.simulation_speed #* delta
+	grass.lifedata["current_energy"] -= 0.5 * GlobalSimulationParameter.simulation_speed * delta
+	#print(grass.lifedata["current_energy"])
 	#if grass["current_energy"] < 0:
 	#	_pending_kills.append(grass)
 

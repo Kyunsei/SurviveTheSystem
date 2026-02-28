@@ -32,7 +32,7 @@ var wandertimer = 0
 
 
 func _enter_tree() -> void:
-	lifedata["current_speed"] = 0.5
+	lifedata["current_speed"] = 50
 	print("hello Mr sheep")
 	#size = Vector3(1,1,1) #Temporary...
 	#max_energy = 1000
