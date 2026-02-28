@@ -137,7 +137,9 @@ func _physics_process(delta: float) -> void:
 func _process(delta: float) -> void:
 	if multiplayer.is_server():
 		if lifedata["current_energy"] > 0:
-			lifedata["current_energy"] -= 1*delta
+			lifedata["current_energy"] -= 0.5*delta
+		if lifedata["current_energy"] > 49 and lifedata["current_health"]<lifedata["Max_health"]:
+			lifedata["current_health"] += 1*delta
 		if lifedata["current_energy"] <= 0:
 			lifedata["current_health"] -= 1*delta
 		if lifedata["current_health"] <= 0:
