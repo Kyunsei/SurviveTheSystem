@@ -155,7 +155,12 @@ func _process(delta: float) -> void:
 
 		update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
 		update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
+		sync_lifedata.rpc_id(int(name), lifedata)
 
+
+@rpc("any_peer","call_local")
+func sync_lifedata(data: Dictionary):
+	lifedata = data
 	
 @rpc("any_peer","call_local")
 func change_bin():

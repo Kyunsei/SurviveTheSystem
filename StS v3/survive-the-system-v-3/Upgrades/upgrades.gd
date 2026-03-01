@@ -16,6 +16,7 @@ func _ready():
 	$PopupMenu.add_item("", 3)
 	$PopupMenu.add_item("", 4)
 	$PopupMenu.set_item_disabled(4, true)
+	$PopupMenu.set_item_disabled(3, true)
 
 			
 func interact(player):

@@ -11,7 +11,13 @@ func _process(delta: float) -> void:
 	pass
 
 
+
 func update_status():
-	print("statsPanel Updated")
-	if multiplayer.is_server():
-		$VBoxContainer/HealthLabel.text = str(get_parent().get_parent().lifedata["current_health"]) + "/" + str(get_parent().get_parent().lifedata["Max_health"])
+	var player = get_parent().get_parent()
+	if player.lifedata.has("current_health") and player.lifedata.has("Max_health"):
+		$VBoxContainer/HealthLabel.text = "Health : " +str(int(player.lifedata["current_health"])) + "/" + str(player.lifedata["Max_health"])
+		$VBoxContainer/EnergyLabel.text = "Energy : " + str(int(player.lifedata["current_energy"])) + "/" + str(player.lifedata["Max_energy"])
+		$VBoxContainer/InventoryLabel.text = str("Inventory size : " +str(player.inventory_capacity_upgrade) +" times bigger")
+		
+	else:
+		print("lifedata not ready yet to update status: ", player.lifedata)
