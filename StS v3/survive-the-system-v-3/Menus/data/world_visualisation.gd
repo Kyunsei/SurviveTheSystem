@@ -6,6 +6,7 @@ var mm
 var panel_size : Vector2
 var color_list = [Color(0.0, 0.345, 0.0, 1.0),Color(0.611, 0.0, 0.0, 1.0),Color(0.0, 0.117, 1.0, 1.0),Color(0.635, 0.635, 0.635, 1.0),Color(0.583, 0.583, 0.583, 1.0),Color(0.574, 0.574, 0.574, 1.0),Color(0.826, 0.826, 0.826, 1.0)]
 var isOn
+var update_time = 1
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	alifemanager = get_parent().get_parent().get_parent().get_node("Alife manager")
@@ -15,7 +16,7 @@ func _ready() -> void:
 	
 	
 	mm.transform_format = MultiMesh.TRANSFORM_2D
-	mm.instance_count = 50000
+	mm.instance_count = 1000000
 	var quad = QuadMesh.new()
 	quad.size = Vector2(4, 4)
 
@@ -25,8 +26,11 @@ func _ready() -> void:
 	update()
 
 func _process(delta: float) -> void:
+	update_time -= delta
 	if isOn:	
-		update()
+		if update_time < 0:
+			update()
+			update_time = 1
 
 func update():
 	'for i in range(mm.instance_count):
@@ -34,15 +38,33 @@ func update():
 		var t = Transform2D(0, pos)
 		mm.set_instance_transform_2d(i, t)
 		mm.set_instance_color(i, Color(1, 0, 0)) # red'
+	#mm.instance_count = 50000
 
 	var i = 0
 	for g in alifemanager.get_node("Grass_Manager").grass_dict.values():
-		var t = Transform2D(0, position_conversion(g["position"]))
+		var t : Transform2D
+	
+		var pos = position_conversion(g["position"])
+		if g["Species"] == Alifedata.enum_speciesID.GRASS:
+
+			t = Transform2D(
+				Vector2(0.5, 0),
+				Vector2(0, 0.5),
+				pos
+			)
+		else:
+			t = Transform2D(0, position_conversion(g["position"]))
+		
 
 		mm.set_instance_transform_2d(i, t)
+
+#var transforms = mm.get_instance_transform_array()
+#transforms[i] = t
+#mm.set_instance_transform_array(transforms)
+		
 		mm.set_instance_color(i, color_list[g["Species"]]) 
 		i+= 1
-		
+	
 	for g in alifemanager.get_node("beast_manager").beast_dict.values():
 		var t = Transform2D(0, position_conversion(g["position"]))
 
@@ -50,7 +72,7 @@ func update():
 		mm.set_instance_color(i, color_list[g["Species"]]) 
 		i+= 1
 
-
+	mm.visible_instance_count = alifemanager.get_node("beast_manager").beast_dict.size() +  alifemanager.get_node("Grass_Manager").grass_dict.size()
 
 func position_conversion(pos):
 	var newpos
@@ -90,3 +112,7 @@ func _on_button_pressed() -> void:
 		isOn =false
 	else:
 		isOn = true
+
+
+func _on_line_edit_text_submitted(new_text: String) -> void:
+	update_time = float(new_text)
