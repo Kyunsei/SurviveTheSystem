@@ -191,6 +191,7 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 
 func death():
 	max_speed = 0
+	sprint_speed = 0
 	base_jump = 0
 	$MeshInstance3D.hide()
 	$CatBones.show()
