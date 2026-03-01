@@ -19,6 +19,8 @@ var life_no_pool_index = 0
 
 var current_life_count_by_species = {}
 
+#multiplayer data
+var player_array = []
 
 #DATA
 var timer = 0.5
@@ -49,7 +51,7 @@ var max_plant  = 10000
 func init():
 			$Grass_Manager.World = World
 			$beast_manager.World = World
-			for i in range(0):
+			for i in range(500):
 				$Grass_Manager.ask_for_spawn_new_grass(Vector3(0+i,0,0+i),Alifedata.enum_speciesID.GRASS)
 			
 
@@ -169,7 +171,7 @@ func spawn_player(id,pos):
 		current_life_count_by_species[Alifedata.enum_speciesID.CAT] += 1
 	else:
 		current_life_count_by_species[Alifedata.enum_speciesID.CAT] = 1
-
+	player_array.append(new_player)
 
 
 
@@ -249,7 +251,7 @@ func get_alife_in_area(pos_center, area):
 			
 
 					var bin = World.bin_array[index]
-					print(bin)
+					#print(bin)
 					if bin:
 						for element in bin:
 							if element is Dictionary:

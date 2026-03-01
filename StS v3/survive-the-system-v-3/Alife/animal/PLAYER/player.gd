@@ -106,10 +106,15 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 
 @rpc("any_peer","call_remote")
-func go_back_to_ship():
-	#print(multiplayer.get_unique_id())
-	position = get_parent().get_parent().get_node("SPACESHIP").position
+func go_back_to_ship(pos):
+	var ship_pos = get_parent().get_parent().get_node("SPACESHIP").position
+	ship_pos.x += pos
+	position = ship_pos
 
+@rpc("any_peer","call_remote")
+func move_player_position(pos):
+	#print(multiplayer.get_unique_id())
+	position = pos
 
 
 func _ready() -> void:
@@ -117,7 +122,7 @@ func _ready() -> void:
 		%Camera3D.current = true
 		World = get_parent().get_parent().get_node("World") #NEED TO BE CHANGED TO ASK SERVER INFO
 		#print(World)
-		go_back_to_ship()
+		go_back_to_ship(0)
 		dialogue_box = $Player_HUD/Dialogue
 		inventory_HUD = $Player_HUD/Inventory
 	if multiplayer.is_server():

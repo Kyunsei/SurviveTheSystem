@@ -15,13 +15,14 @@ func evaluate():
 func enter():
 	#if player.current_energy >= player.max_energy:
 	var newpos_ori = player.position # + Vector3(randf_range(-10,10),0,randf_range(-10, 10)) 
-	for i in range(3):
+	for i in range(1):
 		var newpos = newpos_ori + + Vector3(randf_range(-0.8,0.8),0,randf_range(-0.8, 0.8)) 
 		newpos.x = clamp(newpos.x, -player.World.World_Size.x / 2 + 1, player.World.World_Size.x / 2 - 1)
 		newpos.z = clamp(newpos.z, -player.World.World_Size.z / 2 + 1, player.World.World_Size.z / 2 - 1)
 		player.get_parent().spawn_new_beast.rpc_id(1, newpos, player.lifedata["Species"])
 
 	player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"] - 90,0 ,player.lifedata["Max_energy"] )
+	player.lifedata["Alive"] =0
 
 func exit():
 	pass

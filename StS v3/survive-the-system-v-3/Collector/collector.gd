@@ -2,7 +2,7 @@ extends Node3D
 
 var Biomass_collected = 0
 var max_biomass = 100
-var credit_gain = 10
+var credit_gain = 0
 
 var factor = 0.2
 # Called when the node enters the scene tree for the first time.
@@ -42,11 +42,15 @@ func interact(player):
 	#player.inventory_count = 0
 	update_label()
 	if Biomass_collected >= max_biomass:
+		credit_gain += 10
 		print("BRAVO")
-		player.go_back_to_ship.rpc_id(int(player.name))
-		set_world_readiness.rpc(false)
-		#GlobalSimulationParameter.simulation_speed = 0.5
-		credit_player(player)
+		var c = 0
+		for i in player.get_parent().player_array:
+			i.go_back_to_ship.rpc_id(int(i.name),c)
+			set_world_readiness.rpc(false)
+			c +=1
+			#GlobalSimulationParameter.simulation_speed = 0.5
+			credit_player(i)
 		Biomass_collected = 0
 		max_biomass = max_biomass * 2
 		update_label()
@@ -71,5 +75,4 @@ func update_label():
 #@rpc("any_peer","call_local")
 func credit_player(player):
 	player.catnation_credits += credit_gain 
-	credit_gain += 10
 	player.lifedata["Money"] = player.catnation_credits
