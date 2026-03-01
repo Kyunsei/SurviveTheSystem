@@ -166,8 +166,7 @@ func eat_holding_item() :
 #@rpc("any_peer","call_local")
 func action():
 
-	#print(player.pickup_range_upgrade)
-	#print(collision.shape.size)
+
 	var interacted_areas = Action_area.get_overlapping_areas()
 
 	for area in interacted_areas:
@@ -185,6 +184,8 @@ func action_on_server():
 	collision.shape = collision.shape.duplicate()
 	var box_area = collision.shape
 	box_area.size = Vector3.ONE *player.pickup_range_upgrade
+	#print(player.pickup_range_upgrade)
+	#print(collision.shape.size)
 	var interacted_areas = Action_area.get_overlapping_areas()
 	for area in interacted_areas:
 		if area.get_parent().is_in_group("Collector"):
