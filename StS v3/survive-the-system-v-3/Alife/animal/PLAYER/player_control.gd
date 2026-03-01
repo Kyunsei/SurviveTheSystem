@@ -102,7 +102,7 @@ func _physics_process(delta: float) -> void:
 				pick_up.rpc_id(1)
 				await get_tree().create_timer(0.2).timeout
 				Area3d.hide()
-			if Input.is_action_just_pressed("F2") :
+			if Input.is_action_just_pressed("show_status") :
 				show_stats_menu()
 				
 			if Input.is_action_just_pressed("Action") :
