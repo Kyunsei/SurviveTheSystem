@@ -11,8 +11,10 @@ func _process(delta: float) -> void:
 	pass
 
 
+#@rpc("any_peer","call_remote")
 
 func update_status():
+	print("text")
 	var player = get_parent().get_parent()
 	if player.lifedata.has("current_health") and player.lifedata.has("Max_health"):
 		$VBoxContainer/HealthLabel.text = "Health : " +str(int(player.lifedata["current_health"])) + "/" + str(player.lifedata["Max_health"])

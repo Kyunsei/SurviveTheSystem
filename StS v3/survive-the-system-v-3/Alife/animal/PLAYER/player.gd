@@ -31,7 +31,7 @@ var current_hunger = max_hunger
 #upgrades variable here
 var catnation_credits = 0
 var inv_capacity = 0.0
-var inventory_capacity_upgrade = inv_capacity/5.0 + 1.0
+var inventory_capacity_upgrade = 1
 var pickup_capacity = 0.0
 var pickup_range_upgrade = pickup_capacity*5.0 + 1.0
 var health_upgrade_cost = 2
@@ -203,7 +203,7 @@ func death():
 
 
 func update_status_of_player():
-		print("somethinf status")
+		#print("somethinf status")
 		get_node("Player_HUD").get_node("StatsPanel").update_status()
 
 

@@ -80,8 +80,8 @@ func upgrade_inventory_capacity():
 	if p.catnation_credits >=p.inventory_upgrade_cost:
 		p.catnation_credits -=p.inventory_upgrade_cost
 		p.inventory_upgrade_cost += 1
-		p.inv_capacity += 1.0
-		p.inventory_capacity_upgrade = p.inv_capacity/5 + 1.0
+		p.inv_capacity = 0.2
+		p.inventory_capacity_upgrade += p.inv_capacity
 		print("your maximum inventory capacity is " +str(p.inventory_capacity_upgrade) +" times bigger")
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_inventory_costs.rpc_id(int(p.name), p.inventory_upgrade_cost)
