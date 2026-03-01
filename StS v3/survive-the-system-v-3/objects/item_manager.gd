@@ -5,7 +5,7 @@ func spawn_item(itemdata,pos):
 	var scene = load(itemdata["inventory_path"])
 	var newitem = scene.instantiate()
 	newitem.position = pos
-	add_child(newitem)
+	add_child(newitem,true)
 	newitem.Add()
 
 

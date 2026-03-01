@@ -22,3 +22,7 @@ tree_scene = ExtResource("5_ruoec")
 
 [node name="Item_Manager" type="Node3D" parent="." unique_id=745222982]
 script = ExtResource("8_byu03")
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Item_Manager" unique_id=1684953852]
+_spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk")
+spawn_path = NodePath("..")
