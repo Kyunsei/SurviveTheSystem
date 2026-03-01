@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://dfapvv6me7ncs"]
+
+[ext_resource type="Script" uid="uid://lm0d865dtd3k" path="res://Menus/data/world_visualisation.gd" id="1_00cve"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0xxk1"]
+vertex_color_use_as_albedo = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_m88ol"]
+material = SubResource("StandardMaterial3D_0xxk1")
+
+[sub_resource type="MultiMesh" id="MultiMesh_4a1by"]
+use_colors = true
+mesh = SubResource("QuadMesh_m88ol")
+
+[node name="WorldVisualisation" type="Control" unique_id=2031418219]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_00cve")
+
+[node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="." unique_id=112460]
+multimesh = SubResource("MultiMesh_4a1by")
+
+[node name="Panel" type="Panel" parent="." unique_id=1633757764]
+layout_mode = 0
+offset_right = 400.0
+offset_bottom = 400.0
+
+[node name="Button" type="Button" parent="." unique_id=862328831]
+layout_mode = 0
+offset_left = -64.0
+offset_top = 173.0
+offset_right = -8.0
+offset_bottom = 204.0
+text = "on/off"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

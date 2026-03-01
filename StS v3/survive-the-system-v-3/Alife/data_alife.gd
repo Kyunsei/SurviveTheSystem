@@ -106,7 +106,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Vision_range"] = 4
 			new_life["Food_type"] = [enum_speciesID.GRASS]
 			new_life["Love_type"] = [enum_speciesID.SHEEP]
-			new_life["Danger_type"] = [enum_speciesID.TREE, enum_speciesID.CAT]#, enum_speciesID.SHEEP]
+			new_life["Danger_type"] = [enum_speciesID.CAT]#, enum_speciesID.SHEEP]
 			new_life["Max_age"] = 100.0
 			
 			new_life["current_energy"] = 20
