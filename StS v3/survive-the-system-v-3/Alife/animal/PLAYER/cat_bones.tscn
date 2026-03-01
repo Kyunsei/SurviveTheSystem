@@ -1,18 +1,65 @@
 [gd_scene format=3 uid="uid://dv0s2jhvhfe0v"]
 
+[ext_resource type="Texture2D" uid="uid://d3riehjuhvo1r" path="res://assets/assets kyun/Bones_texture2.png" id="1_4nyxu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_66p47"]
+albedo_texture = ExtResource("1_4nyxu")
+uv1_scale = Vector3(0.5, 0.1, 0.5)
+uv1_triplanar = true
+uv2_scale = Vector3(1, 1, 0.1)
+uv2_triplanar_sharpness = 2.828427
+texture_filter = 0
+
 [sub_resource type="BoxMesh" id="BoxMesh_ext32"]
+material = SubResource("StandardMaterial3D_66p47")
 size = Vector3(0.1, 1, 0.1)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rrq63"]
+albedo_texture = ExtResource("1_4nyxu")
+uv1_scale = Vector3(0.5, 0.1, 0.5)
+uv1_triplanar = true
+uv2_scale = Vector3(1, 1, 0.1)
+uv2_triplanar_sharpness = 2.828427
+texture_filter = 0
+
 [sub_resource type="BoxMesh" id="BoxMesh_4nyxu"]
+material = SubResource("StandardMaterial3D_rrq63")
 size = Vector3(0.1, 0.1, 0.8)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xbr7h"]
+albedo_texture = ExtResource("1_4nyxu")
+uv1_scale = Vector3(0.5, 0.1, 0.5)
+uv1_triplanar = true
+uv2_scale = Vector3(1, 1, 0.1)
+uv2_triplanar_sharpness = 2.828427
+texture_filter = 0
+
 [sub_resource type="BoxMesh" id="BoxMesh_66p47"]
+material = SubResource("StandardMaterial3D_xbr7h")
 size = Vector3(0.3, 0.1, 0.1)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kf436"]
+albedo_texture = ExtResource("1_4nyxu")
+uv1_scale = Vector3(0.5, 0.1, 0.5)
+uv1_triplanar = true
+uv2_scale = Vector3(1, 1, 0.1)
+uv2_triplanar_sharpness = 2.828427
+texture_filter = 0
+
 [sub_resource type="BoxMesh" id="BoxMesh_rrq63"]
+material = SubResource("StandardMaterial3D_kf436")
 size = Vector3(0.4, 0.2, 0.2)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aq2ao"]
+albedo_texture = ExtResource("1_4nyxu")
+uv1_scale = Vector3(0.5, 0.1, 0.5)
+uv1_triplanar = true
+uv2_scale = Vector3(1, 1, 0.1)
+uv2_triplanar_sharpness = 2.828427
+texture_filter = 0
+
 [sub_resource type="PrismMesh" id="PrismMesh_xbr7h"]
+material = SubResource("StandardMaterial3D_aq2ao")
 left_to_right = 1.0
 size = Vector3(0.1, 0.1, 0.1)
 
