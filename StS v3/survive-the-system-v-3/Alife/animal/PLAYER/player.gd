@@ -123,7 +123,7 @@ func _ready() -> void:
 	if multiplayer.is_server():
 		health_bar.max_value = lifedata["Max_health"]
 		energy_bar.max_value = lifedata["Max_energy"]
-		update_status_of_player()
+		#update_status_of_player(inventory_capacity_upgrade, catnation_credits)
 		
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :
@@ -204,6 +204,9 @@ func death():
 
 func update_status_of_player():
 		#print("somethinf status")
+		#lifedata["Money"] = catnation_credits
+		#lifedata["Inventory_capacity"] = inventory_capacity_upgrade
+		#print(lifedata["Money"])
 		get_node("Player_HUD").get_node("StatsPanel").update_status()
 
 

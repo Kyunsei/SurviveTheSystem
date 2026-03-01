@@ -55,10 +55,12 @@ func prep_alife(alife):
 
 	item["Data"] = [alife]
 	#item["inventory_path"] = null
-	item["stack_amount"] = floori(player.inventory_capacity_upgrade*1000.0/alife["Max_energy"])
+	item["stack_amount"] = floori(player.inventory_capacity_upgrade*1000.0/alife["Max_energy"]) #update here
+	print(player.inventory_capacity_upgrade)
 	#print(item)
 	return item
-	
+
+
 func add_item(item, peer_id):
 	for y in range(column_size):
 		for x in range(row_size):
@@ -133,6 +135,9 @@ func change_index(peer_id,idx):
 
 func _process(delta: float) -> void:
 	if player.is_multiplayer_authority():
+		#print(player.inventory_capacity_upgrade)
+		#print(multiplayer.get_unique_id())
+		#print ("----")
 		if Input.is_action_just_pressed("slot1"):
 			select_item(0,int(player.name))
 		if Input.is_action_just_pressed("slot3"):

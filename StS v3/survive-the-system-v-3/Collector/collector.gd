@@ -72,4 +72,4 @@ func update_label():
 func credit_player(player):
 	player.catnation_credits += credit_gain 
 	credit_gain += 10
-	print(player.catnation_credits)
+	player.lifedata["Money"] = player.catnation_credits

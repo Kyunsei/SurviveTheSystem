@@ -33,6 +33,7 @@ func _on_popup_menu_id_pressed(id):
 	match id:
 		0:
 			upgrade_inventory_capacity.rpc_id(1)
+			#upgrade_inventory_capacity.rpc_id(int(p.name))
 		1:
 			upgrade_health.rpc_id(1)
 		2:
@@ -61,6 +62,7 @@ func upgrade_health():
 		p.lifedata["Max_health"] += 20
 		p.lifedata["current_health"] = p.lifedata["Max_health"]
 		print("your max health is now " +str(p.lifedata["Max_health"]))
+		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_health_costs.rpc_id(int(p.name), p.health_upgrade_cost)
 
@@ -72,17 +74,20 @@ func upgrade_energy():
 		p.lifedata["Max_energy"] += 20
 		p.lifedata["current_energy"] = p.lifedata["Max_energy"]
 		print("your max energy is now " +str(p.lifedata["Max_energy"]))
+		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_energy_costs.rpc_id(int(p.name), p.energy_upgrade_cost)
 
-@rpc("any_peer","call_remote")
+#@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func upgrade_inventory_capacity():
 	if p.catnation_credits >=p.inventory_upgrade_cost:
 		p.catnation_credits -=p.inventory_upgrade_cost
 		p.inventory_upgrade_cost += 1
-		p.inv_capacity = 0.2
-		p.inventory_capacity_upgrade += p.inv_capacity
+		p.inventory_capacity_upgrade += 0.2
+		p.lifedata["Inventory_capacity"] = p.inventory_capacity_upgrade
 		print("your maximum inventory capacity is " +str(p.inventory_capacity_upgrade) +" times bigger")
+		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_inventory_costs.rpc_id(int(p.name), p.inventory_upgrade_cost)
 		
@@ -94,14 +99,18 @@ func upgrade_range():
 		p.pickup_capacity += 1.0
 		p.pickup_range_upgrade = p.pickup_capacity*5 + 1.0
 		print("your maximum pick-up range is " +str(p.pickup_range_upgrade) +" times bigger")
+		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
 
 @rpc("any_peer","call_remote")
 func update_credits(new_credits):
 	credits = new_credits
-	$PopupMenu.set_item_text(4, str(credits) + " Cat Nation Imperial Credits")
 
+	$PopupMenu.set_item_text(4, str(credits) + " Cat Nation Imperial Credits")
+#@rpc("any_peer","call_local")
+#func update_money(new_money):
+	#p.lifedata["Money"] = new_money
 
 @rpc("any_peer","call_remote")
 func update_inventory_costs(new_cost):
