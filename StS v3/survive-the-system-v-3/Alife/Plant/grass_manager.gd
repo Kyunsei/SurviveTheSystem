@@ -214,6 +214,10 @@ func get_lightIndex(grass):
 	grass["light_index"] = []
 	if grass["Photosynthesis_range"] == 0:
 		var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
+		if pos.x <= -World.World_Size.x/2 or pos.x >= World.World_Size.x/2:
+				return
+		if pos.z <= -World.World_Size.z/2 or pos.z >= World.World_Size.z/2:
+				return
 		grass["light_index"].append(World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size))
 	else:
 		for i in range(-grass["Photosynthesis_range"],grass["Photosynthesis_range"]):

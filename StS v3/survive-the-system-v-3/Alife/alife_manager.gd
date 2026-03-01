@@ -52,7 +52,8 @@ func init():
 			$Grass_Manager.World = World
 			$beast_manager.World = World
 			for i in range(500):
-				$Grass_Manager.ask_for_spawn_new_grass(Vector3(0+i,0,0+i),Alifedata.enum_speciesID.GRASS)
+				var pos = get_random_worldpos()
+				$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.GRASS)
 			
 
 			#$Grass_Manager.ask_for_spawn_grass(Vector3(-25,0,-15),Alifedata.enum_speciesID.GRASS)
@@ -65,6 +66,11 @@ func init():
 			$Grass_Manager.ask_for_spawn_new_grass(Vector3(10,0,0),Alifedata.enum_speciesID.TREE)
 			$Grass_Manager.ask_for_spawn_new_grass(Vector3(0,0,10),Alifedata.enum_speciesID.TREE)
 
+
+func get_random_worldpos():
+	var x = randf_range(-World.World_Size.x/2,World.World_Size.x/2)
+	var z = randf_range(-World.World_Size.z/2,World.World_Size.z/2)
+	return Vector3(x,0,z)
 
 
 func update_life_count():
