@@ -72,6 +72,8 @@ func update(delta):
 		else:
 			Decompose(b.lifedata,delta)
 		
+		Collision(b)
+		
 	Spawn_and_Kill()
 	
 		#move(b)
@@ -125,7 +127,7 @@ func view_closest(view_range,array_num,b,sp):
 			current_pos.x = b.position.x 
 			current_pos.z = b.position.z
 			bin_index = get_parent().get_worldbin_index(current_pos)
-			if bin_index and array_num[bin_index] >0:			
+			if bin_index  != null and array_num[bin_index] >0:			
 				closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
 				var distance = b.position.distance_to(closest_in_bin.position)
 				if distance < closest_distance:
@@ -142,7 +144,7 @@ func view_closest(view_range,array_num,b,sp):
 				current_pos.x = b.position.x + World.bin_size.x*dx
 				current_pos.z = b.position.z + World.bin_size.z*dy
 				bin_index = get_parent().get_worldbin_index(current_pos)
-				if bin_index and array_num[bin_index] >0:			
+				if bin_index != null and array_num[bin_index] >0:			
 					closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
 					var distance = b.position.distance_to(closest_in_bin.position)
 					if distance < closest_distance:
@@ -155,7 +157,7 @@ func view_closest(view_range,array_num,b,sp):
 				current_pos.x = b.position.x + World.bin_size.x*dx
 				current_pos.z = b.position.z + World.bin_size.z*dy
 				bin_index = get_parent().get_worldbin_index(current_pos)
-				if bin_index and array_num[bin_index] >0:			
+				if bin_index != null and array_num[bin_index] >0:			
 					closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
 					var distance = b.position.distance_to(closest_in_bin.position)
 					if distance < closest_distance:
@@ -176,6 +178,55 @@ func view_closest(view_range,array_num,b,sp):
     "center": local_center
 }'
 
+
+func Collision(b):
+	var radius = 1
+	var current_pos = b.position
+	var bin_index
+	for dx in range(-1, 2):
+		for dz in range(-1, 2):
+	#for r in range(radius + 1):
+			# Special case: center bin
+			#if r == 0:
+				current_pos.x = b.position.x + World.bin_size.x*dx
+				current_pos.z = b.position.z + World.bin_size.z*dz
+				bin_index = get_parent().get_worldbin_index(current_pos)
+				if bin_index and World.bin_array[bin_index] :	
+					check_collision(b, World.bin_array[bin_index])		
+				
+	
+
+
+		
+func check_collision(a, array):
+	var delta : Vector3
+	var dist: float
+	var minDist : float
+	
+	minDist = 1 + 1 # radius a + radius b
+	for b in array:
+		if b["Species"] == Alifedata.enum_speciesID.SHEEP :#or b["Species"] == Alifedata.enum_speciesID.CAT:
+			if b == a.lifedata:
+				continue
+			delta = b["position"] - a.lifedata["position"]
+			dist = delta.length()
+			if dist == 0:
+				delta = Vector3(randf(), 0, randf()).normalized()
+				dist = 0.0001
+			if (dist < minDist):
+				var overlap = minDist - dist
+				var normal = delta / dist
+				a.position -= normal * overlap * 0.5
+				b["position"] += normal * overlap * 0.5
+				a.lifedata["position"] = a.position
+			
+				beast_instance_dict[b["ID"]].position = b["position"]
+				#b.lifedata["position"] = b.position
+		
+
+
+
+###########################
 
 
 func find_closest(from_position: Vector3, array: Array,sp):
@@ -228,6 +279,7 @@ func Kill(grass):
 		beast_instance_dict[grass["ID"]].queue_free()
 		beast_instance_dict.erase(grass["ID"])
 		free_id_array.append(grass["ID"])
+		
 		if 	get_parent().current_life_count_by_species.has(grass["Species"]):
 			get_parent().current_life_count_by_species[grass["Species"]] -= 1
 
@@ -255,6 +307,10 @@ func Spawn_Beast(g):
 			else:
 				get_parent().current_life_count_by_species[g["Species"]] = 1
 				#_pending_spawns.append(newgrass)
+
+
+
+
 
 
 @rpc("any_peer","call_local")

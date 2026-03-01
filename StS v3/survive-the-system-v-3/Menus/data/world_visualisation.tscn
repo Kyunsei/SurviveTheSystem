@@ -37,4 +37,12 @@ offset_right = -8.0
 offset_bottom = 204.0
 text = "on/off"
 
+[node name="LineEdit" type="LineEdit" parent="." unique_id=510245439]
+layout_mode = 0
+offset_left = -76.0
+offset_top = 208.0
+offset_right = -7.5
+offset_bottom = 239.0
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="text_submitted" from="LineEdit" to="." method="_on_line_edit_text_submitted"]
