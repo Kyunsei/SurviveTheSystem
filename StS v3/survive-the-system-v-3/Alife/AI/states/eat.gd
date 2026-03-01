@@ -37,9 +37,9 @@ func update(delta):
 	timer -= delta
 	if timer <= 0:
 		if target:
-			player.lifedata["current_energy"] += target["current_energy"]
+			player.lifedata["current_energy"] += target["Biomass"]
 			player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"]  ,0, player.lifedata["Max_energy"] )
-			target["current_energy"]= 0
+			target["Alive"]= 0
 			get_parent().get_parent().get_parent().get_parent().get_node("Grass_Manager")._pending_external_kills.append(target)
 			player.vision_food.erase(target)
 			timer = eating_time/ (GlobalSimulationParameter.simulation_speed)

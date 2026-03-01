@@ -149,7 +149,7 @@ func eat_holding_item() :
 		if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
 			player.item_hold["Data"][0]["Eat"].call(player)
 		else:
-			var value = player.item_hold["Data"][0]["current_energy"]/15
+			var value = player.item_hold["Data"][0]["Biomass"]/15
 			var inventory = player.get_node("Player_HUD").get_node("Inventory")
 			var item_eaten = inventory.remove_selected(int(player.name))
 			if item_eaten:
