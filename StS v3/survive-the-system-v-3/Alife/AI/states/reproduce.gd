@@ -19,9 +19,8 @@ func enter():
 		var newpos = newpos_ori + + Vector3(randf_range(-0.8,0.8),0,randf_range(-0.8, 0.8)) 
 		newpos.x = clamp(newpos.x, -player.World.World_Size.x / 2 + 1, player.World.World_Size.x / 2 - 1)
 		newpos.z = clamp(newpos.z, -player.World.World_Size.z / 2 + 1, player.World.World_Size.z / 2 - 1)
-		var newalife = player.lifedata.duplicate()
-		newalife["position"] = newpos
-		player.get_parent().Ask_to_spawn.rpc_id(1, newalife)
+		player.get_parent().spawn_new_beast.rpc_id(1, newpos, player.lifedata["Species"])
+
 	player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"] - 90,0 ,player.lifedata["Max_energy"] )
 
 func exit():

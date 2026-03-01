@@ -65,10 +65,8 @@ func _physics_process(delta: float) -> void:
 				player_action_area.hide()
 				
 			
-			if Input.is_action_just_pressed("action1"):			
-				#player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
-				player.get_parent().get_node("beast_manager").Spawn_Beast.rpc_id(1, player.global_position, Alifedata.enum_speciesID.SHEEP)
-			
+			if Input.is_action_just_pressed("action1"):						
+				player.get_parent().get_node("beast_manager").spawn_new_beast.rpc_id(1, player.position, Alifedata.enum_speciesID.SHEEP)
 			
 			if Input.is_action_just_pressed("refresh"):			
 				#player.get_parent().Spawn_life_without_pool.rpc_id(1,player.global_position, "sheep")
@@ -171,8 +169,8 @@ func action():
 	collision.shape = collision.shape.duplicate()
 	var box_area = collision.shape
 	box_area.size = Vector3.ONE *player.pickup_range_upgrade
-	print(player.pickup_range_upgrade)
-	print(collision.shape.size)
+	#print(player.pickup_range_upgrade)
+	#print(collision.shape.size)
 	var interacted_areas = Action_area.get_overlapping_areas()
 
 	for area in interacted_areas:
@@ -202,8 +200,10 @@ func action_on_server():
 		for t in targets:
 			if t is Dictionary:
 				if t != player.lifedata:
+					#print(t)
 					#alife_manager.interact(t,player)
 					if add_to_inventory(t):
+						#print("added")
 						alife_manager.remove(t)	
 						
 						

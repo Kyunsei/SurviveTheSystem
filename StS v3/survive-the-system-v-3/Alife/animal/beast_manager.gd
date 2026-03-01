@@ -80,7 +80,7 @@ func update(delta):
 func Spawn_and_Kill():		
 	for g in _pending_spawns:
 		#Respawn_Beast(alife, new_position)
-		Spawn_Beast(g["position"],g["Species"])
+		Spawn_Beast(g)#["position"],g["Species"])
 		
 	for g in _pending_kills :
 		Kill(g)
@@ -221,70 +221,51 @@ func Decompose(grass, delta):
 		_pending_kills.append(grass)
 
 func Kill(grass):
-	#print("kill")
+
 	if beast_dict.has(grass["ID"]):
-		free_id_array.append(grass["ID"])
 		beast_dict.erase(grass["ID"])
 		get_parent().remove_from_world_bin(grass)		
 		beast_instance_dict[grass["ID"]].queue_free()
 		beast_instance_dict.erase(grass["ID"])
+		free_id_array.append(grass["ID"])
 		if 	get_parent().current_life_count_by_species.has(grass["Species"]):
 			get_parent().current_life_count_by_species[grass["Species"]] -= 1
 
 @rpc("any_peer","call_local")
-func Spawn_Beast(new_position: Vector3,sp:Alifedata.enum_speciesID):
+func Spawn_Beast(g):
 	var alife_scene : PackedScene
-	match sp:
+	match g["Species"]:
 		Alifedata.enum_speciesID.SHEEP:
 			alife_scene = sheep_scene
 			var newlife = alife_scene.instantiate()
 			var id = get_free_id()
+			g["ID"] = id
 			newlife.name = str(id)
-			newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
+			newlife.position = g["position"] #- Vector2(nal.size/2,nal.size/2)
 			newlife.World = World #temp
-			#newlife.current_energy = 50
-			var newgrass = alifedata.build_lifedata(id,new_position,sp)
-			newlife.lifedata = newgrass
-			#newlife.lifedata["current_energy"] = 50 #TEMPORARY HERE LIKE THIS
-
-			beast_dict[id] = newgrass
+			get_parent().put_in_world_bin(g)
+			print(g["bin_ID"])
+			newlife.lifedata = g
+			beast_dict[id] = g
 			beast_instance_dict[id] = newlife
-			get_parent().put_in_world_bin(newgrass)
-			#print(beast_dict)
-			#print(beast_instance_dict)
 
 			add_child.call_deferred(newlife)	
-			if 	get_parent().current_life_count_by_species.has(sp):
-				get_parent().current_life_count_by_species[sp] += 1
+			if 	get_parent().current_life_count_by_species.has(g["Species"]):
+				get_parent().current_life_count_by_species[g["Species"]] += 1
 			else:
-				get_parent().current_life_count_by_species[sp] = 1
+				get_parent().current_life_count_by_species[g["Species"]] = 1
 				#_pending_spawns.append(newgrass)
 
 
 @rpc("any_peer","call_local")
-func Respawn_Beast(alife, new_position):
-	var alife_scene : PackedScene
-	match alife["Species"]:
-		Alifedata.enum_speciesID.SHEEP:
-			alife_scene = sheep_scene
-			var newlife = alife_scene.instantiate()
-			var id = get_free_id()
-			newlife.name = str(id)
-			newlife.position = new_position #- Vector2(nal.size/2,nal.size/2)
-			newlife.World = World #temp
-			#newlife.current_energy = 50
-			var newgrass = alifedata
-			newlife.lifedata = newgrass
-			#newlife.lifedata["current_energy"] = 50 #TEMPORARY HERE LIKE THIS
-			beast_dict[id] = newgrass
-			beast_instance_dict[id] = newlife
-			get_parent().put_in_world_bin(newgrass)
-			#print(beast_dict)
-			#print(beast_instance_dict)
+func spawn_new_beast(pos,sp):
+	var b = Build_new_Beast(pos,sp)
+	Ask_to_spawn(b)
 
-			add_child.call_deferred(newlife)	
-
-			#_pending_spawns.append(newgrass)
+func Build_new_Beast( pos,sp):
+	var newgrass = alifedata.build_lifedata(get_free_id(),pos,sp)
+	return newgrass
+	
 
 
 @rpc("any_peer","call_local")

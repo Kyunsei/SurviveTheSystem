@@ -184,7 +184,7 @@ func spawn_grass(pos, sp):
 	#newgrass.light_index = get_lightIndex(pos)
 	#grass_dict[newgrass.ID] = newgrass
 
-func ask_for_spawn_grass(pos, sp):
+func ask_for_spawn_new_grass(pos, sp):
 	#var newgrass = grass_dna.duplicate()
 	var newgrass = alifedata.build_lifedata(get_free_id(),pos,sp)
 	#newgrass["position"] = pos
