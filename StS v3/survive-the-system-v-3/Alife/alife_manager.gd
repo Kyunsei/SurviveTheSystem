@@ -51,7 +51,7 @@ var max_plant  = 10000
 func init():
 			$Grass_Manager.World = World
 			$beast_manager.World = World
-			for i in range(500):
+			for i in range(50):
 				var pos = get_random_worldpos()
 				$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.GRASS)
 			
