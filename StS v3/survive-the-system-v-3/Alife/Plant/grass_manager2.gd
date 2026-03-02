@@ -64,25 +64,59 @@ var free_indices : Array =[]
 var entity_count := 0 
 var isInit = false
 
+#THREAD
+var simulation_thread : Thread
+var thread_running := false
+var thread_should_stop := false
+var thread_delta : float = 0.0
+var mutex := Mutex.new()
 
 
-	
+func start_simulation_thread():
+	if thread_running:
+		return
+
+	thread_should_stop = false
+	simulation_thread = Thread.new()
+	simulation_thread.start(_thread_loop)
+	thread_running = true	
+
+func stop_simulation_thread():
+	if not thread_running:
+		return
+
+	thread_should_stop = true
+	simulation_thread.wait_to_finish()
+	thread_running = false
+
+func _exit_tree():
+	stop_simulation_thread()
+
+func _thread_loop():
+	while not thread_should_stop:
+
+		var delta := 0.016  # fixed timestep (important!)
+
+		mutex.lock()
+		update(delta)
+		mutex.unlock()
+
+		OS.delay_msec(1)  # prevent CPU burning
 
 func Init():
+	return
 	if multiplayer.is_server():
 		if !World:
 			print("please set the world")
 		build_species_tables()
-	for i in range(3):
-		Spawn_New_Grass(Vector3(0,0,0),0)
-	isInit = true
+		for i in range(1):
+			Spawn_New_Grass(Vector3(0+20*i,0,0),0)
+		isInit = true
+		start_simulation_thread()
 
 
 
 func update(delta):
-	return
-	#print(entity_count)
-	#print(current_energy_array)
 	if !isInit:
 		print("grass manger not initialised")
 		return
@@ -92,8 +126,17 @@ func update(delta):
 		if GlobalSimulationParameter.simulation_speed > 0:
 			if World:
 				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
+
+			#PhotosynthesisSystem(delta)
+			LightSystem_to_plant(delta)
+			HomeostasisSystem(delta)
+			GrowthSystem(delta)
+			ReproductionSystem(delta)
+			GerminationSystem(delta)
+			DecomposeSystem(delta)
 			
-			for i in range(entity_count):
+			
+			'for i in range(entity_count):
 				if Active[i] == 1:
 					if Alive_array[i]==1 :
 						if current_life_state_array[i] >= 0:
@@ -107,12 +150,115 @@ func update(delta):
 							if current_life_state_array[i] == 0:
 								Alive_array[i]=0
 					else:
-						Decompose(i,delta)
+						Decompose(i,delta)'
 
 		#call_deferred("_on_work_finished")
-		Spawn_and_Kill()
+			Spawn_and_Kill()
 		FPS = Time.get_ticks_msec() - ss
 		
+		
+func PhotosynthesisSystem(delta):
+
+
+	for i in range(entity_count):
+		if Active[i] == 0:
+			continue
+		if Alive_array[i] == 0:
+			continue
+		if current_life_state_array[i] == 0:
+			continue
+		Photosynthesis(i, delta)
+		
+		
+func HomeostasisSystem(delta):
+
+	for i in range(entity_count):
+		if Active[i] == 0:
+			continue
+		if Alive_array[i] == 0:
+			continue
+		if current_life_state_array[i] == 0:
+			continue
+		Homeostasis(i, delta)
+func GrowthSystem(delta):
+	for i in range(entity_count):
+		if Active[i] == 0:
+			continue
+		if Alive_array[i] == 0:
+			continue
+		if current_life_state_array[i] == 0:
+			continue
+		Growth(i, delta)
+func ReproductionSystem(delta):	
+	for i in range(entity_count):
+		if Active[i] == 0:
+			continue
+		if Alive_array[i] == 0:
+			continue
+		if current_life_state_array[i] == 0:
+			continue
+		Reproduction(i, delta)	
+func DecomposeSystem(delta):	
+	for i in range(entity_count):
+		if Active[i] == 0:
+			continue
+		if Alive_array[i] == 1:
+			continue
+		Decompose(i, delta)	
+		
+func GerminationSystem(delta):
+	for i in range(entity_count):
+		if Active[i] == 0:
+			continue
+		if Alive_array[i] == 0:
+			continue
+		if current_life_state_array[i] > 0:
+			continue
+		Germination(i)	
+
+
+func LightSystem_to_plant(delta):
+
+	for bi in range(World.light_bin.size()):
+		var light_value = World.light_array[bi]
+		if light_value <= 0:
+			continue
+		
+		var grass = World.light_bin[bi]
+		if !grass:
+			continue
+
+		var share = light_value/World.light_bin[bi].size()
+		for gi in grass:
+			if current_life_state_array[gi]==0:
+				continue
+			var s = Species_array[gi]
+			var t = current_life_state_array[gi]		
+			var photo_factor = species_photosynthesis_absorption[s][t] * GlobalSimulationParameter.simulation_speed * delta
+			current_energy_array[gi] +=  light_value * photo_factor
+			current_energy_array[gi] = clamp(current_energy_array[gi],0 ,species_max_energy[s][t])
+			World.light_array[bi] = 0
+			return
+
+
+		'for gi in grass:
+
+			var s = Species_array[gi]
+			var t = current_life_state_array[gi]		
+			var photo_factor = species_photosynthesis_absorption[s][t] * GlobalSimulationParameter.simulation_speed * delta
+			current_energy_array[gi] += share * photo_factor
+
+			current_energy_array[gi] = clamp(current_energy_array[gi],0 ,species_max_energy[s][t])'	
+		'var gi = grass[0]
+		var s = Species_array[gi]
+		var t = current_life_state_array[gi]		
+		var photo_factor = species_photosynthesis_absorption[s][t] * GlobalSimulationParameter.simulation_speed * delta
+		current_energy_array[gi] +=  light_value * photo_factor
+		current_energy_array[gi] = clamp(current_energy_array[gi],0 ,species_max_energy[s][t])'
+		
+		
+		
+			
 func Photosynthesis(i,delta):
 	var s = Species_array[i]
 	var t = current_life_state_array[i]
@@ -126,18 +272,18 @@ func Photosynthesis(i,delta):
 			var shadow_effect = 1.0
 			World.light_array[l_i] = max(World.light_array[l_i]-shadow_effect,0)
 
-		
 func Homeostasis(i,delta):
 	var s = Species_array[i]
 	var t = current_life_state_array[i]
 	if current_health_array[i] < 0:
-		Alive_array[i] = 0
+		Death(i)
 		#grass["last_step"] = int(grass["Biomass"] / 10)
 		_pending_update.append(i)
 		return
 	var area = max(1,(species_photosynthesis_range[s][t] * 2) * (species_photosynthesis_range[s][t] * 2 ))
 	current_energy_array[i] -= species_homeostasis_cost[s][t] * area * GlobalSimulationParameter.simulation_speed * delta
 	Regenerate_Health(i,delta)
+
 	if current_energy_array[i] < 0:
 		current_health_array[i] -= species_homeostasis_cost[s][t]  * GlobalSimulationParameter.simulation_speed * delta
 
@@ -153,8 +299,15 @@ func Regenerate_Health(i,delta):
 		current_energy_array[i] -= value_regen	
 	
 func Growth(i,delta):
-	pass
-	
+	var s = Species_array[i]
+	if species_list[s].Growth(self,i,delta):
+		_pending_update.append(i)
+
+func Death(i):
+	Alive_array[i] = 0
+
+	remove_from_light_bin(i)
+
 	
 func Reproduction(i,delta):
 		var s = Species_array[i]
@@ -178,12 +331,12 @@ func Germination(i):
 	var t = current_life_state_array[i]
 	var area = max(1,(species_photosynthesis_range[s][t] * 2) * (species_photosynthesis_range[s][t] * 2 ))
 	var light_available = 0
-	for l_i in light_index_array[i]:		
+	for l_i in light_index_array[i]:	
 		if l_i <  World.light_array.size():
 			if World.light_array[l_i] > 0:
 				light_available += 1
 	if light_available == area:
-		current_life_state_array[i] = 0#1
+		current_life_state_array[i] = 1
 		_pending_update.append(i)
 		
 func Decompose(i,delta):
@@ -253,13 +406,11 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		current_biomass_array.append(species_biomass[sp][0])
 		position_array.append(pos)
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
-		var bin = get_worldbin_index(pos)
-		if bin:
-			binID_array.append(bin)	
-			light_index_array.append(get_lightIndex(i))
-		else:
-			binID_array.append(0)	
-			light_index_array.append([])
+		binID_array.append(get_worldbin_index(pos))	
+		light_index_array.append(get_lightIndex(i))
+		put_in_light_bin(i)
+		put_in_world_bin(i)
+
 
 	else:
 		Species_array[i] = sp
@@ -272,10 +423,10 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		current_biomass_array[i] = species_biomass[sp][0]
 		position_array[i] = pos
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
-		var bin = get_worldbin_index(pos)
-		if bin:
-			binID_array[i] =  bin
-			light_index_array[i] = get_lightIndex(i)
+		binID_array[i] =  get_worldbin_index(pos)
+		light_index_array[i] = get_lightIndex(i)
+		put_in_light_bin(i)
+		put_in_world_bin(i)
 
 
 func Spawn_Grass(i,pos):
@@ -283,6 +434,8 @@ func Spawn_Grass(i,pos):
 	position_array[i] = pos
 	binID_array[i] =  get_worldbin_index(pos)
 	light_index_array[i] = get_lightIndex(i)
+	put_in_light_bin(i)
+	put_in_world_bin(i)
 
 func Spawn_New_Grass(newpos:Vector3,s:int):
 	var i : int
@@ -293,11 +446,20 @@ func Spawn_New_Grass(newpos:Vector3,s:int):
 		entity_count += 1
 		
 	Build_New_Grass(i, newpos, s)
+	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
+		get_parent().current_life_count_by_species[Species_array[i]] += 1
+	else:
+		get_parent().current_life_count_by_species[Species_array[i]] = 1
 
 func Kill_Grass(i):
 	free_indices.append(i)
 	Active[i] = 0
-	
+	remove_from_light_bin(i)
+	remove_from_world_bin(i)
+
+
+	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
+		get_parent().current_life_count_by_species[Species_array[i]] -= 1
 ####HELPER FUNCTION
 
 func remove_duplicate_in_index_array(A,B):
@@ -330,6 +492,7 @@ func build_species_tables():
 
 
 	for s in species_list:
+		s.Init()
 		var id = s.species_id	
 		species_max_energy[id] = s.Max_energy
 		species_max_health[id] = s.Max_health
@@ -374,11 +537,85 @@ func get_lightIndex(idx):
 				pos.x = position_array[idx].x + i * World.light_tile_size.x
 				pos.z = position_array[idx].z + j * World.light_tile_size.z
 				if pos.x <= -World.World_Size.x/2 or pos.x >= World.World_Size.x/2:
-					return
+					continue
 				if pos.z <= -World.World_Size.z/2 or pos.z >= World.World_Size.z/2:
-					return
+					continue
 					
 				var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
 				var idx_bin =  World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
 				light_index.append(idx_bin)
 	return light_index
+
+
+func put_in_light_bin(idx):
+
+	var s = Species_array[idx]
+	var t = current_life_state_array[idx]
+	var pos = position_array[idx]
+	if species_photosynthesis_range[s][t] == 0:
+		var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
+		if pos.x <= -World.World_Size.x/2 or pos.x >= World.World_Size.x/2:
+				return
+		if pos.z <= -World.World_Size.z/2 or pos.z >= World.World_Size.z/2:
+				return
+		var bi = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
+		if World.light_bin[bi]:
+			World.light_bin[bi].append(idx)
+		else:
+			World.light_bin[bi]= [idx]
+		#light_index.append(World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size))
+
+	else:
+		for i in range(-species_photosynthesis_range[s][t],species_photosynthesis_range[s][t]):
+			for j in range(-species_photosynthesis_range[s][t],species_photosynthesis_range[s][t]):
+				pos.x = position_array[idx].x + i * World.light_tile_size.x
+				pos.z = position_array[idx].z + j * World.light_tile_size.z
+				if pos.x <= -World.World_Size.x/2 or pos.x >= World.World_Size.x/2:
+					continue
+				if pos.z <= -World.World_Size.z/2 or pos.z >= World.World_Size.z/2:
+					continue				
+				var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
+				var idx_bin =  World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
+				if World.light_bin[idx_bin]:
+					World.light_bin[idx_bin].append(idx)
+				else:
+					World.light_bin[idx_bin]= [idx]
+
+
+
+func remove_from_light_bin(idx):	
+	for li in light_index_array[idx]:
+		if World.light_bin[li].has(idx):
+			World.light_bin[li].erase(idx)
+	light_index_array[idx].clear()
+
+
+func put_in_world_bin(i):
+	var bin_ID = binID_array[i]
+	var w_pos = World.get_PositionInGrid(position_array[i],World.bin_size)
+	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
+	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+	if new_bin_ID < 0 or new_bin_ID >= World.bin_array.size():
+		print("life out of world")
+		#remove_from_world_bin(i)
+		return
+	if bin_ID != new_bin_ID:
+		remove_from_world_bin(i)
+		binID_array[i] = new_bin_ID
+		#g["bin_ID"] = new_bin_ID
+	if World.bin_array[new_bin_ID] == null:
+		World.bin_array[new_bin_ID] = [i]
+		World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
+	else:	
+		World.bin_array[new_bin_ID].append(i) 
+		World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
+
+	#binID_array[i] = new_bin_ID
+	
+	
+func remove_from_world_bin(i):
+	if binID_array[i] >= 0:
+		if World.bin_array[binID_array[i]].has(i):
+			World.bin_array[binID_array[i]].erase(i)
+			World.bin_sum_array[Species_array[i]][binID_array[i]] -= 1
+			binID_array[i] = -1

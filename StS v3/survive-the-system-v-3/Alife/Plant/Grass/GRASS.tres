@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="GRASS" format=3 uid="uid://bkvxjrptv0rnx"]
+
+[ext_resource type="Script" uid="uid://dhs3c3gl6pkjm" path="res://Alife/Plant/Grass/grass.gd" id="1_ollk8"]
+
+[resource]
+script = ExtResource("1_ollk8")
+metadata/_custom_type_script = "uid://dhs3c3gl6pkjm"

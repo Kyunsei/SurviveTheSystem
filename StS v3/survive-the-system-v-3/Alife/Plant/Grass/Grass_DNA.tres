@@ -1,8 +1,0 @@
-[gd_resource type="Resource" script_class="DNA" format=3 uid="uid://bdkig76j1aagb"]
-
-[ext_resource type="Script" uid="uid://whqmtmn23lj8" path="res://Alife/DNA.gd" id="1_7vp6n"]
-
-[resource]
-script = ExtResource("1_7vp6n")
-Max_energy = [12.0]
-metadata/_custom_type_script = "uid://whqmtmn23lj8"

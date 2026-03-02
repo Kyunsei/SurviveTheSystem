@@ -99,12 +99,10 @@ func _process(delta: float) -> void:
 				#GlobalSimulationParameter.sheep_number_data.append(current_life_count_by_species[1])
 				#GlobalSimulationParameter.grass_number_data.append($Grass_Manager.grass_dict.size())
 				#GlobalSimulationParameter.tree_number_data.append(current_life_count_by_species[2])
-
-
 				timer = 1
 			pass
 			$Grass_Manager.update(delta)
-			$Grass_Manager2.update(delta)
+			#$Grass_Manager2.update(delta)
 
 			$beast_manager.update(delta)
 			
@@ -128,7 +126,7 @@ func put_in_world_bin(g):
 	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
 	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
 	if new_bin_ID < 0 or new_bin_ID >= World.bin_array.size():
-		print("life out of world")
+		print( str(g["Species"]) + " life out of world")
 		remove_from_world_bin(g)
 		return
 	if bin_ID != new_bin_ID:

@@ -38,7 +38,7 @@ var instance_data: Array = []  # mirrors multimesh slots'
 
 func update_drawn_grass(g):
 	#var ID = gen[0]
-	return
+	#return
 	var current_energy = g["current_energy"]
 	#if id_to_slot.size() > g["ID"]:
 	if !id_to_slot.has(g["ID"]):
@@ -98,7 +98,7 @@ func color_from_biomass(biomass: float, max_b: float) -> Color:
 	return Color.from_hsv(hue, sat, val)
 
 func remove_grass(g):
-	return
+	#return
 	if !id_to_slot.has(g["ID"]):	
 		return
 

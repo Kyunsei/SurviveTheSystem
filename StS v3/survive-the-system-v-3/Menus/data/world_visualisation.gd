@@ -41,7 +41,7 @@ func update():
 	#mm.instance_count = 50000
 
 	var i = 0
-	for g in alifemanager.get_node("Grass_Manager").grass_dict.values():
+	'for g in alifemanager.get_node("Grass_Manager").grass_dict.values():
 		var t : Transform2D
 	
 		var pos = position_conversion(g["position"])
@@ -57,12 +57,26 @@ func update():
 		
 
 		mm.set_instance_transform_2d(i, t)
+'
 
+
+	for posit in alifemanager.get_node("Grass_Manager2").position_array:
+		var t : Transform2D
+		var pos = position_conversion(posit)
+		#if g["Species"] == Alifedata.enum_speciesID.GRASS:
+		t = Transform2D(
+				Vector2(0.5, 0),
+				Vector2(0, 0.5),
+				pos
+			)
+		#else:
+			#t = Transform2D(0, position_conversion(g["position"]))		
+		mm.set_instance_transform_2d(i, t)
 #var transforms = mm.get_instance_transform_array()
 #transforms[i] = t
 #mm.set_instance_transform_array(transforms)
 		
-		mm.set_instance_color(i, color_list[g["Species"]]) 
+		mm.set_instance_color(i, color_list[0]) 
 		i+= 1
 	
 	for g in alifemanager.get_node("beast_manager").beast_dict.values():
@@ -72,7 +86,7 @@ func update():
 		mm.set_instance_color(i, color_list[g["Species"]]) 
 		i+= 1
 
-	mm.visible_instance_count = alifemanager.get_node("beast_manager").beast_dict.size() +  alifemanager.get_node("Grass_Manager").grass_dict.size()
+	mm.visible_instance_count = alifemanager.get_node("beast_manager").beast_dict.size() +  alifemanager.get_node("Grass_Manager").grass_dict.size() + alifemanager.get_node("Grass_Manager2").entity_count
 
 func position_conversion(pos):
 	var newpos

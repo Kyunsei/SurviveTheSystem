@@ -12,8 +12,10 @@ var Center_z = World_Size.z/2
 var Center_y = World_Size.y
 
 ##### LIGHT MATRIX
-var light_tile_size = Vector3(1.5,World_Size.y,1.5) #in m?
+var light_tile_size = Vector3(2,World_Size.y,2) #in m?
 var light_array = []
+var light_bin = [] #PLANT GO THERE
+
 var light_flux_in = 1.0
 var light_max_value = 1.0
 var array_path = []
@@ -43,6 +45,9 @@ func generate_world():
 	#$Ground/ground.mesh.size = Vector2(World_Size.x,World_Size.z) #THIS IS NOT SYNCH with client
 	var calc_size = World_Size/light_tile_size
 	light_array.resize(calc_size.x * calc_size.y * calc_size.z)
+	light_bin.resize(calc_size.x * calc_size.y * calc_size.z)
+	#light_bin.fill([])
+
 	fill_value_in_each_tile(light_array,light_flux_in )
 	################
 	var calc_size2 = World_Size/bin_size
@@ -64,9 +69,9 @@ func get_PositionInGrid(pos,tile_size):
 	)
 
 func index_3dto1d(x, y, z, tile_size):
-
 	var array_size = World_Size/tile_size
-	return x + array_size.x * (y + array_size.y * z)
+
+	return int(x + array_size.x * (y + array_size.y * z))
 
 func index_1dto3d(i, size_in3D) -> Vector3i:
 	print("2dto3d not fixed yet")

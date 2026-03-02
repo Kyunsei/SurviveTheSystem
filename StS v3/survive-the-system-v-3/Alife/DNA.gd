@@ -28,10 +28,23 @@ class_name DNA
 @export var biomass_gain : float
 @export var max_life_state : int = 6'
 
-'# --- Rendering ---
-@export var mesh : Mesh
-@export var material : Material'
+# --- Rendering ---
+@export var Sprite_path : String
+#@export var material : Material
 
-# --- Flags ---
+'# --- Flags ---
 @export var is_plant : bool = false
-@export var is_animal : bool = false
+@export var is_animal : bool = false'
+
+
+
+# --- BEHAVIOUR FUNCTIONS ---
+
+func growth(manager, i, delta):
+	pass
+
+func reproduction(manager, i, delta):
+	pass
+
+func special_update(manager, i, delta):
+	pass

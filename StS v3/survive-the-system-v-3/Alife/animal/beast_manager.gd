@@ -213,24 +213,26 @@ func check_collision(a, array):
 	
 	minDist = 1 + 1 # radius a + radius b
 	for b in array:
-		if b["Species"] == Alifedata.enum_speciesID.SHEEP :#or b["Species"] == Alifedata.enum_speciesID.CAT:
-			if b == a.lifedata:
-				continue
-			delta = b["position"] - a.lifedata["position"]
-			dist = delta.length()
-			if dist == 0:
-				delta = Vector3(randf(), 0, randf()).normalized()
-				dist = 0.0001
-			if (dist < minDist):
-				var overlap = minDist - dist
-				var normal = delta / dist
-				a.position -= normal * overlap * 0.5
-				b["position"] += normal * overlap * 0.5
-				a.lifedata["position"] = a.position
+		if b is Dictionary:
+
+			if b["Species"] == Alifedata.enum_speciesID.SHEEP :#or b["Species"] == Alifedata.enum_speciesID.CAT:
+				if b == a.lifedata:
+					continue
+				delta = b["position"] - a.lifedata["position"]
+				dist = delta.length()
+				if dist == 0:
+					delta = Vector3(randf(), 0, randf()).normalized()
+					dist = 0.0001
+				if (dist < minDist):
+					var overlap = minDist - dist
+					var normal = delta / dist
+					a.position -= normal * overlap * 0.5
+					b["position"] += normal * overlap * 0.5
+					a.lifedata["position"] = a.position
+				
+					beast_instance_dict[b["ID"]].position = b["position"]
+					#b.lifedata["position"] = b.position
 			
-				beast_instance_dict[b["ID"]].position = b["position"]
-				#b.lifedata["position"] = b.position
-		
 
 
 
@@ -242,11 +244,12 @@ func find_closest(from_position: Vector3, array: Array,sp):
 	var closest_distance = INF
 	
 	for element in array:
-		if element["Species"] == sp:
-			var distance = from_position.distance_to(element["position"])
-			if distance < closest_distance:
-				closest_distance = distance
-				closest = element
+		if element is Dictionary:
+			if element["Species"] == sp:
+				var distance = from_position.distance_to(element["position"])
+				if distance < closest_distance:
+					closest_distance = distance
+					closest = element
 	return closest	
 ####################################################
 
