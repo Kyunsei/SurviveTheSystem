@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bpl70g08sxw37"]
 
 [ext_resource type="Texture2D" uid="uid://belb5ipraimac" path="res://assets/assets kyun/grass_texture128.png" id="2_xthal"]
-[ext_resource type="QuadMesh" uid="uid://cffer30oeavdl" path="res://Alife/Plant/Grass/grass.tres" id="3_q87mi"]
+[ext_resource type="QuadMesh" uid="uid://bkvxjrptv0rnx" path="res://Alife/Plant/Grass/grass.tres" id="3_q87mi"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xthal"]
 shading_mode = 0
