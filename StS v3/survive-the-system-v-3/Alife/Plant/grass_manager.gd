@@ -59,6 +59,7 @@ func _ready() -> void:
 		
 
 func _update_on_thread(delta):
+
 		#print("Thread start — grass count: ", grass_dict.size())
 		var ss = Time.get_ticks_msec() 
 		#var newvalue = World.light_flux_in * GlobalSimulationParameter.simulation_speed * delta

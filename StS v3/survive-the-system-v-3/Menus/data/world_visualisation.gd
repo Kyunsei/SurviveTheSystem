@@ -41,9 +41,8 @@ func update():
 	#mm.instance_count = 50000
 
 	var i = 0
-	'for g in alifemanager.get_node("Grass_Manager").grass_dict.values():
+	for g in alifemanager.get_node("Grass_Manager").grass_dict.values():
 		var t : Transform2D
-	
 		var pos = position_conversion(g["position"])
 		if g["Species"] == Alifedata.enum_speciesID.GRASS:
 
@@ -57,7 +56,9 @@ func update():
 		
 
 		mm.set_instance_transform_2d(i, t)
-'
+		mm.set_instance_color(i, color_list[g["Species"]]) 
+
+		i+= 1
 
 
 	for posit in alifemanager.get_node("Grass_Manager2").position_array:

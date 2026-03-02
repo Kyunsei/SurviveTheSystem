@@ -127,8 +127,8 @@ func update(delta):
 			if World:
 				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
 
-			#PhotosynthesisSystem(delta)
-			LightSystem_to_plant(delta)
+			PhotosynthesisSystem(delta)
+			#LightSystem_to_plant(delta)
 			HomeostasisSystem(delta)
 			GrowthSystem(delta)
 			ReproductionSystem(delta)
@@ -217,7 +217,7 @@ func GerminationSystem(delta):
 		Germination(i)	
 
 
-func LightSystem_to_plant(delta):
+func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 
 	for bi in range(World.light_bin.size()):
 		var light_value = World.light_array[bi]
@@ -230,6 +230,10 @@ func LightSystem_to_plant(delta):
 
 		var share = light_value/World.light_bin[bi].size()
 		for gi in grass:
+			if Active[gi]==0:
+				continue
+			if Alive_array[gi]==0:
+				continue
 			if current_life_state_array[gi]==0:
 				continue
 			var s = Species_array[gi]
@@ -238,7 +242,7 @@ func LightSystem_to_plant(delta):
 			current_energy_array[gi] +=  light_value * photo_factor
 			current_energy_array[gi] = clamp(current_energy_array[gi],0 ,species_max_energy[s][t])
 			World.light_array[bi] = 0
-			return
+			break
 
 
 		'for gi in grass:
