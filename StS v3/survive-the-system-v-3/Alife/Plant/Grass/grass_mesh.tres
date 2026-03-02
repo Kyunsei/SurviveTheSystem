@@ -1,0 +1,20 @@
+[gd_resource type="QuadMesh" format=3 uid="uid://ossnpdi2f01p"]
+
+[ext_resource type="Texture2D" uid="uid://214pm1q1i4uf" path="res://Alife/Plant/Grass/grass.png" id="1_lvbe7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cx5lr"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("1_lvbe7")
+backlight_enabled = true
+backlight = Color(1, 1, 1, 1)
+texture_filter = 0
+billboard_mode = 2
+billboard_keep_scale = true
+
+[resource]
+material = SubResource("StandardMaterial3D_cx5lr")
+size = Vector2(2, 2)
+center_offset = Vector3(0, 1, 0)
