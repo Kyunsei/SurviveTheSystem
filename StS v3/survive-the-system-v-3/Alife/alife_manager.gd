@@ -40,7 +40,7 @@ var max_plant  = 10000
 #Pro: easy to do,cons: hard to optimise
 #2. alife are in a common matrix and use GPU or renderig server for visual (disconnected
 #pro: optimisation possible,  cons: difficult to have heterogeinity bc everything in same matrixx
-#3. hybrid... need to identifiy where to parallelise and where to not!
+#3. hybrid... need to identifiy where to parallelise and where to not!!
 
 #START WITH 1) because not a lot of time until demo in March
 #NOW doing something else, Do matrix things on CPU and use multimesh to render very numerous entities (grass) 
