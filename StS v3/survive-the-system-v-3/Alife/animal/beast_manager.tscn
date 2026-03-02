@@ -2,11 +2,13 @@
 
 [ext_resource type="Script" uid="uid://j70xvf03xj0d" path="res://Alife/animal/beast_manager.gd" id="1_7qukx"]
 [ext_resource type="PackedScene" uid="uid://bba3or5r3sxn1" path="res://Alife/animal/Herbivor/sheep.tscn" id="2_sxbuu"]
+[ext_resource type="PackedScene" uid="uid://bpbjidthyhh7b" path="res://Alife/animal/Spider/spider.tscn" id="3_r08tb"]
 
 [node name="beast_manager" type="Node3D" unique_id=1821176039]
 script = ExtResource("1_7qukx")
 sheep_scene = ExtResource("2_sxbuu")
+spider_scene = ExtResource("3_r08tb")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1763691165]
-_spawnable_scenes = PackedStringArray("uid://bba3or5r3sxn1")
+_spawnable_scenes = PackedStringArray("uid://bba3or5r3sxn1", "uid://bpbjidthyhh7b")
 spawn_path = NodePath("..")

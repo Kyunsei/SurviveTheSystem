@@ -10,6 +10,8 @@ var alifedata :Alifedata
 var World : Node3D
 
 @export var sheep_scene : PackedScene
+@export var spider_scene : PackedScene
+
 
 var thread_beast: Thread
 var mutex: Mutex = Mutex.new()
@@ -21,6 +23,9 @@ var _pending_external_spawns: Array = []
 
 #var _pending_light_changes: Dictionary = {}  # index -> new value
 var free_id_array = []
+
+
+var FPS
 
 'var beast_dna = {
 	"ID":0,
@@ -63,6 +68,8 @@ func update(delta):
 	#start_thread()
 	'for g in beast_dict.values():
 		homeostasis(g)'
+	var ss = Time.get_ticks_msec() 
+
 	for b in beast_instance_dict.values():
 		#vision(b)
 		if b.lifedata["Alive"] == 1:
@@ -77,6 +84,7 @@ func update(delta):
 	Spawn_and_Kill()
 	
 		#move(b)
+	FPS = Time.get_ticks_msec() - ss
 
 
 func Spawn_and_Kill():		
@@ -289,6 +297,11 @@ func Spawn_Beast(g):
 	match g["Species"]:
 		Alifedata.enum_speciesID.SHEEP:
 			alife_scene = sheep_scene
+		Alifedata.enum_speciesID.SPIDERCRAB:
+			alife_scene = spider_scene
+		
+			
+	if alife_scene:
 			var newlife = alife_scene.instantiate()
 			var id = get_free_id()
 			g["ID"] = id
@@ -296,7 +309,6 @@ func Spawn_Beast(g):
 			newlife.position = g["position"] #- Vector2(nal.size/2,nal.size/2)
 			newlife.World = World #temp
 			get_parent().put_in_world_bin(g)
-			print(g["bin_ID"])
 			newlife.lifedata = g
 			beast_dict[id] = g
 			beast_instance_dict[id] = newlife
@@ -307,6 +319,7 @@ func Spawn_Beast(g):
 			else:
 				get_parent().current_life_count_by_species[g["Species"]] = 1
 				#_pending_spawns.append(newgrass)
+			print(get_parent().current_life_count_by_species)
 
 
 

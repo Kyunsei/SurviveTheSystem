@@ -42,6 +42,7 @@ var grass_dna = {
 	"light_index": []
 }
 
+var FPS : float
 
 
 func _ready() -> void:
@@ -53,7 +54,7 @@ func _ready() -> void:
 
 func _update_on_thread(delta):
 	#print("Thread start — grass count: ", grass_dict.size())
-	#var ss = Time.get_ticks_msec() 
+	var ss = Time.get_ticks_msec() 
 	#var newvalue = World.light_flux_in * GlobalSimulationParameter.simulation_speed * delta
 	#print(newvalue)
 	#var newmaxvalue = World.light_max_value * GlobalSimulationParameter.simulation_speed 
@@ -80,9 +81,12 @@ func _update_on_thread(delta):
 
 	#print("end " + str(Time.get_ticks_msec() -ss))
 	call_deferred("_on_work_finished")
+	
+	FPS = Time.get_ticks_msec() - ss
 
 func update(delta):
 	start_thread(delta)
+
 	#_update_on_thread()
 	'for g in grass_array:
 		Photosynthesis(g)

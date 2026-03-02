@@ -55,16 +55,17 @@ func init():
 				var pos = get_random_worldpos()
 				$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.GRASS)
 			
-
+			for i in range(50):
+				var pos = get_random_worldpos()
+				$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.TREE)
+			for i in range(5):
+				var pos = get_random_worldpos()
+				$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
+						
 			#$Grass_Manager.ask_for_spawn_grass(Vector3(-25,0,-15),Alifedata.enum_speciesID.GRASS)
-			$Grass_Manager.ask_for_spawn_new_grass(Vector3(15,0,15),Alifedata.enum_speciesID.TREE)
+			$beast_manager.spawn_new_beast(Vector3(15,0,15),Alifedata.enum_speciesID.SPIDERCRAB)
 			$Grass_Manager.ask_for_spawn_new_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
-			$beast_manager.spawn_new_beast(Vector3(21,0,-15),Alifedata.enum_speciesID.SHEEP)
-			$Grass_Manager.ask_for_spawn_new_grass(Vector3(0,0,0),Alifedata.enum_speciesID.TREE)
-			$Grass_Manager.ask_for_spawn_new_grass(Vector3(-5,0,0),Alifedata.enum_speciesID.TREE)
-			$Grass_Manager.ask_for_spawn_new_grass(Vector3(5,0,5),Alifedata.enum_speciesID.TREE)
-			$Grass_Manager.ask_for_spawn_new_grass(Vector3(10,0,0),Alifedata.enum_speciesID.TREE)
-			$Grass_Manager.ask_for_spawn_new_grass(Vector3(0,0,10),Alifedata.enum_speciesID.TREE)
+	
 
 
 func get_random_worldpos():

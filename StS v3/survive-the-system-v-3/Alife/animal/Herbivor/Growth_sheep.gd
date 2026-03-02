@@ -15,6 +15,8 @@ preload("res://Alife/animal/Herbivor/SHEEP.png")]
 var size_array = [0.5,0.5,1.5,2]
 
 func evaluate():
+	if player.lifedata["Species"] == Alifedata.enum_speciesID.SPIDERCRAB:
+		return 0
 	if player.lifedata["current_life_state"] == 0:
 		return 5.0
 

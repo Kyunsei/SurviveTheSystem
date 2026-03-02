@@ -3,6 +3,7 @@ extends Control
 var IP_ADDRESS = "127.0.0.1" #"158.41.57.177"
 var PORT = 12345
 var MAX_CLIENTS = 5
+var alifemanager
 
 var peer: ENetMultiplayerPeer
 
@@ -13,6 +14,8 @@ func _ready() -> void:
 		#connect signal of connection with function
 	multiplayer.peer_connected.connect(on_connection)
 	multiplayer.peer_disconnected.connect(on_disconnection)
+	alifemanager = get_parent().get_parent().get_node("Alife manager")
+	
 
 	#other potential signal on client only
 	'multiplayer.connected_to_server
@@ -24,7 +27,13 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if peer:
 		if multiplayer.is_server():
-			$FPS.text ="Peer ID: " + str(multiplayer.get_unique_id()) + "\nfps: " + str(Engine.get_frames_per_second())
+			var beastfps = alifemanager.get_node("beast_manager").FPS
+			var grassfps = alifemanager.get_node("Grass_Manager").FPS
+
+			$FPS.text ="Peer ID: " + str(multiplayer.get_unique_id())
+			$FPS.text = $FPS.text +  "\nfps: " + str(Engine.get_frames_per_second()) 
+			$FPS.text = $FPS.text +  " \t Beats_Time: " + str(beastfps) 
+			$FPS.text = $FPS.text +  " \t Grass_Time: " + str(grassfps) 
 
 
 func _on_button_pressed() -> void:

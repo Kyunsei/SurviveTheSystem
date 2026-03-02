@@ -111,6 +111,9 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			
 			new_life["current_energy"] = 20
 			new_life["Max_energy"] = 100
+			new_life["current_health"] = 500
+			new_life["Max_health"] = 500
+
 
 			new_life["Sprites"] = "res://Alife/animal/Herbivor/sheep3.png"
 		enum_speciesID.CAT:
@@ -135,7 +138,22 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 
 			new_life["Sprites"] = "res://assets/Art from STS2/player_cat.png"
 
+		enum_speciesID.SPIDERCRAB:
+			new_life["Homeostasis_cost"] = 0.
+			new_life["Reproduction_cost"] = 100
+			new_life["Reproduction_spread"] = 2
+			new_life["current_speed"] = 0
+			new_life["Max_speed"] = 10
+			new_life["Vision_range"] = 4
+			new_life["Food_type"] = [enum_speciesID.SHEEP, enum_speciesID.CAT]
+			new_life["Love_type"] = []
+			new_life["Danger_type"] = [enum_speciesID.SPIDERCRAB]#, enum_speciesID.SHEEP]
+			new_life["Max_age"] = 100.0
+			
+			new_life["current_energy"] = 20
+			new_life["Max_energy"] = 100
 
+			new_life["Sprites"] = "res://Alife/animal/Spider/Spidercrab.png"
 	return new_life
 
 
