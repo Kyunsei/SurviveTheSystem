@@ -319,7 +319,6 @@ func Spawn_Beast(g):
 			else:
 				get_parent().current_life_count_by_species[g["Species"]] = 1
 				#_pending_spawns.append(newgrass)
-			print(get_parent().current_life_count_by_species)
 
 
 

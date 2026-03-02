@@ -78,6 +78,7 @@ func index_1dto3d(i, size_in3D) -> Vector3i:
 
 func add_value_in_each_tile(array,value,v_min,v_max):
 	for i in array.size():
+		#print(array[i])
 		array[i] = clamp(array[i]+value, v_min, v_max)
 	
 func fill_value_in_each_tile(array,value):

@@ -50,6 +50,10 @@ var max_plant  = 10000
 
 func init():
 			$Grass_Manager.World = World
+			$Grass_Manager2.World = World
+			$Grass_Manager2.Init()
+
+
 			$beast_manager.World = World
 			for i in range(50):
 				var pos = get_random_worldpos()
@@ -100,6 +104,8 @@ func _process(delta: float) -> void:
 				timer = 1
 			pass
 			$Grass_Manager.update(delta)
+			$Grass_Manager2.update(delta)
+
 			$beast_manager.update(delta)
 			
 	elif GlobalSimulationParameter.ClientStarted:

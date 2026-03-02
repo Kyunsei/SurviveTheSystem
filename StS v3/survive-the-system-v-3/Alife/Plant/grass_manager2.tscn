@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://b4aghfi4iytr7"]
+
+[ext_resource type="Script" uid="uid://rxenc0br8qof" path="res://Alife/Plant/grass_manager2.gd" id="1_0gklr"]
+[ext_resource type="Script" uid="uid://whqmtmn23lj8" path="res://Alife/DNA.gd" id="2_eguq1"]
+[ext_resource type="Resource" uid="uid://bdkig76j1aagb" path="res://Alife/Plant/Grass/Grass_DNA.tres" id="3_yp710"]
+
+[node name="Grass_Manager" type="Node3D" unique_id=2019447816]
+script = ExtResource("1_0gklr")
+species_list = Array[ExtResource("2_eguq1")]([ExtResource("3_yp710")])

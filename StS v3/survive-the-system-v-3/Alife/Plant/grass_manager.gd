@@ -20,6 +20,7 @@ var World : Node3D
 @export var object_scene : PackedScene
 
 var thread: Thread
+var Thread_array = []
 var mutex: Mutex = Mutex.new()
 var thread_is_running: bool = false
 var _pending_spawns: Array = []
@@ -43,56 +44,77 @@ var grass_dna = {
 }
 
 var FPS : float
+var isInit = false
 
 
 func _ready() -> void:
 	if multiplayer.is_server():
 		thread = Thread.new()
 		alifedata = Alifedata.new()
-		
+		#for t in range(4):
+		#	var thread_temp = Thread.new()
+		#	Thread_array.append(thread_temp)
 
+			
+		
 
 func _update_on_thread(delta):
-	#print("Thread start — grass count: ", grass_dict.size())
-	var ss = Time.get_ticks_msec() 
-	#var newvalue = World.light_flux_in * GlobalSimulationParameter.simulation_speed * delta
-	#print(newvalue)
-	#var newmaxvalue = World.light_max_value * GlobalSimulationParameter.simulation_speed 
-	_pending_spawns.clear()
-	_pending_kills.clear()
-	if GlobalSimulationParameter.simulation_speed > 0:
-		World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
-		
-		#_pending_light_changes.clear()	
-		for g in grass_dict.values():
-			if g["Alive"]==1 :
-				if  g["current_life_state"]> 0:
-					Photosynthesis(g,delta)
-					Homeostasis(g,delta)
-					Growth(g,delta)
-					Reproduction(g,delta)
+		#print("Thread start — grass count: ", grass_dict.size())
+		var ss = Time.get_ticks_msec() 
+		#var newvalue = World.light_flux_in * GlobalSimulationParameter.simulation_speed * delta
+		#print(newvalue)
+		#var newmaxvalue = World.light_max_value * GlobalSimulationParameter.simulation_speed 
+		_pending_spawns.clear()
+		_pending_kills.clear()
+		if GlobalSimulationParameter.simulation_speed > 0:
+			World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
+			
+			#_pending_light_changes.clear()	
+			for key in grass_dict:
+				#if key > min and key < max:
+					var g = grass_dict[key]
+					if g["Alive"]==1 :
+						if  g["current_life_state"]> 0:
+							Photosynthesis(g,delta)
+							Homeostasis(g,delta)
+							Growth(g,delta)
+							Reproduction(g,delta)
 
-				else:
-					Germination(g)
-					if g["current_life_state"] == 0:
-						g["Alive"] = 0
-			else:
-				Decompose(g,delta)
+						else:
+							Germination(g)
+							if g["current_life_state"] == 0:
+								g["Alive"] = 0
+					else:
+						Decompose(g,delta)
 
-	#print("end " + str(Time.get_ticks_msec() -ss))
-	call_deferred("_on_work_finished")
-	
-	FPS = Time.get_ticks_msec() - ss
+		#print("end " + str(Time.get_ticks_msec() -ss))
+		call_deferred("_on_work_finished")
+		FPS = Time.get_ticks_msec() - ss
 
 func update(delta):
-	start_thread(delta)
+	#return
+	if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
+		#var c = 0
+		#for t in Thread_array:
+		#	start_thread_paralell(delta, t , 1000 * c , 1000 * (c+1))
+		
+		
+		start_thread(delta)
+		#isInit = true
 
-	#_update_on_thread()
-	'for g in grass_array:
-		Photosynthesis(g)
-		Reproduction(g)
-		Homeostasis(g)'
 
+
+func start_thread_paralell(delta, t , min , max):
+		mutex.lock()
+		if thread_is_running:
+			mutex.unlock()
+			#print("Already running!")
+			return
+		thread_is_running = true
+		mutex.unlock()
+		
+		t = Thread.new()
+		#t.start(_update_on_thread.bind(delta,min,max))
 
 
 func start_thread(delta):
@@ -237,11 +259,7 @@ func get_lightIndex(grass):
 				var idx =  World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
 				grass["light_index"].append(idx)	 
 
-'func Homeostasis(grass):
-	grass["current_energy"] -= grass["Homeostasis_cost"]  * GlobalSimulationParameter.simulation_speed
-	#current_energy = max(0,current_energy)
-	if grass["current_energy"] < 0:
-		Kill(grass)'
+
 
 
 func Decompose(grass,delta):
@@ -306,31 +324,9 @@ func Photosynthesis(grass,delta):
 	#print(tt)
 	#print(grass["current_energy"]) #* area * GlobalSimulationParameter.simulation_speed * delta)
 
-'func Photosynthesis_old(grass):
-	
-	if grass["light_index"] <  World.light_array.size():
-		var energy_absorbed = World.light_array[grass["light_index"]] * grass["Photosynthesis_absorbtion"] * GlobalSimulationParameter.simulation_speed 
-		energy_absorbed = min(World.light_array[grass["light_index"]],energy_absorbed)
-		#print(energy_absorbed)
-		if energy_absorbed <= 0:
-			return
-		grass["current_energy"] += energy_absorbed
-		var shadow_effect = 1.0
-		World.light_array[grass["light_index"]] = max(World.light_array[grass["light_index"]]-shadow_effect,0)
-		#print(World.light_array[light_index])'
 		
 		
-	
-'func Reproduction(grass):
-	if grass["current_energy"]  > 10:# reproduction_stock + energy_stock:
-		var newpos = grass["position"] + Vector3(randf_range(-5,5),
-											0,
-											randf_range(-5,5)
-											) 
-		newpos.x = clamp(newpos.x ,-World.World_Size.x/2+1,World.World_Size.x/2-1 )
-		newpos.z = clamp(newpos.z ,-World.World_Size.z/2+1,World.World_Size.z/2-1 )
-		spawn_grass(newpos)
-		grass["current_energy"] -= 8'
+
 		
 func Reproduction(grass,delta):
 		if grass["current_energy"] > grass["Reproduction_cost"]*2:
@@ -391,12 +387,6 @@ func Become_object(grass):
 		get_parent().add_child(new_object, true)
 
 
-
-
-	#if g.bin_ID:
-	#	if World.bin_array[g.bin_ID].has(g):
-	#		World.bin_array[g.bin_ID].erase(g)
-	#		g.bin_ID = null
 
 
 ##########################MULTIMESH GESTION

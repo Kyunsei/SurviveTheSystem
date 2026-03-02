@@ -28,7 +28,6 @@ var vision_friend ={ }
 
 
 func _enter_tree() -> void:
-	print("hello SHEEP")
 	#size = Vector3(1,1,1) #Temporary...
 	#max_energy = 1000
 	beast_manager = get_parent()
