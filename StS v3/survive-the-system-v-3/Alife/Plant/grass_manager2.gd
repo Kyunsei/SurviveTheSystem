@@ -28,6 +28,7 @@ var Species_array : PackedInt32Array
 
 #SPECIES SPECIFICIC
 @export var species_list : Array[DNA]
+var species_id_array : Array =[]
 var species_max_energy : Array = [] 
 var species_max_health : Array = [] 
 var species_max_age : Array = [] 
@@ -107,6 +108,17 @@ func _thread_loop():
 
 func _process(delta):
 	pass
+	if !multiplayer.is_server():
+		return
+	
+	if _pending_spawns_species.size() == 0 \
+	and _pending_kills.size() == 0 \
+	and _pending_update.size() == 0:
+		return
+
+	mutex.lock()
+	Spawn_and_Kill()
+	mutex.unlock()	
 	'if not thread_result_ready:
 		return
 
@@ -132,9 +144,12 @@ func _process(delta):
 	Apply_Spawn_And_Kill(spawns_positions, spawns_species, kills, updates)'
 
 
+func _ready() -> void:
+	multiplayer.peer_connected.connect(_on_peer_connected)
+
 
 func Init():
-	return
+	#return
 	if multiplayer.is_server():
 		if !World:
 			print("please set the world")
@@ -169,14 +184,10 @@ func update(delta):
 			
 
 		#call_deferred("Spawn_and_Kill")
-		Spawn_and_Kill()
+		#Spawn_and_Kill()
 		FPS = Time.get_ticks_msec() - ss
 	
-	
-func Sync_to_client():
-	if _pending_spawns_positions.size()> 0:
-		draw_new_grass.rpc(_pending_spawns_positions,_pending_spawns_positions)
-	
+
 	
 		
 func PhotosynthesisSystem(delta):
@@ -346,11 +357,29 @@ func Reproduction(i,delta):
 			)
 			newpos.x = clamp(newpos.x, -World.World_Size.x / 2 + 1, World.World_Size.x / 2 - 1)
 			newpos.z = clamp(newpos.z, -World.World_Size.z / 2 + 1, World.World_Size.z / 2 - 1)
-			
-
 			current_energy_array[i] -= species_reproduction_cost[s][t]	
-			_pending_spawns_positions.append(newpos)
-			_pending_spawns_species.append(s)
+
+			if check_if_lighttile_free(newpos):
+				_pending_spawns_positions.append(newpos)
+				_pending_spawns_species.append(s)
+
+
+func check_if_lighttile_free(pos):
+
+	var light_index : int 
+	var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
+	if pos.x <= -World.World_Size.x/2 or pos.x >= World.World_Size.x/2:
+			return false
+	if pos.z <= -World.World_Size.z/2 or pos.z >= World.World_Size.z/2:
+			return false
+	light_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
+	if !World.light_bin[light_index]:
+		return true
+	if World.light_bin[light_index].size()> 0:
+		return false
+	return true
+	
+
 
 func Germination(i):
 	var s = Species_array[i]
@@ -410,40 +439,68 @@ func Apply_Spawn_And_Kill(spawn_positions, spawn_species, kills, updates):
 
 		
 func Spawn_and_Kill():
-	#var unique_spawn : PackedInt32Array
-	#var unique_spawns :PackedInt32Array = remove_duplicate_in_index_array(_pending_external_spawns,_pending_spawns)
+	if !multiplayer.is_server():
+		return
+		
+	var spawned_ids := PackedInt32Array()
+	var spawned_positions := PackedVector3Array()
+	var killed_ids := PackedInt32Array()
+	var updated_ids := PackedInt32Array()	
+
+
 	var unique_kills :PackedInt32Array = remove_duplicate_in_index_array(_pending_external_kills,_pending_kills)
 	var unique_updates :PackedInt32Array = remove_duplicate_in_index_array(_pending_external_update,_pending_update)
 
 	for i in _pending_kills:
 		Kill_Grass(i)
+		killed_ids.append(i)
 		
 	for i in range(_pending_spawns_species.size()):
-		Spawn_New_Grass(_pending_spawns_positions[i], _pending_spawns_species[i])
-		
-	for i in range(_pending_external_spawns_id.size()):
+		var new_id = Spawn_New_Grass(_pending_spawns_positions[i], _pending_spawns_species[i])
+		spawned_ids.append(new_id)
+		spawned_positions.append(_pending_spawns_positions[i])
+				
+	'for i in range(_pending_external_spawns_id.size()):
 		Spawn_Grass(_pending_external_spawns_id[i],_pending_external_spawns_positions[i])
 		#Spawn_Grass(i)
-		#Build_New_Grass(i, pos, sp)
+		#Build_New_Grass(i, pos, sp)'
 
 
 	for i in unique_updates:
 		#Update_Grass(i)
+		#updated_ids.append(i)
 		pass
 	
-	Sync_to_client()
+# ---- SEND TO CLIENTS ----
+	if spawned_ids.size() > 0:
+		draw_new_grass.rpc(spawned_ids, spawned_positions)
+
+	if killed_ids.size() > 0:
+		erase_grass.rpc(killed_ids)
+
+	if updated_ids.size() > 0:
+		var pos_array := PackedVector3Array()
+		var state_array := PackedInt32Array()
+		var alive_array := PackedInt32Array()
+
+		for id in updated_ids:
+			pos_array.append(position_array[id])
+			state_array.append(current_life_state_array[id])
+			alive_array.append(Alive_array[id])
+
+		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array)
 
 	
 	
 	_pending_spawns_positions.clear()
 	_pending_spawns_species.clear()
-	_pending_external_spawns_id.clear()	
-	_pending_external_spawns_positions.clear()	
+	#_pending_external_spawns_id.clear()	
+	#_pending_external_spawns_positions.clear()	
 	
-	_pending_external_kills.clear()
+	#_pending_external_kills.clear()
 	_pending_kills.clear()
 	_pending_update.clear()
-	_pending_external_update.clear()
+	#_pending_external_update.clear()
 
 		
 
@@ -505,12 +562,19 @@ func Spawn_New_Grass(newpos:Vector3,s:int):
 		entity_count += 1
 		
 	Build_New_Grass(i, newpos, s)
+	species_id_array[s].append(i)
 	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
 		get_parent().current_life_count_by_species[Species_array[i]] += 1
 	else:
 		get_parent().current_life_count_by_species[Species_array[i]] = 1
 	return i 
+	
 func Kill_Grass(i):
+	var s = Species_array[i]
+
+	if species_id_array[s].has(i):
+		species_id_array[s].erase(i)
+		
 	free_indices.append(i)
 	Active[i] = 0
 	remove_from_light_bin(i)
@@ -564,6 +628,7 @@ func build_species_tables():
 		species_reproduction_spread[id] = s.Reproduction_spread
 		species_reproduction_number[id] = s.Reproduction_number
 		species_biomass[id] = s.Biomass
+		species_id_array.append([])
 
 ###CONECT TO WORLD
 
@@ -684,7 +749,7 @@ func remove_from_world_bin(i):
 ##########################MULTIMESH GESTION
 
 @rpc("authority", "call_remote", "reliable") 
-func draw_new_grass(id_array, pos_array):#,# state_array, alive_array):	
+func draw_new_grass(id_array, pos_array):#, state_array, alive_array):	
 		$grass.draw_new_grass(id_array, pos_array)#, state_array, alive_array)
 		
 			
@@ -701,5 +766,26 @@ func erase_grass(id_array):
 
 func send_and_draw_array(id_array, pos_array, state_array, alive_array):
 	$grass.init()
-	$grass.draw_new_grass(id_array, pos_array, state_array, alive_array)
-			
+	$grass.draw_new_grass(id_array, pos_array)#, state_array, alive_array)
+
+
+
+func _on_peer_connected(id):
+	if multiplayer.is_server():
+		send_full_state_to_peer(id)
+
+func send_full_state_to_peer(peer_id):
+
+	var ids := PackedInt32Array()
+	var positions := PackedVector3Array()
+	var states := PackedInt32Array()
+	var alive := PackedInt32Array()
+
+	for i in range(entity_count):
+		if Active[i] == 1:
+			ids.append(i)
+			positions.append(position_array[i])
+			states.append(current_life_state_array[i])
+			alive.append(Alive_array[i])
+
+	send_and_draw_array.rpc_id(peer_id, ids, positions, states, alive)			

@@ -93,7 +93,7 @@ func _update_on_thread(delta):
 		FPS = Time.get_ticks_msec() - ss
 
 func update(delta):
-	#return
+	return
 	if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
 		#var c = 0
 		#for t in Thread_array:

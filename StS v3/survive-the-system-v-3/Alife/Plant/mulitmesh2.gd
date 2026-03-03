@@ -6,14 +6,13 @@ var shadow
 
 func init():
 	instance_number = 0
+	multimesh.visible_instance_count = instance_number 
 
 func _ready() -> void:
-	multimesh.instance_count = 100000
+	multimesh.instance_count = 1000000
 	if has_node("shadow"):
 		shadow = $shadow
-		shadow.multimesh.instance_count = 100000
-
-
+		shadow.multimesh.instance_count = 1000000
 
 
 func update_drawn_grass(id_array, pos_array, state_array, alive_array):
@@ -53,7 +52,7 @@ func draw_new_grass(id_array, pos_array):#, state_array, alive_array):
 			multimesh.set_instance_color(id_array[i], Color(1.0, 1.0, 1.0, 1.0))'
 	
 		instance_number += 1
-	
+	#print(instance_number)
 	multimesh.visible_instance_count = instance_number 
 	
 	
