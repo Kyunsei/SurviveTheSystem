@@ -192,6 +192,8 @@ func action_on_server():
 			area.get_parent().interact(player)
 		if area.name == "Upgrade":
 			area.interact(player)
+		if area.name == "Area3D_go_button":
+			area.get_parent().interacting()
 
 	
 	

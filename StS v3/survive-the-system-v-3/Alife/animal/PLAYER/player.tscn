@@ -302,7 +302,7 @@ libraries/ = SubResource("AnimationLibrary_1iiag")
 [node name="DEBUG_CONTROL" type="Node" parent="." unique_id=1175554298]
 script = ExtResource("5_2y45n")
 
-[node name="Action_Area3D" type="Area3D" parent="." unique_id=921750962]
+[node name="Action_Area3D" type="Area3D" parent="." unique_id=921750962 groups=["action"]]
 unique_name_in_owner = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Action_Area3D" unique_id=285623758]
