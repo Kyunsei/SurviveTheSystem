@@ -234,6 +234,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.26419193, 0, -0.7107303)
 
 [node name="Status_bar" type="Node3D" parent="MeshInstance3D" unique_id=1033692764]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+visible = false
 
 [node name="SubViewport" type="SubViewport" parent="MeshInstance3D/Status_bar" unique_id=2136513796]
 transparent_bg = true
