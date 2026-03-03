@@ -12,7 +12,7 @@ var Center_z = World_Size.z/2
 var Center_y = World_Size.y
 
 ##### LIGHT MATRIX
-var light_tile_size = Vector3(2,World_Size.y,2) #in m?
+var light_tile_size = Vector3(1,World_Size.y,1) #in m?
 var light_array = []
 var light_bin = [] #PLANT GO THERE
 
