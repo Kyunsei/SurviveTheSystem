@@ -118,6 +118,8 @@ func move_player_position(pos):
 
 
 func _ready() -> void:
+	if $MeshInstance3D/Status_bar.show() == false:
+		$MeshInstance3D/Status_bar.show()
 	if is_multiplayer_authority():
 		%Camera3D.current = true
 		World = get_parent().get_parent().get_node("World") #NEED TO BE CHANGED TO ASK SERVER INFO
@@ -217,7 +219,6 @@ func update_status_of_player():
 
 @rpc("any_peer","call_local")
 func update_bar(bartype,value, MaxValue):
-	$MeshInstance3D/Status_bar.show()
 	if bartype ==1 :
 		health_bar.value = value
 		health_bar.max_value = MaxValue
