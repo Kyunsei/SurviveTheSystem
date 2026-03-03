@@ -52,7 +52,7 @@ func interact(player):
 			#GlobalSimulationParameter.simulation_speed = 0.5
 			credit_player(i)
 		Biomass_collected = 0
-		max_biomass = max_biomass * 2
+		max_biomass = max_biomass * 1.5
 		update_label()
 
 		#end_of_quest.rpc_id(int(player.name),player)
