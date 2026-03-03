@@ -118,9 +118,9 @@ func move_player_position(pos):
 
 
 func _ready() -> void:
-	if $MeshInstance3D/Status_bar.show() == false:
-		$MeshInstance3D/Status_bar.show()
+
 	if is_multiplayer_authority():
+		$MeshInstance3D/Status_bar.show()
 		%Camera3D.current = true
 		World = get_parent().get_parent().get_node("World") #NEED TO BE CHANGED TO ASK SERVER INFO
 		#print(World)
