@@ -236,9 +236,12 @@ func add_to_inventory(alife):
 func Drop():
 	var inventory = player.get_node("Player_HUD").get_node("Inventory")
 	var item_dropped = inventory.remove_selected(int(player.name))
-	if item_dropped:
-		if item_dropped["Species"] == Alifedata.enum_speciesID.ITEM:
-			alife_manager.get_node("Item_Manager").spawn_item.rpc(item_dropped,player.position)
+	if item_dropped != null:
+		if item_dropped is Dictionary:
+			if item_dropped["Species"] == Alifedata.enum_speciesID.ITEM:
+				alife_manager.get_node("Item_Manager").spawn_item.rpc(item_dropped,player.position)
+			else:
+				alife_manager.add(item_dropped,player.position)	
 		else:
 			alife_manager.add(item_dropped,player.position)	
 

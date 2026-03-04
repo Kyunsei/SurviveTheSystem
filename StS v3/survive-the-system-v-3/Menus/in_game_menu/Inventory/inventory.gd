@@ -62,12 +62,9 @@ func prep_alife(alife):
 func prep_newgrass(i):
 	var grassmanager = player.get_parent().get_node("Grass_Manager2")
 	var item ={}
-	print(grassmanager.species_list)
 	var s = grassmanager.Species_array[i]
-	print(s)
 	item["name"] =grassmanager.species_list[s].display_name
 	item["inventory_icon"] =grassmanager.species_list[s].Sprite_path
-
 	item["Data"] = [i]
 	#item["inventory_path"] = null
 	item["stack_amount"] = floori(player.inventory_capacity_upgrade*grassmanager.species_list[s].Stack_amount) #update here
@@ -100,7 +97,7 @@ func remove_selected(peer_id):
 	if current_index != null:
 		var slot = items[current_index][0]		
 		var item_rmv = slot.remove_item(peer_id)
-		if item_rmv:
+		if item_rmv != null:
 			if slot.item == {}:
 				player.equip_item(null)
 				player.equip_item.rpc_id(peer_id,null)

@@ -210,16 +210,19 @@ func remove(grass):
 		$Grass_Manager2.remove_from_world(grass)
 
 func add(grass, pos):
-	pos.y = 0
-	grass["position"] = pos
-	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
-		$beast_manager.Ask_to_spawn(grass)	
-	elif grass["Species"]== Alifedata.enum_speciesID.CAT:
-		#spawn_player(0,pos)
-		print("was a bit bugging sadly")
+	if grass is Dictionary:
+		pos.y = 0
+		grass["position"] = pos
+		if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
+			$beast_manager.Ask_to_spawn(grass)	
+		elif grass["Species"]== Alifedata.enum_speciesID.CAT:
+			#spawn_player(0,pos)
+			print("was a bit bugging sadly")
+		else:
+			$Grass_Manager.Ask_for_spawn(grass)
 	else:
-		$Grass_Manager.Ask_for_spawn(grass)
-
+		pos.y = 0
+		$Grass_Manager2.add_to_world(grass,pos)
 
 			
 func Attack(grass,value):

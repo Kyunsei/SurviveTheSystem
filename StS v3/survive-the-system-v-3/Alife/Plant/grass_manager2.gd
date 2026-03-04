@@ -657,7 +657,8 @@ func remove_from_world(i):
 	Active[i] = 0
 	_pending_update.append(i)
 	
-func add_to_world(i):
+func add_to_world(i,pos):
+	position_array[i] = pos
 	put_in_world_bin(i)
 	put_in_light_bin(i)
 	light_index_array[i] = get_lightIndex(i)

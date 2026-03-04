@@ -46,6 +46,7 @@ func remove_item(peer_id):
 		send_remove_info.rpc_id(peer_id)
 
 		return rmv_item
+
 	return null
 
 	
