@@ -118,10 +118,11 @@ func _physics_process(delta: float) -> void:
 func UseITEM():	
 	#print(player.item_hold)
 	if player.item_hold:
-		if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
-			player.item_hold["Data"][0]["Use"].call(player)
-		else:
-			print("alife entitity action")
+		if player.item_hold is Dictionary:
+			if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
+				player.item_hold["Data"][0]["Use"].call(player)
+			else:
+				print("alife entitity action")
 	else:
 		var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
 		 												player_action_area.get_node("CollisionShape3D").shape.size)
@@ -145,15 +146,25 @@ func pick_up() :
 @rpc("any_peer","call_local")
 func eat_holding_item() :
 	if player.item_hold:
-		if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
-			player.item_hold["Data"][0]["Eat"].call(player)
+		if player.item_hold["Data"][0] is Dictionary:
+			if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
+				player.item_hold["Data"][0]["Eat"].call(player)
+			else:
+				var value = player.item_hold["Data"][0]["Biomass"]/15
+				var inventory = player.get_node("Player_HUD").get_node("Inventory")
+				var item_eaten = inventory.remove_selected(int(player.name))
+				if item_eaten:
+					player.lifedata["current_energy"] =clamp(player.lifedata["current_energy"]+value,0,player.lifedata["Max_energy"])
+					#print(value)
 		else:
-			var value = player.item_hold["Data"][0]["Biomass"]/15
+			var id = player.item_hold["Data"][0]
+			var value = alife_manager.get_node("Grass_Manager2").current_biomass_array[id]/15
 			var inventory = player.get_node("Player_HUD").get_node("Inventory")
 			var item_eaten = inventory.remove_selected(int(player.name))
 			if item_eaten:
-				player.lifedata["current_energy"] =clamp(player.lifedata["current_energy"]+value,0,player.lifedata["Max_energy"])
-				#print(value)
+					player.lifedata["current_energy"] =clamp(player.lifedata["current_energy"]+value,0,player.lifedata["Max_energy"])
+					#print(value)
+			
 	else:
 		pass
 
