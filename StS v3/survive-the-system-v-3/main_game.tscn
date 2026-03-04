@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://csp4534h7vmrb" path="res://Collector/collector.tscn" id="5_f52ns"]
 [ext_resource type="PackedScene" uid="uid://cjq6scu5nepoj" path="res://World/spaceship/spaceship.tscn" id="6_2pltu"]
 [ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/animal/Spider/Spidercrab.png" id="7_f52ns"]
+[ext_resource type="PackedScene" uid="uid://bw0x55yvvmaih" path="res://Collector/collector_ship.tscn" id="8_l5ukw"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f3thf"]
 transparency = 1
@@ -52,3 +53,6 @@ mesh = SubResource("QuadMesh_l5ukw")
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D" unique_id=318474683]
 cast_shadow = 3
 mesh = SubResource("SphereMesh_4srsv")
+
+[node name="Collector_ship" parent="." unique_id=187580227 instance=ExtResource("8_l5ukw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.539349, 1.0617714, 29.988403)

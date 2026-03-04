@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://b2pd3suhffqo"]
+
+[ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="1_04lix"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tp7ya"]
+albedo_texture = ExtResource("1_04lix")
+metallic = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_ks4mn"]
+material = SubResource("StandardMaterial3D_tp7ya")
+size = Vector3(0.05, 1, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ugo8l"]
+albedo_texture = ExtResource("1_04lix")
+metallic = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_p2nub"]
+material = SubResource("StandardMaterial3D_ugo8l")
+size = Vector3(0.15, 1.2, 0.15)
+
+[node name="Barrier" type="Node3D" unique_id=300521391]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=511337875]
+mesh = SubResource("BoxMesh_ks4mn")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=304353051]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, 0, 0)
+mesh = SubResource("BoxMesh_ks4mn")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=1457606311]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, 0, 0)
+mesh = SubResource("BoxMesh_ks4mn")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=1224738754]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0, 0)
+mesh = SubResource("BoxMesh_ks4mn")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="." unique_id=2120147360]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0, 0)
+mesh = SubResource("BoxMesh_ks4mn")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="." unique_id=1562210862]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.39999998, 0, 0)
+mesh = SubResource("BoxMesh_ks4mn")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="." unique_id=1037729800]
+transform = Transform3D(-4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0, 1, -0.100000024, 0.5, 0)
+mesh = SubResource("BoxMesh_p2nub")
