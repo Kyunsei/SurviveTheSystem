@@ -193,6 +193,10 @@ func action_on_server():
 			area.interact(player)
 		if area.name == "Area3D_go_button":
 			area.get_parent().interacting()
+		if area.name == "call_collector_ship_Area3D":
+			area.get_parent().interacting()
+		if area.name == "go_up_area3D":
+			area.get_parent().go_up()
 
 	
 	

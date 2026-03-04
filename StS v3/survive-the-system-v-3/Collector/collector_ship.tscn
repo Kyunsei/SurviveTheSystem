@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cc6y2lfwuh080" path="res://Collector/collector_ship.gd" id="1_okm20"]
 [ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="1_ue0ys"]
 [ext_resource type="PackedScene" uid="uid://b2pd3suhffqo" path="res://Collector/barrier.tscn" id="2_okm20"]
+[ext_resource type="PackedScene" uid="uid://cup4ldkq72aad" path="res://World/spaceship/activation_button.tscn" id="4_jyloi"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jyloi"]
 albedo_texture = ExtResource("1_ue0ys")
@@ -19,6 +20,22 @@ size = Vector3(0.2, 0.95, 3.6)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_tf2qa"]
 size = Vector3(5, 0.5, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m4dhe"]
+albedo_texture = ExtResource("1_ue0ys")
+metallic = 0.8
+uv1_scale = Vector3(1, 2, 2)
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_tf2qa"]
+material = SubResource("StandardMaterial3D_m4dhe")
+size = Vector3(1, 2, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_h5hgu"]
+size = Vector3(1, 2, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sl04x"]
+size = Vector3(0.2, 0.8, 0.8)
 
 [node name="Collector_ship" type="AnimatableBody3D" unique_id=1273828613]
 script = ExtResource("1_okm20")
@@ -84,3 +101,21 @@ transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -2.4
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=680751226]
 shape = SubResource("BoxShape3D_tf2qa")
+
+[node name="column" type="MeshInstance3D" parent="." unique_id=1203606589]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3000001, 0)
+mesh = SubResource("BoxMesh_tf2qa")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="column" unique_id=1188969162]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="column/StaticBody3D" unique_id=45604299]
+shape = SubResource("BoxShape3D_h5hgu")
+
+[node name="Activation_button" parent="column" unique_id=2102924428 instance=ExtResource("4_jyloi")]
+transform = Transform3D(-2.1855694e-08, 0, -0.5, 0, 0.5, 0, 0.5, 0, -2.1855694e-08, 0.5, -1.1920929e-07, 0)
+
+[node name="go_up_area3D" type="Area3D" parent="." unique_id=1485061281]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="go_up_area3D" unique_id=637978609]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.4, 0)
+shape = SubResource("BoxShape3D_sl04x")

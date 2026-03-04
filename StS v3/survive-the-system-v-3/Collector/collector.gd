@@ -3,6 +3,7 @@ extends Node3D
 var Biomass_collected = 0
 var max_biomass = 100
 var credit_gain = 0
+@onready var spaceship: Node3D = $"../SPACESHIP"
 
 var factor = 0.2
 # Called when the node enters the scene tree for the first time.
@@ -50,10 +51,13 @@ func interact(player):
 		credit_gain += 10
 		print("BRAVO")
 		var c = 0
+		spaceship.get_node("Collector_ship").go_down()
+
+		#.go_down.rpc_id(1)
 		for i in player.get_parent().player_array:
-			i.go_back_to_ship.rpc_id(int(i.name),c)
-			set_world_readiness.rpc(false)
-			c +=1
+			#i.go_back_to_ship.rpc_id(int(i.name),c)
+			#set_world_readiness.rpc(false)
+			#c +=1
 			#GlobalSimulationParameter.simulation_speed = 0.5
 			credit_player(i)
 		Biomass_collected = 0

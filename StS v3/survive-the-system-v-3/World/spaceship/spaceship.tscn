@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cup4ldkq72aad" path="res://World/spaceship/activation_button.tscn" id="5_ftgam"]
 [ext_resource type="Script" uid="uid://b4o6f6gbseg6h" path="res://World/spaceship/go_button.gd" id="6_oclds"]
 [ext_resource type="Script" uid="uid://84wgp7mvc54w" path="res://World/spaceship/area_3d_go_button.gd" id="7_8txik"]
+[ext_resource type="PackedScene" uid="uid://bw0x55yvvmaih" path="res://Collector/collector_ship.tscn" id="8_4e1qf"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2gbrl"]
 albedo_texture = ExtResource("1_l8se6")
@@ -15,7 +16,7 @@ metallic_specular = 0.8
 uv1_scale = Vector3(0.5, 1, 0.2)
 uv1_triplanar = true
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_l8se6"]
+[sub_resource type="PlaneMesh" id="PlaneMesh_usqpj"]
 material = SubResource("StandardMaterial3D_2gbrl")
 size = Vector2(10, 10)
 
@@ -28,12 +29,31 @@ size = Vector3(10, 0.5, 20)
 [sub_resource type="BoxShape3D" id="BoxShape3D_ftgam"]
 size = Vector3(10, 0.5, 20)
 
+[sub_resource type="PlaneMesh" id="PlaneMesh_w7yga"]
+material = SubResource("StandardMaterial3D_2gbrl")
+size = Vector2(10, 10)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2jlj7"]
+material = SubResource("StandardMaterial3D_2gbrl")
+size = Vector2(10, 10)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_qscrw"]
+material = SubResource("StandardMaterial3D_2gbrl")
+size = Vector2(10, 10)
+
 [sub_resource type="PlaneMesh" id="PlaneMesh_hu12v"]
 material = SubResource("StandardMaterial3D_2gbrl")
 size = Vector2(10, 20)
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_1wtdp"]
 data = PackedVector3Array(5, 0, 10, -5, 0, 10, 5, 0, -10, -5, 0, 10, -5, 0, -10, 5, 0, -10)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_l8se6"]
+material = SubResource("StandardMaterial3D_2gbrl")
+size = Vector2(6, 6)
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_11em4"]
+data = PackedVector3Array(3, 0, 3, -3, 0, 3, 3, 0, -3, -3, 0, 3, -3, 0, -3, 3, 0, -3)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ef02v"]
 albedo_texture = ExtResource("1_l8se6")
@@ -45,6 +65,10 @@ uv1_triplanar = true
 [sub_resource type="PlaneMesh" id="PlaneMesh_ftgam"]
 material = SubResource("StandardMaterial3D_ef02v")
 size = Vector2(10, 20)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_se27s"]
+material = SubResource("StandardMaterial3D_2gbrl")
+size = Vector2(10, 10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oclds"]
 transparency = 1
@@ -70,6 +94,9 @@ properties/0/replication_mode = 1
 properties/1/path = NodePath("ship/moving_wall1:position")
 properties/1/spawn = true
 properties/1/replication_mode = 1
+properties/2/path = NodePath("Collector_ship:position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
 
 [node name="SPACESHIP" type="Node3D" unique_id=853925969]
 script = ExtResource("1_2gbrl")
@@ -83,7 +110,7 @@ transform = Transform3D(2.9802326e-08, 1, 2.1855693e-07, 1, -2.980232e-08, -4.37
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground8" unique_id=1799751667]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-mesh = SubResource("PlaneMesh_l8se6")
+mesh = SubResource("PlaneMesh_usqpj")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground8" unique_id=95599255]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -103,7 +130,7 @@ transform = Transform3D(4.3711374e-08, -2.6226832e-07, 1, -2.9802322e-08, -1, -2
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground10" unique_id=539345174]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-mesh = SubResource("PlaneMesh_l8se6")
+mesh = SubResource("PlaneMesh_w7yga")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground10" unique_id=1338180240]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -114,7 +141,7 @@ transform = Transform3D(4.3711374e-08, -2.6226832e-07, 1, 1, -2.980232e-08, -4.3
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground9" unique_id=759469758]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-mesh = SubResource("PlaneMesh_l8se6")
+mesh = SubResource("PlaneMesh_2jlj7")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground9" unique_id=308663458]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -125,7 +152,7 @@ transform = Transform3D(-2.9802322e-08, -1, -1.3113416e-07, 1, -2.9802322e-08, -
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground7" unique_id=533302630]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-mesh = SubResource("PlaneMesh_l8se6")
+mesh = SubResource("PlaneMesh_qscrw")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground7" unique_id=1418895643]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -158,15 +185,136 @@ mesh = SubResource("PlaneMesh_hu12v")
 shape = SubResource("ConcavePolygonShape3D_1wtdp")
 
 [node name="ground4" type="StaticBody3D" parent="ship/non_moving" unique_id=237035107]
-transform = Transform3D(2.6054018e-15, 4.371139e-08, -1, 1, -5.9604645e-08, 0, -5.9604645e-08, -1, -4.371139e-08, 1, 5, 10)
+transform = Transform3D(2.6054018e-15, 4.371139e-08, -1, 1, -5.9604645e-08, 0, -5.9604645e-08, -1, -4.371139e-08, 1, 5, 15.1)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground4" unique_id=1156502492]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
 mesh = SubResource("PlaneMesh_l8se6")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground4" unique_id=1504576732]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-shape = SubResource("ConcavePolygonShape3D_2gbrl")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground4" unique_id=2119873072]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground5" type="StaticBody3D" parent="ship/non_moving" unique_id=1358357981]
+transform = Transform3D(-5.9604645e-08, -1, 0, 1, -5.9604645e-08, 0, 0, 0, 1, 2.6999998, 5, 12)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground5" unique_id=1359554473]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground5" unique_id=1422568501]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground11" type="StaticBody3D" parent="ship/non_moving" unique_id=884795316]
+transform = Transform3D(2.6054018e-15, 4.371139e-08, -1, 1, -5.9604645e-08, 0, -5.9604645e-08, -1, -4.371139e-08, 6.7, 5, 10)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground11" unique_id=1741738127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground11" unique_id=96373693]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground12" type="StaticBody3D" parent="ship/non_moving" unique_id=557477181]
+transform = Transform3D(2.6054018e-15, 4.371139e-08, -1, 1, -5.9604645e-08, 0, -5.9604645e-08, -1, -4.371139e-08, -4.7000003, 5, 10)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground12" unique_id=2007492382]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground12" unique_id=1007762380]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground13" type="StaticBody3D" parent="ship/non_moving" unique_id=538618058]
+transform = Transform3D(5.9604645e-08, 1, 8.742278e-08, 1, -5.9604645e-08, 0, 5.2108035e-15, 8.742278e-08, -1, -2.7000003, 5, 14)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground13" unique_id=122318125]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground13" unique_id=1523446169]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground14" type="StaticBody3D" parent="ship/non_moving" unique_id=1951257819]
+transform = Transform3D(5.9604645e-08, 1, 8.742278e-08, 1, -5.9604645e-08, 0, 5.2108035e-15, 8.742278e-08, -1, -2.7000003, 11.000001, 14)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground14" unique_id=1438248147]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground14" unique_id=1239489978]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground15" type="StaticBody3D" parent="ship/non_moving" unique_id=1541062775]
+transform = Transform3D(2.6054018e-15, 4.371139e-08, -1, 1, -5.9604645e-08, 0, -5.9604645e-08, -1, -4.371139e-08, 0.99999976, 11.000001, 15.1)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground15" unique_id=720167572]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground15" unique_id=1977624026]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground16" type="StaticBody3D" parent="ship/non_moving" unique_id=1483040489]
+transform = Transform3D(-5.9604645e-08, -1, 0, 1, -5.9604645e-08, 0, 0, 0, 1, 2.6999998, 11.000001, 12)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground16" unique_id=1560934010]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground16" unique_id=1066913444]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground17" type="StaticBody3D" parent="ship/non_moving" unique_id=2129667726]
+transform = Transform3D(2.6054018e-15, 4.371139e-08, -1, 1, -5.9604645e-08, 0, -5.9604645e-08, -1, -4.371139e-08, 6.7, 11.000001, 10)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground17" unique_id=1467005183]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground17" unique_id=253890439]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground18" type="StaticBody3D" parent="ship/non_moving" unique_id=1853695175]
+transform = Transform3D(2.6054018e-15, 4.371139e-08, -1, 1, -5.9604645e-08, 0, -5.9604645e-08, -1, -4.371139e-08, -4.700001, 11.000001, 10)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground18" unique_id=190641638]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground18" unique_id=1489906821]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground19" type="StaticBody3D" parent="ship/non_moving" unique_id=1788407311]
+transform = Transform3D(2.6054018e-15, 4.371139e-08, -1, -1.0331603e-07, -1, -4.371139e-08, -1, 1.0331603e-07, 1.9106855e-15, 0.69999933, 12, 10.1)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground19" unique_id=557452558]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground19" unique_id=995315711]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
+
+[node name="ground20" type="StaticBody3D" parent="ship/non_moving" unique_id=657401167]
+transform = Transform3D(2.6054018e-15, 4.371139e-08, -1, -1, 1.4702742e-07, 3.821371e-15, 1.4702742e-07, 1, 4.371139e-08, 0.69999933, 11, 10)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/non_moving/ground20" unique_id=1659076361]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+mesh = SubResource("PlaneMesh_l8se6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/non_moving/ground20" unique_id=1136024686]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_11em4")
 
 [node name="ground6" type="StaticBody3D" parent="ship/non_moving" unique_id=1542156535]
 transform = Transform3D(-1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 0, 0, 1, 0, 10, 0)
@@ -182,7 +330,7 @@ transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.31
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/moving_ground1" unique_id=1992877223]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
-mesh = SubResource("PlaneMesh_l8se6")
+mesh = SubResource("PlaneMesh_se27s")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ship/moving_ground1" unique_id=555426444]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -217,5 +365,8 @@ shape = SubResource("BoxShape3D_8txik")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=865904901]
 replication_config = SubResource("SceneReplicationConfig_8txik")
+
+[node name="Collector_ship" parent="." unique_id=1273828613 instance=ExtResource("8_4e1qf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 12.6)
 
 [connection signal="area_entered" from="go_button/Area3D_go_button" to="go_button" method="_on_area_3d_area_entered"]

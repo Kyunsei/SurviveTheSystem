@@ -67,13 +67,14 @@ func _on_next():
 	
 @rpc("any_peer","call_remote")
 func tp_player():
-		var alife_manager = get_parent().get_parent().get_node("Alife manager")
-		#print(alife_manager)
-		var t_position = Vector3(0,1,0)
-		for i in alife_manager.player_array:
-			print(i)
-			i.move_player_position.rpc_id(int(i.name),t_position)
-			t_position.x += 1
+	pass
+		#var alife_manager = get_parent().get_parent().get_node("Alife manager")
+		##print(alife_manager)
+		#var t_position = Vector3(0,1,0)
+		#for i in alife_manager.player_array:
+			#print(i)
+			#i.move_player_position.rpc_id(int(i.name),t_position)
+			#t_position.x += 1
 
 @rpc("any_peer","call_remote")
 func change_server_simulation_speed(value):
