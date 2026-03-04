@@ -131,7 +131,7 @@ func Init():
 		if !World:
 			print("please set the world")
 		build_species_tables()
-		for i in range(2):
+		for i in range(1):
 			Spawn_New_Grass(Vector3(0+0*i,0,0),0)
 		isInit = true
 		start_simulation_thread()
@@ -384,6 +384,8 @@ func Decompose(i,delta):
 	else:
 		grass["last_step"] = current_step'
 	if current_biomass_array[i] < 0:
+		if _pending_kills.has(i):
+			return
 		_pending_kills.append(i)
 
 
@@ -495,6 +497,7 @@ func Spawn_Grass(i,pos):
 	put_in_world_bin(i)
 
 func Spawn_New_Grass(newpos:Vector3,s:int):
+	#print("new")
 	var i : int
 	if free_indices.size()> 0:
 		i = free_indices.pop_back()
@@ -520,7 +523,6 @@ func Kill_Grass(i):
 	Active[i] = 0
 	remove_from_light_bin(i)
 	remove_from_world_bin(i)
-
 
 	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
 		get_parent().current_life_count_by_species[Species_array[i]] -= 1

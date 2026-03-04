@@ -237,6 +237,8 @@ func Kill(grass):
 
 
 
+	
+
 func get_lightIndex(grass):
 	var pos = grass["position"]
 	grass["light_index"] = []
@@ -339,7 +341,7 @@ func Reproduction(grass,delta):
 			)
 			newpos.x = clamp(newpos.x, -World.World_Size.x / 2 + 1, World.World_Size.x / 2 - 1)
 			newpos.z = clamp(newpos.z, -World.World_Size.z / 2 + 1, World.World_Size.z / 2 - 1)
-			
+			#if check_if_lighttile_free(newpos):
 			spawn_grass(newpos, grass["Species"])
 			#var newgrass = grass_dna.duplicate()
 			#newgrass["position"] = newpos
