@@ -12,27 +12,32 @@ func _ready() -> void:
 
 #@rpc("any_peer","call_local")
 func interact(player):
-	var temp = player.inventory
+
 	
-	
+	#var grassmanager = player.get_parent().get_node("Grass_Manager2")
 	
 	var item_hold = player.item_hold
 	var inventory = player.get_node("Player_HUD").get_node("Inventory")
 
-	if item_hold:
-		#print(item_hold["Data"])
-		#print("------")
+	if item_hold != null:
 
-		if item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
-			print("you try to give an item")
-			return
+			var grassmanager = player.get_parent().get_node("Grass_Manager2")
+			
 
-		var temp_duplicate_list = item_hold["Data"].duplicate()
-		for o in temp_duplicate_list:
-			#print(o)
-			Biomass_collected += o["Biomass"]*factor
-			inventory.remove_selected(int(player.name))
+			var temp_duplicate_list = item_hold["Data"].duplicate()
+			for  o in temp_duplicate_list:
+				if o is Dictionary:
+					if item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
+						print("you try to give an item")
+						return
 
+					Biomass_collected += o["Biomass"]*factor
+					inventory.remove_selected(int(player.name))
+				else:
+					Biomass_collected += grassmanager.current_biomass_array[o]*factor
+					inventory.remove_selected(int(player.name))
+
+		
 
 	
 	'for o in player.inventory:		
