@@ -5,7 +5,7 @@ var Local_address = "127.0.0.1"
 var V_address ="195.26.116.181" 
 var K_address = "92.107.162.231"
 var newIP = ""
-var tried_already = false
+#var tried_already = false
 var PORT = 12345
 
 var peer: ENetMultiplayerPeer
@@ -52,11 +52,11 @@ func on_client_connection():
 	$VBoxContainer/Button_Play.disabled = false
 
 func on_connection_failed():
-	if tried_already == false:
+	'if tried_already == false:
 		newIP =V_address
 		connect_to_server(newIP, PORT)
 	else:
-		pass
+		pass'
 	$Label_server.text = "Connection failed"
 	$VBoxContainer/Button_Play.disabled = true
 
@@ -84,4 +84,9 @@ func _on_button_localconnect_pressed() -> void:
 
 func _on_button_onlineconnect_pressed() -> void:
 	newIP =K_address
+	connect_to_server(newIP, PORT)
+
+
+func _on_button_onlineconnect_2_pressed() -> void:
+	newIP =V_address
 	connect_to_server(newIP, PORT)

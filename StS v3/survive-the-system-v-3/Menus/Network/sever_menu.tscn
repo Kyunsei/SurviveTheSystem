@@ -26,10 +26,10 @@ anchors_preset = -1
 anchor_left = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 467.0
-offset_top = 578.0
-offset_right = 558.0
-offset_bottom = 609.0
+offset_left = 469.0
+offset_top = 564.0
+offset_right = 560.0
+offset_bottom = 595.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Start -Host"
@@ -75,5 +75,41 @@ offset_top = 148.0
 offset_right = 323.0
 offset_bottom = 148.0
 
+[node name="CheckButton" type="CheckButton" parent="." unique_id=690147902]
+layout_mode = 0
+offset_left = 489.0
+offset_top = 621.0
+offset_right = 533.0
+offset_bottom = 645.0
+
+[node name="Label2" type="Label" parent="CheckButton" unique_id=878149023]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.568
+offset_left = -2.0079994
+offset_top = 1.0
+offset_right = 1.0
+offset_bottom = 24.0
+text = "Old"
+
+[node name="Label" type="Label" parent="CheckButton" unique_id=2128823549]
+layout_mode = 0
+offset_left = -172.0
+offset_top = -21.0
+offset_right = 293.0
+offset_bottom = 2.0
+text = "Grass system [set only BEFORE started] cause bug otherwise"
+
+[node name="Label3" type="Label" parent="CheckButton" unique_id=1440977058]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.568
+offset_left = 72.992004
+offset_top = -1.0
+offset_right = 76.0
+offset_bottom = 22.0
+text = "New"
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="text_submitted" from="LineEdit" to="." method="_on_line_edit_text_submitted"]
+[connection signal="toggled" from="CheckButton" to="." method="_on_check_button_toggled"]

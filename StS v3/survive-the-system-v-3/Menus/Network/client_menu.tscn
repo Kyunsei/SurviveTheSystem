@@ -32,10 +32,10 @@ text = "Survive The System v 0.3"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1166853070]
 layout_mode = 0
-offset_left = 448.0
-offset_top = 186.0
-offset_right = 893.0
-offset_bottom = 236.0
+offset_left = 354.0
+offset_top = 178.0
+offset_right = 820.0
+offset_bottom = 242.0
 
 [node name="Button_localconnect" type="Button" parent="HBoxContainer" unique_id=1929637958]
 layout_mode = 2
@@ -45,7 +45,14 @@ text = "Connect Local"
 [node name="Button_onlineconnect" type="Button" parent="HBoxContainer" unique_id=1712706061]
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
-text = "Connect Online"
+text = "Connect Online 
+Kyun"
+
+[node name="Button_onlineconnect2" type="Button" parent="HBoxContainer" unique_id=1751571610]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Connect Online
+Izva"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=340213268]
 layout_mode = 0
@@ -64,7 +71,7 @@ text = "Play Solo"
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 disabled = true
-text = "Play Local"
+text = "Play"
 
 [node name="Button_Settings" type="Button" parent="VBoxContainer" unique_id=1419502925]
 layout_mode = 2
@@ -86,5 +93,6 @@ text = "not connected"
 
 [connection signal="pressed" from="HBoxContainer/Button_localconnect" to="." method="_on_button_localconnect_pressed"]
 [connection signal="pressed" from="HBoxContainer/Button_onlineconnect" to="." method="_on_button_onlineconnect_pressed"]
+[connection signal="pressed" from="HBoxContainer/Button_onlineconnect2" to="." method="_on_button_onlineconnect_2_pressed"]
 [connection signal="pressed" from="VBoxContainer/Button_Play_solo" to="." method="_on_button_play_solo_pressed"]
 [connection signal="pressed" from="VBoxContainer/Button_Play" to="." method="_on_button_play_pressed"]

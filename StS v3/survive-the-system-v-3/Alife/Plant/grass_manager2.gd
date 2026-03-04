@@ -104,6 +104,8 @@ func _thread_loop():
 		OS.delay_msec(1)  # prevent CPU burning
 
 func _process(delta):
+	if GlobalSimulationParameter.DEBUG_grass_sim == 0:
+		return
 	if !multiplayer.is_server():
 		return
 	
@@ -123,7 +125,8 @@ func _ready() -> void:
 
 
 func Init():
-	#return
+	if GlobalSimulationParameter.DEBUG_grass_sim == 0:
+		return
 	if multiplayer.is_server():
 		if !World:
 			print("please set the world")

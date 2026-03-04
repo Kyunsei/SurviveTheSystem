@@ -75,3 +75,10 @@ func on_disconnection(id):
 
 func _on_line_edit_text_submitted(new_text: String) -> void:
 	GlobalSimulationParameter.simulation_speed = float(new_text)
+
+
+func _on_check_button_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		GlobalSimulationParameter.DEBUG_grass_sim = 1
+	else:
+		GlobalSimulationParameter.DEBUG_grass_sim = 0
