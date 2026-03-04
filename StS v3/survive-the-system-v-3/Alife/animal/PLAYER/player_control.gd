@@ -210,7 +210,7 @@ func action_on_server():
 						#print("added")
 						alife_manager.remove(t)	
 			else:
-				#if add_to_inventory(t):
+				if add_to_inventory(t):
 					alife_manager.remove(t)	
 					
 						
@@ -218,11 +218,18 @@ func action_on_server():
 func add_to_inventory(alife):
 		#print(alife["Species"])
 		var inventory = player.get_node("Player_HUD").get_node("Inventory")
-		if inventory.add_item(inventory.prep_alife(alife),int(player.name)):
-			return true
+		if alife is Dictionary:
+
+			if inventory.add_item(inventory.prep_alife(alife),int(player.name)):
+				return true
+			else:
+				return false
+				#queue_free()
 		else:
-			return false
-			#queue_free()
+			if inventory.add_item(inventory.prep_newgrass(alife),int(player.name)):
+				return true
+			else:
+				return false
 
 
 @rpc("any_peer","call_remote")

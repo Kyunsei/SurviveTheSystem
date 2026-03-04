@@ -27,8 +27,13 @@ func Init():
 
 #--- RENDERING ----
 
-	Sprite_path = "res://Alife/Plant/Grass/grass.png"  #TO DEFINE HERE BEST WAY
+#????
 
+
+#INVENTORY
+
+	Sprite_path = "res://Alife/Plant/Grass/grass.png"  #TO DEFINE HERE BEST WAY
+	Stack_amount = 100
 
 
 

@@ -31,7 +31,7 @@ class_name DNA
 # --- Rendering ---
 @export var Sprite_path : String
 #@export var material : Material
-
+@export var Stack_amount : int
 '# --- Flags ---
 @export var is_plant : bool = false
 @export var is_animal : bool = false'
