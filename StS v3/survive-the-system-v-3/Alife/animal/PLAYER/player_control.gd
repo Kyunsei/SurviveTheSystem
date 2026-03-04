@@ -128,12 +128,11 @@ func UseITEM():
 		if targets:
 			for t in targets:
 				if t is Dictionary:
-					#print(t)
-					#if t["Species"] == Alifedata.enum_speciesID.GRASS :
-						#alife_manager.get_node("Grass_Manager").Cut(t)
 					if t != player.lifedata:
 						alife_manager.Attack(t,5)
-
+				else:
+					alife_manager.Attack(t,5)
+				
 				
 
 @rpc("any_peer","call_local")
@@ -200,6 +199,7 @@ func action_on_server():
 	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
 	 												player_action_area.get_node("CollisionShape3D").shape.size)
 
+	#print(targets)
 	if targets:
 		for t in targets:
 			if t is Dictionary:
@@ -209,6 +209,10 @@ func action_on_server():
 					if add_to_inventory(t):
 						#print("added")
 						alife_manager.remove(t)	
+			else:
+				#if add_to_inventory(t):
+					alife_manager.remove(t)	
+					
 						
 						
 func add_to_inventory(alife):

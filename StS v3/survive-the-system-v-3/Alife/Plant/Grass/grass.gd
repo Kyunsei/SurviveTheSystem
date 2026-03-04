@@ -23,7 +23,7 @@ func Init():
 	Reproduction_cost  =[4,4]
 	Reproduction_spread  =[5,5]
 	Reproduction_number =[1,1]
-	Biomass =[5,10]
+	Biomass =[5,10] #MAYBE NO LONGER IN USE
 
 #--- RENDERING ----
 
@@ -34,13 +34,14 @@ func Init():
 
 
 func Growth(manager, i, delta):
-	if manager.current_life_state_array[i] < 1:
+	if manager.current_life_state_array[i] < 6:
 		if manager.current_energy_array[i] > 5:
 			manager.current_life_state_array[i] += 1
 			manager.current_energy_array[i] -=  5
 			manager.current_biomass_array[i] += 5
 			return true
-					
+			
+			
 					
 	'# Simple linear growth
 	var s = manager.Species_array[i]

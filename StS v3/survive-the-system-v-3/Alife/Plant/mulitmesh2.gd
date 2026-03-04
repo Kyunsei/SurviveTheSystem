@@ -14,15 +14,34 @@ func _ready() -> void:
 		shadow = $shadow
 		shadow.multimesh.instance_count = 1000000
 
-
-func update_drawn_grass(id_array, pos_array, state_array, alive_array):
+func draw_all_grass(id_array, pos_array, state_array, alive_array,active_array):
+	init()
 	var i_scale = Vector3.ONE
 	var pos = Vector3.ZERO
 	for i in range(id_array.size()):
 		pos = pos_array[i]
-		i_scale = i_scale * state_array[i]
-		if state_array[i] == 0:
-			pos.y = 1#-100
+		i_scale = Vector3.ONE * clamp(float(state_array[i])/5,0.2,1)  # I guess it should be somthing else.. like a size variable
+		if active_array[i] == 0:
+			pos.y = -100 #MAYBE THIS NEED TO CHANGE TOO
+		multimesh.set_instance_transform(id_array[i], Transform3D(Basis().scaled(i_scale), pos))
+		multimesh.set_instance_color(id_array[i], Color(1.0, 1.0, 1.0, 1.0))	
+		if alive_array[i]==0:
+			multimesh.set_instance_color(id_array[i], Color(0.27, 0.27, 0.27, 1.0))
+		else:
+			multimesh.set_instance_color(id_array[i], Color(1.0, 1.0, 1.0, 1.0))
+
+		instance_number += 1
+
+	multimesh.visible_instance_count = instance_number 
+
+func update_drawn_grass(id_array, pos_array, state_array, alive_array, active_array):
+	var i_scale = Vector3.ONE
+	var pos = Vector3.ZERO
+	for i in range(id_array.size()):
+		pos = pos_array[i]
+		i_scale = Vector3.ONE * clamp(float(state_array[i])/5,0.2,1)  # I guess it should be somthing else.. like a size variable
+		if active_array[i] == 0:
+			pos.y = -100 #MAYBE THIS NEED TO CHANGE TOO
 		multimesh.set_instance_transform(id_array[i], Transform3D(Basis().scaled(i_scale), pos))
 		multimesh.set_instance_color(id_array[i], Color(1.0, 1.0, 1.0, 1.0))	
 		if alive_array[i]==0:
@@ -31,13 +50,15 @@ func update_drawn_grass(id_array, pos_array, state_array, alive_array):
 			multimesh.set_instance_color(id_array[i], Color(1.0, 1.0, 1.0, 1.0))
 	
 
-func draw_new_grass(id_array, pos_array):#, state_array, alive_array):
-	var i_scale = Vector3.ONE
+func draw_new_grass(id_array, pos_array):# state_array, alive_array):
+	var i_scale = Vector3.ONE * 0.2
 	var pos = Vector3.ZERO
-	#print(pos_array)
+	#print(id_array)
 	for i in range(id_array.size()):
+		#print(pos_array)
 		pos = pos_array[i]
-		#i_scale = i_scale * state_array[i]
+		#i_scale = Vector3.ONE * clamp(float(state_array[i])/5,0.2,1)  # I guess it should be somthing else.. like a size variable
+
 		#if state_array[i] == 0:
 		#	pos.y = 1#-100
 		#multimesh.set_instance_visible(i, true)

@@ -189,6 +189,7 @@ func spawn_player(id,pos):
 	
 	
 func interact(grass,player):
+	print("is alifemanger interact function still called somwhere?")
 	player.add_to_inventory(grass,1)
 	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
 		$beast_manager._pending_kills.append(grass)	
@@ -198,13 +199,15 @@ func interact(grass,player):
 
 
 func remove(grass):
-	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
-		$beast_manager.ask_for_Kill(grass)	
-	elif grass["Species"]== Alifedata.enum_speciesID.CAT:
-		print("not yet done for player")	
+	if grass is Dictionary:
+		if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
+			$beast_manager.ask_for_Kill(grass)	
+		elif grass["Species"]== Alifedata.enum_speciesID.CAT:
+			print("not yet done for player")	
+		else:
+			$Grass_Manager._pending_external_kills.append(grass)
 	else:
-		$Grass_Manager._pending_external_kills.append(grass)
-
+		$Grass_Manager2.remove_from_world(grass)
 
 func add(grass, pos):
 	pos.y = 0
@@ -220,8 +223,12 @@ func add(grass, pos):
 
 			
 func Attack(grass,value):
-	grass["current_health"] -= value
-	print(grass["current_health"])
+	if grass is Dictionary:
+		grass["current_health"] -= value
+		print(grass["current_health"])
+	else:
+		$Grass_Manager2.current_health_array[grass]-= value
+		print($Grass_Manager2.current_health_array[grass])
 	
 	#print(grass["current_health"])
 	'if grass["current_health"] <= 0:
@@ -262,7 +269,6 @@ func get_alife_in_area(pos_center, area):
 			
 
 					var bin = World.bin_array[index]
-					#print(bin)
 					if bin:
 						for element in bin:
 							if element is Dictionary:
@@ -272,6 +278,15 @@ func get_alife_in_area(pos_center, area):
 								if p.x >= min_pos.x and p.x <= max_pos.x \
 								and p.y >= min_pos.y and p.y <= max_pos.y \
 								and p.z >= min_pos.z and p.z <= max_pos.z:
+									results.append(element)
+							else:
+								
+								var p: Vector3 = get_node("Grass_Manager2").position_array[element]
+								if p.x >= min_pos.x and p.x <= max_pos.x \
+								and p.y >= min_pos.y and p.y <= max_pos.y \
+								and p.z >= min_pos.z and p.z <= max_pos.z:
+									#get_node("Grass_Manager2").current_health_array[element] = -100
+									#print(get_node("Grass_Manager2").Active[element])
 									results.append(element)
 
 	return results

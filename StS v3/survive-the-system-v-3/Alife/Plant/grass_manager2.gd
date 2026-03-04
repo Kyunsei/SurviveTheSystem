@@ -10,7 +10,7 @@ extends Node3D
 #NEED TO PUT IN WORLD BIN !!!!!!!!!!!!!
 
 var FPS : float
-var id : PackedInt32Array
+#var id : PackedInt32Array
 
 #WORLD
 var position_array : PackedVector3Array
@@ -55,10 +55,7 @@ var _pending_spawns_species: PackedInt32Array
 var _pending_spawns_positions: PackedVector3Array
 var _pending_kills: PackedInt32Array
 var _pending_update: PackedInt32Array
-var _pending_external_spawns_id: PackedInt32Array
-var _pending_external_spawns_positions: PackedVector3Array
-var _pending_external_kills: PackedInt32Array
-var _pending_external_update: PackedInt32Array
+
 
 var World
 var free_indices : Array =[]
@@ -107,7 +104,6 @@ func _thread_loop():
 		OS.delay_msec(1)  # prevent CPU burning
 
 func _process(delta):
-	pass
 	if !multiplayer.is_server():
 		return
 	
@@ -119,29 +115,7 @@ func _process(delta):
 	mutex.lock()
 	Spawn_and_Kill()
 	mutex.unlock()	
-	'if not thread_result_ready:
-		return
 
-	mutex.lock()
-
-	# copy pending data to local buffers
-	var spawns_positions = _pending_spawns_positions.duplicate()
-	var spawns_species = _pending_spawns_species.duplicate()
-	var kills = _pending_kills.duplicate()
-	var updates = _pending_update.duplicate()
-
-	# clear thread buffers
-	_pending_spawns_positions.clear()
-	_pending_spawns_species.clear()
-	_pending_kills.clear()
-	_pending_update.clear()
-
-	thread_result_ready = false
-
-	mutex.unlock()
-
-	# NOW apply safely on main thread
-	Apply_Spawn_And_Kill(spawns_positions, spawns_species, kills, updates)'
 
 
 func _ready() -> void:
@@ -270,7 +244,7 @@ func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 			if current_life_state_array[gi]==0:
 				continue
 			var s = Species_array[gi]
-			var t = current_life_state_array[gi]		
+			var t = min(current_life_state_array[gi],species_photosynthesis_absorption[s].size()-1)		
 			var photo_factor = species_photosynthesis_absorption[s][t] * GlobalSimulationParameter.simulation_speed * delta
 			current_energy_array[gi] +=  light_value * photo_factor
 			current_energy_array[gi] = clamp(current_energy_array[gi],0 ,species_max_energy[s][t])
@@ -298,7 +272,7 @@ func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 			
 func Photosynthesis(i,delta):
 	var s = Species_array[i]
-	var t = current_life_state_array[i]
+	var t = min(current_life_state_array[i],species_photosynthesis_absorption[s].size()-1)
 	var time_value = species_photosynthesis_absorption[s][t] * GlobalSimulationParameter.simulation_speed * delta
 	for l_i in light_index_array[i]:		
 		if l_i <  World.light_array.size():
@@ -311,7 +285,7 @@ func Photosynthesis(i,delta):
 
 func Homeostasis(i,delta):
 	var s = Species_array[i]
-	var t = current_life_state_array[i]
+	var t = min(current_life_state_array[i],species_photosynthesis_range[s].size()-1)
 	if current_health_array[i] <= 0:
 		Death(i)
 		#grass["last_step"] = int(grass["Biomass"] / 10)
@@ -329,7 +303,7 @@ func Homeostasis(i,delta):
 
 func Regenerate_Health(i,delta):
 	var s = Species_array[i]
-	var t = current_life_state_array[i]
+	var t = min(current_life_state_array[i],species_max_health[s].size()-1)
 	if current_health_array[i] != species_max_health[s][t]:
 		var value_regen = min(current_energy_array[i]/2, species_max_health[s][t] - current_health_array[i]) * GlobalSimulationParameter.simulation_speed * delta
 		current_health_array[i] += value_regen
@@ -342,13 +316,12 @@ func Growth(i,delta):
 
 func Death(i):
 	Alive_array[i] = 0
-
 	remove_from_light_bin(i)
 
 	
 func Reproduction(i,delta):
 		var s = Species_array[i]
-		var t = current_life_state_array[i]
+		var t = min(current_life_state_array[i],species_reproduction_cost[s].size()-1)
 		if current_energy_array[i] > species_reproduction_cost[s][t]*2:
 			var newpos = position_array[i] + Vector3(
 				randf_range(-species_reproduction_spread[s][t], species_reproduction_spread[s][t]),
@@ -383,7 +356,7 @@ func check_if_lighttile_free(pos):
 
 func Germination(i):
 	var s = Species_array[i]
-	var t = current_life_state_array[i]
+	var t = min(current_life_state_array[i],species_photosynthesis_range[s].size()-1)
 	var area = max(1,(species_photosynthesis_range[s][t] * 2) * (species_photosynthesis_range[s][t] * 2 ))
 	var light_available = 0
 	for l_i in light_index_array[i]:	
@@ -398,7 +371,7 @@ func Germination(i):
 			Alive_array[i] = 0	
 func Decompose(i,delta):
 	var s = Species_array[i]
-	var t = current_life_state_array[i]
+	var t = min(current_life_state_array[i],species_decomposition_speed[s].size()-1)
 	current_biomass_array[i] -= species_decomposition_speed[s][t]  * GlobalSimulationParameter.simulation_speed   *delta
 	'var current_step = int(Biomass_array[i] / 10)
 	if  grass.has("last_step"):
@@ -409,32 +382,6 @@ func Decompose(i,delta):
 		grass["last_step"] = current_step'
 	if current_biomass_array[i] < 0:
 		_pending_kills.append(i)
-
-
-func Apply_Spawn_And_Kill(spawn_positions, spawn_species, kills, updates):
-
-	var spawned_ids := PackedInt32Array()
-	var spawned_positions := PackedVector3Array()
-
-	# KILLS
-	for i in kills:
-		Kill_Grass(i)
-
-	# SPAWNS
-	for i in range(spawn_species.size()):
-		var id = Spawn_New_Grass(spawn_positions[i], spawn_species[i])
-		spawned_ids.append(id)
-		spawned_positions.append(spawn_positions[i])
-
-	# UPDATES (if needed)
-	# handle updates here if required
-
-	# RPC (server only)
-	if multiplayer.is_server():
-		if spawned_ids.size() > 0:
-			draw_new_grass.rpc(spawned_ids, spawned_positions)
-		if kills.size() > 0:
-			erase_grass.rpc(kills)
 
 
 		
@@ -448,8 +395,8 @@ func Spawn_and_Kill():
 	var updated_ids := PackedInt32Array()	
 
 
-	var unique_kills :PackedInt32Array = remove_duplicate_in_index_array(_pending_external_kills,_pending_kills)
-	var unique_updates :PackedInt32Array = remove_duplicate_in_index_array(_pending_external_update,_pending_update)
+	#var unique_kills :PackedInt32Array = remove_duplicate_in_index_array(_pending_external_kills,_pending_kills)
+	#var unique_updates :PackedInt32Array = remove_duplicate_in_index_array(_pending_external_update,_pending_update)
 
 	for i in _pending_kills:
 		Kill_Grass(i)
@@ -466,15 +413,13 @@ func Spawn_and_Kill():
 		#Build_New_Grass(i, pos, sp)'
 
 
-	for i in unique_updates:
-		#Update_Grass(i)
-		#updated_ids.append(i)
-		pass
+	for i in _pending_update:
+		updated_ids.append(i)
 	
 # ---- SEND TO CLIENTS ----
 	if spawned_ids.size() > 0:
-		draw_new_grass.rpc(spawned_ids, spawned_positions)
-
+		draw_new_grass.rpc(spawned_ids,spawned_positions)#, state_array, alive_array)
+		
 	if killed_ids.size() > 0:
 		erase_grass.rpc(killed_ids)
 
@@ -482,32 +427,25 @@ func Spawn_and_Kill():
 		var pos_array := PackedVector3Array()
 		var state_array := PackedInt32Array()
 		var alive_array := PackedInt32Array()
+		var actives := PackedInt32Array()
 
 		for id in updated_ids:
 			pos_array.append(position_array[id])
 			state_array.append(current_life_state_array[id])
 			alive_array.append(Alive_array[id])
+			actives.append(Active[id])
 
-		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array)
+		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives)
 
 	
 	
 	_pending_spawns_positions.clear()
 	_pending_spawns_species.clear()
-	#_pending_external_spawns_id.clear()	
-	#_pending_external_spawns_positions.clear()	
-	
-	#_pending_external_kills.clear()
 	_pending_kills.clear()
 	_pending_update.clear()
-	#_pending_external_update.clear()
 
-		
 
-	#draw_new_grass.rpc(unique_spawn)		
-	#erase_grass.rpc(unique_kills)
-	#update_drawn_grass.rpc(_pending_update)
-
+	
 
 
 func Build_New_Grass(i:int,pos: Vector3, sp:int):
@@ -643,9 +581,10 @@ func get_worldbin_index(current_pos):
 					return bin_index
 		return null
 		
+
 func get_lightIndex(idx):
 	var s = Species_array[idx]
-	var t = current_life_state_array[idx]
+	var t = min(current_life_state_array[idx],species_photosynthesis_range[s].size()-1)
 	var pos = position_array[idx]
 	var light_index = []
 	if species_photosynthesis_range[s][t] == 0:
@@ -674,7 +613,7 @@ func get_lightIndex(idx):
 func put_in_light_bin(idx):
 
 	var s = Species_array[idx]
-	var t = current_life_state_array[idx]
+	var t = min(current_life_state_array[idx], species_photosynthesis_range[s].size()-1)
 	var pos = position_array[idx]
 	if species_photosynthesis_range[s][t] == 0:
 		var w_pos = World.get_PositionInGrid(pos,World.light_tile_size)
@@ -705,6 +644,20 @@ func put_in_light_bin(idx):
 				else:
 					World.light_bin[idx_bin]= [idx]
 
+
+func remove_from_world(i):
+	remove_from_light_bin(i)
+	remove_from_world_bin(i)
+	light_index_array[i] = []
+	Active[i] = 0
+	_pending_update.append(i)
+	
+func add_to_world(i):
+	put_in_world_bin(i)
+	put_in_light_bin(i)
+	light_index_array[i] = get_lightIndex(i)
+	Active[i] = 1
+	_pending_update.append(i)
 
 
 func remove_from_light_bin(idx):	
@@ -754,8 +707,8 @@ func draw_new_grass(id_array, pos_array):#, state_array, alive_array):
 		
 			
 @rpc("authority", "call_remote", "reliable") 			
-func update_drawn_grass(id_array, pos_array, state_array, alive_array):
-		$grass.update_drawn_grass(id_array, pos_array, state_array, alive_array)
+func update_drawn_grass(id_array, pos_array, state_array, alive_array,active):
+		$grass.update_drawn_grass(id_array, pos_array, state_array, alive_array,active)
 				
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(id_array):
@@ -763,10 +716,9 @@ func erase_grass(id_array):
 			
 
 @rpc("any_peer","call_remote")
-
-func send_and_draw_array(id_array, pos_array, state_array, alive_array):
-	$grass.init()
-	$grass.draw_new_grass(id_array, pos_array)#, state_array, alive_array)
+func send_and_draw_array(id_array, pos_array, state_array, alive_array, Active_array):
+	#$grass.init()
+	$grass.draw_all_grass(id_array, pos_array, state_array, alive_array, Active_array)
 
 
 
@@ -780,12 +732,14 @@ func send_full_state_to_peer(peer_id):
 	var positions := PackedVector3Array()
 	var states := PackedInt32Array()
 	var alive := PackedInt32Array()
+	var active := PackedInt32Array()
 
 	for i in range(entity_count):
-		if Active[i] == 1:
+		#if Active[i] == 1:
 			ids.append(i)
 			positions.append(position_array[i])
 			states.append(current_life_state_array[i])
 			alive.append(Alive_array[i])
+			active.append(Active[i])
 
-	send_and_draw_array.rpc_id(peer_id, ids, positions, states, alive)			
+	send_and_draw_array.rpc_id(peer_id, ids, positions, states, alive,active)			
