@@ -9,11 +9,12 @@ var init = false
 func Init() -> void:
 	if multiplayer.is_server():
 		var pos = global_position
-		pos.y=0.5
+		pos.y +=0.5
 		pos.z += 8
+		pos.x -= 6
 		
 		for i in range(3):
-			pos.x = 3*i -3
+			pos.x += 3
 			alifemanager.get_node("Item_Manager").spawn_new_item(catration_path,pos)
 		print("spawn")
 
