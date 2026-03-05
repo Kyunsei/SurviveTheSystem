@@ -51,9 +51,14 @@ func _process(delta: float) -> void:
 	if isWorldAccelerated:
 		timer_count -= delta
 		if timer_count <0 :
+			get_server_time.rpc_id(1)
+
 			change_server_simulation_speed.rpc_id(1,1)
 			isWorldAccelerated = false 
 
+@rpc("any_peer","call_remote")
+func get_server_time():
+	print(get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_age)
 
 func Time_Speed():
 	if isWorldAccelerated == false:
@@ -65,6 +70,7 @@ func Time_Speed():
 
 @rpc("any_peer","call_remote")
 func change_server_simulation_speed(value):
+	get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_age = 0
 	GlobalSimulationParameter.simulation_speed = value
 
 @rpc("any_peer","call_remote")

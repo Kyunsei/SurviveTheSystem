@@ -6,6 +6,9 @@ extends Node3D
 @export var tree_scene: PackedScene
 
 
+
+var World_time = 0
+
 #
 var IsInit = false
 

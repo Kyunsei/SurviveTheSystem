@@ -10,6 +10,7 @@ extends Node3D
 #NEED TO PUT IN WORLD BIN !!!!!!!!!!!!!
 
 var FPS : float
+var Grass_simulator_age = 0
 #var id : PackedInt32Array
 
 #WORLD
@@ -92,13 +93,20 @@ func _exit_tree():
 	stop_simulation_thread()
 
 func _thread_loop():
+	
+	#var last_time := Time.get_ticks_usec()
+	
 	while not thread_should_stop:
-
-		var delta := 0.016  # fixed timestep (important!)
-
+		
+		#var now := Time.get_ticks_usec()
+		var delta := 0.016  # fixed timestep (important!) #now - last_time) / 1000000.0   #
+		#last_time = now
+		#print(delta)
 		mutex.lock()
 		update(delta)
 		thread_result_ready = true
+		Grass_simulator_age += 1
+
 		mutex.unlock()
 
 		OS.delay_msec(1)  # prevent CPU burning
@@ -162,6 +170,7 @@ func update(delta):
 		#call_deferred("Spawn_and_Kill")
 		#Spawn_and_Kill()
 		FPS = Time.get_ticks_msec() - ss
+	
 	
 
 	
