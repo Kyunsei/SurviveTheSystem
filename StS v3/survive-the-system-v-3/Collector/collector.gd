@@ -4,6 +4,7 @@ var Biomass_collected = 0
 var max_biomass = 100
 var credit_gain = 0
 @onready var spaceship: Node3D = $"../SPACESHIP"
+var collecting = true
 
 var factor = 0.2
 # Called when the node enters the scene tree for the first time.
@@ -48,28 +49,51 @@ func interact(player):
 	#player.inventory = {}
 	#player.inventory_count = 0
 	update_label()
-	if Biomass_collected >= max_biomass:
+	if Biomass_collected >= max_biomass and collecting == true:
+		collecting = false
 		credit_gain += 10
 		print("BRAVO")
 		var c = 0
 		spaceship.get_node("Collector_ship").go_down()
 
 		#.go_down.rpc_id(1)
-		for i in player.get_parent().player_array:
-			i.escape_fast_or_die.rpc_id(int(i.name))
+		start_escape_phase(player)
+		#for i in player.get_parent().player_array:
+			#i.escape_fast_or_die.rpc_id(int(i.name))
 			#i.go_back_to_ship.rpc_id(int(i.name),c)
 			#set_world_readiness.rpc(false)
 			#c +=1
 			#GlobalSimulationParameter.simulation_speed = 0.5
-			credit_player(i)
+			#credit_player(i)
 		Biomass_collected = 0
 		max_biomass = max_biomass * 1.5
+		$collected_amount_Label3D.text = "Collector is full and waiting retrieval"
+		await get_tree().create_timer(40.0).timeout
+		collecting = true
 		update_label()
 
 		#end_of_quest.rpc_id(int(player.name),player)
 	#p.grass_in_inventory = 0
 	#print ("item collected")
 	#print (Biomass_collected)'
+
+func start_escape_phase(player):
+	for p in player.get_parent().player_array:
+		p.show_escape_timer.rpc_id(int(p.name), 30)
+		p.start_escape_ui.rpc_id(int(p.name), 30.0) # shows UI timer
+		credit_player(p)
+
+	await get_tree().create_timer(30.0).timeout
+
+	check_escape_results(player)	
+
+func check_escape_results(player):
+	spaceship.get_node("Collector_ship").go_up()
+	for p in player.get_parent().player_array:
+		if p.position.y >= 90:
+			p.escape_success.rpc_id(int(p.name))
+		else:
+			p.Die.rpc_id(int(p.name))
 
 @rpc("any_peer","call_remote")
 func end_of_quest(player):
