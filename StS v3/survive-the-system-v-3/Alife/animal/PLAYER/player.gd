@@ -39,6 +39,11 @@ var inventory_upgrade_cost = 2
 var energy_upgrade_cost = 2
 var range_upgrade_cost = 2
 
+#Escape the surface variables here!
+var escape_time := 10.0
+var escaping := false
+@onready var timer_label = $Player_HUD/TimerLabel
+
 #INVENTORY PART
 var inventory_HUD 
 var inventory = {}
@@ -163,6 +168,20 @@ func _process(delta: float) -> void:
 		update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
 		update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
 		sync_lifedata.rpc_id(int(name), lifedata)
+		
+	if escaping and is_multiplayer_authority():
+		if position.y >= 90:
+			escaping = false
+			timer_label.text = "You reached the ship and survived!"
+			await get_tree().create_timer(2.0).timeout
+			timer_label.hide()
+			return
+		escape_time -= delta
+		timer_label.text = str(ceil(escape_time))
+		if escape_time <= 0:
+			escaping = false
+			timer_label.hide()
+			Die()
 
 
 @rpc("any_peer","call_local")
@@ -225,3 +244,9 @@ func update_bar(bartype,value, MaxValue):
 	if bartype ==2 :
 		energy_bar.value = value
 		energy_bar.max_value = MaxValue
+
+@rpc("any_peer","call_remote")
+func escape_fast_or_die():
+	escape_time = 30.0
+	escaping = true
+	timer_label.show()

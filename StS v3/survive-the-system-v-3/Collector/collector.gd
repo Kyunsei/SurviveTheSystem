@@ -56,6 +56,7 @@ func interact(player):
 
 		#.go_down.rpc_id(1)
 		for i in player.get_parent().player_array:
+			i.escape_fast_or_die.rpc_id(int(i.name))
 			#i.go_back_to_ship.rpc_id(int(i.name),c)
 			#set_world_readiness.rpc(false)
 			#c +=1

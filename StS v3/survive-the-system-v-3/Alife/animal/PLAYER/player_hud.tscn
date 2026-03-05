@@ -6,6 +6,46 @@
 [ext_resource type="PackedScene" uid="uid://dtgeb6wmjm6a2" path="res://Menus/in_game_menu/Inventory/inventory.tscn" id="4_0cxu6"]
 [ext_resource type="Script" uid="uid://cndfvw6tbims7" path="res://Alife/animal/PLAYER/stats_panel.gd" id="5_7oqrd"]
 
+[sub_resource type="FontFile" id="FontFile_7oqrd"]
+cache/0/variation_coordinates = {}
+cache/0/face_index = 0
+cache/0/embolden = 0.0
+cache/0/transform = Transform2D(1, 0, 0, 1, 0, 0)
+cache/0/spacing_top = 0
+cache/0/spacing_bottom = 0
+cache/0/spacing_space = 0
+cache/0/spacing_glyph = 0
+cache/0/baseline_offset = 0.0
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/72/0/ascent = 0.0
+cache/0/72/0/descent = 0.0
+cache/0/72/0/underline_position = 0.0
+cache/0/72/0/underline_thickness = 0.0
+cache/0/72/0/scale = 1.0
+cache/0/128/0/ascent = 0.0
+cache/0/128/0/descent = 0.0
+cache/0/128/0/underline_position = 0.0
+cache/0/128/0/underline_thickness = 0.0
+cache/0/128/0/scale = 1.0
+cache/0/96/0/ascent = 0.0
+cache/0/96/0/descent = 0.0
+cache/0/96/0/underline_position = 0.0
+cache/0/96/0/underline_thickness = 0.0
+cache/0/96/0/scale = 1.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_hfkfl"]
+line_spacing = 6.0
+paragraph_spacing = 2.0
+font = SubResource("FontFile_7oqrd")
+font_size = 96
+font_color = Color(1, 0, 0, 0.45882353)
+outline_size = 6
+outline_color = Color(0, 0.019607844, 0, 0.49411765)
+
 [node name="Player_HUD" type="CanvasLayer" unique_id=1065555217]
 script = ExtResource("1_50gt6")
 
@@ -99,3 +139,19 @@ layout_mode = 2
 
 [node name="CreditLabel" type="Label" parent="StatsPanel/VBoxContainer" unique_id=614826464]
 layout_mode = 2
+
+[node name="TimerLabel" type="Label" parent="." unique_id=1403878110]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -64.5
+offset_right = 120.0
+offset_bottom = 64.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Timer"
+label_settings = SubResource("LabelSettings_hfkfl")
