@@ -15,6 +15,14 @@ transform_format = 1
 use_colors = true
 mesh = ExtResource("4_lxqh2")
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_lxqh2"]
+properties/0/path = NodePath("CanvasLayer:visible")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("CanvasLayer/ProgressBar:value")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
 [node name="Grass_Manager" type="Node3D" unique_id=2019447816]
 script = ExtResource("1_0gklr")
 species_list = Array[ExtResource("2_eguq1")]([SubResource("Resource_yp710")])
@@ -22,3 +30,27 @@ species_list = Array[ExtResource("2_eguq1")]([SubResource("Resource_yp710")])
 [node name="grass" type="MultiMeshInstance3D" parent="." unique_id=931824674]
 multimesh = SubResource("MultiMesh_nt0jf")
 script = ExtResource("5_hbvxf")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1771965466]
+
+[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer" unique_id=1728687036]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -43.0
+offset_top = 8.0
+offset_right = 37.0
+offset_bottom = 35.0
+grow_horizontal = 2
+max_value = 2000.0
+value = 100.0
+
+[node name="Label" type="Label" parent="CanvasLayer" unique_id=1782219292]
+offset_left = 518.0
+offset_top = 33.0
+offset_right = 630.0
+offset_bottom = 56.0
+text = "Loading World"
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1691349673]
+replication_config = SubResource("SceneReplicationConfig_lxqh2")

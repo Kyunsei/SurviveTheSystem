@@ -10,7 +10,7 @@ extends Node3D
 #NEED TO PUT IN WORLD BIN !!!!!!!!!!!!!
 
 var FPS : float
-var Grass_simulator_age = 0
+var Grass_simulator_time = 0
 #var id : PackedInt32Array
 
 #WORLD
@@ -94,19 +94,16 @@ func _exit_tree():
 
 func _thread_loop():
 	
-	#var last_time := Time.get_ticks_usec()
+
 	
 	while not thread_should_stop:
 		
-		#var now := Time.get_ticks_usec()
-		var delta := 0.016  # fixed timestep (important!) #now - last_time) / 1000000.0   #
-		#last_time = now
-		#print(delta)
+		var delta := 0.016  
 		mutex.lock()
 		update(delta)
 		thread_result_ready = true
-		Grass_simulator_age += 1
-
+		Grass_simulator_time -= 1
+		call_deferred("update_grass_time")
 		mutex.unlock()
 
 		OS.delay_msec(1)  # prevent CPU burning
@@ -739,6 +736,12 @@ func send_and_draw_array(id_array, pos_array, state_array, alive_array, Active_a
 	#$grass.init()
 	$grass.draw_all_grass(id_array, pos_array, state_array, alive_array, Active_array)
 
+func update_grass_time():
+	if Grass_simulator_time > 0:
+		$CanvasLayer.show()
+	else:
+		$CanvasLayer.hide()
+	$CanvasLayer/ProgressBar.value = 2000 - Grass_simulator_time
 
 
 func _on_peer_connected(id):

@@ -44,35 +44,21 @@ func _physics_process(delta: float) -> void:
 				else:	
 					tuto_HUD.show()
 			if Input.is_action_just_pressed("F3"):
-				Time_Speed()
+				change_server_simulation_speed.rpc_id(1,300)
 
 
 func _process(delta: float) -> void:
-	if isWorldAccelerated:
-		timer_count -= delta
-		if timer_count <0 :
-			get_server_time.rpc_id(1)
-
-			change_server_simulation_speed.rpc_id(1,1)
-			isWorldAccelerated = false 
-
-@rpc("any_peer","call_remote")
-func get_server_time():
-	print(get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_age)
-
-func Time_Speed():
-	if isWorldAccelerated == false:
-		timer_count =  10
-		isWorldAccelerated = true 
-		change_server_simulation_speed.rpc_id(1,200)
-
-	
+	if multiplayer.is_server():
+		if isWorldAccelerated:
+			if get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time <0 :
+				GlobalSimulationParameter.simulation_speed = 1
+				#get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 2000 
+				isWorldAccelerated = false 
+		
 
 @rpc("any_peer","call_remote")
 func change_server_simulation_speed(value):
-	get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_age = 0
-	GlobalSimulationParameter.simulation_speed = value
-
-@rpc("any_peer","call_remote")
-func set_world_readiness(yesorno):
-		GlobalSimulationParameter.WorldReady = yesorno
+	if isWorldAccelerated == false:
+		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 2000
+		GlobalSimulationParameter.simulation_speed = value
+		isWorldAccelerated = true
