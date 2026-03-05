@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://blwiuyhycfj5j" path="res://Alife/AI/states/dying.gd" id="5_gjfga"]
 [ext_resource type="Script" uid="uid://befcqr7hv7m5r" path="res://Alife/AI/states/eat.gd" id="6_voeaq"]
 [ext_resource type="Script" uid="uid://d1vorrs2hlill" path="res://Alife/AI/states/reproduce.gd" id="7_dndam"]
-[ext_resource type="Script" path="res://Alife/animal/Herbivor/Growth_sheep.gd" id="8_gjfga"]
+[ext_resource type="Script" uid="uid://byxmqknlkkhwi" path="res://Alife/animal/Herbivor/Growth_sheep.gd" id="8_gjfga"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_hq4mw"]
 load_path = "res://.godot/imported/sheep1.png-ce0d1f40c8148524096d8542320f9e0b.s3tc.ctex"
@@ -21,6 +21,7 @@ billboard_mode = 2
 [sub_resource type="QuadMesh" id="QuadMesh_dndam"]
 material = SubResource("StandardMaterial3D_voeaq")
 size = Vector2(0.5, 0.5)
+center_offset = Vector3(0, 0.25, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gjfga"]
 
@@ -34,6 +35,9 @@ properties/0/replication_mode = 1
 properties/1/path = NodePath("debugLabel:text")
 properties/1/spawn = true
 properties/1/replication_mode = 1
+properties/2/path = NodePath("MeshInstance3D:position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
 
 [node name="sheep" type="Node3D" unique_id=455347701 groups=["sheep"]]
 script = ExtResource("1_61knv")

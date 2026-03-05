@@ -49,9 +49,9 @@ func send_new_sprite(state):
 		mi.set_surface_override_material(0, unique_mat) 
 		var q := QuadMesh.new()
 		q.size = Vector2(size_array[state], size_array[state])
-		mi.mesh = q                                     
-		mi.position.y = (q.size.y-1) / 2.0
-
+		mi.mesh = q  
+		mi.mesh.center_offset.y    =          size_array[state] / 2.0                     
+		#mi.position.y = size_array[state] / 2.0 
 
 func exit():
 	pass
