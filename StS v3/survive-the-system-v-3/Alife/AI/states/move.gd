@@ -36,14 +36,24 @@ func evaluate():
 	var food = find_safe_food()
 
 	if food:
-		var offset = food["position"] - player.position
-		var dist = offset.length()
-		var food_dir = offset.normalized()
+		if food is Dictionary:
+			var offset = food["position"] - player.position
+			var dist = offset.length()
+			var food_dir = offset.normalized()
 
-		var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
-		final_dir = food_dir # * weight
-		target = food
-		debug = "FOOD"
+			var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
+			final_dir = food_dir # * weight
+			target = food
+			debug = "FOOD"
+		else:
+			var offset = player.get_parent().get_parent().get_node("Grass_Manager2").position_array[food] - player.position
+			var dist = offset.length()
+			var food_dir = offset.normalized()
+
+			var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
+			final_dir = food_dir # * weight
+			target = food
+			debug = "FOOD"
 
 	# normalize final direction
 	direction = final_dir.normalized()
@@ -111,13 +121,14 @@ func compute_danger_vector():
 
 	for d in player.vision_danger.values():
 		if d:
-			var offset = player.position - d["position"]
-			var dist = offset.length()
+			if d is Dictionary:
+				var offset = player.position - d["position"]
+				var dist = offset.length()
 
-			if dist < max_radius:
-				var strength = (max_radius - dist) / max_radius
-				avoidance += offset.normalized() * strength
-				strongest = max(strongest, strength)
+				if dist < max_radius:
+					var strength = (max_radius - dist) / max_radius
+					avoidance += offset.normalized() * strength
+					strongest = max(strongest, strength)
 
 	return {
 		"direction": avoidance.normalized() if avoidance.length() > 0 else Vector3.ZERO,
@@ -134,10 +145,16 @@ func find_safe_food():
 
 			for d in player.vision_danger.values():
 				if d:
-					if d["position"].distance_to(f["position"]) < safe_radius:
-						safe = false
-						break
-
+					if d is Dictionary:
+						if f is Dictionary:
+							if d["position"].distance_to(f["position"]) < safe_radius:
+								safe = false
+								break
+						else:
+							var t_pos = player.get_parent().get_parent().get_node("Grass_Manager2").position_array[f]
+							if d["position"].distance_to(t_pos) < safe_radius:
+								safe = false
+								break
 			if safe:
 				return f
 
@@ -157,15 +174,25 @@ func physics_update(delta):
 
 	var step = player.lifedata["current_speed"] * GlobalSimulationParameter.simulation_speed *delta
 	if target:
-		var dist_to_target	= (target["position"] - player.position).length()
-		if dist_to_target <= step and isFood:
+		if target is Dictionary:
+			var dist_to_target	= (target["position"] - player.position).length()
+			if dist_to_target <= step and isFood:
 
-			player.position = target["position"]
-		
+				player.position = target["position"]
+			
+			else:
+				#player.direction = (target["position"] - player.position).normalized()	
+				player.position += direction * step	
 		else:
-			#player.direction = (target["position"] - player.position).normalized()	
-			player.position += direction * step	
-				
+			var t_pos = player.get_parent().get_parent().get_node("Grass_Manager2").position_array[target]
+			var dist_to_target	= (t_pos - player.position).length()
+			if dist_to_target <= step and isFood:
+
+				player.position = t_pos
+			
+			else:
+				#player.direction = (target["position"] - player.position).normalized()	
+				player.position += direction * step	
 	else:
 		wandertimer -= delta
 		if wandertimer <= 0:

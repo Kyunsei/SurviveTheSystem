@@ -131,8 +131,8 @@ func Init():
 		if !World:
 			print("please set the world")
 		build_species_tables()
-		for i in range(1):
-			Spawn_New_Grass(Vector3(0+0*i,0,0),0)
+		#for i in range(1):
+		#	Spawn_New_Grass(Vector3(0+0*i,0,0),0)
 		isInit = true
 		start_simulation_thread()
 

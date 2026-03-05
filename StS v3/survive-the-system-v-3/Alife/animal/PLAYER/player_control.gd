@@ -118,11 +118,13 @@ func _physics_process(delta: float) -> void:
 func UseITEM():	
 	#print(player.item_hold)
 	if player.item_hold:
-		if player.item_hold is Dictionary:
+		if player.item_hold["Data"][0] is Dictionary:
 			if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
 				player.item_hold["Data"][0]["Use"].call(player)
 			else:
 				print("alife entitity action")
+		else:
+			print("alife entitity action")
 	else:
 		var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
 		 												player_action_area.get_node("CollisionShape3D").shape.size)

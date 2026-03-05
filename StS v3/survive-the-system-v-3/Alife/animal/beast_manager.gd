@@ -128,6 +128,7 @@ func view_closest(view_range,array_num,b,sp):
 	var closest_in_bin =  null
 	var closest_distance = INF
 	var bin_index
+	var distance : float
 
 	for r in range(view_range + 1):
 		# Special case: center bin
@@ -137,7 +138,11 @@ func view_closest(view_range,array_num,b,sp):
 			bin_index = get_parent().get_worldbin_index(current_pos)
 			if bin_index  != null and array_num[bin_index] >0:			
 				closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
-				var distance = b.position.distance_to(closest_in_bin.position)
+				if closest_in_bin is Dictionary:
+					distance = b.position.distance_to(closest_in_bin.position)
+				else:
+					var t_pos = get_parent().get_node("Grass_Manager2").position_array[closest_in_bin]
+					distance = b.position.distance_to(t_pos)
 				if distance < closest_distance:
 					closest = closest_in_bin
 					closest_distance = distance			
@@ -154,7 +159,11 @@ func view_closest(view_range,array_num,b,sp):
 				bin_index = get_parent().get_worldbin_index(current_pos)
 				if bin_index != null and array_num[bin_index] >0:			
 					closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
-					var distance = b.position.distance_to(closest_in_bin.position)
+					if closest_in_bin is Dictionary:
+						distance = b.position.distance_to(closest_in_bin.position)
+					else:
+						var t_pos = get_parent().get_node("Grass_Manager2").position_array[closest_in_bin]
+						distance = b.position.distance_to(t_pos)
 					if distance < closest_distance:
 						closest = closest_in_bin
 						closest_distance = distance			
@@ -167,7 +176,11 @@ func view_closest(view_range,array_num,b,sp):
 				bin_index = get_parent().get_worldbin_index(current_pos)
 				if bin_index != null and array_num[bin_index] >0:			
 					closest_in_bin = find_closest(b.position, World.bin_array[bin_index],sp)
-					var distance = b.position.distance_to(closest_in_bin.position)
+					if closest_in_bin is Dictionary:
+						distance = b.position.distance_to(closest_in_bin.position)
+					else:
+						var t_pos = get_parent().get_node("Grass_Manager2").position_array[closest_in_bin]
+						distance = b.position.distance_to(t_pos)
 					if distance < closest_distance:
 						closest = closest_in_bin
 						closest_distance = distance
@@ -248,6 +261,12 @@ func find_closest(from_position: Vector3, array: Array,sp):
 			if element["Species"] == sp:
 				var distance = from_position.distance_to(element["position"])
 				if distance < closest_distance:
+					closest_distance = distance
+					closest = element
+		else:
+			var t_pos = get_parent().get_node("Grass_Manager2").position_array[element]
+			var distance = from_position.distance_to(t_pos)
+			if distance < closest_distance:
 					closest_distance = distance
 					closest = element
 	return closest	
