@@ -16,4 +16,4 @@ var object_grass_number = 0
 
 
 
-var DEBUG_grass_sim = 0
+var DEBUG_grass_sim = 1

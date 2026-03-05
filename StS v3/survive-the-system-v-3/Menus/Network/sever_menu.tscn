@@ -81,6 +81,7 @@ offset_left = 489.0
 offset_top = 621.0
 offset_right = 533.0
 offset_bottom = 645.0
+button_pressed = true
 
 [node name="Label2" type="Label" parent="CheckButton" unique_id=878149023]
 layout_mode = 1

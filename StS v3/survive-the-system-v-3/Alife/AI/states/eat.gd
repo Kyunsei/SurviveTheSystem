@@ -21,7 +21,7 @@ func evaluate():
 				distance = player.position.distance_to(t)
 			#print(distance)
 			#print(distance)
-			if distance < 2:
+			if distance < 4:
 				target = f
 				dist_score = 1.0 #clamp(distance / maxDist, 0., 1)
 	return dist_score #* score
