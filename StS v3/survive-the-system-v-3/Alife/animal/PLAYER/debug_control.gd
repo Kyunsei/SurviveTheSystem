@@ -11,6 +11,10 @@ var direction = Vector3(0,0,0)
 var total = 0
 var tuto_HUD : Control
 
+
+var timer_count = 10
+var isWorldAccelerated = false
+
 signal grid_called
 
 func _ready() -> void:
@@ -39,6 +43,30 @@ func _physics_process(delta: float) -> void:
 					
 				else:	
 					tuto_HUD.show()
+			if Input.is_action_just_pressed("F3"):
+				Time_Speed()
 
 
-				
+func _process(delta: float) -> void:
+	if isWorldAccelerated:
+		timer_count -= delta
+		if timer_count <0 :
+			change_server_simulation_speed.rpc_id(1,1)
+			isWorldAccelerated = false 
+
+
+func Time_Speed():
+	if isWorldAccelerated == false:
+		timer_count =  10
+		isWorldAccelerated = true 
+		change_server_simulation_speed.rpc_id(1,200)
+
+	
+
+@rpc("any_peer","call_remote")
+func change_server_simulation_speed(value):
+	GlobalSimulationParameter.simulation_speed = value
+
+@rpc("any_peer","call_remote")
+func set_world_readiness(yesorno):
+		GlobalSimulationParameter.WorldReady = yesorno

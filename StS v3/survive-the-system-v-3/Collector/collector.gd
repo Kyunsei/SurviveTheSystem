@@ -21,10 +21,11 @@ func interact(player):
 	var inventory = player.get_node("Player_HUD").get_node("Inventory")
 
 	if item_hold != null:
-
+			if item_hold.size() < 1:
+				return
+			print(item_hold.size())
 			var grassmanager = player.get_parent().get_node("Grass_Manager2")
-			
-
+			#if item_hold["Data"] is Dictionary:
 			var temp_duplicate_list = item_hold["Data"].duplicate()
 			for  o in temp_duplicate_list:
 				if o is Dictionary:

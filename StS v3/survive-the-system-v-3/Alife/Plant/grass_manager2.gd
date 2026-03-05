@@ -137,7 +137,6 @@ func Init():
 		start_simulation_thread()
 
 
-
 func update(delta):
 	if !isInit:
 		print("grass manger not initialised")
@@ -149,14 +148,14 @@ func update(delta):
 			if World:
 				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
 
-			PhotosynthesisSystem(delta)
-			#LightSystem_to_plant(delta)
+			LightSystem_to_plant(delta)
 
 			HomeostasisSystem(delta)
 			GrowthSystem(delta)
 			ReproductionSystem(delta)
 			GerminationSystem(delta)
 			DecomposeSystem(delta)
+		
 
 			
 
@@ -325,7 +324,7 @@ func Death(i):
 func Reproduction(i,delta):
 		var s = Species_array[i]
 		var t = min(current_life_state_array[i],species_reproduction_cost[s].size()-1)
-		if current_energy_array[i] > species_reproduction_cost[s][t]*2:
+		if current_energy_array[i] >= species_reproduction_cost[s][t]*2:
 			var newpos = position_array[i] + Vector3(
 				randf_range(-species_reproduction_spread[s][t], species_reproduction_spread[s][t]),
 				0,
@@ -656,6 +655,8 @@ func remove_from_world(i):
 	light_index_array[i] = []
 	Active[i] = 0
 	_pending_update.append(i)
+	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
+		get_parent().current_life_count_by_species[Species_array[i]] -= 1
 	
 func add_to_world(i,pos):
 	position_array[i] = pos
@@ -664,7 +665,10 @@ func add_to_world(i,pos):
 	light_index_array[i] = get_lightIndex(i)
 	Active[i] = 1
 	_pending_update.append(i)
-
+	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
+		get_parent().current_life_count_by_species[Species_array[i]] += 1
+	else:
+		get_parent().current_life_count_by_species[Species_array[i]] = 1
 
 func remove_from_light_bin(idx):	
 	for li in light_index_array[idx]:

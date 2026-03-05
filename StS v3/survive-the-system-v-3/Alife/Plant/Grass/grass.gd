@@ -8,7 +8,7 @@ func Init():
 	display_name = "GRASS"
 
 	# --- Core metabolism ---
-	Max_energy =[10,10]
+	Max_energy =[1100,1100]
 	Max_health  =[4,4]
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.3,0.3]
@@ -20,7 +20,7 @@ func Init():
 
 
 	# --- Life Cycle ---
-	Reproduction_cost  =[4,4]
+	Reproduction_cost  =[500,500]
 	Reproduction_spread  =[5,5]
 	Reproduction_number =[1,1]
 	Biomass =[5,10] #MAYBE NO LONGER IN USE
@@ -33,16 +33,16 @@ func Init():
 #INVENTORY
 
 	Sprite_path = "res://Alife/Plant/Grass/grass.png"  #TO DEFINE HERE BEST WAY
-	Stack_amount = 100
+	Stack_amount = 500
 
 
 
 
 func Growth(manager, i, delta):
 	if manager.current_life_state_array[i] < 6:
-		if manager.current_energy_array[i] > 5:
+		if manager.current_energy_array[i] > 500:
 			manager.current_life_state_array[i] += 1
-			manager.current_energy_array[i] -=  5
+			manager.current_energy_array[i] -=  500
 			manager.current_biomass_array[i] += 5
 			return true
 			
