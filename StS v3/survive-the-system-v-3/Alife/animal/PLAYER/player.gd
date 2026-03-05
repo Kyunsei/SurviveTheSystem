@@ -40,9 +40,10 @@ var energy_upgrade_cost = 2
 var range_upgrade_cost = 2
 
 #Escape the surface variables here!
-var escape_time := 10.0
-var escaping := false
 @onready var timer_label = $Player_HUD/TimerLabel
+var escape_timer_running = false
+var escape_time_left = 0.0
+var escape_height := 90.0
 
 #INVENTORY PART
 var inventory_HUD 
@@ -169,19 +170,14 @@ func _process(delta: float) -> void:
 		update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
 		sync_lifedata.rpc_id(int(name), lifedata)
 		
-	if escaping and is_multiplayer_authority():
-		if position.y >= 90:
-			escaping = false
-			timer_label.text = "You reached the ship and survived!"
-			await get_tree().create_timer(2.0).timeout
-			timer_label.hide()
-			return
-		escape_time -= delta
-		timer_label.text = str(ceil(escape_time))
-		if escape_time <= 0:
-			escaping = false
-			timer_label.hide()
-			Die()
+	if escape_timer_running and is_multiplayer_authority():
+		escape_time_left -= delta
+		if position.y >= escape_height:
+			timer_label.text = str(int(escape_time_left)) +"(safe)"
+		else:
+			timer_label.text = str(int(escape_time_left)) + " (death)"
+		if escape_time_left <= 0:
+			escape_timer_running = false
 
 
 @rpc("any_peer","call_local")
@@ -245,8 +241,33 @@ func update_bar(bartype,value, MaxValue):
 		energy_bar.value = value
 		energy_bar.max_value = MaxValue
 
-@rpc("any_peer","call_remote")
-func escape_fast_or_die():
-	escape_time = 30.0
-	escaping = true
+#@rpc("any_peer","call_remote")
+#func escape_fast_or_die():
+	#escape_time = 30.0
+	#escaping = true
+	#timer_label.show()
+
+@rpc("any_peer","call_local")
+func escape_success():
+	timer_label.show()
+	timer_label.text = "You survived!"
+
+	await get_tree().create_timer(2.0).timeout
+	timer_label.hide()
+	
+@rpc("any_peer","call_local")
+func show_escape_timer(time):
+	timer_label.show()
+
+	for i in range(time, 0, -1):
+		timer_label.text = str(i)
+		await get_tree().create_timer(1.0).timeout
+
+	if position.y <= 90:
+		timer_label.hide()
+
+@rpc("any_peer","call_local")
+func start_escape_ui(time):
+	escape_timer_running = true
+	escape_time_left = time
 	timer_label.show()

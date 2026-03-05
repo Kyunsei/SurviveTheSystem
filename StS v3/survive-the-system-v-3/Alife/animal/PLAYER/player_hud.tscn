@@ -7,6 +7,9 @@
 [ext_resource type="Script" uid="uid://cndfvw6tbims7" path="res://Alife/animal/PLAYER/stats_panel.gd" id="5_7oqrd"]
 
 [sub_resource type="FontFile" id="FontFile_7oqrd"]
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
 cache/0/variation_coordinates = {}
 cache/0/face_index = 0
 cache/0/embolden = 0.0
