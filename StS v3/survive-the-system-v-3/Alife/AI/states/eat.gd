@@ -9,6 +9,7 @@ var timer = 0.5  * GlobalSimulationParameter.simulation_speed
 func evaluate():
 	#print( player.lifedata["current_energy"])
 	target = null
+	#print(player.lifedata["current_energy"])
 	var score = 1 - player.lifedata["current_energy"]/player.lifedata["Max_energy"]
 	var dist_score = 0
 	var distance : float
@@ -24,7 +25,7 @@ func evaluate():
 			if distance < 4:
 				target = f
 				dist_score = 1.0 #clamp(distance / maxDist, 0., 1)
-	return dist_score #* score
+	return dist_score * score
 
 
 func enter():
@@ -44,15 +45,17 @@ func update(delta):
 		if target:
 			if target is Dictionary:
 				player.lifedata["current_energy"] += target["Biomass"]
-				player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"]  ,0, player.lifedata["Max_energy"] )
+				#player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"]  ,0, player.lifedata["Max_energy"] )
 				target["Alive"]= 0
 				get_parent().get_parent().get_parent().get_parent().get_node("Grass_Manager")._pending_external_kills.append(target)
 				player.vision_food.erase(target)
 				timer = eating_time/ (GlobalSimulationParameter.simulation_speed)
 			else:
 				var g_manager = player.get_parent().get_parent().get_node("Grass_Manager2")
-				player.lifedata["current_energy"] += g_manager.current_biomass_array[target]
-				player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"]  ,0, player.lifedata["Max_energy"] )
+				player.lifedata["current_energy"] += g_manager.current_biomass_array[target] * 5
+				
+				
+				#player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"]  ,0, player.lifedata["Max_energy"] )
 				g_manager.remove_from_world(target)
 				#g_manager.Active[target]= 0
 

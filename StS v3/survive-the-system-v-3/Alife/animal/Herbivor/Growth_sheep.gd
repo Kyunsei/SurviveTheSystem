@@ -21,21 +21,21 @@ func evaluate():
 		return 5.0
 
 	if player.lifedata["current_life_state"] < sprite_array.size()-1:
-		if player.lifedata["current_energy"] >= 100:
+		if player.lifedata["current_energy"] >= 5000:
 			return 1.5
 		return 0.
 	else:
 		return 0.
 
 func enter():
-	if player.lifedata["current_energy"] < 100:
+	if player.lifedata["current_energy"] < 1000:
 		pass
 	else:
 		if player.lifedata["current_life_state"] < sprite_array.size()-1:
 			player.lifedata["current_life_state"] += 1
 			player.lifedata["Biomass"] += 20
 			player.lifedata["Max_speed"] = 5
-			player.lifedata["current_energy"] -= 50
+			player.lifedata["current_energy"] -= 900
 			#player.get_node("MeashInstance3D").texture = load(sprite_array[player.lifedata["current_life_state"]])
 			send_new_sprite.rpc(player.lifedata["current_life_state"])
 
@@ -51,7 +51,6 @@ func send_new_sprite(state):
 		q.size = Vector2(size_array[state], size_array[state])
 		mi.mesh = q  
 		mi.mesh.center_offset.y    =          size_array[state] / 2.0                     
-		#mi.position.y = size_array[state] / 2.0 
 
 func exit():
 	pass

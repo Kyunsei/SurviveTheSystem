@@ -60,25 +60,30 @@ func update():
 
 		i+= 1
 
-
+	var c = 0
 	for posit in alifemanager.get_node("Grass_Manager2").position_array:
 		var t : Transform2D
 		var pos = position_conversion(posit)
-		#if g["Species"] == Alifedata.enum_speciesID.GRASS:
+		if alifemanager.get_node("Grass_Manager2").Active[c] == 0:
+			pos.y = -10000
+			
+			#if g["Species"] == Alifedata.enum_speciesID.GRASS:
 		t = Transform2D(
 				Vector2(0.5, 0),
 				Vector2(0, 0.5),
 				pos
 			)
-		#else:
-			#t = Transform2D(0, position_conversion(g["position"]))		
+			#else:
+				#t = Transform2D(0, position_conversion(g["position"]))		
 		mm.set_instance_transform_2d(i, t)
-#var transforms = mm.get_instance_transform_array()
-#transforms[i] = t
-#mm.set_instance_transform_array(transforms)
-		
+			
+	#var transforms = mm.get_instance_transform_array()
+	#transforms[i] = t
+	#mm.set_instance_transform_array(transforms)
+			
 		mm.set_instance_color(i, color_list[0]) 
 		i+= 1
+		c+= 1
 	
 	for g in alifemanager.get_node("beast_manager").beast_dict.values():
 		var t = Transform2D(0, position_conversion(g["position"]))

@@ -7,7 +7,7 @@ var target
 func evaluate():
 	var score = 0.0
 	if player.lifedata["current_life_state"] == 3:
-		if  player.lifedata["current_energy"] >= 100:
+		if  player.lifedata["current_energy"] >= 5000:
 			score = 1.0
 	return score
 
@@ -21,8 +21,9 @@ func enter():
 		newpos.z = clamp(newpos.z, -player.World.World_Size.z / 2 + 1, player.World.World_Size.z / 2 - 1)
 		player.get_parent().spawn_new_beast.rpc_id(1, newpos, player.lifedata["Species"])
 
-	player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"] - 90,0 ,player.lifedata["Max_energy"] )
+	player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"] - 6000,0 ,player.lifedata["Max_energy"] )
 	player.lifedata["Alive"] =0
+	player.lifedata["current_life_state"] += 1
 
 func exit():
 	pass

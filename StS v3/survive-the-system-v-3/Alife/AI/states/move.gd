@@ -44,7 +44,7 @@ func evaluate():
 			var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
 			final_dir = food_dir # * weight
 			target = food
-			debug = "FOOD"
+			
 		else:
 			var offset = player.get_parent().get_parent().get_node("Grass_Manager2").position_array[food] - player.position
 			var dist = offset.length()
@@ -53,7 +53,7 @@ func evaluate():
 			var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
 			final_dir = food_dir # * weight
 			target = food
-			debug = "FOOD"
+		debug = "FOOD"
 
 	# normalize final direction
 	direction = final_dir.normalized()

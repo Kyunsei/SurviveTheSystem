@@ -95,7 +95,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Sprites"] = "res://assets/Art from STS2/berry_1.png"
 
 		enum_speciesID.SHEEP:
-			new_life["Homeostasis_cost"] = 0.6
+			new_life["Homeostasis_cost"] = 2
 			#new_life["Photosynthesis_absorbtion"] = 0.
 			#new_life["Photosynthesis_range"] = 2
 			new_life["Reproduction_cost"] = 100
@@ -109,8 +109,8 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Danger_type"] = [enum_speciesID.CAT]#, enum_speciesID.SHEEP]
 			new_life["Max_age"] = 100.0
 			
-			new_life["current_energy"] = 20
-			new_life["Max_energy"] = 100
+			new_life["current_energy"] = 2000
+			new_life["Max_energy"] = 10000
 			new_life["current_health"] = 500
 			new_life["Max_health"] = 500
 
