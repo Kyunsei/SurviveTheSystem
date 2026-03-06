@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bcmrqlah5v1p7"]
+
+[ext_resource type="Script" uid="uid://b7inlgtdrqidc" path="res://World/spaceship/skin_area_3d.gd" id="1_ktpii"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tnl4x"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_ktpii"]
+
+[node name="Skin_Area3D" type="Area3D" unique_id=1912766374]
+script = ExtResource("1_ktpii")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=202937951]
+shape = SubResource("BoxShape3D_tnl4x")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1536795132]
+mesh = SubResource("BoxMesh_ktpii")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=1380447106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+text = "Skin attributor
+"
+
+[node name="PopupMenu" type="PopupMenu" parent="." unique_id=1609507052]
+initial_position = 1
+hide_on_item_selection = false
+
+[connection signal="id_pressed" from="PopupMenu" to="." method="_on_popup_menu_id_pressed"]
+[connection signal="popup_hide" from="PopupMenu" to="." method="_on_popup_menu_popup_hide"]

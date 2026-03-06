@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://b4o6f6gbseg6h" path="res://World/spaceship/go_button.gd" id="6_oclds"]
 [ext_resource type="Script" uid="uid://84wgp7mvc54w" path="res://World/spaceship/area_3d_go_button.gd" id="7_8txik"]
 [ext_resource type="PackedScene" uid="uid://bw0x55yvvmaih" path="res://Collector/collector_ship.tscn" id="8_4e1qf"]
+[ext_resource type="PackedScene" uid="uid://bcmrqlah5v1p7" path="res://World/spaceship/skin_area_3d.tscn" id="9_usqpj"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2gbrl"]
 albedo_texture = ExtResource("1_l8se6")
@@ -368,5 +369,8 @@ replication_config = SubResource("SceneReplicationConfig_8txik")
 
 [node name="Collector_ship" parent="." unique_id=1273828613 instance=ExtResource("8_4e1qf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 12.6)
+
+[node name="Skin_Area3D" parent="." unique_id=1912766374 instance=ExtResource("9_usqpj")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.5000005, 0.5, 4.9)
 
 [connection signal="area_entered" from="go_button/Area3D_go_button" to="go_button" method="_on_area_3d_area_entered"]

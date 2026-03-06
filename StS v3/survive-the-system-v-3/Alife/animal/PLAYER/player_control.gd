@@ -210,6 +210,8 @@ func action_on_server():
 			area.get_parent().interacting()
 		if area.name == "go_up_area3D":
 			area.get_parent().go_up()
+		if area.name == "Skin_Area3D":
+			area.attribute_skin(player)
 
 	
 	
