@@ -4,6 +4,9 @@ var Super_p
 var skins = [
 	preload("res://assets/assets kyun/ground_texture128.png"), # skin 1
 	preload("res://assets/assets kyun/grass_texture128.png"),  # skin 2
+	preload("res://assets/assets kyun/collector_texture.png"),  # skin 3
+	preload("res://assets/assets kyun/shiptexture_1.png"),  # skin 4
+	preload("res://assets/assets kyun/spaceship_texture1.png"), # skin 5
 ]
 
 # Called when the node enters the scene tree for the first time.
@@ -25,11 +28,11 @@ func _on_popup_menu_id_pressed(id):
 		1:
 			change_player_skin.rpc(1, multiplayer.get_unique_id())
 		2:
-			print("option 3")
+			change_player_skin.rpc(2, multiplayer.get_unique_id())
 		3:
-			print("option 4")
+			change_player_skin.rpc(3, multiplayer.get_unique_id())
 		4:
-			print("option 5")
+			change_player_skin.rpc(4, multiplayer.get_unique_id())
 	await get_tree().process_frame
 	$PopupMenu.popup()
 

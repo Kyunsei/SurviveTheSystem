@@ -4,6 +4,7 @@ extends Node3D
 @export var plant_scene: PackedScene
 @export var sheep_scene: PackedScene
 @export var tree_scene: PackedScene
+@export var bone_scene: PackedScene
 
 
 
@@ -302,8 +303,12 @@ func get_alife_in_area(pos_center, area):
 
 	return results
 
+@rpc("any_peer","call_local")
+func drop_bones(pos):
 	
-
+	var new_bones = bone_scene.instantiate()
+	new_bones.position = Vector3(pos.x,pos.y-0.5,pos.z)
+	self.call_deferred("add_child",new_bones, true)
 
 
 

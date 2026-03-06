@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dv0s2jhvhfe0v"]
 
 [ext_resource type="Texture2D" uid="uid://d3riehjuhvo1r" path="res://assets/assets kyun/Bones_texture2.png" id="1_4nyxu"]
+[ext_resource type="Script" uid="uid://rs3afu71ipw" path="res://Alife/animal/PLAYER/cat_bones.gd" id="1_66p47"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_66p47"]
 albedo_texture = ExtResource("1_4nyxu")
@@ -63,7 +64,22 @@ material = SubResource("StandardMaterial3D_aq2ao")
 left_to_right = 1.0
 size = Vector3(0.1, 0.1, 0.1)
 
-[node name="CatBones" type="Node3D" unique_id=853951407]
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_4nyxu"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4nyxu"]
+size = Vector3(0.4, 1.1, 0.8)
+
+[node name="CatBones" type="RigidBody3D" unique_id=770879454]
+axis_lock_linear_x = true
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+mass = 100.0
+script = ExtResource("1_66p47")
 
 [node name="column" type="MeshInstance3D" parent="." unique_id=1450192557]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
@@ -128,3 +144,10 @@ mesh = SubResource("PrismMesh_xbr7h")
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="boneHead" unique_id=818431376]
 transform = Transform3D(5.7620454e-08, 0, 1, 0, 1, 0, -1, 0, 5.7620454e-08, 0, 0.14999998, -0.05)
 mesh = SubResource("PrismMesh_xbr7h")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1752299381]
+replication_config = SubResource("SceneReplicationConfig_4nyxu")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2038343776]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.05, 0.6, 0)
+shape = SubResource("BoxShape3D_4nyxu")

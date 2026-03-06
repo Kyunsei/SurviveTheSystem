@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://g8f1lj1jedxl" path="res://Alife/animal/PLAYER/player_control.gd" id="1_31v8x"]
 [ext_resource type="Script" uid="uid://cr5xulv4uju01" path="res://Alife/animal/PLAYER/player.gd" id="1_qrp1o"]
-[ext_resource type="PackedScene" uid="uid://dv0s2jhvhfe0v" path="res://Alife/animal/PLAYER/cat_bones.tscn" id="2_1vr6m"]
 [ext_resource type="PackedScene" uid="uid://cx8myhkgjy4fp" path="res://Alife/animal/PLAYER/player_hud.tscn" id="2_2y45n"]
 [ext_resource type="Script" uid="uid://b0jwhtwhk47rk" path="res://Alife/animal/PLAYER/camera_3d.gd" id="3_kppvm"]
 [ext_resource type="Script" uid="uid://cwrvvywn7edre" path="res://Alife/animal/PLAYER/debug_control.gd" id="5_2y45n"]
@@ -72,6 +71,9 @@ properties/3/replication_mode = 0
 properties/4/path = NodePath("Status_bar/SubViewport/ProgressBar:show_percentage")
 properties/4/spawn = true
 properties/4/replication_mode = 0
+properties/5/path = NodePath("MeshInstance3D:visible")
+properties/5/spawn = true
+properties/5/replication_mode = 1
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_1iiag"]
 height = 1.0
@@ -172,10 +174,6 @@ size = Vector3(1.5, 1.2, 1.5)
 [node name="Player" type="CharacterBody3D" unique_id=1092654110 groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("1_qrp1o")
-
-[node name="CatBones" parent="." unique_id=853951407 instance=ExtResource("2_1vr6m")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, -0.5, 0)
-visible = false
 
 [node name="Player_HUD" parent="." unique_id=1065555217 instance=ExtResource("2_2y45n")]
 

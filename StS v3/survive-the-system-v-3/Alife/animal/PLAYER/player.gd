@@ -164,8 +164,8 @@ func _process(delta: float) -> void:
 		if lifedata["current_energy"] <= 0:
 			lifedata["current_health"] -= 1*delta
 		if lifedata["current_health"] <= 0:
-			Die()
-			Die.rpc_id(int(name))
+			#Die()
+			Die.rpc_id(1, int(name))
 
 		update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
 		update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
@@ -203,10 +203,12 @@ func change_bin():
 			get_parent().put_in_world_bin(lifedata)
 
 @rpc("any_peer","call_local")
-func Die():
-	lifedata["Alive"] = 0
-	#$MeshInstance3D.get_active_material(0).albedo_color =Color()
-	death()
+func Die(id):
+	if lifedata["Alive"] == 1:
+		print("detah")
+		lifedata["Alive"] = 0
+		#$MeshInstance3D.get_active_material(0).albedo_color =Color()
+		death.rpc_id(id,id)
 	
 
 
@@ -220,12 +222,44 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 		
 		pass
 
-func death():
+@rpc("any_peer","call_local")
+func death(id):
+	$CollisionShape3D.disabled = true
+	velocity = Vector3.ZERO
+	gravity = 0
+	fall_gravity = 0
+	low_jump_gravity = 0
 	max_speed = 0
 	sprint_speed = 0
 	base_jump = 0
 	$MeshInstance3D.hide()
-	$CatBones.show()
+	get_parent().drop_bones.rpc_id(1, position)
+	await get_tree().create_timer(1.0).timeout
+	respawn()
+	respawn_server.rpc_id(1)
+	#$CatBones.show()
+
+#@rpc("any_peer","call_local")
+func respawn():
+	go_back_to_ship(0)
+	gravity = 60
+	fall_gravity = 90
+	low_jump_gravity = 240
+	max_speed = 500
+	sprint_speed = 1000
+	base_jump = 25
+	inventory_capacity_upgrade = 1
+	$CollisionShape3D.disabled = false
+	$MeshInstance3D.show()
+
+@rpc("any_peer","call_local")
+func respawn_server():
+	lifedata["current_health"] = 100
+	lifedata["current_energy"] = 100
+	lifedata["Max_energy"] = 100
+	lifedata["Max_health"] = 100
+	inventory_capacity_upgrade = 1
+	lifedata["Alive"] = 1
 
 
 func update_status_of_player():
@@ -272,6 +306,8 @@ func show_escape_timer(time):
 	timer_label.text = str(int(time))
 	timer_label.show()
 
+
+	
 
 @rpc("any_peer","call_local")
 func start_escape_ui(time):

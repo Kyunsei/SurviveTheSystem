@@ -109,7 +109,7 @@ func check_escape_results(player):
 		if p.position.y >= 90:
 			p.escape_success.rpc_id(int(p.name))
 		else:
-			p.Die.rpc_id(int(p.name))
+			p.Die.rpc_id(int(p.name), int(p.name))
 
 func stop_go_button():
 	spaceship.get_node("go_button").currently_active = true
