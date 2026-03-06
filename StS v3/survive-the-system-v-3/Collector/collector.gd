@@ -5,7 +5,8 @@ var max_biomass = 100
 var credit_gain = 0
 @onready var spaceship: Node3D = $"../SPACESHIP"
 var collecting = true
-
+var timer_to_escape = int(61)
+var safe_timer = int(6)
 var factor = 0.2
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -67,10 +68,7 @@ func interact(player):
 			#credit_player(i)
 		Biomass_collected = 0
 		max_biomass = max_biomass * 1.5
-		$collected_amount_Label3D.text = "Collector is full and waiting retrieval"
-		await get_tree().create_timer(40.0).timeout
-		collecting = true
-		update_label()
+
 
 		#end_of_quest.rpc_id(int(player.name),player)
 	#p.grass_in_inventory = 0
@@ -78,22 +76,45 @@ func interact(player):
 	#print (Biomass_collected)'
 
 func start_escape_phase(player):
+	var collector_ship = spaceship.get_node("Collector_ship")
+	$collected_amount_Label3D.text = "Collector is full and awaiting retrieval"
+	stop_go_button()
 	for p in player.get_parent().player_array:
-		p.show_escape_timer.rpc_id(int(p.name), 30)
-		p.start_escape_ui.rpc_id(int(p.name), 30.0) # shows UI timer
+		p.show_escape_timer.rpc_id(int(p.name), timer_to_escape)
+		p.start_escape_ui.rpc_id(int(p.name), timer_to_escape) # shows UI timer
 		credit_player(p)
 
-	await get_tree().create_timer(30.0).timeout
+	var remaining_time = timer_to_escape
 
-	check_escape_results(player)	
+	while remaining_time > 0:
+		await get_tree().create_timer(1.0).timeout
+		remaining_time -= 1
+		
+
+
+		if collector_ship.global_position.y >= 90 and remaining_time > safe_timer:
+			remaining_time = safe_timer
+			for p in player.get_parent().player_array:
+				p.force_escape_time.rpc_id(int(p.name), safe_timer)
+	collecting = true
+	update_label()
+	start_go_button()
+	check_escape_results(player)
+	
 
 func check_escape_results(player):
 	spaceship.get_node("Collector_ship").go_up()
 	for p in player.get_parent().player_array:
+		p.stop_escape_ui.rpc()
 		if p.position.y >= 90:
 			p.escape_success.rpc_id(int(p.name))
 		else:
 			p.Die.rpc_id(int(p.name))
+
+func stop_go_button():
+	spaceship.get_node("go_button").currently_active = true
+func start_go_button():
+	spaceship.get_node("go_button").currently_active = false
 
 @rpc("any_peer","call_remote")
 func end_of_quest(player):

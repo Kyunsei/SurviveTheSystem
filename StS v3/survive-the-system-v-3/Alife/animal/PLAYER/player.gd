@@ -41,6 +41,7 @@ var range_upgrade_cost = 2
 
 #Escape the surface variables here!
 @onready var timer_label = $Player_HUD/TimerLabel
+var last_time_displayed := -1
 var escape_timer_running = false
 var escape_time_left = 0.0
 var escape_height := 90.0
@@ -172,12 +173,15 @@ func _process(delta: float) -> void:
 		
 	if escape_timer_running and is_multiplayer_authority():
 		escape_time_left -= delta
-		if position.y >= escape_height:
-			timer_label.text = str(int(escape_time_left)) +"(safe)"
-		else:
-			timer_label.text = str(int(escape_time_left)) + " (death)"
-		if escape_time_left <= 0:
-			escape_timer_running = false
+		var current_time := int(escape_time_left)
+		if current_time != last_time_displayed:
+			last_time_displayed = current_time
+			if position.y >= escape_height:
+				timer_label.text = str(int(escape_time_left)) +"(safe)"
+			else:
+				timer_label.text = str(int(escape_time_left)) + " (death)"
+			if escape_time_left <= 0:
+				escape_timer_running = false
 
 
 @rpc("any_peer","call_local")
@@ -241,11 +245,10 @@ func update_bar(bartype,value, MaxValue):
 		energy_bar.value = value
 		energy_bar.max_value = MaxValue
 
-#@rpc("any_peer","call_remote")
-#func escape_fast_or_die():
-	#escape_time = 30.0
-	#escaping = true
-	#timer_label.show()
+@rpc("any_peer","call_local")
+func force_escape_time(new_time):
+	escape_time_left = new_time
+	last_time_displayed = -1
 
 @rpc("any_peer","call_local")
 func escape_success():
@@ -254,17 +257,21 @@ func escape_success():
 
 	await get_tree().create_timer(2.0).timeout
 	timer_label.hide()
-	
+
+@rpc("any_peer","call_local")
+func stop_escape_ui():
+	print("escape stopped")
+	escape_timer_running = false
+	timer_label.hide()
+
+
 @rpc("any_peer","call_local")
 func show_escape_timer(time):
+	escape_time_left = time
+	escape_timer_running = true
+	timer_label.text = str(int(time))
 	timer_label.show()
 
-	for i in range(time, 0, -1):
-		timer_label.text = str(i)
-		await get_tree().create_timer(1.0).timeout
-
-	if position.y <= 90:
-		timer_label.hide()
 
 @rpc("any_peer","call_local")
 func start_escape_ui(time):
