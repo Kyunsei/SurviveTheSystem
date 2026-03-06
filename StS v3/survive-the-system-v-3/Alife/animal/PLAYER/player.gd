@@ -260,6 +260,7 @@ func respawn_server():
 	lifedata["Max_health"] = 100
 	inventory_capacity_upgrade = 1
 	lifedata["Alive"] = 1
+	lifedata["Inventory_capacity"] = 1
 
 
 func update_status_of_player():
