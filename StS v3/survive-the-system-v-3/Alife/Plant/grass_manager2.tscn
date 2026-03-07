@@ -4,16 +4,44 @@
 [ext_resource type="Script" uid="uid://whqmtmn23lj8" path="res://Alife/DNA.gd" id="2_eguq1"]
 [ext_resource type="Script" uid="uid://dhs3c3gl6pkjm" path="res://Alife/Plant/Grass/grass.gd" id="3_eguq1"]
 [ext_resource type="QuadMesh" uid="uid://ossnpdi2f01p" path="res://Alife/Plant/Grass/grass_mesh.tres" id="4_lxqh2"]
+[ext_resource type="Script" uid="uid://dr3a0hgnctbxq" path="res://Alife/Plant/tree/TREE.gd" id="4_nt0jf"]
 [ext_resource type="Script" uid="uid://dqvbcbtdwfsju" path="res://Alife/Plant/mulitmesh2.gd" id="5_hbvxf"]
+[ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="6_hbvxf"]
 
 [sub_resource type="Resource" id="Resource_yp710"]
 script = ExtResource("3_eguq1")
 metadata/_custom_type_script = "uid://dhs3c3gl6pkjm"
 
+[sub_resource type="Resource" id="Resource_vuq5v"]
+script = ExtResource("4_nt0jf")
+metadata/_custom_type_script = "uid://dr3a0hgnctbxq"
+
 [sub_resource type="MultiMesh" id="MultiMesh_nt0jf"]
 transform_format = 1
 use_colors = true
 mesh = ExtResource("4_lxqh2")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cx5lr"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("6_hbvxf")
+backlight_enabled = true
+backlight = Color(1, 1, 1, 1)
+texture_filter = 0
+billboard_mode = 2
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_nt0jf"]
+material = SubResource("StandardMaterial3D_cx5lr")
+size = Vector2(2, 2)
+center_offset = Vector3(0, 1, 0)
+
+[sub_resource type="MultiMesh" id="MultiMesh_vuq5v"]
+transform_format = 1
+use_colors = true
+mesh = SubResource("QuadMesh_nt0jf")
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_lxqh2"]
 properties/0/path = NodePath("CanvasLayer:visible")
@@ -25,10 +53,14 @@ properties/1/replication_mode = 1
 
 [node name="Grass_Manager" type="Node3D" unique_id=2019447816]
 script = ExtResource("1_0gklr")
-species_list = Array[ExtResource("2_eguq1")]([SubResource("Resource_yp710")])
+species_list = Array[ExtResource("2_eguq1")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v")])
 
 [node name="grass" type="MultiMeshInstance3D" parent="." unique_id=931824674]
 multimesh = SubResource("MultiMesh_nt0jf")
+script = ExtResource("5_hbvxf")
+
+[node name="tree" type="MultiMeshInstance3D" parent="." unique_id=784812530]
+multimesh = SubResource("MultiMesh_vuq5v")
 script = ExtResource("5_hbvxf")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1771965466]

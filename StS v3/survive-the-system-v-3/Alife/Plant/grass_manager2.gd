@@ -42,6 +42,9 @@ var species_reproduction_spread : Array = []
 var species_reproduction_number : Array = [] 
 var species_biomass : Array = [] 
 
+#New SPECIES SYSTEM
+
+
 
 
 #PLANT SPECIFIC 
@@ -293,6 +296,7 @@ func Photosynthesis(i,delta):
 
 func Homeostasis(i,delta):
 	var s = Species_array[i]
+
 	var t = min(current_life_state_array[i],species_photosynthesis_range[s].size()-1)
 	if current_health_array[i] <= 0:
 		Death(i)
@@ -300,6 +304,8 @@ func Homeostasis(i,delta):
 		_pending_update.append(i)
 		return
 	var area = max(1,(species_photosynthesis_range[s][t] * 2) * (species_photosynthesis_range[s][t] * 2 ))
+	
+	t = min(current_life_state_array[i],species_homeostasis_cost[s].size()-1)
 	current_energy_array[i] -= species_homeostasis_cost[s][t] * area * GlobalSimulationParameter.simulation_speed * delta
 	Regenerate_Health(i,delta)
 
@@ -561,9 +567,9 @@ func build_species_tables():
 	species_reproduction_number.resize(count)
 	species_biomass.resize(count)
 
-
 	for s in species_list:
 		s.Init()
+		
 		var id = s.species_id	
 		species_max_energy[id] = s.Max_energy
 		species_max_health[id] = s.Max_health
@@ -717,10 +723,21 @@ func remove_from_world_bin(i):
 ############################### RPC
 ##########################MULTIMESH GESTION
 
+
+######### UPDATE HERE. NEW SYSTEM IS: HAVING 2D new ARRAY , one by species
+### having after
+#### grass draw id_array[0] , pos_array[0]
+#### tree draw id_array[0] , pos_array[0]
+
 @rpc("authority", "call_remote", "reliable") 
 func draw_new_grass(id_array, pos_array):#, state_array, alive_array):	
-		$grass.draw_new_grass(id_array, pos_array)#, state_array, alive_array)
-		
+	var c = 0
+	for si in id_array:
+		if Species_array[si] == 0:
+				$grass.draw_new_grass(si, pos_array[c])#, state_array, alive_array)
+		elif Species_array[si] == 1:
+				$tree.draw_new_grass(si, pos_array[c])#, state_array, alive_array)
+		c += 1
 			
 @rpc("authority", "call_remote", "reliable") 			
 func update_drawn_grass(id_array, pos_array, state_array, alive_array,active):
