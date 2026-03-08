@@ -75,6 +75,9 @@ properties/4/replication_mode = 0
 properties/5/path = NodePath("MeshInstance3D:visible")
 properties/5/spawn = true
 properties/5/replication_mode = 1
+properties/6/path = NodePath("MultiplayerSynchronizer:sync_bstate_array")
+properties/6/spawn = true
+properties/6/replication_mode = 1
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_1iiag"]
 height = 1.0
@@ -311,3 +314,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
 shape = SubResource("BoxShape3D_2y45n")
 
 [connection signal="area_entered" from="MeshInstance3D/Pick_up_Area3D" to="." method="_on_pick_up_area_3d_area_entered"]
+[connection signal="synchronized" from="MultiplayerSynchronizer" to="MultiplayerSynchronizer" method="_on_synchronized"]
