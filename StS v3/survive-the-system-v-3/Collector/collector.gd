@@ -7,7 +7,7 @@ var credit_gain = 0
 var collecting = true
 var timer_to_escape = int(61)
 var safe_timer = int(6)
-var factor = 0.005
+var factor = 5 #0.005
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	update_label()
@@ -16,40 +16,39 @@ func _ready() -> void:
 #@rpc("any_peer","call_local")
 func interact(player):
 
-	
-	#var grassmanager = player.get_parent().get_node("Grass_Manager2")
-	
-	var item_hold = player.item_hold
-	var inventory = player.get_node("Player_HUD").get_node("Inventory")
+	if collecting == true :
+		#var grassmanager = player.get_parent().get_node("Grass_Manager2")
+		
+		var item_hold = player.item_hold
+		var inventory = player.get_node("Player_HUD").get_node("Inventory")
 
-	if item_hold != null:
-			if item_hold.size() < 1:
-				return
-			print(item_hold.size())
-			var grassmanager = player.get_parent().get_node("Grass_Manager2")
-			#if item_hold["Data"] is Dictionary:
-			var temp_duplicate_list = item_hold["Data"].duplicate()
-			for  o in temp_duplicate_list:
-				if o is Dictionary:
-					if item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
-						print("you try to give an item")
-						return
+		if item_hold != null:
+				if item_hold.size() < 1:
+					return
+				print(item_hold.size())
+				var grassmanager = player.get_parent().get_node("Grass_Manager2")
+				#if item_hold["Data"] is Dictionary:
+				var temp_duplicate_list = item_hold["Data"].duplicate()
+				for  o in temp_duplicate_list:
+					if o is Dictionary:
+						if item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
+							print("you try to give an item")
+							return
 
-					Biomass_collected += o["Biomass"]*factor
-					inventory.remove_selected(int(player.name))
-				else:
-					Biomass_collected += grassmanager.current_biomass_array[o]*factor
-					inventory.remove_selected(int(player.name))
+						Biomass_collected += o["Biomass"]*factor
+						inventory.remove_selected(int(player.name))
+					else:
+						Biomass_collected += grassmanager.current_biomass_array[o]*factor
+						inventory.remove_selected(int(player.name))
+
+			
 
 		
-
-	
-	'for o in player.inventory:		
-		Biomass_collected += player.inventory[o]["current_energy"]*factor
-		#player.remove_from_inventory(o,1)'
-	#player.inventory = {}
-	#player.inventory_count = 0
-	update_label()
+		'for o in player.inventory:		
+			Biomass_collected += player.inventory[o]["current_energy"]*factor
+			#player.remove_from_inventory(o,1)'
+		#player.inventory = {}
+		#player.inventory_count = 0
 	if Biomass_collected >= max_biomass and collecting == true:
 		collecting = false
 		credit_gain += 10
@@ -96,7 +95,7 @@ func start_escape_phase(player):
 			remaining_time = safe_timer
 			for p in player.get_parent().player_array:
 				p.force_escape_time.rpc_id(int(p.name), safe_timer)
-		collecting = true
+	collecting = true
 	update_label()
 	start_go_button()
 	check_escape_results(player)
