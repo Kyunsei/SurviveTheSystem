@@ -281,6 +281,8 @@ texture = SubResource("ViewportTexture_1vr6m")
 script = ExtResource("1_31v8x")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1350252593]
+replication_interval = 0.05
+delta_interval = 0.05
 replication_config = SubResource("SceneReplicationConfig_qrp1o")
 
 [node name="camera_anchor" type="Node3D" parent="." unique_id=854155107]
