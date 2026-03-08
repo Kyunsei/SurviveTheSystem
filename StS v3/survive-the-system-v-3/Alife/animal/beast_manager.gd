@@ -422,8 +422,9 @@ func Homeostasis(grass, delta):
 	
 	grass["current_age"] += 1
 	if grass["current_age"] >= grass["Max_age"]:
-		grass["Alive"] = 0
-		return
+		#grass["Alive"] = 0
+		pass
+		#return
 	
 	if grass["current_health"] < 0:
 		grass["Alive"] = 0
@@ -433,7 +434,8 @@ func Homeostasis(grass, delta):
 	grass["current_energy"] -= grass["Homeostasis_cost"]  * GlobalSimulationParameter.simulation_speed * delta
 	#Regenerate_Health(grass,delta)
 	if grass["current_energy"] < 0:
-		grass["current_health"] -= grass["Homeostasis_cost"] * GlobalSimulationParameter.simulation_speed * delta
+		pass
+		#grass["current_health"] -= grass["Homeostasis_cost"] * GlobalSimulationParameter.simulation_speed * delta
 
 
 func Regenerate_Health(grass,delta):
