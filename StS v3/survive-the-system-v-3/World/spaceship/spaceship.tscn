@@ -10,7 +10,7 @@
 [ext_resource type="Script" uid="uid://84wgp7mvc54w" path="res://World/spaceship/area_3d_go_button.gd" id="7_8txik"]
 [ext_resource type="PackedScene" uid="uid://bw0x55yvvmaih" path="res://Collector/collector_ship.tscn" id="8_4e1qf"]
 [ext_resource type="PackedScene" uid="uid://bcmrqlah5v1p7" path="res://World/spaceship/skin_area_3d.tscn" id="9_usqpj"]
-[ext_resource type="PackedScene" uid="uid://c2k148ms3kq4q" path="res://World/spaceship/space_ship_kyunsei_from_dabols.tscn" id="10_w7yga"]
+[ext_resource type="PackedScene" uid="uid://of4st8k4xwbc" path="res://World/spaceship/space_ship_kyunsei.scn" id="11_2jlj7"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_2jlj7"]
 size = Vector3(13, 0.5, 9)
@@ -128,8 +128,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.1, 5.3)
 [node name="Skin_Area3D" parent="." unique_id=1912766374 instance=ExtResource("9_usqpj")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5, 0.5, -3.4999995)
 
-[node name="SPACE SHIP Kyunsei" parent="." unique_id=983687171 instance=ExtResource("10_w7yga")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.1, -9.7)
+[node name="SPACE SHIP Kyunsei" parent="." unique_id=997132027 instance=ExtResource("11_2jlj7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.1, -9.700001)
 
 [node name="Tuto" type="Node3D" parent="." unique_id=201677320]
 
