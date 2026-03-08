@@ -7,7 +7,7 @@ var credit_gain = 0
 var collecting = true
 var timer_to_escape = int(61)
 var safe_timer = int(6)
-var factor = 0.02
+var factor = 0.005
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	update_label()

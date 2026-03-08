@@ -17,7 +17,7 @@ func evaluate():
 				distance = player.position.distance_to(f["position"])
 				if GlobalSimulationParameter.life_numbers != {}:
 					if f["Species"] == Alifedata.enum_speciesID.SHEEP:
-						if GlobalSimulationParameter.life_numbers[Alifedata.enum_speciesID.SHEEP][-1] < 2:
+						if player.get_parent().get_parent().current_life_count_by_species[Alifedata.enum_speciesID.SHEEP] < 2:
 							return 0
 				
 			else:
@@ -53,6 +53,7 @@ func update(delta):
 				
 				if target["Species"] == Alifedata.enum_speciesID.SHEEP:
 					target["current_health"] = -100
+					#print("SHEEP EATEN")
 					pass
 		
 				

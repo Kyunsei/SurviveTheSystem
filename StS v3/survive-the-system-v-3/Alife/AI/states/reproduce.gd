@@ -9,7 +9,7 @@ var timer = 0
 func evaluate():
 	var score = 0.0
 	if GlobalSimulationParameter.life_numbers != {}:
-		if GlobalSimulationParameter.life_numbers[Alifedata.enum_speciesID.SHEEP][-1] >1:
+		if player.get_parent().get_parent().current_life_count_by_species[Alifedata.enum_speciesID.SHEEP]  >1:
 			return 0
 	if !hasReproduced:
 		if player.lifedata["current_life_state"] == 3:
