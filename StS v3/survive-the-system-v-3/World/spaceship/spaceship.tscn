@@ -6,11 +6,17 @@
 [ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="3_qscrw"]
 [ext_resource type="PackedScene" uid="uid://bi2piyyfepqdv" path="res://Upgrades/upgrades.tscn" id="4_ef02v"]
 [ext_resource type="PackedScene" uid="uid://cup4ldkq72aad" path="res://World/spaceship/activation_button.tscn" id="5_ftgam"]
-[ext_resource type="Script" path="res://World/spaceship/go_button.gd" id="6_oclds"]
-[ext_resource type="Script" path="res://World/spaceship/area_3d_go_button.gd" id="7_8txik"]
+[ext_resource type="Script" uid="uid://b4o6f6gbseg6h" path="res://World/spaceship/go_button.gd" id="6_oclds"]
+[ext_resource type="Script" uid="uid://84wgp7mvc54w" path="res://World/spaceship/area_3d_go_button.gd" id="7_8txik"]
 [ext_resource type="PackedScene" uid="uid://bw0x55yvvmaih" path="res://Collector/collector_ship.tscn" id="8_4e1qf"]
 [ext_resource type="PackedScene" uid="uid://bcmrqlah5v1p7" path="res://World/spaceship/skin_area_3d.tscn" id="9_usqpj"]
-[ext_resource type="PackedScene" path="res://World/spaceship/space_ship_kyunsei_from_dabols.tscn" id="10_w7yga"]
+[ext_resource type="PackedScene" uid="uid://c2k148ms3kq4q" path="res://World/spaceship/space_ship_kyunsei_from_dabols.tscn" id="10_w7yga"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_2jlj7"]
+size = Vector3(13, 0.5, 9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qscrw"]
+size = Vector3(13, 0.5, 9)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11em4"]
 transparency = 1
@@ -63,6 +69,16 @@ size = Vector2(6, 3.5)
 script = ExtResource("1_2gbrl")
 
 [node name="ship" type="Node3D" parent="." unique_id=412404887]
+
+[node name="solid_ground" type="MeshInstance3D" parent="ship" unique_id=685376169]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2, -0.3, -2.2)
+visible = false
+mesh = SubResource("BoxMesh_2jlj7")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="ship/solid_ground" unique_id=1183344341]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/solid_ground/StaticBody3D" unique_id=536380054]
+shape = SubResource("BoxShape3D_qscrw")
 
 [node name="moving_ground1" type="StaticBody3D" parent="ship" unique_id=1158021671]
 transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, 0, -15.1)
