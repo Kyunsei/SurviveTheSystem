@@ -1,5 +1,5 @@
 extends MultiplayerSynchronizer
-class_name PhysicsSynchronizer
+#class_name PhysicsSynchronizer
 @export var sync_bstate_array : Array = \
 	[0, Vector3.ZERO, Quaternion.IDENTITY, Vector3.ZERO, Vector3.ZERO]
 

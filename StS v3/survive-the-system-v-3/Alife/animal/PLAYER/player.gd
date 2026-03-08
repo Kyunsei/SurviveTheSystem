@@ -257,8 +257,8 @@ func respawn():
 	gravity = 60
 	fall_gravity = 90
 	low_jump_gravity = 240
-	max_speed = 500
-	sprint_speed = 1000
+	max_speed = 10
+	sprint_speed = 20
 	base_jump = 25
 	inventory_capacity_upgrade = 1
 	$CollisionShape3D.disabled = false
