@@ -2,8 +2,8 @@ extends CharacterBody3D
 
 
 
-@export var max_speed = 500
-@export var sprint_speed = max_speed*2
+@export var max_speed = 10
+@export var sprint_speed = 20
 @export var gravity = 60
 @export var base_jump = 25
 @export var fall_gravity := 90
@@ -147,12 +147,13 @@ func _ready() -> void:
 		
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :
-		velocity.x = direction.x *speed *delta
-		velocity.z = direction.z *speed *delta
+		velocity.x = direction.x *speed 
+		velocity.z = direction.z *speed 
 		data_movement_to_server.rpc_id(1, global_position)
 
 		if direction != Vector3(0,0,0):
 			$MeshInstance3D.rotation.y = $camera_anchor.rotation.y 
+			$Action_Area3D.rotation.y = $camera_anchor.rotation.y 
 			pass
 			#var target_yaw := atan2(direction.x, -direction.z)
 		move_and_slide()
@@ -164,7 +165,7 @@ func data_movement_to_server(pos):
 func giving_position_to_others(pos: Vector3) -> void:
 	if not is_multiplayer_authority():
 		# Smoothly interpolate to avoid vibration
-		global_position = global_position.lerp(pos, 0.1)
+		global_position = global_position.lerp(pos, 0.3)
 		#global_position = pos
 
 
