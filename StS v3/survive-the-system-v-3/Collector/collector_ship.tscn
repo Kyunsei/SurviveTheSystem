@@ -4,7 +4,6 @@
 [ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="1_ue0ys"]
 [ext_resource type="PackedScene" uid="uid://b2pd3suhffqo" path="res://Collector/barrier.tscn" id="2_okm20"]
 [ext_resource type="PackedScene" uid="uid://cup4ldkq72aad" path="res://World/spaceship/activation_button.tscn" id="4_jyloi"]
-[ext_resource type="Script" uid="uid://duk2kb2hdvpwr" path="res://Collector/multiplayer_synchronizer.gd" id="5_m4dhe"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jyloi"]
 albedo_texture = ExtResource("1_ue0ys")
@@ -39,12 +38,9 @@ size = Vector3(1, 2, 1)
 size = Vector3(0.2, 0.8, 0.8)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_tf2qa"]
-properties/0/path = NodePath("MultiplayerSynchronizer:sync_bstate_array")
+properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:position")
-properties/1/spawn = true
-properties/1/replication_mode = 1
 
 [node name="Collector_ship" type="AnimatableBody3D" unique_id=1273828613]
 script = ExtResource("1_okm20")
@@ -133,6 +129,5 @@ shape = SubResource("BoxShape3D_sl04x")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1231671309]
 replication_config = SubResource("SceneReplicationConfig_tf2qa")
-script = ExtResource("5_m4dhe")
 
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="MultiplayerSynchronizer" method="_on_synchronized"]
