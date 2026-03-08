@@ -152,8 +152,8 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Danger_type"] = []#, enum_speciesID.SHEEP]
 			new_life["Max_age"] = INF
 			new_life["Decomposition_speed"] = 0.0
-			new_life["current_health"] = 40.0
-			new_life["Max_health"] =40.0
+			new_life["current_health"] = 400.0
+			new_life["Max_health"] =400.0
 			new_life["current_energy"] = 200
 			new_life["Max_energy"] = 300
 			new_life["Biomass"] = 500.0
