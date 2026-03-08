@@ -73,6 +73,7 @@ func update(delta):
 	for b in beast_instance_dict.values():
 		#vision(b)
 		if b.lifedata["Alive"] == 1:
+			#print(b.lifedata["current_energy"])
 			vision(b)
 			choose_action(b)
 			Homeostasis(b.lifedata,delta)
@@ -228,7 +229,7 @@ func check_collision(a, array):
 	for b in array:
 		if b is Dictionary:
 
-			if b["Species"] == Alifedata.enum_speciesID.SHEEP :#or b["Species"] == Alifedata.enum_speciesID.CAT:
+			if b["Species"] == a.lifedata["Species"]: #Alifedata.enum_speciesID.SHEEP :#or b["Species"] == Alifedata.enum_speciesID.CAT:
 				if b == a.lifedata:
 					continue
 				delta = b["position"] - a.lifedata["position"]
@@ -259,6 +260,9 @@ func find_closest(from_position: Vector3, array: Array,sp):
 	for element in array:
 		if element is Dictionary:
 			if element["Species"] == sp:
+				'if sp == Alifedata.enum_speciesID.SHEEP:
+					if element["current_life_state"] == 0 :
+						continue'
 				var distance = from_position.distance_to(element["position"])
 				if distance < closest_distance:
 					closest_distance = distance
@@ -415,13 +419,19 @@ func Cut(grass):
 		_pending_kills.append(grass)'
 
 func Homeostasis(grass, delta):
+	
+	grass["current_age"] += 1
+	if grass["current_age"] >= grass["Max_age"]:
+		grass["Alive"] = 0
+		return
+	
 	if grass["current_health"] < 0:
 		grass["Alive"] = 0
 		#grass["last_step"] = int(grass["Biomass"] / 10)
 		#_pending_update.append(grass)
 		return
 	grass["current_energy"] -= grass["Homeostasis_cost"]  * GlobalSimulationParameter.simulation_speed * delta
-	Regenerate_Health(grass,delta)
+	#Regenerate_Health(grass,delta)
 	if grass["current_energy"] < 0:
 		grass["current_health"] -= grass["Homeostasis_cost"] * GlobalSimulationParameter.simulation_speed * delta
 

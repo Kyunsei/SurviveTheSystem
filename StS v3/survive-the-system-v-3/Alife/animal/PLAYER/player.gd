@@ -219,9 +219,7 @@ func change_bin():
 @rpc("any_peer","call_local")
 func Die(id):
 	if lifedata["Alive"] == 1:
-		print("detah")
 		lifedata["Alive"] = 0
-		#$MeshInstance3D.get_active_material(0).albedo_color =Color()
 		death.rpc_id(id,id)
 	
 

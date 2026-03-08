@@ -1,7 +1,7 @@
 extends State
 class_name growthsheep
 
-var egg_factor_time = 2.
+var egg_factor_time = 20.
 
 var sprite_array = [
 preload("res://Alife/animal/Herbivor/sheep1.png"),
@@ -10,14 +10,16 @@ preload("res://Alife/animal/Herbivor/sheep3.png"),
 preload("res://Alife/animal/Herbivor/SHEEP.png")]
 
 
-
+var Debug : String
 
 var size_array = [0.5,0.5,1.5,2]
 
 func evaluate():
-	if player.lifedata["Species"] == Alifedata.enum_speciesID.SPIDERCRAB:
-		return 0
+
 	if player.lifedata["current_life_state"] == 0:
+		Debug = "EGG"
+		get_parent().get_parent().get_node("debugLabel").text = Debug
+
 		return 5.0
 
 	if player.lifedata["current_life_state"] < sprite_array.size()-1:

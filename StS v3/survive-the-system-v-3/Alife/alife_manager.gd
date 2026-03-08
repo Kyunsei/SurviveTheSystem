@@ -72,12 +72,12 @@ func init():
 					$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.GRASS)
 				else:
 					$Grass_Manager2.Spawn_New_Grass(pos,0)
-			for i in range(3):
+			for i in range(2):
 				var pos = get_random_worldpos()
 				$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
 						
 			$Grass_Manager.ask_for_spawn_new_grass(Vector3(0,0,0),Alifedata.enum_speciesID.GRASS)
-			#$beast_manager.spawn_new_beast(Vector3(15,0,15),Alifedata.enum_speciesID.SPIDERCRAB)
+			$beast_manager.spawn_new_beast(Vector3(15,0,15),Alifedata.enum_speciesID.SPIDERCRAB)
 			#$beast_manager.spawn_new_beast(Vector3(0,0,0),Alifedata.enum_speciesID.SHEEP)
 
 			#$Grass_Manager.ask_for_spawn_new_grass(Vector3(0,0,15),Alifedata.enum_speciesID.BUSH)
@@ -216,6 +216,9 @@ func remove(grass):
 			$beast_manager.ask_for_Kill(grass)	
 		elif grass["Species"]== Alifedata.enum_speciesID.CAT:
 			print("not yet done for player")	
+		elif grass["Species"]== Alifedata.enum_speciesID.SPIDERCRAB:
+			$beast_manager.ask_for_Kill(grass)	
+
 		else:
 			$Grass_Manager._pending_external_kills.append(grass)
 	else:
@@ -230,6 +233,8 @@ func add(grass, pos):
 		elif grass["Species"]== Alifedata.enum_speciesID.CAT:
 			#spawn_player(0,pos)
 			print("was a bit bugging sadly")
+		elif grass["Species"]== Alifedata.enum_speciesID.SPIDERCRAB:	
+			$beast_manager.Ask_to_spawn(grass)	
 		else:
 			$Grass_Manager.Ask_for_spawn(grass)
 	else:

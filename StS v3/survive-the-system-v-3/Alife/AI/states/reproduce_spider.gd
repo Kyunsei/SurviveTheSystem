@@ -1,16 +1,13 @@
 extends State
-class_name reproduce_state
+class_name reproduce_state_spider
 
 var target 
 var hasReproduced = false
-var timer = 0
 
 
 func evaluate():
+	return 0.0 
 	var score = 0.0
-	if GlobalSimulationParameter.life_numbers != {}:
-		if GlobalSimulationParameter.life_numbers[Alifedata.enum_speciesID.SHEEP][-1] >1:
-			return 0
 	if !hasReproduced:
 		if player.lifedata["current_life_state"] == 3:
 			if  player.lifedata["current_energy"] >= 5000:
@@ -26,10 +23,10 @@ func enter():
 		newpos.x = clamp(newpos.x, -player.World.World_Size.x / 2 + 1, player.World.World_Size.x / 2 - 1)
 		newpos.z = clamp(newpos.z, -player.World.World_Size.z / 2 + 1, player.World.World_Size.z / 2 - 1)
 		player.get_parent().spawn_new_beast.rpc_id(1, newpos, player.lifedata["Species"])
-		#hasReproduced = true
-
-	player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"] - 4000,0 ,player.lifedata["Max_energy"] )
+		hasReproduced = true
+	player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"] - 6000,0 ,player.lifedata["Max_energy"] )
 	#player.lifedata["Alive"] =0
+	player.lifedata["current_life_state"] += 1
 
 func exit():
 	pass

@@ -68,10 +68,11 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Reproduction_cost"] = 4
 			new_life["Reproduction_spread"] = 5
 			new_life["Max_energy"] = 10
-			new_life["Max_age"] = 100.0
+			new_life["Max_age"] = 10000.0
 			new_life["Sprites"] = "res://Alife/Plant/Grass/grass.png"
 			new_life["current_health"] = 4.0
 			new_life["Max_health"] =4.0
+			new_life["current_age"] =0
 
 			#light_index = []
 		enum_speciesID.TREE:
@@ -81,7 +82,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Reproduction_cost"] = 200
 			new_life["Reproduction_spread"] = 20
 			new_life["Max_energy"] = 500
-			new_life["Max_age"] = 100.0
+			new_life["Max_age"] = 1000.0
 			new_life["Sprites"] = "res://Alife/Plant/tree/tree.png"
 
 		enum_speciesID.BUSH:
@@ -95,24 +96,24 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Sprites"] = "res://assets/Art from STS2/berry_1.png"
 
 		enum_speciesID.SHEEP:
-			new_life["Homeostasis_cost"] = 2
+			new_life["Homeostasis_cost"] = 0.8
 			#new_life["Photosynthesis_absorbtion"] = 0.
 			#new_life["Photosynthesis_range"] = 2
 			new_life["Reproduction_cost"] = 100
 			new_life["Reproduction_spread"] = 2
 			new_life["current_speed"] = 0
 
-			new_life["Max_speed"] = 0
+			new_life["Max_speed"] = 10
 			new_life["Vision_range"] = 3
 			new_life["Food_type"] = [enum_speciesID.GRASS]
 			new_life["Love_type"] = [enum_speciesID.SHEEP]
 			new_life["Danger_type"] = [enum_speciesID.CAT, enum_speciesID.SPIDERCRAB]
-			new_life["Max_age"] = 100.0
+			new_life["Max_age"] = 5000.0
 			
-			new_life["current_energy"] = 2000
+			new_life["current_energy"] = 0
 			new_life["Max_energy"] = 10000
-			new_life["current_health"] = 500
-			new_life["Max_health"] = 500
+			new_life["current_health"] = 20
+			new_life["Max_health"] = 20
 
 
 			new_life["Sprites"] = "res://Alife/animal/Herbivor/sheep3.png"
@@ -137,21 +138,25 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["current_health"] = cat_max_health
 
 			new_life["Sprites"] = "res://assets/Art from STS2/player_cat.png"
+			new_life["Biomass"] = 50.0
 
 		enum_speciesID.SPIDERCRAB:
-			new_life["Homeostasis_cost"] = 0.
+			new_life["Homeostasis_cost"] = .05
 			new_life["Reproduction_cost"] = 100
 			new_life["Reproduction_spread"] = 2
-			new_life["current_speed"] = 0
-			new_life["Max_speed"] = 10
-			new_life["Vision_range"] = 4
+			new_life["current_speed"] =10
+			new_life["Max_speed"] = 22
+			new_life["Vision_range"] = 50
 			new_life["Food_type"] = [enum_speciesID.SHEEP, enum_speciesID.CAT]
 			new_life["Love_type"] = []
-			new_life["Danger_type"] = [enum_speciesID.SPIDERCRAB]#, enum_speciesID.SHEEP]
-			new_life["Max_age"] = 100.0
-			
-			new_life["current_energy"] = 20
-			new_life["Max_energy"] = 100
+			new_life["Danger_type"] = []#, enum_speciesID.SHEEP]
+			new_life["Max_age"] = INF
+			new_life["Decomposition_speed"] = 0.0
+			new_life["current_health"] = 400.0
+			new_life["Max_health"] =400.0
+			new_life["current_energy"] = 200
+			new_life["Max_energy"] = 300
+			new_life["Biomass"] = 500.0
 
 			new_life["Sprites"] = "res://Alife/animal/Spider/Spidercrab.png"
 	return new_life

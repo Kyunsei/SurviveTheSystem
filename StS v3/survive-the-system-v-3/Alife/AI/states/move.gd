@@ -58,7 +58,11 @@ func evaluate():
 	# normalize final direction
 	direction = final_dir.normalized()
 	direction.y = 0
-
+	
+	if player.lifedata["current_life_state"] == 0:
+		score = 0.0
+		debug = "EGG State"
+		
 	get_parent().get_parent().get_node("debugLabel").text = debug
 	return score
 	
@@ -110,7 +114,6 @@ func get_wander_direction():
 
 	#score = dist_score * energy_scorew
 	direction.y = 0
-	#print(target)
 	return score'
 
 
