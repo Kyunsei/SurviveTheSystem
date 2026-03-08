@@ -2,8 +2,8 @@ extends CharacterBody3D
 
 
 
-@export var max_speed = 10
-@export var sprint_speed = 20
+@export var max_speed = 9
+@export var sprint_speed = 18
 @export var gravity = 60
 @export var base_jump = 25
 @export var fall_gravity := 90
@@ -260,8 +260,8 @@ func respawn():
 	gravity = 60
 	fall_gravity = 90
 	low_jump_gravity = 240
-	max_speed = 10
-	sprint_speed = 20
+	max_speed = 9
+	sprint_speed = 18
 	base_jump = 25
 	inventory_capacity_upgrade = 1
 	$CollisionShape3D.disabled = false
