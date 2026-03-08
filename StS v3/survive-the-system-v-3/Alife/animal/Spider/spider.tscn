@@ -3,11 +3,10 @@
 [ext_resource type="Script" uid="uid://dndkftgkcc1je" path="res://Alife/animal/Spider/spider.gd" id="1_2eadm"]
 [ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/animal/Spider/Spidercrab.png" id="2_2eadm"]
 [ext_resource type="Script" uid="uid://dovwjxpu3l7pm" path="res://Alife/AI/StateManager.gd" id="2_3oiml"]
-[ext_resource type="Script" uid="uid://b1ed7n1e5j12v" path="res://Alife/AI/states/move.gd" id="3_k5g61"]
-[ext_resource type="Script" uid="uid://blwiuyhycfj5j" path="res://Alife/AI/states/dying.gd" id="4_b5rki"]
-[ext_resource type="Script" uid="uid://befcqr7hv7m5r" path="res://Alife/AI/states/eat.gd" id="5_y0ktg"]
-[ext_resource type="Script" uid="uid://d1vorrs2hlill" path="res://Alife/AI/states/reproduce.gd" id="6_y6i5n"]
-[ext_resource type="Script" path="res://Alife/animal/Herbivor/Growth_sheep.gd" id="7_t80t8"]
+[ext_resource type="Script" uid="uid://b3yvys18hn26m" path="res://Alife/AI/states/dying_spider.gd" id="4_ef62s"]
+[ext_resource type="Script" uid="uid://c2np7inye38m5" path="res://Alife/AI/states/eat_spider.gd" id="5_2eadm"]
+[ext_resource type="Script" uid="uid://bejd1j5mjgnru" path="res://Alife/AI/states/reproduce_spider.gd" id="6_uf5tp"]
+[ext_resource type="Script" uid="uid://cvo0kj8obxo58" path="res://Alife/AI/states/move_spider.gd" id="7_py03d"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_voeaq"]
 transparency = 1
@@ -37,6 +36,7 @@ properties/1/replication_mode = 1
 script = ExtResource("1_2eadm")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=373920221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 mesh = SubResource("QuadMesh_dndam")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D" unique_id=2138353345]
@@ -50,24 +50,21 @@ replication_config = SubResource("SceneReplicationConfig_61knv")
 script = ExtResource("2_3oiml")
 metadata/_custom_type_script = "uid://dovwjxpu3l7pm"
 
-[node name="move_state" type="Node" parent="StateManager" unique_id=1167051338]
-script = ExtResource("3_k5g61")
-metadata/_custom_type_script = "uid://b1ed7n1e5j12v"
+[node name="dying_state_spider" type="Node" parent="StateManager" unique_id=88058252]
+script = ExtResource("4_ef62s")
+metadata/_custom_type_script = "uid://b3yvys18hn26m"
 
-[node name="dying_state" type="Node" parent="StateManager" unique_id=1374954193]
-script = ExtResource("4_b5rki")
-metadata/_custom_type_script = "uid://blwiuyhycfj5j"
+[node name="eat_state_spider" type="Node" parent="StateManager" unique_id=1538853517]
+script = ExtResource("5_2eadm")
+metadata/_custom_type_script = "uid://c2np7inye38m5"
 
-[node name="eat_state" type="Node" parent="StateManager" unique_id=821047457]
-script = ExtResource("5_y0ktg")
-metadata/_custom_type_script = "uid://befcqr7hv7m5r"
+[node name="reproduce_state_spider" type="Node" parent="StateManager" unique_id=1134023604]
+script = ExtResource("6_uf5tp")
+metadata/_custom_type_script = "uid://bejd1j5mjgnru"
 
-[node name="reproduce_state" type="Node" parent="StateManager" unique_id=2114404148]
-script = ExtResource("6_y6i5n")
-metadata/_custom_type_script = "uid://d1vorrs2hlill"
-
-[node name="growthsheep" type="Node" parent="StateManager" unique_id=770097425]
-script = ExtResource("7_t80t8")
+[node name="move_state_spider" type="Node" parent="StateManager" unique_id=122070552]
+script = ExtResource("7_py03d")
+metadata/_custom_type_script = "uid://cvo0kj8obxo58"
 
 [node name="debugLabel" type="Label3D" parent="." unique_id=2100566420]
 unique_name_in_owner = true
