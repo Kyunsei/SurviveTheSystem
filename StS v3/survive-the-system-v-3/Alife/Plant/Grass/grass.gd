@@ -12,7 +12,7 @@ func Init():
 	Max_health  =[4,4]
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.3,0.3]
-	Decomposition_speed =[1.,1.]
+	Decomposition_speed =[2.,2.]
 
 	# --- Plant Related ----
 	Photosynthesis_absorption =[1.,1.]

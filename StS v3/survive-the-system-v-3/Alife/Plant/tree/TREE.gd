@@ -8,26 +8,27 @@ func Init():
 	display_name = "TREE"
 
 	# --- Core metabolism ---
-	Max_energy =[2200]
-	Max_health  =[4]
+	Max_energy =[22000]
+	Max_health  =[5,10,20,30,40]
 	Max_age  = [100]
-	Homeostasis_cost  =[0.3]
+	Homeostasis_cost  =[0.]
 	Decomposition_speed =[1.]
 
 	# --- Plant Related ----
 	Photosynthesis_absorption =[1.]
-	Photosynthesis_range =[0,1.,2.,3.]
+	Photosynthesis_range =[3]
 
 
 	# --- Life Cycle ---
-	Reproduction_cost  =[500]
-	Reproduction_spread  =[10]
+	Reproduction_cost  =[5000]
+	Reproduction_spread  =[100]
 	Reproduction_number =[1]
-	Biomass =[10] #MAYBE NO LONGER IN USE
+	Biomass =[10,20,30,40,50,60] #MAYBE NO LONGER IN USE
 
 #--- RENDERING ----
 
 #????
+
 
 
 #INVENTORY
@@ -40,13 +41,13 @@ func Init():
 
 func Growth(manager, i, delta):
 	if manager.current_life_state_array[i] < 6:
-		if manager.current_energy_array[i] > 500:
+		if manager.current_energy_array[i] > 2000:
 			manager.current_life_state_array[i] += 1
-			manager.current_energy_array[i] -=  500
-			manager.current_biomass_array[i] += 5
+			manager.current_energy_array[i] -=  1000
+			manager.current_biomass_array[i] += 10
+			#manager.put_in_light_bin(i)
 			return true
-			
-			
+				
 					
 	'# Simple linear growth
 	var s = manager.Species_array[i]
