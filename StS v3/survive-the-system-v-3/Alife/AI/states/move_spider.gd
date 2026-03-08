@@ -23,10 +23,13 @@ func evaluate():
 				var offset = food["position"] - player.position
 				var dist = offset.length()
 				var food_dir = offset.normalized()
-				player.lifedata["current_speed"] = 5
+				player.lifedata["current_speed"] = 22
 				direction = food_dir 
 				target = food
-
+				if GlobalSimulationParameter.life_numbers != {}:
+					if target["Species"] == Alifedata.enum_speciesID.SHEEP:
+						if GlobalSimulationParameter.life_numbers[Alifedata.enum_speciesID.SHEEP][-1] < 2:
+							return 0
 	get_parent().get_parent().get_node("debugLabel").text = debug
 
 	return score

@@ -233,7 +233,7 @@ func add(grass, pos):
 		elif grass["Species"]== Alifedata.enum_speciesID.CAT:
 			#spawn_player(0,pos)
 			print("was a bit bugging sadly")
-		if grass["Species"]== Alifedata.enum_speciesID.SPIDERCRAB:	
+		elif grass["Species"]== Alifedata.enum_speciesID.SPIDERCRAB:	
 			$beast_manager.Ask_to_spawn(grass)	
 		else:
 			$Grass_Manager.Ask_for_spawn(grass)

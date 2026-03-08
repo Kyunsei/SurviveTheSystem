@@ -15,6 +15,10 @@ func evaluate():
 		if f:
 			if f is Dictionary:
 				distance = player.position.distance_to(f["position"])
+				if GlobalSimulationParameter.life_numbers != {}:
+					if f["Species"] == Alifedata.enum_speciesID.SHEEP:
+						if GlobalSimulationParameter.life_numbers[Alifedata.enum_speciesID.SHEEP][-1] < 2:
+							return 0
 				
 			else:
 				var t = player.get_parent().get_parent().get_node("Grass_Manager2").position_array[f]

@@ -80,7 +80,7 @@ func update(delta):
 		else:
 			Decompose(b.lifedata,delta)
 		
-		#Collision(b)
+		Collision(b)
 		
 	Spawn_and_Kill()
 	
