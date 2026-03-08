@@ -16,7 +16,7 @@ func interact():
 		currently_active = true
 		print("you pushed the button")
 		$"../ship/moving_wall1".position.y -= 3
-		$"../ship/moving_ground1".position.z -= 10
+		$"../ship/moving_ground1".position.z += 10
 		await get_tree().create_timer(2.0).timeout
 		$"../ship/moving_wall1".position = moving_wall_initial_position
 		$"../ship/moving_ground1".position = moving_ground_initial_position
