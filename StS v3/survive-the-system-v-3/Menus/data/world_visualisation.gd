@@ -61,27 +61,30 @@ func update():
 		i+= 1
 
 	var c = 0
+	var manager = alifemanager.get_node("Grass_Manager2")
 	for posit in alifemanager.get_node("Grass_Manager2").position_array:
 		var t : Transform2D
 		var pos = position_conversion(posit)
 		if alifemanager.get_node("Grass_Manager2").Active[c] == 0:
 			pos.y = -10000
 			
-			#if g["Species"] == Alifedata.enum_speciesID.GRASS:
-		t = Transform2D(
-				Vector2(0.5, 0),
-				Vector2(0, 0.5),
-				pos
-			)
-			#else:
-				#t = Transform2D(0, position_conversion(g["position"]))		
+		if manager.Species_array[c] == 0:
+			t = Transform2D(
+					Vector2(0.5, 0),
+					Vector2(0, 0.5),
+					pos
+				)
+		else:
+			t = Transform2D(0, pos)	
 		mm.set_instance_transform_2d(i, t)
+		mm.set_instance_color(i, color_list[manager.Species_array[c]]) 
+
+	
 			
 	#var transforms = mm.get_instance_transform_array()
 	#transforms[i] = t
 	#mm.set_instance_transform_array(transforms)
 			
-		mm.set_instance_color(i, color_list[0]) 
 		i+= 1
 		c+= 1
 	
@@ -97,6 +100,7 @@ func update():
 func position_conversion(pos):
 	var newpos
 	var factor = Vector2(World.World_Size.x*World.bin_size.x,World.World_Size.z*World.bin_size.z) / panel_size/2
+	#print(factor)
 	newpos = Vector2(pos.x,pos.z) *  factor  + panel_size/2
 
 	return newpos

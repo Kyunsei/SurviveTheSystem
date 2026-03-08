@@ -20,6 +20,7 @@ mesh = ExtResource("5_lqx4p")
 
 [sub_resource type="MultiMesh" id="MultiMesh_wac1v"]
 transform_format = 1
+use_colors = true
 mesh = ExtResource("6_mcq2d")
 
 [sub_resource type="MultiMesh" id="MultiMesh_mcq2d"]

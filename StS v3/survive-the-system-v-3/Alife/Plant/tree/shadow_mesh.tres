@@ -1,5 +1,9 @@
 [gd_resource type="SphereMesh" format=3 uid="uid://c0f8vwlqbesnh"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fq1is"]
+vertex_color_use_as_albedo = true
+
 [resource]
+material = SubResource("StandardMaterial3D_fq1is")
 radius = 4.0
 height = 3.0

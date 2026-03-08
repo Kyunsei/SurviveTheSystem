@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="TREE" format=3 uid="uid://dkewhxwtd0xc8"]
+
+[ext_resource type="Script" uid="uid://dr3a0hgnctbxq" path="res://Alife/Plant/tree/TREE.gd" id="1_14fyh"]
+
+[resource]
+script = ExtResource("1_14fyh")
+metadata/_custom_type_script = "uid://dr3a0hgnctbxq"
