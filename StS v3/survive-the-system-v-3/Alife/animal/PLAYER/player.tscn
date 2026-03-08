@@ -176,7 +176,6 @@ size = Vector3(1.5, 1.2, 1.5)
 
 [node name="Player" type="CharacterBody3D" unique_id=1092654110 groups=["player"]]
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("1_qrp1o")
 
 [node name="Player_HUD" parent="." unique_id=1065555217 instance=ExtResource("2_2y45n")]
