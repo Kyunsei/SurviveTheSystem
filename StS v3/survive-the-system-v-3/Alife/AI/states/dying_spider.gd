@@ -35,6 +35,9 @@ func send_new_sprite():
 
 
 func enter():
+	var debug = "Dead"
+	get_parent().get_parent().get_node("debugLabel").text = debug
+
 	send_new_sprite.rpc()
 
 

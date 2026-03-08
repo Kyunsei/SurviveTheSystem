@@ -114,7 +114,6 @@ func get_wander_direction():
 
 	#score = dist_score * energy_scorew
 	direction.y = 0
-	#print(target)
 	return score'
 
 

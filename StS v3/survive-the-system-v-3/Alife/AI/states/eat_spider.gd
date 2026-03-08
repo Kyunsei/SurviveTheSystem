@@ -7,9 +7,7 @@ var timer = 0.5  * GlobalSimulationParameter.simulation_speed
 
 
 func evaluate():
-	#print( player.lifedata["current_energy"])
 	target = null
-	#print(player.lifedata["current_energy"])
 	var score = 1 - player.lifedata["current_energy"]/player.lifedata["Max_energy"]
 	var dist_score = 0
 	var distance : float
@@ -22,8 +20,7 @@ func evaluate():
 				var t = player.get_parent().get_parent().get_node("Grass_Manager2").position_array[f]
 				distance = player.position.distance_to(t)
 			
-			#print(distance)
-			#print(distance)
+
 			if distance < 2:
 				target = f
 				dist_score = 1.0 #clamp(distance / maxDist, 0., 1)
@@ -48,7 +45,6 @@ func update(delta):
 		if target:
 			if target is Dictionary:
 				player.lifedata["current_energy"] += target["Biomass"] 
-				print(target["current_energy"])
 				#player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"]  ,0, player.lifedata["Max_energy"] )
 				
 				if target["Species"] == Alifedata.enum_speciesID.SHEEP:

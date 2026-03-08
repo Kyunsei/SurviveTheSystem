@@ -216,6 +216,9 @@ func remove(grass):
 			$beast_manager.ask_for_Kill(grass)	
 		elif grass["Species"]== Alifedata.enum_speciesID.CAT:
 			print("not yet done for player")	
+		elif grass["Species"]== Alifedata.enum_speciesID.SPIDERCRAB:
+			$beast_manager.ask_for_Kill(grass)	
+
 		else:
 			$Grass_Manager._pending_external_kills.append(grass)
 	else:
@@ -230,6 +233,8 @@ func add(grass, pos):
 		elif grass["Species"]== Alifedata.enum_speciesID.CAT:
 			#spawn_player(0,pos)
 			print("was a bit bugging sadly")
+		if grass["Species"]== Alifedata.enum_speciesID.SPIDERCRAB:	
+			$beast_manager.Ask_to_spawn(grass)	
 		else:
 			$Grass_Manager.Ask_for_spawn(grass)
 	else:

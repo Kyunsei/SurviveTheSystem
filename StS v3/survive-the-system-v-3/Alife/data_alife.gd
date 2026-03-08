@@ -112,8 +112,8 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			
 			new_life["current_energy"] = 0
 			new_life["Max_energy"] = 10000
-			new_life["current_health"] = 500
-			new_life["Max_health"] = 500
+			new_life["current_health"] = 20
+			new_life["Max_health"] = 20
 
 
 			new_life["Sprites"] = "res://Alife/animal/Herbivor/sheep3.png"
@@ -141,7 +141,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Biomass"] = 50.0
 
 		enum_speciesID.SPIDERCRAB:
-			new_life["Homeostasis_cost"] = .045
+			new_life["Homeostasis_cost"] = .003
 			new_life["Reproduction_cost"] = 100
 			new_life["Reproduction_spread"] = 2
 			new_life["current_speed"] = 0
@@ -152,7 +152,8 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Danger_type"] = []#, enum_speciesID.SHEEP]
 			new_life["Max_age"] = INF
 			new_life["Decomposition_speed"] = 0.0
-
+			new_life["current_health"] = 40.0
+			new_life["Max_health"] =40.0
 			new_life["current_energy"] = 200
 			new_life["Max_energy"] = 300
 			new_life["Biomass"] = 500.0

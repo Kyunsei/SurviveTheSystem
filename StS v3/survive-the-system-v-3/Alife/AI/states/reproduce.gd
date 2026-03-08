@@ -27,7 +27,6 @@ func enter():
 
 	player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"] - 6000,0 ,player.lifedata["Max_energy"] )
 	#player.lifedata["Alive"] =0
-	player.lifedata["current_life_state"] += 1
 
 func exit():
 	pass

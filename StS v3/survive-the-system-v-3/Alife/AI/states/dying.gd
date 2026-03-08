@@ -38,12 +38,10 @@ func send_new_sprite(state):
 
 func enter():
 	send_new_sprite.rpc(player.lifedata["current_life_state"])
-	print("dead")
 
 	#changecolor.rpc()
 	
 
-	#print(player.get_parent().name)
 	#player.get_parent().Kill_Beast.rpc_id(1, player)
 
 
