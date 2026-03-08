@@ -164,8 +164,8 @@ func data_movement_to_server(pos):
 func giving_position_to_others(pos: Vector3) -> void:
 	if not is_multiplayer_authority():
 		# Smoothly interpolate to avoid vibration
-		#global_position = global_position.lerp(pos, 0.3)
-		global_position = pos
+		global_position = global_position.lerp(pos, 0.1)
+		#global_position = pos
 
 
 func _process(delta: float) -> void:
