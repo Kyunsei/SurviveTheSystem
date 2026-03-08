@@ -70,6 +70,10 @@ func on_connection(id):
 
 func on_disconnection(id):
 	$Label.text = $Label.text + "\n" + str(id) + " disconnected to server"
+	if id == null:
+		pass
+	else:
+		get_parent().get_parent().get_node("Alife manager").get_node(str(id)).queue_free()
 	
 
 

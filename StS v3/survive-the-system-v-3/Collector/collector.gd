@@ -96,7 +96,7 @@ func start_escape_phase(player):
 			remaining_time = safe_timer
 			for p in player.get_parent().player_array:
 				p.force_escape_time.rpc_id(int(p.name), safe_timer)
-	collecting = true
+		collecting = true
 	update_label()
 	start_go_button()
 	check_escape_results(player)

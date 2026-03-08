@@ -3,6 +3,7 @@ extends RigidBody3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	rotation_degrees.y = randf_range(0.0, 360.0)
 	linear_velocity = Vector3.ZERO
 		#$CollisionShape3D.disabled = true
 		#gravity_scale = 0
