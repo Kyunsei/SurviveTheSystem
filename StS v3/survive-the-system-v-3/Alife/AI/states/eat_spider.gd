@@ -52,7 +52,7 @@ func update(delta):
 				#player.lifedata["current_energy"]  = clamp(player.lifedata["current_energy"]  ,0, player.lifedata["Max_energy"] )
 				
 				if target["Species"] == Alifedata.enum_speciesID.SHEEP:
-					#target["current_health"] = -100
+					target["current_health"] = -100
 					pass
 		
 				
