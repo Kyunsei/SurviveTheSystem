@@ -6,11 +6,11 @@
 [ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="3_qscrw"]
 [ext_resource type="PackedScene" uid="uid://bi2piyyfepqdv" path="res://Upgrades/upgrades.tscn" id="4_ef02v"]
 [ext_resource type="PackedScene" uid="uid://cup4ldkq72aad" path="res://World/spaceship/activation_button.tscn" id="5_ftgam"]
-[ext_resource type="Script" uid="uid://b4o6f6gbseg6h" path="res://World/spaceship/go_button.gd" id="6_oclds"]
-[ext_resource type="Script" uid="uid://84wgp7mvc54w" path="res://World/spaceship/area_3d_go_button.gd" id="7_8txik"]
+[ext_resource type="Script" path="res://World/spaceship/go_button.gd" id="6_oclds"]
+[ext_resource type="Script" path="res://World/spaceship/area_3d_go_button.gd" id="7_8txik"]
 [ext_resource type="PackedScene" uid="uid://bw0x55yvvmaih" path="res://Collector/collector_ship.tscn" id="8_4e1qf"]
 [ext_resource type="PackedScene" uid="uid://bcmrqlah5v1p7" path="res://World/spaceship/skin_area_3d.tscn" id="9_usqpj"]
-[ext_resource type="PackedScene" uid="uid://c2k148ms3kq4q" path="res://World/spaceship/space_ship_kyunsei_from_dabols.tscn" id="10_w7yga"]
+[ext_resource type="PackedScene" path="res://World/spaceship/space_ship_kyunsei_from_dabols.tscn" id="10_w7yga"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_11em4"]
 transparency = 1
@@ -55,6 +55,9 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath("Collector_ship:position")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_2jlj7"]
+size = Vector2(6, 3.5)
 
 [node name="SPACESHIP" type="Node3D" unique_id=853925969]
 script = ExtResource("1_2gbrl")
@@ -111,5 +114,47 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5, 0
 
 [node name="SPACE SHIP Kyunsei" parent="." unique_id=983687171 instance=ExtResource("10_w7yga")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.1, -9.7)
+
+[node name="Tuto" type="Node3D" parent="." unique_id=201677320]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Tuto" unique_id=764666498]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5.4732122, 3.56884, 0.26365614)
+mesh = SubResource("QuadMesh_2jlj7")
+
+[node name="Label3D" type="Label3D" parent="Tuto" unique_id=1825571317]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5.408509, 3.6152334, -1.0291824)
+modulate = Color(0, 0, 0, 1)
+outline_modulate = Color(1, 1, 1, 1)
+text = "[CONTROL - F2 to display]
+WASD: Move
+Mouse: Camera
+F or left click : USE OBJECT
+Q: unequip
+R: interact /pick things
+E: [not yet here] Pick object
+T: Drop item
+C: Eat
+1,2,3,4: equip item
+Wheel or -,=: zoom_in_out
+F11: full screen
+ESC: free mouse
+
+
+
+
+
+"
+
+[node name="Label3D2" type="Label3D" parent="Tuto" unique_id=617138371]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5.408509, 3.6690211, 1.4035363)
+modulate = Color(0, 0, 0, 1)
+outline_modulate = Color(1, 1, 1, 1)
+text = "[CONTROL -For Debug only]
+Arrow: camera offset
+M: spawn a sheep
+F1: show bin
+F3: Time wrap
+F5 : Refresh Affichage
+"
 
 [connection signal="area_entered" from="go_button/Area3D_go_button" to="go_button" method="_on_area_3d_area_entered"]

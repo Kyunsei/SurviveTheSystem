@@ -45,7 +45,9 @@ func _physics_process(delta: float) -> void:
 					tuto_HUD.show()
 			if Input.is_action_just_pressed("F3"):
 				change_server_simulation_speed.rpc_id(1,300)
-
+				
+			if Input.is_action_just_pressed("F5"):
+				player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer.rpc_id(1,multiplayer.get_unique_id())
 
 func _process(delta: float) -> void:
 	if multiplayer.is_server():

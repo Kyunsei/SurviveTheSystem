@@ -27,9 +27,10 @@ var Alive_array : PackedInt32Array
 var current_biomass_array : PackedFloat32Array
 var Species_array : PackedInt32Array
 
+
 #SPECIES SPECIFICIC
 @export var species_list : Array[DNA]
-var species_id_array : Array =[]
+#var species_id_array : Array =[]
 var species_max_energy : Array = [] 
 var species_max_health : Array = [] 
 var species_max_age : Array = [] 
@@ -56,9 +57,9 @@ var light_index_array : Array = []
 #FOR MANAGER
 var Active : PackedInt32Array
 #var _pending_spawns_species: Array = []  #REPLACE BY 2D array
-var _pending_spawns_positions: Array = [] 
-var _pending_kills: Array = [] 
-var _pending_update: Array = [] 
+var _pending_spawns_positions: PackedVector3Array
+var _pending_kills: PackedInt32Array
+var _pending_update: PackedInt32Array
 
 
 var World
@@ -119,12 +120,10 @@ func _process(delta):
 
 	# Check if any species has pending work
 	var has_pending = false
-	for s in range(_pending_spawns_positions.size()):
-		if _pending_spawns_positions[s].size() > 0 \
-		or _pending_kills[s].size() > 0 \
-		or _pending_update[s].size() > 0:
-			has_pending = true
-			break
+	if _pending_spawns_positions.size() > 0 \
+	or _pending_kills.size() > 0 \
+	or _pending_update.size() > 0:
+		has_pending = true
 
 	if !has_pending:
 		return
@@ -157,25 +156,19 @@ func update(delta):
 		print("grass manger not initialised")
 		return
 	if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
-		var oldv = 0
+		#var oldv = 0
 		var ss = Time.get_ticks_msec() 
 		if GlobalSimulationParameter.simulation_speed > 0:
 			if World:
 				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
-			oldv = current_energy_array[0]
 			LightSystem_to_plant(delta)
 			HomeostasisSystem(delta)			
 			GrowthSystem(delta)
 			ReproductionSystem(delta)
-
 			GerminationSystem(delta)
 			DecomposeSystem(delta)
 		
 
-			
-
-		#call_deferred("Spawn_and_Kill")
-		#Spawn_and_Kill()
 		FPS = Time.get_ticks_msec() - ss
 	
 	
@@ -243,7 +236,6 @@ func GerminationSystem(delta):
 
 
 func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
-
 	for bi in range(World.light_bin.size()):
 		var light_value = World.light_array[bi]
 		if light_value <= 0:
@@ -288,11 +280,10 @@ func Photosynthesis(i,delta):
 
 func Homeostasis(i,delta):
 	var s = Species_array[i]
-
 	var t = min(current_life_state_array[i],species_photosynthesis_range[s].size()-1)
 	if current_health_array[i] <= 0:
 		Death(i)
-		_pending_update[s].append(i)
+		_pending_update.append(i)
 		return
 		
 	var area = max(1,(species_photosynthesis_range[s][t] * 2) * (species_photosynthesis_range[s][t] * 2 ))
@@ -306,7 +297,7 @@ func Homeostasis(i,delta):
 		current_health_array[i] -= species_homeostasis_cost[s][t]  * GlobalSimulationParameter.simulation_speed * delta
 
 
-	
+
 
 func Regenerate_Health(i,delta):
 	var s = Species_array[i]
@@ -321,7 +312,7 @@ func Regenerate_Health(i,delta):
 func Growth(i,delta):
 	var s = Species_array[i]
 	if species_list[s].Growth(self,i,delta):
-		_pending_update[s].append(i)
+		_pending_update.append(i)
 
 func Death(i):
 	Alive_array[i] = 0
@@ -342,7 +333,7 @@ func Reproduction(i,delta):
 			current_energy_array[i] -= species_reproduction_cost[s][t]	
 
 			if check_if_lighttile_free(newpos):
-				_pending_spawns_positions[s].append(newpos)
+				_pending_spawns_positions.append(newpos)
 				#_pending_spawns_species[s].append(s)
 
 
@@ -374,7 +365,7 @@ func Germination(i):
 				light_available += 1
 	if light_available == area:
 		current_life_state_array[i] = 1
-		_pending_update[s].append(i)
+		_pending_update.append(i)
 		
 	if current_life_state_array[i] == 0:
 			Alive_array[i] = 0	
@@ -390,9 +381,9 @@ func Decompose(i,delta):
 	else:
 		grass["last_step"] = current_step'
 	if current_biomass_array[i] < 0:
-		if _pending_kills[s].has(i):
+		if _pending_kills.has(i):
 			return
-		_pending_kills[s].append(i)
+		_pending_kills.append(i)
 
 
 		
@@ -406,31 +397,28 @@ func Spawn_and_Kill():
 	var killed_ids := PackedInt32Array()
 	var killed_species := PackedInt32Array()   # NEW
 	var updated_ids := PackedInt32Array()	
-	var updated_species := PackedInt32Array()   # NEW
 
 
 	#var unique_kills :PackedInt32Array = remove_duplicate_in_index_array(_pending_external_kills,_pending_kills)
 	#var unique_updates :PackedInt32Array = remove_duplicate_in_index_array(_pending_external_update,_pending_update)
-	for s in _pending_kills.size():
-		for i in _pending_kills[s]:
+	#print(_pending_kills)
+	for i in _pending_kills:
 			Kill_Grass(i)
 			killed_ids.append(i)
-			killed_species.append(s)  
+			killed_species.append(Species_array[i])  
 			
-	for s in range(_pending_spawns_positions.size()):
-		for i in range(_pending_spawns_positions[s].size()):
-			var new_id = Spawn_New_Grass(_pending_spawns_positions[s][i],s)
+	for i in range(_pending_spawns_positions.size()):
+			var new_id = Spawn_New_Grass(_pending_spawns_positions[i],Species_array[i])
 			spawned_ids.append(new_id)
-			spawned_positions.append(_pending_spawns_positions[s][i])
-			spawned_species.append(s)  # NEW
+			spawned_positions.append(_pending_spawns_positions[i])
+			spawned_species.append(Species_array[i])  # NEW
 				
 	'for i in range(_pending_external_spawns_id.size()):
 		Spawn_Grass(_pending_external_spawns_id[i],_pending_external_spawns_positions[i])
 		#Spawn_Grass(i)
 		#Build_New_Grass(i, pos, sp)'
 
-	for s in range(_pending_update.size()):
-		for i in _pending_update[s]:
+	for i in _pending_update:
 			updated_ids.append(i)
 	
 # ---- SEND TO CLIENTS ----
@@ -456,12 +444,10 @@ func Spawn_and_Kill():
 
 		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives,update_species)
 
-	
-	for s in range(_pending_spawns_positions.size()):
-		_pending_spawns_positions[s].clear()
-		#_pending_spawns_species.clear()
-		_pending_kills[s].clear()
-		_pending_update[s].clear()
+	_pending_spawns_positions.clear()
+	#_pending_spawns_species.clear()
+	_pending_kills.clear()
+	_pending_update.clear()
 
 
 	
@@ -519,7 +505,7 @@ func Spawn_New_Grass(newpos:Vector3,s:int):
 		entity_count += 1
 		
 	Build_New_Grass(i, newpos, s)
-	species_id_array[s].append(i)
+	#species_id_array[s].append(i)
 	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
 		get_parent().current_life_count_by_species[Species_array[i]] += 1
 	else:
@@ -529,8 +515,8 @@ func Spawn_New_Grass(newpos:Vector3,s:int):
 func Kill_Grass(i):
 	var s = Species_array[i]
 
-	if species_id_array[s].has(i):
-		species_id_array[s].erase(i)
+	'if species_id_array[s].has(i):
+		species_id_array[s].erase(i)'
 		
 	free_indices.append(i)
 	Active[i] = 0
@@ -584,11 +570,8 @@ func build_species_tables():
 		species_reproduction_spread[id] = s.Reproduction_spread
 		species_reproduction_number[id] = s.Reproduction_number
 		species_biomass[id] = s.Biomass
-		species_id_array.append([])
-		#_pending_spawns_species.append([])
-		_pending_spawns_positions.append([])
-		_pending_kills.append([])
-		_pending_update.append([])
+		#species_id_array.append([])
+
 
 ###CONECT TO WORLD
 
@@ -672,7 +655,7 @@ func remove_from_world(i):
 	remove_from_world_bin(i)
 	light_index_array[i] = []
 	Active[i] = 0
-	_pending_update[Species_array[i]].append(i)
+	_pending_update.append(i)
 	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
 		get_parent().current_life_count_by_species[Species_array[i]] -= 1
 	
@@ -682,7 +665,7 @@ func add_to_world(i,pos):
 	put_in_light_bin(i)
 	light_index_array[i] = get_lightIndex(i)
 	Active[i] = 1
-	_pending_update[Species_array[i]].append(i)
+	_pending_update.append(i)
 	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
 		get_parent().current_life_count_by_species[Species_array[i]] += 1
 	else:
@@ -789,6 +772,7 @@ func _on_peer_connected(id):
 	if multiplayer.is_server():
 		send_full_state_to_peer(id)
 
+@rpc("any_peer","call_remote")
 func send_full_state_to_peer(peer_id):
 
 	var ids := PackedInt32Array()

@@ -8,7 +8,7 @@ func Init():
 	display_name = "TREE"
 
 	# --- Core metabolism ---
-	Max_energy =[22000]
+	Max_energy =[220000]
 	Max_health  =[5,10,20,30,40]
 	Max_age  = [100]
 	Homeostasis_cost  =[0.]
@@ -20,8 +20,8 @@ func Init():
 
 
 	# --- Life Cycle ---
-	Reproduction_cost  =[5000]
-	Reproduction_spread  =[100]
+	Reproduction_cost  =[50000]
+	Reproduction_spread  =[15]
 	Reproduction_number =[1]
 	Biomass =[10,20,30,40,50,60] #MAYBE NO LONGER IN USE
 
@@ -41,10 +41,10 @@ func Init():
 
 func Growth(manager, i, delta):
 	if manager.current_life_state_array[i] < 6:
-		if manager.current_energy_array[i] > 2000:
+		if manager.current_energy_array[i] > 20000:
 			manager.current_life_state_array[i] += 1
-			manager.current_energy_array[i] -=  1000
-			manager.current_biomass_array[i] += 10
+			manager.current_energy_array[i] -=  10000
+			manager.current_biomass_array[i] += 100
 			#manager.put_in_light_bin(i)
 			return true
 				

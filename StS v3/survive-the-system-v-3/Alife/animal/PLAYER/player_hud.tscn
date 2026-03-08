@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://6qrypffsftey" path="res://Menus/char_select.tscn" id="2_ivssi"]
 [ext_resource type="PackedScene" uid="uid://c0wfphs81elqo" path="res://Menus/in_game_menu/dialogue.tscn" id="3_44h10"]
 [ext_resource type="PackedScene" uid="uid://dtgeb6wmjm6a2" path="res://Menus/in_game_menu/Inventory/inventory.tscn" id="4_0cxu6"]
-[ext_resource type="Script" uid="uid://cndfvw6tbims7" path="res://Alife/animal/PLAYER/stats_panel.gd" id="5_7oqrd"]
+[ext_resource type="Script" path="res://Alife/animal/PLAYER/stats_panel.gd" id="5_7oqrd"]
 
 [sub_resource type="FontFile" id="FontFile_7oqrd"]
 subpixel_positioning = 0
@@ -53,31 +53,30 @@ outline_color = Color(0, 0.019607844, 0, 0.49411765)
 script = ExtResource("1_50gt6")
 
 [node name="Label" type="Label" parent="." unique_id=1392581439]
+visible = false
 offset_right = 40.0
 offset_bottom = 23.0
-text = "[Tutorial]
+text = "[CONTROL - F2 to display]
 WASD: Move
 Mouse: Camera
-Arrow: camera offset
-Wheel or -,=: zoom_in_out
-ESC: free mouse
-
-F11: full screen
--------
 F or left click : USE OBJECT
 Q: unequip
 R: interact /pick things
 E: [not yet here] Pick object
 T: Drop item
 C: Eat
-
 1,2,3,4: equip item
---------------
-debug part
+Wheel or -,=: zoom_in_out
+F11: full screen
+ESC: free mouse
 
-M: spawn a sheep
-F1: show bin
 "
+
+[node name="Panel" type="Panel" parent="Label" unique_id=1574094309]
+z_index = -1
+layout_mode = 0
+offset_right = 230.0
+offset_bottom = 339.0
 
 [node name="FPS" type="Label" parent="." unique_id=1086284271]
 offset_left = 13.0
