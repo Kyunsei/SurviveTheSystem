@@ -108,7 +108,6 @@ func _physics_process(delta: float) -> void:
 				action()
 				
 			if Input.is_action_just_pressed("Drop"):
-				if  player.global_position.y < 10:
 					Drop.rpc_id(1)
 			if Input.is_action_just_pressed("eat"):
 				eat_holding_item.rpc_id(1)
@@ -253,19 +252,25 @@ func add_to_inventory(alife):
 
 @rpc("any_peer","call_remote")
 func Drop():
+
 	if player.item_hold:
 		var inventory = player.get_node("Player_HUD").get_node("Inventory")
-		var item_dropped = inventory.remove_selected(int(player.name))
-		if item_dropped != null:
-			if item_dropped is Dictionary:
-				if item_dropped["Species"] == Alifedata.enum_speciesID.ITEM:
+		var item = inventory.get_selected(int(player.name))
+		if item is Dictionary:
+			if item["Species"] != Alifedata.enum_speciesID.ITEM: #all old gras (since then removed) old sheep, old spidercrab, etc... to be removed later
+				if player.global_position.y < 10 :
+					var item_dropped = inventory.remove_selected(int(player.name))
+					if item_dropped != null:
+						alife_manager.add(item_dropped,player.position)	
+			else: #cat ration and all other buyable objects
+				var item_dropped = inventory.remove_selected(int(player.name))
+				if item_dropped != null:
 					alife_manager.get_node("Item_Manager").spawn_item.rpc(item_dropped,player.position)
-				else:
+		else: #grass and future sheep
+			if player.global_position.y < 10 :
+				var item_dropped = inventory.remove_selected(int(player.name))
+				if item_dropped != null:
 					alife_manager.add(item_dropped,player.position)	
-			else:
-				alife_manager.add(item_dropped,player.position)	
-
-		#player.drop(0, 1)
 
 func show_stats_menu():
 	player.get_node("Player_HUD").get_node("StatsPanel").update_status()

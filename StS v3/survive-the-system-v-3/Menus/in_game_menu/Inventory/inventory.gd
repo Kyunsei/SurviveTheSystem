@@ -108,6 +108,10 @@ func remove_selected(peer_id):
 	else:
 		return null
 
+func get_selected(peer_id):
+	if current_index != null:
+		var slot = items[current_index][0].item["Data"][0]		
+		return slot
 
 '@rpc("authority","call_remote")
 func equip_item_at_index(idx):
