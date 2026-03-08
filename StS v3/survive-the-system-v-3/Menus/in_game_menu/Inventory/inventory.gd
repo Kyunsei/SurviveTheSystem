@@ -87,6 +87,7 @@ func remove_last_item(peer_id):
 			var slot = items[x][y]
 			
 			var item_rmv = slot.remove_item(peer_id)
+
 			if item_rmv:
 				return item_rmv
 	return null
@@ -101,6 +102,7 @@ func remove_selected(peer_id):
 			if slot.item == {}:
 				player.equip_item(null)
 				player.equip_item.rpc_id(peer_id,null)
+				slot.is_deselected.rpc_id(int(player.name))	
 			return item_rmv
 		return null
 	else:
