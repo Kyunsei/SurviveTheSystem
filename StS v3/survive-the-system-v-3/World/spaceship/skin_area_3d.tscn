@@ -1,10 +1,19 @@
 [gd_scene format=3 uid="uid://bcmrqlah5v1p7"]
 
 [ext_resource type="Script" uid="uid://b7inlgtdrqidc" path="res://World/spaceship/skin_area_3d.gd" id="1_ktpii"]
+[ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="2_hm6rq"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_tnl4x"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8u8um"]
+albedo_color = Color(0.8, 0.5294118, 0.80784315, 1)
+albedo_texture = ExtResource("2_hm6rq")
+metallic = 0.5
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+
 [sub_resource type="BoxMesh" id="BoxMesh_ktpii"]
+material = SubResource("StandardMaterial3D_8u8um")
 
 [node name="Skin_Area3D" type="Area3D" unique_id=1912766374]
 script = ExtResource("1_ktpii")

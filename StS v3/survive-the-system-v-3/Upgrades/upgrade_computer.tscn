@@ -1,11 +1,23 @@
 [gd_scene format=3 uid="uid://cd48ktb2b6fg3"]
 
 [ext_resource type="Texture2D" uid="uid://cdthu0ij71nd" path="res://assets/assets kyun/upgrade_computer_text.png" id="1_1ie6i"]
+[ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="1_d80et"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wd2xx"]
+albedo_texture = ExtResource("1_d80et")
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_d80et"]
+material = SubResource("StandardMaterial3D_wd2xx")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_j3is7"]
+albedo_texture = ExtResource("1_d80et")
+uv1_scale = Vector3(6, 2, 2)
 
 [sub_resource type="BoxMesh" id="BoxMesh_wd2xx"]
-size = Vector3(1, 0.6, 1)
+material = SubResource("StandardMaterial3D_j3is7")
+size = Vector3(1.2, 0.6, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rq74l"]
 transparency = 1

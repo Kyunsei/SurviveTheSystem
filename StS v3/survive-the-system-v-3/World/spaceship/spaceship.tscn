@@ -73,7 +73,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 shape = SubResource("ConcavePolygonShape3D_w7yga")
 
 [node name="moving_wall1" type="StaticBody3D" parent="ship" unique_id=1506289592]
-transform = Transform3D(4.3711374e-08, -2.6226832e-07, 1, -2.9802322e-08, -1, -2.6226832e-07, 1, -2.9802322e-08, -4.3711374e-08, -1, 10, -27)
+transform = Transform3D(4.3711374e-08, -2.6226832e-07, 1, -2.9802322e-08, -1, -2.6226832e-07, 1, -2.9802322e-08, -4.3711374e-08, -1, 22.2, -27)
+visible = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/moving_wall1" unique_id=2050797589]
 transform = Transform3D(-4.3711367e-08, 1, 3.0597968e-07, -1, -4.371132e-08, -2.1855695e-07, -2.1855695e-07, -3.0597965e-07, 1, 17, 1.9999995, 0.5999997)
@@ -84,13 +85,13 @@ transform = Transform3D(-4.3711367e-08, 1, 3.0597968e-07, -1, -4.371132e-08, -2.
 shape = SubResource("ConcavePolygonShape3D_2jlj7")
 
 [node name="NPC" parent="." unique_id=2146363901 instance=ExtResource("1_1wtdp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -6)
 
 [node name="Upgrade" parent="." unique_id=323732360 instance=ExtResource("4_ef02v")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.3, 0.19999999, -6.4)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.3, 0.6, -6.4)
 
 [node name="go_button" parent="." unique_id=2102924428 instance=ExtResource("5_ftgam")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -17)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -16.1)
 script = ExtResource("6_oclds")
 
 [node name="Area3D_go_button" type="Area3D" parent="go_button" unique_id=1561342002]
