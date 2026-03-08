@@ -46,6 +46,11 @@ var escape_timer_running = false
 var escape_time_left = 0.0
 var escape_height := 90.0
 
+#Server sync variables stuff
+var input_direction : Vector3
+var input_jump := false
+var input_sprint := false
+
 #INVENTORY PART
 var inventory_HUD 
 var inventory = {}
@@ -112,6 +117,7 @@ func update_item_hold_texture(path):
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 
+
 @rpc("any_peer","call_remote")
 func go_back_to_ship(pos):
 	var ship_pos = get_parent().get_parent().get_node("SPACESHIP").position
@@ -141,20 +147,27 @@ func _ready() -> void:
 		
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :
-		if is_jumping == false:
-			velocity.x = direction.x *speed *delta
-			velocity.z = direction.z *speed *delta
-		if fly:
-			velocity.y = direction.y *speed *delta
+		velocity.x = direction.x *speed *delta
+		velocity.z = direction.z *speed *delta
+		data_movement_to_server.rpc_id(1, global_position)
 
-		'if not is_on_floor():
-			velocity.y -= gravity * delta'
 		if direction != Vector3(0,0,0):
 			$MeshInstance3D.rotation.y = $camera_anchor.rotation.y 
 			pass
 			#var target_yaw := atan2(direction.x, -direction.z)
 		move_and_slide()
 		change_bin.rpc_id(1)
+@rpc("any_peer","call_remote",)
+func data_movement_to_server(pos):
+	giving_position_to_others.rpc(pos)
+@rpc("any_peer","call_remote","unreliable")
+func giving_position_to_others(pos: Vector3) -> void:
+	if not is_multiplayer_authority():
+		# Smoothly interpolate to avoid vibration
+		#global_position = global_position.lerp(pos, 0.3)
+		global_position = pos
+
+
 func _process(delta: float) -> void:
 	if multiplayer.is_server():
 		if lifedata["current_energy"] > 0:
@@ -307,11 +320,18 @@ func show_escape_timer(time):
 	timer_label.text = str(int(time))
 	timer_label.show()
 
-
-	
-
 @rpc("any_peer","call_local")
 func start_escape_ui(time):
 	escape_timer_running = true
 	escape_time_left = time
 	timer_label.show()
+
+#Server sync movement
+@rpc("any_peer","call_remote","unreliable")
+func receive_input(dir: Vector3, jump: bool, sprint: bool):
+	if !multiplayer.is_server():
+		return
+		
+	input_direction = dir
+	input_jump = jump
+	input_sprint = sprint
