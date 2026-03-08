@@ -149,7 +149,7 @@ func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority() :
 		velocity.x = direction.x *speed 
 		velocity.z = direction.z *speed 
-		data_movement_to_server.rpc_id(1, global_position)
+		#data_movement_to_server.rpc_id(1, global_position)
 
 		if direction != Vector3(0,0,0):
 			$MeshInstance3D.rotation.y = $camera_anchor.rotation.y 
@@ -165,7 +165,7 @@ func data_movement_to_server(pos):
 func giving_position_to_others(pos: Vector3) -> void:
 	if not is_multiplayer_authority():
 		# Smoothly interpolate to avoid vibration
-		global_position = global_position.lerp(pos, 0.3)
+		global_position = pos
 		#global_position = pos
 
 
