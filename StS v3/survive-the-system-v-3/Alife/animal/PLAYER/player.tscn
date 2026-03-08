@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://cr5xulv4uju01" path="res://Alife/animal/PLAYER/player.gd" id="1_qrp1o"]
 [ext_resource type="PackedScene" uid="uid://cx8myhkgjy4fp" path="res://Alife/animal/PLAYER/player_hud.tscn" id="2_2y45n"]
 [ext_resource type="Script" uid="uid://b0jwhtwhk47rk" path="res://Alife/animal/PLAYER/camera_3d.gd" id="3_kppvm"]
+[ext_resource type="Script" uid="uid://lr0ajs2s86xo" path="res://Alife/animal/PLAYER/multiplayer_synchronizer.gd" id="4_1vr6m"]
 [ext_resource type="Script" uid="uid://cwrvvywn7edre" path="res://Alife/animal/PLAYER/debug_control.gd" id="5_2y45n"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6t5sv"]
@@ -281,9 +282,8 @@ texture = SubResource("ViewportTexture_1vr6m")
 script = ExtResource("1_31v8x")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1350252593]
-replication_interval = 0.05
-delta_interval = 0.05
 replication_config = SubResource("SceneReplicationConfig_qrp1o")
+script = ExtResource("4_1vr6m")
 
 [node name="camera_anchor" type="Node3D" parent="." unique_id=854155107]
 
