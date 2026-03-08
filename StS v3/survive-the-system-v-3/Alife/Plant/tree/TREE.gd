@@ -16,7 +16,7 @@ func Init():
 
 	# --- Plant Related ----
 	Photosynthesis_absorption =[1.]
-	Photosynthesis_range =[3]
+	Photosynthesis_range =[4]
 
 
 	# --- Life Cycle ---

@@ -29,10 +29,11 @@ func add_item(new_item, peer_id):
 	
 	return false
 
-
+@rpc("any_peer","call_local")
 func is_selected():
 	$ColorRect.show()
 
+@rpc("any_peer","call_local")
 func is_deselected():
 	$ColorRect.hide()
 
