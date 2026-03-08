@@ -153,7 +153,7 @@ func _physics_process(delta: float) -> void:
 
 		if direction != Vector3(0,0,0):
 			$MeshInstance3D.rotation.y = $camera_anchor.rotation.y 
-			$Action_Area3D.rotation.y = $camera_anchor.rotation.y 
+			#$Action_Area3D.rotation.y = $camera_anchor.rotation.y 
 			pass
 			#var target_yaw := atan2(direction.x, -direction.z)
 		move_and_slide()

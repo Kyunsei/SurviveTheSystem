@@ -28,7 +28,7 @@ func evaluate():
 				target = food
 				if GlobalSimulationParameter.life_numbers != {}:
 					if target["Species"] == Alifedata.enum_speciesID.SHEEP:
-						if GlobalSimulationParameter.life_numbers[Alifedata.enum_speciesID.SHEEP][-1] < 2:
+						if player.get_parent().get_parent().current_life_count_by_species[Alifedata.enum_speciesID.SHEEP] < 2:
 							return 0
 	get_parent().get_parent().get_node("debugLabel").text = debug
 
