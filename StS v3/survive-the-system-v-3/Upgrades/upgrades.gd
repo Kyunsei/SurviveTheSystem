@@ -3,7 +3,9 @@ extends Area3D
 var p
 var credits = 0
 var step = 3 #0
-
+var cat_ration_cost = 3
+const CAT_RATION = "res://objects/cat_ration/cat_ration.tscn"
+var object_spawned_position = Vector3(-4, 94, -2)
 
 func display_text(dialogue_box, text):
 	dialogue_box.show()
@@ -13,10 +15,10 @@ func _ready():
 	$PopupMenu.add_item("Inventory maximum capacity up", 0)
 	$PopupMenu.add_item("More maximum health", 1)
 	$PopupMenu.add_item("", 2)
-	$PopupMenu.add_item("", 3)
+	$PopupMenu.add_item("ONE cat ration /// COST : 3", 3)
 	$PopupMenu.add_item("", 4)
 	$PopupMenu.set_item_disabled(4, true)
-	$PopupMenu.set_item_disabled(3, true)
+	#$PopupMenu.set_item_disabled(3, true)
 
 			
 func interact(player):
@@ -26,7 +28,7 @@ func interact(player):
 	update_inventory_costs.rpc_id(int(p.name), p.inventory_upgrade_cost)
 	update_health_costs.rpc_id(int(p.name), p.health_upgrade_cost)
 	update_energy_costs.rpc_id(int(p.name), p.energy_upgrade_cost)
-	update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
+	#update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
 
 @rpc("any_peer","call_remote")
 func _on_popup_menu_id_pressed(id):
@@ -39,7 +41,7 @@ func _on_popup_menu_id_pressed(id):
 		2:
 			upgrade_energy.rpc_id(1)
 		3:
-			upgrade_range.rpc_id(1)
+			buy_cat_ration.rpc_id(1)
 		4:
 			pass
 	await get_tree().process_frame
@@ -60,7 +62,7 @@ func upgrade_health():
 		p.catnation_credits -=p.health_upgrade_cost
 		p.health_upgrade_cost += 1
 		p.lifedata["Max_health"] += 20
-		p.lifedata["current_health"] = p.lifedata["Max_health"]
+		p.lifedata["current_health"] += 20
 		print("your max health is now " +str(p.lifedata["Max_health"]))
 		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
@@ -72,7 +74,7 @@ func upgrade_energy():
 		p.catnation_credits -=p.energy_upgrade_cost
 		p.energy_upgrade_cost += 1
 		p.lifedata["Max_energy"] += 20
-		p.lifedata["current_energy"] = p.lifedata["Max_energy"]
+		p.lifedata["current_energy"] += 20
 		print("your max energy is now " +str(p.lifedata["Max_energy"]))
 		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
@@ -102,6 +104,15 @@ func upgrade_range():
 		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
+
+@rpc("any_peer","call_remote")
+func buy_cat_ration():
+	if p.catnation_credits >= cat_ration_cost:
+		p.catnation_credits -=cat_ration_cost
+		p.lifedata["Money"] = p.catnation_credits
+		get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(CAT_RATION,object_spawned_position)
+		update_credits.rpc_id(int(p.name), p.catnation_credits)
+
 
 @rpc("any_peer","call_remote")
 func update_credits(new_credits):

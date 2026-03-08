@@ -29,7 +29,7 @@ var current_hunger = max_hunger
 @onready var energy_bar = $MeshInstance3D/Status_bar/SubViewport2/ProgressBarEnergy
 
 #upgrades variable here
-var catnation_credits = 0
+var catnation_credits = 1
 var inv_capacity = 0.0
 var inventory_capacity_upgrade = 1
 var pickup_capacity = 0.0
@@ -171,19 +171,22 @@ func giving_position_to_others(pos: Vector3) -> void:
 
 func _process(delta: float) -> void:
 	if multiplayer.is_server():
-		if lifedata["current_energy"] > 0:
-			lifedata["current_energy"] -= 0.5*delta
-		if lifedata["current_energy"] > 49 and lifedata["current_health"]<lifedata["Max_health"]:
-			lifedata["current_health"] += 1*delta
-		if lifedata["current_energy"] <= 0:
-			lifedata["current_health"] -= 1*delta
-		if lifedata["current_health"] <= 0:
-			#Die()
-			Die.rpc_id(1, int(name))
+		if int(name) == null:
+			pass
+		else:
+			if lifedata["current_energy"] > 0:
+				lifedata["current_energy"] -= 0.5*delta
+			if lifedata["current_energy"] > 49 and lifedata["current_health"]<lifedata["Max_health"]:
+				lifedata["current_health"] += 1*delta
+			if lifedata["current_energy"] <= 0:
+				lifedata["current_health"] -= 1*delta
+			if lifedata["current_health"] <= 0:
+				#Die()
+				Die.rpc_id(1, int(name))
 
-		update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
-		update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
-		sync_lifedata.rpc_id(int(name), lifedata)
+			update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
+			update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
+			sync_lifedata.rpc_id(int(name), lifedata)
 		
 	if escape_timer_running and is_multiplayer_authority():
 		escape_time_left -= delta
