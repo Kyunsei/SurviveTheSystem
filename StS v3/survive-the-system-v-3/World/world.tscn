@@ -15,6 +15,7 @@ sky_material = SubResource("ProceduralSkyMaterial_j8job")
 [sub_resource type="Environment" id="Environment_bkhv4"]
 background_mode = 2
 sky = SubResource("Sky_f52ns")
+glow_enabled = true
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_62w18"]
 
