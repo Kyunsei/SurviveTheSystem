@@ -108,7 +108,8 @@ func _physics_process(delta: float) -> void:
 				action()
 				
 			if Input.is_action_just_pressed("Drop"):
-				Drop.rpc_id(1)
+				if  player.global_position.y < 10:
+					Drop.rpc_id(1)
 			if Input.is_action_just_pressed("eat"):
 				eat_holding_item.rpc_id(1)
 
