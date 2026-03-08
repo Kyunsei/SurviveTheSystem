@@ -160,7 +160,7 @@ func _physics_process(delta: float) -> void:
 @rpc("any_peer","call_remote",)
 func data_movement_to_server(pos):
 	giving_position_to_others.rpc(pos)
-@rpc("any_peer","call_remote","unreliable")
+@rpc("any_peer","call_local","unreliable")
 func giving_position_to_others(pos: Vector3) -> void:
 	if not is_multiplayer_authority():
 		# Smoothly interpolate to avoid vibration
