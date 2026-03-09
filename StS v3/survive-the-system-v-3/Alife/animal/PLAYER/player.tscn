@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://g8f1lj1jedxl" path="res://Alife/animal/PLAYER/player_control.gd" id="1_31v8x"]
 [ext_resource type="Script" uid="uid://cr5xulv4uju01" path="res://Alife/animal/PLAYER/player.gd" id="1_qrp1o"]
 [ext_resource type="PackedScene" uid="uid://cx8myhkgjy4fp" path="res://Alife/animal/PLAYER/player_hud.tscn" id="2_2y45n"]
+[ext_resource type="PackedScene" uid="uid://br0id6ya8hqd2" path="res://assets/asset dabols/Hoover.fbx" id="3_1vr6m"]
 [ext_resource type="Script" uid="uid://b0jwhtwhk47rk" path="res://Alife/animal/PLAYER/camera_3d.gd" id="3_kppvm"]
 [ext_resource type="Script" uid="uid://cwrvvywn7edre" path="res://Alife/animal/PLAYER/debug_control.gd" id="5_2y45n"]
 
@@ -281,10 +282,14 @@ texture = SubResource("ViewportTexture_1vr6m")
 
 [node name="Action_Area3D" type="Area3D" parent="MeshInstance3D" unique_id=921750962 groups=["action"]]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/Action_Area3D" unique_id=285623758]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
 shape = SubResource("BoxShape3D_2y45n")
+
+[node name="Hoover" parent="MeshInstance3D" unique_id=1633460261 instance=ExtResource("3_1vr6m")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1.1, -0.19999999, -0.7999999)
 
 [node name="Player_control" type="Node" parent="." unique_id=1336833191]
 script = ExtResource("1_31v8x")

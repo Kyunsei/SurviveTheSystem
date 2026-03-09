@@ -3,9 +3,10 @@
 [ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="1_ahxx7"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r5pjn"]
-albedo_color = Color(0.31764707, 0.8745098, 0.84313726, 1)
+transparency = 1
+albedo_color = Color(0.31764707, 0.8745098, 0.84313726, 0.18039216)
 albedo_texture = ExtResource("1_ahxx7")
-metallic = 0.8
+roughness = 0.1
 backlight_enabled = true
 backlight = Color(0.8862616, 0.88626146, 0.8862615, 1)
 refraction_enabled = true

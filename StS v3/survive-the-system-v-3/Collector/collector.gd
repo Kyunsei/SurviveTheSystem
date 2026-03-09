@@ -7,10 +7,13 @@ var credit_gain = 0
 var collecting = true
 var timer_to_escape = int(61)
 var safe_timer = int(6)
-var factor = 5 #0.005
+var factor = 0.005
+var InsideBiomassInitHeight
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	InsideBiomassInitHeight = 3.8
 	update_label()
+	
 
 
 #@rpc("any_peer","call_local")
@@ -18,7 +21,6 @@ func interact(player):
 
 	if collecting == true :
 		#var grassmanager = player.get_parent().get_node("Grass_Manager2")
-		
 		var item_hold = player.item_hold
 		var inventory = player.get_node("Player_HUD").get_node("Inventory")
 
@@ -36,9 +38,11 @@ func interact(player):
 							return
 
 						Biomass_collected += o["Biomass"]*factor
+						update_label()
 						inventory.remove_selected(int(player.name))
 					else:
 						Biomass_collected += grassmanager.current_biomass_array[o]*factor
+						update_label()
 						inventory.remove_selected(int(player.name))
 
 			
@@ -55,7 +59,7 @@ func interact(player):
 		print("BRAVO")
 		var c = 0
 		spaceship.get_node("Collector_ship").go_down()
-
+		update_insideBiomass()
 		#.go_down.rpc_id(1)
 		start_escape_phase(player)
 		#for i in player.get_parent().player_array:
@@ -65,8 +69,7 @@ func interact(player):
 			#c +=1
 			#GlobalSimulationParameter.simulation_speed = 0.5
 			#credit_player(i)
-		Biomass_collected = 0
-		max_biomass = max_biomass * 1.5
+
 
 
 		#end_of_quest.rpc_id(int(player.name),player)
@@ -96,6 +99,8 @@ func start_escape_phase(player):
 			for p in player.get_parent().player_array:
 				p.force_escape_time.rpc_id(int(p.name), safe_timer)
 	collecting = true
+	Biomass_collected = 0
+	max_biomass = max_biomass * 1.5
 	update_label()
 	start_go_button()
 	check_escape_results(player)
@@ -126,6 +131,13 @@ func set_world_readiness(yesorno):
 
 func update_label():
 	$collected_amount_Label3D.text = "Biomass collected " + str(round(Biomass_collected)) + " /" + str(max_biomass)
+	update_insideBiomass()
+
+func update_insideBiomass():
+	var fill_percentage = clamp(Biomass_collected/max_biomass, 0.0, 1.0)
+	$InsideMesh.scale.y = fill_percentage
+	var natural_offset = 0.2 #natural offset
+	$InsideMesh.position.y = (natural_offset + InsideBiomassInitHeight*fill_percentage)/2
 
 #@rpc("any_peer","call_local")
 func credit_player(player):
