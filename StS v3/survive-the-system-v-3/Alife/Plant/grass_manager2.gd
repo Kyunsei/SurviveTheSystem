@@ -727,8 +727,12 @@ func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):
 				$grass.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
 		elif si == 1:
 				$tree.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
+		elif si == 2:
+				$moss.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
 	$grass.multimesh.visible_instance_count = $grass.instance_number
 	$tree.multimesh.visible_instance_count = $tree.instance_number		
+	$moss.multimesh.visible_instance_count = $moss.instance_number		
+
 @rpc("authority", "call_remote", "reliable") 			
 func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array):
 	for c in range(id_array.size()):
@@ -737,6 +741,8 @@ func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,spe
 			$grass.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
 		elif s == 1:
 			$tree.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
+		elif s == 2:
+			$moss.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
 
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(id_array,species_array):
@@ -746,20 +752,29 @@ func erase_grass(id_array,species_array):
 			$grass.remove_grass(id_array[c])
 		elif s == 1:
 			$tree.remove_grass(id_array[c])
+		elif s == 2:
+			$moss.remove_grass(id_array[c])
+			
 			
 
 @rpc("any_peer","call_remote")
 func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_array,species_array):
 	$grass.init()
 	$tree.init()
+	$moss.init()
 	for c in range(id_array.size()):
 		var s = species_array[c]
 		if s == 0:
 			$grass.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
 		elif s == 1:
 			$tree.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
+		elif s == 2:
+			$moss.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
+	
 	$grass.multimesh.visible_instance_count = $grass.instance_number
 	$tree.multimesh.visible_instance_count = $tree.instance_number
+	$moss.multimesh.visible_instance_count = $moss.instance_number
+
 func update_grass_time():
 	if Grass_simulator_time > 0:
 		$CanvasLayer.show()
