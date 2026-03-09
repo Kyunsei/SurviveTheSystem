@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://pnk3budbla4v"]
+
+[ext_resource type="QuadMesh" uid="uid://bm1k4t0khab06" path="res://Alife/Plant/Moss/moss.tres" id="1_1wwsn"]
+[ext_resource type="QuadMesh" uid="uid://cemxkaiaso15s" path="res://Alife/Plant/Moss/moss_ground.tres" id="2_be5qk"]
+
+[node name="moss" type="Node3D" unique_id=265190410]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=521765770]
+mesh = ExtResource("1_1wwsn")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=850642349]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0)
+mesh = ExtResource("2_be5qk")

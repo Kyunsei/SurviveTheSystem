@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dv0s2jhvhfe0v" path="res://Alife/animal/PLAYER/cat_bones.tscn" id="6_q7pws"]
 [ext_resource type="PackedScene" uid="uid://thsj6h0d3ou" path="res://Alife/Plant/Grass_Manager.tscn" id="6_ruoec"]
 [ext_resource type="PackedScene" uid="uid://dsidfhuppxvrw" path="res://Alife/animal/beast_manager.tscn" id="7_1roai"]
-[ext_resource type="Script" uid="uid://cww3w3dis212h" path="res://objects/item_manager.gd" id="8_byu03"]
+[ext_resource type="Script" path="res://objects/item_manager.gd" id="8_byu03"]
 [ext_resource type="PackedScene" uid="uid://b4aghfi4iytr7" path="res://Alife/Plant/grass_manager2.tscn" id="9_byu03"]
 
 [node name="Alife manager" type="Node3D" unique_id=1345180502]
@@ -20,6 +20,7 @@ tree_scene = ExtResource("5_ruoec")
 bone_scene = ExtResource("6_q7pws")
 
 [node name="Grass_Manager" parent="." unique_id=291917329 instance=ExtResource("6_ruoec")]
+visible = false
 
 [node name="beast_manager" parent="." unique_id=1821176039 instance=ExtResource("7_1roai")]
 
