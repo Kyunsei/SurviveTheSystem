@@ -11,6 +11,9 @@
 [ext_resource type="PackedScene" uid="uid://bw0x55yvvmaih" path="res://Collector/collector_ship.tscn" id="8_4e1qf"]
 [ext_resource type="PackedScene" uid="uid://bcmrqlah5v1p7" path="res://World/spaceship/skin_area_3d.tscn" id="9_usqpj"]
 [ext_resource type="PackedScene" uid="uid://of4st8k4xwbc" path="res://World/spaceship/space_ship_kyunsei.scn" id="11_2jlj7"]
+[ext_resource type="PackedScene" uid="uid://dnm54piw4bqn6" path="res://objects/spear.tscn" id="12_qscrw"]
+[ext_resource type="PackedScene" uid="uid://gfl2a22r2q8k" path="res://assets/asset dabols/tent.fbx" id="13_se27s"]
+[ext_resource type="PackedScene" uid="uid://qfu1yg6tgwwa" path="res://assets/asset dabols/axe 1.fbx" id="14_nk3pt"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_2jlj7"]
 size = Vector3(13, 0.5, 9)
@@ -170,5 +173,14 @@ F1: show bin
 F3: Time wrap
 F5 : Refresh Affichage
 "
+
+[node name="spear" parent="." unique_id=2092039129 instance=ExtResource("12_qscrw")]
+transform = Transform3D(2.7320507, -2.0705523, -2.7320507, 0.7320508, 7.7274065, -0.7320508, 2.828427, 0, 2.828427, -5.4999995, 0.3, -0.50000095)
+
+[node name="tent" parent="." unique_id=15290300 instance=ExtResource("13_se27s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8000007, 1.3000001, -1.8)
+
+[node name="axe 1" parent="." unique_id=293005357 instance=ExtResource("14_nk3pt")]
+transform = Transform3D(0.9659258, -0.75, -0.20096189, 0.25881907, 2.7990384, 0.75000006, 0, -0.77645725, 2.8977778, -6, 0.39999998, -3.3999996)
 
 [connection signal="area_entered" from="go_button/Area3D_go_button" to="go_button" method="_on_area_3d_area_entered"]

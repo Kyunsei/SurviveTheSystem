@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://dnm54piw4bqn6"]
+
+[ext_resource type="PackedScene" uid="uid://bbpte0ycxxfvu" path="res://assets/asset dabols/spear.fbx" id="1_u00d7"]
+
+[node name="spear" unique_id=1429903944 instance=ExtResource("1_u00d7")]
