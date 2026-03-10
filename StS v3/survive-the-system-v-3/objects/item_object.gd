@@ -1,6 +1,5 @@
 extends Node3D
 class_name Item
-
 @export var item_ressources : ItemResource
 
 
@@ -23,7 +22,7 @@ func Add():
 func Remove():
 	get_parent().get_parent().remove_from_world_bin(itemData)
 	delete_item.rpc()
-	
+
 @rpc("authority", "call_local")
 func delete_item():
 	queue_free()

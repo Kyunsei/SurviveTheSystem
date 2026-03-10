@@ -28,6 +28,7 @@ func _ready():
 
 				
 			
+			
 func prep_item(new_item):
 	print("prep_item is working")
 	var item ={}

@@ -8,8 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://dv0s2jhvhfe0v" path="res://Alife/animal/PLAYER/cat_bones.tscn" id="6_q7pws"]
 [ext_resource type="PackedScene" uid="uid://thsj6h0d3ou" path="res://Alife/Plant/Grass_Manager.tscn" id="6_ruoec"]
 [ext_resource type="PackedScene" uid="uid://dsidfhuppxvrw" path="res://Alife/animal/beast_manager.tscn" id="7_1roai"]
-[ext_resource type="Script" path="res://objects/item_manager.gd" id="8_byu03"]
+[ext_resource type="Script" uid="uid://cww3w3dis212h" path="res://objects/item_manager.gd" id="8_byu03"]
 [ext_resource type="PackedScene" uid="uid://b4aghfi4iytr7" path="res://Alife/Plant/grass_manager2.tscn" id="9_byu03"]
+[ext_resource type="PackedScene" uid="uid://dp2plghkprved" path="res://objects/cat_ration/Object_spear.tscn" id="10_mcv33"]
 
 [node name="Alife manager" type="Node3D" unique_id=1345180502]
 script = ExtResource("1_yx3o6")
@@ -28,8 +29,11 @@ visible = false
 script = ExtResource("8_byu03")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Item_Manager" unique_id=1684953852]
-_spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk")
+_spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk", "uid://dp2plghkprved")
 spawn_path = NodePath("..")
+
+[node name="Object_spear" parent="Item_Manager" unique_id=1352666552 instance=ExtResource("10_mcv33")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 93.5, -4.4)
 
 [node name="Grass_Manager2" parent="." unique_id=2019447816 instance=ExtResource("9_byu03")]
 

@@ -59,7 +59,7 @@ func _physics_process(delta: float) -> void:
 			
 			
 			if Input.is_action_just_pressed("use"):
-				player_action_area.show()
+				#player_action_area.show()
 
 				UseITEM.rpc_id(1)
 				await get_tree().create_timer(0.2).timeout
@@ -124,16 +124,16 @@ func UseITEM():
 				print("alife entitity action")
 		else:
 			print("alife entitity action")
-	else:
-		var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
-		 												player_action_area.get_node("CollisionShape3D").shape.size)
-		if targets:
-			for t in targets:
-				if t is Dictionary:
-					if t != player.lifedata:
-						alife_manager.Attack(t,5)
-				else:
-					alife_manager.Attack(t,5)
+	#else:
+		#var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
+		 												#player_action_area.get_node("CollisionShape3D").shape.size)
+		#if targets:
+			#for t in targets:
+				#if t is Dictionary:
+					#if t != player.lifedata:
+						#alife_manager.Attack(t,5)
+				#else:
+					#alife_manager.Attack(t,5)
 				
 				
 
