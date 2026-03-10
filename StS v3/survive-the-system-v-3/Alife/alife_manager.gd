@@ -276,7 +276,7 @@ func Attack(grass,value):
 	
 	
 	
-
+#version before trying to fix
 func get_alife_in_area(pos_center, area):
 	var results: Array = []
 	var min_pos = pos_center - area
@@ -292,7 +292,6 @@ func get_alife_in_area(pos_center, area):
 						continue
 
 					var index: int = World.index_3dto1d(x, y, z, World.bin_size)
-			
 
 					var bin = World.bin_array[index]
 					if bin:
@@ -316,6 +315,8 @@ func get_alife_in_area(pos_center, area):
 									results.append(element)
 
 	return results
+
+	
 
 @rpc("any_peer","call_local")
 func drop_bones(pos):
