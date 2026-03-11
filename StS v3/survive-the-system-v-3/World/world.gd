@@ -63,7 +63,7 @@ func generate_world():
 
 
 func get_PositionInGrid(pos,tile_size):
-	pos = pos + World_Size/2
+	pos += World_Size/2
 	return Vector3i(
 		floor(pos.x / tile_size.x),
 		floor(pos.y / tile_size.y),

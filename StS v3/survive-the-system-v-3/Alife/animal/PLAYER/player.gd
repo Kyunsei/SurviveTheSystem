@@ -337,3 +337,68 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 	input_direction = dir
 	input_jump = jump
 	input_sprint = sprint
+	
+	
+#OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!
+#original before the fix
+#@rpc("any_peer","call_local")
+#func spear_attack():
+	#print("called")
+	#spear_attack_animation.rpc_id(int(name))
+	#
+#
+	##var center = player.position
+	#var area = $MeshInstance3D/spear_Area3D
+	#var collision = $MeshInstance3D/spear_Area3D/CollisionShape3D
+	#var targets = get_parent().get_alife_in_area(area.global_position, collision.shape.size)
+	##print(area.global_position, collision.shape.size, area.position)
+	##print(targets)
+	#if targets : #and $AnimationPlayer.is_playing():
+		#for t in targets:
+			#if t is Dictionary:
+				#if t != lifedata:
+					#get_parent().Attack(t,5)
+					#print("hit player")
+			#else:
+				#get_parent().Attack(t,5)
+				#print("hit non player")
+
+#"fixed" version :
+@rpc("any_peer","call_local")
+func spear_attack():
+	print("called")
+	spear_attack_animation.rpc_id(int(name))
+	
+
+	#var center = player.position
+	var area = $MeshInstance3D/spear_Area3D
+	var collision = $MeshInstance3D/spear_Area3D/CollisionShape3D
+	var extents = collision.shape.size/2
+	var basis = collision.global_transform.basis.orthonormalized()
+	var world_extents = Vector3(
+	abs(basis.x.x) * extents.x + abs(basis.y.x) * extents.y + abs(basis.z.x) * extents.z,
+	abs(basis.x.y) * extents.x + abs(basis.y.y) * extents.y + abs(basis.z.y) * extents.z,
+	abs(basis.x.z) * extents.x + abs(basis.y.z) * extents.y + abs(basis.z.z) * extents.z
+)
+	var targets = get_parent().get_alife_in_area(area.global_position, world_extents)
+	#print(area.global_position, collision.shape.size, area.position)
+	#print(targets)
+	if targets : #and $AnimationPlayer.is_playing():
+		for t in targets:
+			if t is Dictionary:
+				if t != lifedata:
+					get_parent().Attack(t,5)
+					print("hit player")
+			else:
+				get_parent().Attack(t,5)
+				print("hit non player")
+				
+
+
+@rpc("any_peer","call_remote")
+func spear_attack_animation():
+	$AnimationPlayer.play("spear_attack_2")
+	await $AnimationPlayer.animation_finished
+	$AnimationPlayer.play_backwards("spear_attack_1")
+
+#OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!

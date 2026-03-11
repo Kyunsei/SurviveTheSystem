@@ -174,7 +174,7 @@ F3: Time wrap
 F5 : Refresh Affichage
 "
 
-[node name="spear" parent="." unique_id=2092039129 instance=ExtResource("12_qscrw")]
+[node name="spear" parent="." unique_id=1429903944 instance=ExtResource("12_qscrw")]
 transform = Transform3D(2.7320507, -2.0705523, -2.7320507, 0.7320508, 7.7274065, -0.7320508, 2.828427, 0, 2.828427, -5.4999995, 0.3, -0.50000095)
 
 [node name="tent" parent="." unique_id=15290300 instance=ExtResource("13_se27s")]
