@@ -145,7 +145,7 @@ func _ready() -> void:
 		energy_bar.max_value = lifedata["Max_energy"]
 		#update_status_of_player(inventory_capacity_upgrade, catnation_credits)
 		
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	if is_multiplayer_authority() :
 		velocity.x = direction.x *speed 
 		velocity.z = direction.z *speed 
@@ -238,7 +238,7 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 		pass
 
 @rpc("any_peer","call_local")
-func death(id):
+func death(_id):
 	$CollisionShape3D.disabled = true
 	velocity = Vector3.ZERO
 	gravity = 0

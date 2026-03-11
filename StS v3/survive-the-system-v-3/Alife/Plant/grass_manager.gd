@@ -106,7 +106,7 @@ func update(delta):
 
 
 
-func start_thread_paralell(delta, t , min , max):
+func start_thread_paralell(_delta, t , _min , _max):
 		mutex.lock()
 		if thread_is_running:
 			mutex.unlock()
@@ -332,7 +332,7 @@ func Photosynthesis(grass,delta):
 		
 
 		
-func Reproduction(grass,delta):
+func Reproduction(grass,_delta):
 		if grass["current_energy"] > grass["Reproduction_cost"]*2:
 			var newpos = grass["position"] + Vector3(
 				randf_range(-grass["Reproduction_spread"], grass["Reproduction_spread"]),
@@ -365,7 +365,7 @@ func Germination(g):
 		_pending_update.append(g)
 			
 
-func Growth(g,delta):
+func Growth(g,_delta):
 	#if g["current_energy"] % 5 == 0:
 	if Alifedata.Growth(g):
 		_pending_update.append(g)

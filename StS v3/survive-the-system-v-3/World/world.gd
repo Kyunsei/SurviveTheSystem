@@ -32,7 +32,7 @@ var bin_sum_array = [] #array of sum of each alifeelement by bin
 
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	
 	if GlobalSimulationParameter.SimulationStarted:
 		if multiplayer.is_server():

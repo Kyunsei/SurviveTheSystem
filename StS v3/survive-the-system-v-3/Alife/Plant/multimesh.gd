@@ -39,7 +39,7 @@ var instance_data: Array = []  # mirrors multimesh slots'
 func update_drawn_grass(g):
 	#var ID = gen[0]
 	#return
-	var current_energy = g["current_energy"]
+	#var current_energy = g["current_energy"]
 	#if id_to_slot.size() > g["ID"]:
 	if !id_to_slot.has(g["ID"]):
 		print("strange")

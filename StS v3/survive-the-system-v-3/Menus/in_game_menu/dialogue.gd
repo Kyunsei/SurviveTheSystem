@@ -30,7 +30,7 @@ func skip():
 	_typing = false
 	$Panel/Label.visible_characters = -1  # show all instantly
 	
-func _input(event: InputEvent) -> void:
+func _input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("Action"):
 		skip()
 

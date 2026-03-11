@@ -9,7 +9,7 @@ var color_list = [Color(0.0, 0.345, 0.0, 1.0),Color(0.507, 0.207, 0.164, 1.0),Co
 func _ready() -> void:
 	graph_size = $Graph_population.size
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if multiplayer.is_server():
 		queue_redraw()
 		update_number()

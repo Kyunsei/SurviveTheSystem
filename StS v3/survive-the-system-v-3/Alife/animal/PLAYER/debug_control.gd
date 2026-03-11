@@ -15,7 +15,7 @@ var tuto_HUD : Control
 var timer_count = 10
 var isWorldAccelerated = false
 
-signal grid_called
+#signal grid_called
 
 func _ready() -> void:
 	player = get_parent()
@@ -27,7 +27,7 @@ func _ready() -> void:
 		camera_anchor = player.get_node("camera_anchor")
 	
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 
 	if player.is_multiplayer_authority():
 		if player.isdebuging:
@@ -49,7 +49,7 @@ func _physics_process(delta: float) -> void:
 			if Input.is_action_just_pressed("F5"):
 				player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer.rpc_id(1,multiplayer.get_unique_id())
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if multiplayer.is_server():
 		if isWorldAccelerated:
 			if get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time <0 :

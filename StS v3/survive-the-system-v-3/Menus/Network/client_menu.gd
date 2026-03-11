@@ -35,13 +35,13 @@ func check_connection():
 				$Label_server.text = "Disconnected"
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	pass
 	#check_connection()
 
-func connect_to_server(IP_ADDRESS, PORT):
+func connect_to_server(IP_ADDRESSv, PORTv):
 	peer = ENetMultiplayerPeer.new()
-	peer.create_client(IP_ADDRESS, PORT)
+	peer.create_client(IP_ADDRESSv, PORTv)
 	multiplayer.multiplayer_peer = peer
 	$Label_server.text = "Connecting..."
 

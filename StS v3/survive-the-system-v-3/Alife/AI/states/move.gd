@@ -38,19 +38,19 @@ func evaluate():
 	if food:
 		if food is Dictionary:
 			var offset = food["position"] - player.position
-			var dist = offset.length()
+			#var dist = offset.length()
 			var food_dir = offset.normalized()
 
-			var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
+			#var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
 			final_dir = food_dir # * weight
 			target = food
 			
 		else:
 			var offset = player.get_parent().get_parent().get_node("Grass_Manager2").position_array[food] - player.position
-			var dist = offset.length()
+			#var dist = offset.length()
 			var food_dir = offset.normalized()
 
-			var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
+			#var weight = clamp(5.0 / max(dist, 0.1), 1.5, 4.0)
 			final_dir = food_dir # * weight
 			target = food
 		debug = "FOOD"
@@ -170,7 +170,7 @@ func exit():
 	pass
 
 
-func update(delta):
+func update(_delta):
 	pass
 	
 func physics_update(delta):

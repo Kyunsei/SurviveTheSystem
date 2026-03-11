@@ -39,7 +39,7 @@ func exit():
 	isFinish = true
 
 
-func physics_update(delta):
+func physics_update(_delta):
 	pass
 
 func update(delta):

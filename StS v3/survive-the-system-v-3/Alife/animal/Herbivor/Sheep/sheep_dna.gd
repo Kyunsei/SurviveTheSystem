@@ -1,22 +1,26 @@
 extends DNA
-class_name MOSS
+class_name SHEEP
 
 
 func Init():
 		
-	species_id = 2
-	display_name = "MOSS"
+	species_id = 3
+	display_name = "SHEEP"
 
 	# --- Core metabolism ---
 	Max_energy =[1100,1100]
 	Max_health  =[4,4]
 	Max_age  = [100,100]
-	Homeostasis_cost  =[0.3,0.3]
-	Decomposition_speed =[2.,2.]
+	Homeostasis_cost  =[0.00]
+	Decomposition_speed =[1]
 
 	# --- Plant Related ----
-	Photosynthesis_absorption =[1.,1.]
-	Photosynthesis_range =[0,0]
+	Photosynthesis_absorption =[0]
+	Photosynthesis_range =[0]
+
+
+	# --- Movement Related ----
+	Max_speed =[5]
 
 
 	# --- Life Cycle ---
@@ -32,10 +36,8 @@ func Init():
 
 #INVENTORY
 
-	Sprite_path = "res://Alife/Plant/Grass/grass.png"  #TO DEFINE HERE BEST WAY
+	Sprite_path = "res://Alife/animal/Herbivor/sheep2.png"
 	Stack_amount = 100
-
-
 
 
 func Growth(manager, i, _delta):

@@ -24,7 +24,7 @@ func _ready() -> void:
 	#call_deferred("_on_button_pressed")
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if peer:
 		if multiplayer.is_server():
 			var beastfps = alifemanager.get_node("beast_manager").FPS

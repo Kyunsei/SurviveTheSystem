@@ -202,7 +202,7 @@ func view_closest(view_range,array_num,b,sp):
 
 
 func Collision(b):
-	var radius = 1
+#	var radius = 1
 	var current_pos = b.position
 	var bin_index
 	for dx in range(-1, 2):

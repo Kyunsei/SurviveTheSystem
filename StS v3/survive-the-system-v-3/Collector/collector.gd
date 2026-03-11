@@ -57,7 +57,7 @@ func interact(player):
 		collecting = false
 		credit_gain += 10
 		print("BRAVO")
-		var c = 0
+		#var c = 0
 		spaceship.get_node("Collector_ship").go_down()
 		update_insideBiomass()
 		#.go_down.rpc_id(1)

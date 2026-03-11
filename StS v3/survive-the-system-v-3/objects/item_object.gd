@@ -36,8 +36,8 @@ func add_to_player(body,peer_id):
 			Remove()
 			
 
-static func on_use(player):
+static func on_use(_player):
 	print("used and did something" )
 
-static func eat(player):
+static func eat(_player):
 	print("eat something" )

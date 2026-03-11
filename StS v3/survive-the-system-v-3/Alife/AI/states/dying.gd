@@ -48,8 +48,8 @@ func enter():
 func exit():
 	pass
 
-func physics_update(delta):
+func physics_update(_delta):
 	pass
 
-func update(delta):
+func update(_delta):
 	pass

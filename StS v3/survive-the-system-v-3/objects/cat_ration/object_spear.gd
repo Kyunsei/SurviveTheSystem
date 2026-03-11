@@ -18,7 +18,7 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 
 
 static func on_use(player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BEFORE
-	var center = player.position
+	#var center = player.position
 	var size = Vector3(2,2,2)
 	var targets = player.get_parent().get_alife_in_area(player.position, size)
 	#player.get_node("MeshInstance3D").get_node("Area3D").show()
@@ -36,7 +36,7 @@ static func on_use(player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BE
 	
 	
 	
-static func eat(player):
+static func eat(_player):
 	#print ("eaten cat ratio")
 	print("This Spear can't be eaten")
 	pass

@@ -9,11 +9,11 @@ func _ready() -> void:
 	moving_ground_initial_position = $"../ship/moving_ground1".position
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	pass
 
 
-func _on_area_3d_area_entered(area: Area3D) -> void:
+func _on_area_3d_area_entered(_area: Area3D) -> void:
 	pass
 		
 		

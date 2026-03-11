@@ -109,7 +109,7 @@ func remove_selected(peer_id):
 	else:
 		return null
 
-func get_selected(peer_id):
+func get_selected(_peer_id):
 	if current_index != null:
 		var slot = items[current_index][0].item["Data"][0]		
 		return slot
@@ -149,7 +149,7 @@ func change_index(peer_id,idx):
 
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if player.is_multiplayer_authority():
 		#print(player.inventory_capacity_upgrade)
 		#print(multiplayer.get_unique_id())

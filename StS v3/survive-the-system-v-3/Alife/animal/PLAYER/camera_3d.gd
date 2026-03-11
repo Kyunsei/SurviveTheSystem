@@ -64,18 +64,6 @@ func _process(delta: float) -> void:
 
 
 
-func _physics_process(delta):
-	pass
-	#rotation.x = lerp(rotation.x, pitch, smooth * delta)
-	'if player.is_multiplayer_authority():
-		if Input.is_action_pressed("up"):
-			face_camera(delta)
-		if Input.is_action_pressed("down"):
-			face_camera(delta)
-		if Input.is_action_pressed("left"):
-			face_camera(delta)
-		if Input.is_action_pressed("right"):
-			face_camera(delta)'
 			
 func _unhandled_input(event):
 	if player.is_multiplayer_authority():
@@ -107,7 +95,7 @@ func _input(event):
 				mouse_captured = true
 
 
-func face_camera(delta):
+func face_camera(_delta):
 	# Camera forward vector
 	var cam_forward = - %Camera3D.global_transform.basis.z
 

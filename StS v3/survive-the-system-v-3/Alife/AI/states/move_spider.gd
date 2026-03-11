@@ -21,7 +21,7 @@ func evaluate():
 		if food:
 			if food is Dictionary:
 				var offset = food["position"] - player.position
-				var dist = offset.length()
+				#var dist = offset.length()
 				var food_dir = offset.normalized()
 				player.lifedata["current_speed"] = 22
 				direction = food_dir 
@@ -94,7 +94,7 @@ func exit():
 	pass
 
 
-func update(delta):
+func update(_delta):
 	pass
 	
 func physics_update(delta):

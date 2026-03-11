@@ -37,7 +37,7 @@ func showorhide():
 			isShowing = get_parent().light_grid_visible
 	
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	showorhide()
 	if get_parent().light_grid_visible:
 		#request_light_grid.rpc_id(1,multiplayer.get_unique_id())

@@ -8,9 +8,30 @@
 [ext_resource type="PackedScene" uid="uid://dv0s2jhvhfe0v" path="res://Alife/animal/PLAYER/cat_bones.tscn" id="6_q7pws"]
 [ext_resource type="PackedScene" uid="uid://thsj6h0d3ou" path="res://Alife/Plant/Grass_Manager.tscn" id="6_ruoec"]
 [ext_resource type="PackedScene" uid="uid://dsidfhuppxvrw" path="res://Alife/animal/beast_manager.tscn" id="7_1roai"]
-[ext_resource type="Script" uid="uid://cww3w3dis212h" path="res://objects/item_manager.gd" id="8_byu03"]
+[ext_resource type="Script" path="res://objects/item_manager.gd" id="8_byu03"]
 [ext_resource type="PackedScene" uid="uid://b4aghfi4iytr7" path="res://Alife/Plant/grass_manager2.tscn" id="9_byu03"]
 [ext_resource type="PackedScene" uid="uid://dp2plghkprved" path="res://objects/cat_ration/Object_spear.tscn" id="10_mcv33"]
+[ext_resource type="Script" uid="uid://whqmtmn23lj8" path="res://Alife/DNA.gd" id="12_vcetm"]
+[ext_resource type="Script" uid="uid://dhs3c3gl6pkjm" path="res://Alife/Plant/Grass/grass.gd" id="13_ck1yl"]
+[ext_resource type="Script" uid="uid://dr3a0hgnctbxq" path="res://Alife/Plant/tree/TREE.gd" id="14_jmkf0"]
+[ext_resource type="Script" uid="uid://dj8ux7osvyk1j" path="res://Alife/Plant/Moss/MOSS.gd" id="15_go1ug"]
+[ext_resource type="Script" uid="uid://6g7oj0av4g6x" path="res://Alife/animal/Herbivor/Sheep/sheep_dna.gd" id="16_ck1yl"]
+
+[sub_resource type="Resource" id="Resource_yp710"]
+script = ExtResource("13_ck1yl")
+metadata/_custom_type_script = "uid://dhs3c3gl6pkjm"
+
+[sub_resource type="Resource" id="Resource_vuq5v"]
+script = ExtResource("14_jmkf0")
+metadata/_custom_type_script = "uid://dr3a0hgnctbxq"
+
+[sub_resource type="Resource" id="Resource_5nq35"]
+script = ExtResource("15_go1ug")
+metadata/_custom_type_script = "uid://dj8ux7osvyk1j"
+
+[sub_resource type="Resource" id="Resource_jmkf0"]
+script = ExtResource("16_ck1yl")
+metadata/_custom_type_script = "uid://6g7oj0av4g6x"
 
 [node name="Alife manager" type="Node3D" unique_id=1345180502]
 script = ExtResource("1_yx3o6")
@@ -29,13 +50,14 @@ visible = false
 script = ExtResource("8_byu03")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Item_Manager" unique_id=1684953852]
-_spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk", "uid://dp2plghkprved")
+_spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk")
 spawn_path = NodePath("..")
 
 [node name="Object_spear" parent="Item_Manager" unique_id=1352666552 instance=ExtResource("10_mcv33")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 93.5, -4.4)
 
 [node name="Grass_Manager2" parent="." unique_id=2019447816 instance=ExtResource("9_byu03")]
+species_list = Array[ExtResource("12_vcetm")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35"), SubResource("Resource_jmkf0")])
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=275810104]
 _spawnable_scenes = PackedStringArray("uid://dv0s2jhvhfe0v")

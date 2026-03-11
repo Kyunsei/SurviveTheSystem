@@ -15,6 +15,8 @@ class_name DNA
 @export var Photosynthesis_absorption : PackedFloat32Array =[1.]
 @export var Photosynthesis_range : PackedInt32Array=[0]
 
+	# --- Movement Related ----
+@export var Max_speed : PackedFloat32Array =[0.]
 
 # --- Life Cycle ---
 @export var Reproduction_cost : PackedFloat32Array =[5]
@@ -29,9 +31,15 @@ class_name DNA
 @export var max_life_state : int = 6'
 
 # --- Rendering ---
+@export var multimesh : MultiMesh
+
+
+# --- Inventory---
+
 @export var Sprite_path : String
 #@export var material : Material
 @export var Stack_amount : int
+
 '# --- Flags ---
 @export var is_plant : bool = false
 @export var is_animal : bool = false'
@@ -40,11 +48,15 @@ class_name DNA
 
 # --- BEHAVIOUR FUNCTIONS ---
 
-func growth(manager, i, delta):
+func growth(_manager, _i, _delta):
 	pass
 
-func reproduction(manager, i, delta):
+func reproduction(_manager, _i, _delta):
 	pass
 
-func special_update(manager, i, delta):
+func special_update(_manager, _i, _delta):
+	pass
+
+
+func Choose_action(_manager, _i, _delta):
 	pass

@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="SHEEP" format=3 uid="uid://yi3lcyvwh8vv"]
+
+[ext_resource type="Script" uid="uid://6g7oj0av4g6x" path="res://Alife/animal/Herbivor/Sheep/sheep_dna.gd" id="1_etrcu"]
+
+[resource]
+script = ExtResource("1_etrcu")
+metadata/_custom_type_script = "uid://6g7oj0av4g6x"

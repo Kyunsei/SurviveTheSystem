@@ -19,7 +19,7 @@ func Init() -> void:
 		print("spawn")
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if !init and GlobalSimulationParameter.SimulationStarted:
 		Init()
 		init = true
