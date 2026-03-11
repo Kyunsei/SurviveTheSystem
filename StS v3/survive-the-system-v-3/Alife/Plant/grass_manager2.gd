@@ -17,6 +17,9 @@ var position_array : PackedVector3Array
 var size_array: PackedVector3Array  #NOT IN USE? 
 var binID_array: PackedInt32Array
 
+var flow_world_array : Array[PackedVector3Array]
+var field_world_array : Array[PackedFloat64Array]
+
 #STATS
 var current_energy_array : PackedFloat64Array
 var current_health_array : PackedFloat32Array
@@ -225,6 +228,7 @@ func Init():
 		if !World:
 			print("please set the world")
 		build_species_tables()
+		build_world_bin_tables()
 		#for i in range(1):
 		#	Spawn_New_Grass(Vector3(0+0*i,0,0),0)
 		isInit = true
@@ -587,6 +591,15 @@ func remove_duplicate_in_index_array(A,B):
 		unique_array.append(k)
 	return unique_array
 
+func build_world_bin_tables():
+	var count = species_list.size()
+
+	field_world_array.resize(count)
+	print(World.bin_array.size())
+	for s in range(species_list.size()):
+		for t in range(World.bin_array.size()):
+			field_world_array[s].append(0.0)
+
 
 func build_species_tables():
 	var count = species_list.size()
@@ -602,6 +615,7 @@ func build_species_tables():
 	species_reproduction_spread.resize(count)
 	species_reproduction_number.resize(count)
 	species_biomass.resize(count)
+	
 
 	for s in species_list:
 		s.Init()
@@ -747,9 +761,12 @@ func put_in_world_bin(i):
 	if World.bin_array[new_bin_ID] == null:
 		World.bin_array[new_bin_ID] = [i]
 		World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
+		field_world_array[Species_array[i]][new_bin_ID] += 1.0
 	else:	
 		World.bin_array[new_bin_ID].append(i) 
 		World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
+		field_world_array[Species_array[i]][new_bin_ID] += 1
+
 
 	#binID_array[i] = new_bin_ID
 	
@@ -759,7 +776,10 @@ func remove_from_world_bin(i):
 		if World.bin_array[binID_array[i]].has(i):
 			World.bin_array[binID_array[i]].erase(i)
 			World.bin_sum_array[Species_array[i]][binID_array[i]] -= 1
+			field_world_array[Species_array[i]][binID_array[i]] -= 1
 			binID_array[i] = -1
+
+
 			
 			
 ############################### RPC
