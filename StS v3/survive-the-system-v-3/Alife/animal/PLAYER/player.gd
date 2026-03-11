@@ -380,7 +380,6 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 #"fixed" version :
 @rpc("any_peer","call_local")
 func spear_attack():
-	print("called")
 	spear_attack_animation.rpc_id(int(name))
 	
 
