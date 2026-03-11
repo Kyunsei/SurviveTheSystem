@@ -131,12 +131,11 @@ func _draw():
 '
 
 
-func _on_button_pressed() -> void:
-	if isOn:
-		isOn =false
-	else:
-		isOn = true
 
 
 func _on_line_edit_text_submitted(new_text: String) -> void:
 	update_time = float(new_text)
+
+
+func _on_button_toggled(toggled_on: bool) -> void:
+			isOn = 	toggled_on

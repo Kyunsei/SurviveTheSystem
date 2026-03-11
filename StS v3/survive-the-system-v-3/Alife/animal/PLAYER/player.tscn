@@ -324,7 +324,7 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1.1,
 visible = false
 
 [node name="spear" parent="MeshInstance3D" unique_id=922266187 instance=ExtResource("4_5e6c6")]
-transform = Transform3D(1.9318513, 1.2940954, 0, -0.517638, 4.829629, 0, 0, 0, 2, -0.10000001, -0.20000002, -0.6)
+transform = Transform3D(1.9318511, 1.2940954, 0, -0.517638, 4.829629, 0, 0, 0, 2, -0.10000001, -0.20000002, -0.6)
 
 [node name="Player_control" type="Node" parent="." unique_id=1336833191]
 script = ExtResource("1_31v8x")
