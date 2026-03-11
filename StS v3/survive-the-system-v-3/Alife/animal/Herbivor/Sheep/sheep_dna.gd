@@ -1,5 +1,6 @@
 extends DNA
 class_name SHEEP
+@export var state_array : Array[STATE]
 
 
 func Init():
@@ -47,11 +48,33 @@ func Growth(manager, i, _delta):
 			manager.current_energy_array[i] -=  500
 			manager.current_biomass_array[i] += 5
 			return true
-			
-			
-					
-	'# Simple linear growth
-	var s = manager.Species_array[i]
-	var t = manager.current_life_state_array[i]
 
-	manager.current_biomass_array[i] += 0.5 * delta'
+func Update(_manager, _i, _delta):
+	choose_action(_manager, _i)	
+
+			
+func choose_action(manager, i):
+	if state_array.size() < 1:
+		return
+	var best_score : float = 0
+	var score : float
+	var best_action : STATE
+	for s in state_array:
+		score = s.evaluate(manager, i)		
+		if score > best_score:
+			best_score = score
+			best_action = s
+		
+		elif score == best_score:
+			#print("equal_score")
+			if randi() == 1:
+				best_action = s
+	'if best_action:
+		if best_action ==current_state:
+			if current_state.isFinish == false:
+				return
+		#get_parent().get_node("debugLabel").text =best_action.name
+		if current_state:
+			current_state.exit()
+		best_action.enter()
+		current_state = best_action'

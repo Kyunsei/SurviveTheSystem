@@ -25,6 +25,9 @@ class_name DNA
 @export var Biomass : PackedFloat32Array =[5]
 
 
+
+
+
 '# --- Growth ---
 @export var growth_threshold : float
 @export var biomass_gain : float
@@ -58,5 +61,5 @@ func special_update(_manager, _i, _delta):
 	pass
 
 
-func Choose_action(_manager, _i, _delta):
+func Update(_manager, _i, _delta):
 	pass

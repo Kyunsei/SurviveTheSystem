@@ -255,7 +255,7 @@ func update(delta):
 			for i in range(entity_count):
 				if Active[i] == 1:
 					#continue
-					Choose_action(i,delta)
+					entity_update(i,delta)
 					
 					'var s = Species_array[i]
 					var t = current_life_state_array[i]
@@ -304,8 +304,8 @@ func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 			break
 
 		
-func Choose_action(i,delta):
-	species_list[Species_array[i]].Choose_action(self,i,delta)
+func entity_update(i,delta):
+	species_list[Species_array[i]].Update(self,i,delta)
 	
 		
 			
