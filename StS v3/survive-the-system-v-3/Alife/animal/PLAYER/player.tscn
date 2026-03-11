@@ -208,10 +208,12 @@ transform = Transform3D(0.9659258, 0.25881907, 0, -0.25881907, 0.9659258, 0, 0, 
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D/spear_Area3D" unique_id=815655520]
 transform = Transform3D(0.9659258, -0.25881907, 0, 0.25881907, 0.9659258, 0, 0, 0, 1, -0.13287702, 0.68908906, -0.85)
+visible = false
 mesh = SubResource("BoxMesh_kcrxs")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/spear_Area3D" unique_id=1954593525]
 transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, -0.1294095, 0.7029629, -0.85)
+visible = false
 shape = SubResource("BoxShape3D_kcrxs")
 
 [node name="Area3D" type="Area3D" parent="MeshInstance3D" unique_id=970604991]
@@ -324,7 +326,12 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1.1,
 visible = false
 
 [node name="spear" parent="MeshInstance3D" unique_id=922266187 instance=ExtResource("4_5e6c6")]
+<<<<<<< Updated upstream
 transform = Transform3D(1.9318511, 1.2940954, 0, -0.517638, 4.829629, 0, 0, 0, 2, -0.10000001, -0.20000002, -0.6)
+=======
+transform = Transform3D(1.931851, 1.2940954, 0, -0.51763797, 4.829629, 0, 0, 0, 2, -0.10000001, -0.20000002, -0.6)
+visible = false
+>>>>>>> Stashed changes
 
 [node name="Player_control" type="Node" parent="." unique_id=1336833191]
 script = ExtResource("1_31v8x")

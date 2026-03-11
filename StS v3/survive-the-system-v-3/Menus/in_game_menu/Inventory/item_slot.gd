@@ -32,6 +32,7 @@ func add_item(new_item, peer_id):
 @rpc("any_peer","call_local")
 func is_selected():
 	$ColorRect.show()
+	#if 
 
 @rpc("any_peer","call_local")
 func is_deselected():

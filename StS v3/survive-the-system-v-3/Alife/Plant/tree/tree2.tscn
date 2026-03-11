@@ -1,10 +1,44 @@
 [gd_scene format=3 uid="uid://bgxwmxoqmnoki"]
 
-[ext_resource type="QuadMesh" uid="uid://nh4yv5p6sry0" path="res://Alife/Plant/tree/tree_mesh.tres" id="1_5w4al"]
 [ext_resource type="SphereMesh" uid="uid://c0f8vwlqbesnh" path="res://Alife/Plant/tree/shadow_mesh.tres" id="2_2ehfy"]
+[ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="2_jbxdu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oxt7e"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 2
+shading_mode = 0
+albedo_texture = ExtResource("2_jbxdu")
+texture_filter = 0
+
+[sub_resource type="QuadMesh" id="QuadMesh_3ox4u"]
+material = SubResource("StandardMaterial3D_oxt7e")
+size = Vector2(8, 14)
 
 [node name="Tree" type="MeshInstance3D" unique_id=314223625]
-mesh = ExtResource("1_5w4al")
+cast_shadow = 0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=745418586]
+visible = false
 mesh = ExtResource("2_2ehfy")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1539833211]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 6, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_3ox4u")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=1590529393]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_3ox4u")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=1741673829]
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 6, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_3ox4u")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="." unique_id=1243652367]
+transform = Transform3D(0.7071067, 0, -0.7071067, 0, 1, 0, 0.7071067, 0, 0.7071067, 0, 6, 0)
+cast_shadow = 0
+mesh = SubResource("QuadMesh_3ox4u")
