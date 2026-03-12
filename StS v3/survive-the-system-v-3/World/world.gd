@@ -1,7 +1,7 @@
 extends Node3D
 
 #WORLD SETUP
-var World_Size = Vector3(180,1,180)
+var World_Size = Vector3(400,1,400)
 #var World_Size = Vector3(120,1,120)
 
 #var World_Size = Vector3(50,1,50)
@@ -75,8 +75,7 @@ func index_3dto1d(x, y, z, tile_size):
 
 	return int(x + array_size.x * (y + array_size.y * z))
 
-func index_1dto3d(i, size_in3D) -> Vector3i:
-	print("2dto3d not fixed yet")
+func index_1dto3d(i:int, size_in3D:Vector3i) -> Vector3i:
 	var x = i % size_in3D.x
 	var y = (i / size_in3D.x) % size_in3D.y
 	var z = i / (size_in3D.x * size_in3D.y)

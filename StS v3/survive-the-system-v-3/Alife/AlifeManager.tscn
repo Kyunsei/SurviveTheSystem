@@ -16,6 +16,7 @@
 [ext_resource type="Script" uid="uid://dr3a0hgnctbxq" path="res://Alife/Plant/tree/TREE.gd" id="14_jmkf0"]
 [ext_resource type="Script" uid="uid://dj8ux7osvyk1j" path="res://Alife/Plant/Moss/MOSS.gd" id="15_go1ug"]
 [ext_resource type="Script" uid="uid://6g7oj0av4g6x" path="res://Alife/animal/Herbivor/Sheep/sheep_dna.gd" id="16_ck1yl"]
+[ext_resource type="Script" uid="uid://btfv6wp0e0836" path="res://Alife/AIv2/STATE.gd" id="17_jmkf0"]
 
 [sub_resource type="Resource" id="Resource_yp710"]
 script = ExtResource("13_ck1yl")

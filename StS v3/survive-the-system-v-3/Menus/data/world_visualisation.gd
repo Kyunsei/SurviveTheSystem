@@ -5,20 +5,34 @@ var World
 var mm
 var panel_size : Vector2
 var color_list = [Color(0.0, 0.345, 0.0, 1.0),Color(0.507, 0.207, 0.164, 1.0),Color(0.0, 0.117, 1.0, 1.0),Color(0.635, 0.635, 0.635, 1.0),Color(0.638, 0.398, 0.895, 1.0),Color(0.976, 0.11, 0.0, 1.0),Color(0.826, 0.826, 0.826, 1.0)]
-var isOn
+var isOn = true
 var update_time = 1
+
+
+#------- different affichage -----------
+
+var alife_selected : int = 0
+var isalifeshow : bool = true
+var isfieldshow : bool = false
+var isflowshow : bool = false
+var isbinshow : bool = false
+var islightshow : bool = false
+
+
+# ...
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	alifemanager = get_parent().get_parent().get_parent().get_node("Alife manager")
 	World = get_parent().get_parent().get_parent().get_node("World")
 	panel_size = $Panel.size
 	mm = $MultiMeshInstance2D.multimesh# MultiMesh.new()
-	
-	
 	mm.transform_format = MultiMesh.TRANSFORM_2D
 	mm.instance_count = 1000000
 	var quad = QuadMesh.new()
 	quad.size = Vector2(4, 4)
+	$Alife_select.get_popup().id_pressed.connect(_on_menu_button_pressed)
 
 	#var instance = MultiMeshInstance2D.new()
 	#instance.multimesh = mm
@@ -33,40 +47,128 @@ func _process(delta: float) -> void:
 			update_time = 1
 
 func update():
-	'for i in range(mm.instance_count):
-		var pos = Vector2(randf()*1024, randf()*768)
-		var t = Transform2D(0, pos)
-		mm.set_instance_transform_2d(i, t)
-		mm.set_instance_color(i, Color(1, 0, 0)) # red'
-	#mm.instance_count = 50000
 
 	var i = 0
-	for g in alifemanager.get_node("Grass_Manager").grass_dict.values():
-		var t : Transform2D
-		var pos = position_conversion(g["position"])
-		if g["Species"] == Alifedata.enum_speciesID.GRASS:
-
-			t = Transform2D(
-				Vector2(0.5, 0),
-				Vector2(0, 0.5),
-				pos
-			)
-		else:
-			t = Transform2D(0, position_conversion(g["position"]))
+	
+	if isbinshow:	
+		i = show_bin(i,World.bin_array, World.bin_size)	
+	if islightshow:
+		i = show_bin(i,World.light_array, World.light_tile_size)
+	if isalifeshow:
+		i = show_alife(i,alife_selected)
+	if isfieldshow:
+		i = show_field(i)
 		
+	mm.visible_instance_count = i
+	
+	'for g in alifemanager.get_node("beast_manager").beast_dict.values():
+		var t = Transform2D(0, position_conversion(g["position"]))
 
 		mm.set_instance_transform_2d(i, t)
 		mm.set_instance_color(i, color_list[g["Species"]]) 
-
 		i+= 1
 
+	mm.visible_instance_count = alifemanager.get_node("beast_manager").beast_dict.size() +  alifemanager.get_node("Grass_Manager").grass_dict.size() + alifemanager.get_node("Grass_Manager2").entity_count
+'
+func position_conversion(pos):
+	#var newpos
+	#var factor = Vector2(World.World_Size.x*World.bin_size.x,World.World_Size.z*World.bin_size.z) / panel_size
+	#newpos = Vector2(pos.x,pos.z) /  factor  + panel_size/2
+	#print("pos: ", pos, " -> panel: ", newpos, " (factor: ", factor, ")")
+	var world_extent = Vector2(World.World_Size.x, World.World_Size.z)
+	# world_extent = (1000, 1000) meters
+	var newpos = (Vector2(pos.x, pos.z) / world_extent) * panel_size + panel_size / 2
+	#print(pos)
+	return newpos
+	#return newpos
+
+
+func show_field(i):
+	if alife_selected == 0:
+		return i
+	var arr = alifemanager.get_node("Grass_Manager2").field_world_array[alife_selected-1]
+	for bin in range(World.bin_array.size()):
+		var t : Transform2D
+		var tile_number = Vector3i(World.World_Size/ World.bin_size)
+		
+		var conv_tile_size = Vector2()
+		conv_tile_size.x = panel_size.x / tile_number.x
+		conv_tile_size.y = panel_size.y / tile_number.z	
+		var x = (bin % int(tile_number.x) )  * conv_tile_size.x +  conv_tile_size.x/2
+		@warning_ignore("integer_division")
+		var y = (bin / int(tile_number.x) % int(tile_number.z) )* conv_tile_size.y + +  conv_tile_size.y/2
+
+		
+		var stupid_factor = Vector2(World.bin_size.x, World.bin_size.z) / Vector2(5,5)
+		var stupid_scale = panel_size/ Vector2(World.World_Size.x, World.World_Size.z)  * stupid_factor
+
+		t = Transform2D(
+				Vector2(stupid_scale.x, 0),
+				Vector2(0, stupid_scale.y),
+				Vector2i(x,y)
+			)
+		
+		mm.set_instance_transform_2d(i, t)
+		var value = float(arr[bin])/25.0	
+		var col = Color(value, value, value, 1.0)		
+		mm.set_instance_color(i, col )	
+		i+= 1
+	return i
+
+
+
+func show_bin(i,world_bin, tile_size):
+	for bin in range(world_bin.size()):
+		var t : Transform2D
+		var tile_number = Vector3i(World.World_Size/ tile_size)
+		
+		var conv_tile_size = Vector2()
+		conv_tile_size.x = panel_size.x / tile_number.x
+		conv_tile_size.y = panel_size.y / tile_number.z	
+		var x = (bin % int(tile_number.x) )  * conv_tile_size.x +  conv_tile_size.x/2
+		@warning_ignore("integer_division")
+		var y = (bin / int(tile_number.x) % int(tile_number.z) )* conv_tile_size.y + +  conv_tile_size.y/2
+
+		
+		var stupid_factor = Vector2(tile_size.x, tile_size.z) / Vector2(5,5)
+		var stupid_scale = panel_size/ Vector2(World.World_Size.x, World.World_Size.z)  * stupid_factor
+
+		t = Transform2D(
+				Vector2(stupid_scale.x, 0),
+				Vector2(0, stupid_scale.y),
+				Vector2i(x,y)
+			)
+		
+		mm.set_instance_transform_2d(i, t)
+		var value = 0
+		if world_bin[i]:
+			if  world_bin[i] is Array:
+				value = min(float(world_bin[i].size()),30.)/30.
+			else:
+				value = world_bin[i]
+		
+		var col = Color(value, value, value, 1.0)
+		
+		mm.set_instance_color(i, col )	
+		i+= 1
+	return i
+
+
+
+
+
+func show_alife(i, sp):
+
+	
 	var c = 0
 	var manager = alifemanager.get_node("Grass_Manager2")
 	for posit in alifemanager.get_node("Grass_Manager2").position_array:
 		var t : Transform2D
 		var pos = position_conversion(posit)
 		if alifemanager.get_node("Grass_Manager2").Active[c] == 0:
-			pos.y = -10000
+			pos.y = -10000	
+			
+
 			
 		if manager.Species_array[c] == 0:
 			t = Transform2D(
@@ -76,34 +178,20 @@ func update():
 				)
 		else:
 			t = Transform2D(0, pos)	
-		mm.set_instance_transform_2d(i, t)
-		mm.set_instance_color(i, color_list[manager.Species_array[c]]) 
-
+		
+		if sp == 0: #ALL specie sprinted
+			mm.set_instance_transform_2d(i, t)
+			mm.set_instance_color(i, color_list[manager.Species_array[c]]) 	
+			i+= 1
+		elif manager.Species_array[c] == sp - 1 :
+			mm.set_instance_transform_2d(i, t)
+			mm.set_instance_color(i, color_list[manager.Species_array[c]]) 	
+			i+= 1		
+		c+= 1	
 	
-			
-	#var transforms = mm.get_instance_transform_array()
-	#transforms[i] = t
-	#mm.set_instance_transform_array(transforms)
-			
-		i+= 1
-		c+= 1
+
+	return i
 	
-	for g in alifemanager.get_node("beast_manager").beast_dict.values():
-		var t = Transform2D(0, position_conversion(g["position"]))
-
-		mm.set_instance_transform_2d(i, t)
-		mm.set_instance_color(i, color_list[g["Species"]]) 
-		i+= 1
-
-	mm.visible_instance_count = alifemanager.get_node("beast_manager").beast_dict.size() +  alifemanager.get_node("Grass_Manager").grass_dict.size() + alifemanager.get_node("Grass_Manager2").entity_count
-
-func position_conversion(pos):
-	var newpos
-	var factor = Vector2(World.World_Size.x*World.bin_size.x,World.World_Size.z*World.bin_size.z) / panel_size/2
-	#print(factor)
-	newpos = Vector2(pos.x,pos.z) *  factor  + panel_size/2
-
-	return newpos
 '
 func add_energy_in_each_tile(value):
 	for i in World_size:
@@ -131,6 +219,8 @@ func _draw():
 '
 
 
+func _on_menu_button_pressed(id : int) -> void:
+	alife_selected = id
 
 
 func _on_line_edit_text_submitted(new_text: String) -> void:
@@ -139,3 +229,23 @@ func _on_line_edit_text_submitted(new_text: String) -> void:
 
 func _on_button_toggled(toggled_on: bool) -> void:
 			isOn = 	toggled_on
+
+
+func _on_button_alife_toggled(toggled_on: bool) -> void:
+	isalifeshow = toggled_on
+
+
+func _on_button_field_toggled(toggled_on: bool) -> void:
+	isfieldshow = toggled_on
+
+
+func _on_button_flow_toggled(toggled_on: bool) -> void:
+	isflowshow= toggled_on
+
+
+func _on_button_bin_toggled(toggled_on: bool) -> void:
+	isbinshow= toggled_on
+
+
+func _on_button_light_toggled(toggled_on: bool) -> void:
+	islightshow = toggled_on
