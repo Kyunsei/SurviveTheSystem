@@ -1,5 +1,22 @@
 [gd_scene format=3 uid="uid://dnm54piw4bqn6"]
 
 [ext_resource type="PackedScene" uid="uid://bbpte0ycxxfvu" path="res://assets/asset dabols/spear.fbx" id="1_u00d7"]
+[ext_resource type="Texture2D" uid="uid://4gvvl55dr8wa" path="res://assets/assets kyun/axe_head1.png" id="2_qgbiw"]
 
-[node name="spear" unique_id=1429903944 instance=ExtResource("1_u00d7")]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crkon"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 2
+albedo_texture = ExtResource("2_qgbiw")
+texture_filter = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_qgbiw"]
+material = SubResource("StandardMaterial3D_crkon")
+size = Vector2(0.1, 0.05)
+
+[node name="spear" unique_id=922266187 instance=ExtResource("1_u00d7")]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." index="2" unique_id=1377958339]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.38, 0)
+mesh = SubResource("QuadMesh_qgbiw")
