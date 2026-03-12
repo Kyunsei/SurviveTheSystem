@@ -139,10 +139,11 @@ func UseITEM():
 
 @rpc("any_peer","call_local")
 func pick_up() :
-			var collision = %pick_up_CollisionShape3D
-			collision.disabled = false
-			await get_tree().create_timer(0.2).timeout
-			collision.disabled = true
+	pass
+	#var collision = %pick_up_CollisionShape3D
+	#collision.disabled = false
+	#await get_tree().create_timer(0.2).timeout
+	#collision.disabled = true
 
 @rpc("any_peer","call_local")
 func eat_holding_item() :

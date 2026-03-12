@@ -5,9 +5,9 @@ var max_biomass = 100
 var credit_gain = 0
 @onready var spaceship: Node3D = $"../SPACESHIP"
 var collecting = true
-var timer_to_escape = int(61)
+var timer_to_escape = int(91)
 var safe_timer = int(6)
-var factor = 5#0.005
+var factor = 0.005
 var InsideBiomassInitHeight
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

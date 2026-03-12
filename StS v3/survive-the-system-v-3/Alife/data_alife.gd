@@ -13,7 +13,7 @@ var Homeostasis_cost: float
 var Photosynthesis_absorbtion: float
 var light_index: int
 @export var cat_max_health = 100
-@export var cat_max_energy = 100
+@export var cat_max_energy = 200
 
 'func _init(_id:int, _pos:Vector3, sp:enum_speciesID):
 	ID = _id
@@ -128,7 +128,7 @@ func build_lifedata(_id:int, _pos:Vector3, sp:enum_speciesID):
 			new_life["Danger_type"] = [enum_speciesID.SPIDERCRAB]
 			new_life["Max_age"] = 100.0
 			new_life["Max_energy"] = 10
-			new_life["Max_energy"] = 100
+			new_life["Max_energy"] = 200
 			new_life["Max_health"] = 100
 			#-------------Upgrade related here--------------
 			new_life["Inventory_capacity"] = 1

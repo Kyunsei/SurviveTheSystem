@@ -9,6 +9,7 @@ var target_position: Vector3
 var collector_grabbed := false
 var collector_init_position
 var collector_moving = false
+var collector_target_position
 var moving := false
 
 func _ready():
@@ -17,6 +18,7 @@ func _ready():
 		collector_init_position = collector.global_position
 		start_position = global_position
 		target_position = start_position 
+		collector_target_position = start_position -Vector3(0,5,0)
 
 
 func _physics_process(delta):
@@ -30,7 +32,7 @@ func _physics_process(delta):
 		
 		global_position = global_position.move_toward(target_position, move_speed * delta)
 		if collector_grabbed == true:
-			collector.global_position = collector.global_position.move_toward(target_position, move_speed * delta)
+			collector.global_position = collector.global_position.move_toward(collector_target_position, move_speed * delta)
 		# Stop when reached
 		if global_position.distance_to(target_position) < 0.01:
 			global_position = target_position
@@ -51,7 +53,7 @@ func go_down():
 			return
 		
 		if global_position == start_position:
-			target_position = collector.global_position
+			target_position = collector.global_position + Vector3(0,5,0)
 			moving = true
 
 
@@ -62,7 +64,7 @@ func go_up():
 		if moving:
 			return
 		
-		var down_position = collector.global_position
+		var down_position = collector.global_position + Vector3(0,5,0)
 		collector_grabbed = true
 		if global_position == down_position:
 			target_position = start_position

@@ -120,6 +120,10 @@ script = ExtResource("7_8txik")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="go_button/Area3D_go_button" unique_id=1330551069]
 shape = SubResource("BoxShape3D_8txik")
 
+[node name="Label3D" type="Label3D" parent="go_button" unique_id=1398346734]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5999999, 0)
+text = "Press R!"
+
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=865904901]
 replication_config = SubResource("SceneReplicationConfig_8txik")
 

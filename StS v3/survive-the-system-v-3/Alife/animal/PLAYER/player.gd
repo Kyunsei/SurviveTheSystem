@@ -29,7 +29,7 @@ var current_hunger = max_hunger
 @onready var energy_bar = $MeshInstance3D/Status_bar/SubViewport2/ProgressBarEnergy
 
 #upgrades variable here
-var catnation_credits = 1000
+var catnation_credits = 1
 var inv_capacity = 0.0
 var inventory_capacity_upgrade = 1
 var pickup_capacity = 0.0
@@ -231,7 +231,7 @@ func _process(delta: float) -> void:
 			if position.y >= escape_height:
 				timer_label.text = str(int(escape_time_left)) +"(safe)"
 			else:
-				timer_label.text = str(int(escape_time_left)) + " (death)"
+				timer_label.text = str(int(escape_time_left)) + " Return to ship"
 			if escape_time_left <= 0:
 				escape_timer_running = false
 
@@ -284,7 +284,7 @@ func death(_id):
 	base_jump = 0
 	$MeshInstance3D.hide()
 	get_parent().drop_bones.rpc_id(1, position)
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(3.0).timeout
 	respawn()
 	respawn_server.rpc_id(1)
 	#$CatBones.show()
@@ -305,8 +305,8 @@ func respawn():
 @rpc("any_peer","call_local")
 func respawn_server():
 	lifedata["current_health"] = 100
-	lifedata["current_energy"] = 100
-	lifedata["Max_energy"] = 100
+	lifedata["current_energy"] = 200
+	lifedata["Max_energy"] = 200
 	lifedata["Max_health"] = 100
 	inventory_capacity_upgrade = 1
 	lifedata["Alive"] = 1
