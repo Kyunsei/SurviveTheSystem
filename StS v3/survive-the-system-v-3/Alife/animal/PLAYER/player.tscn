@@ -93,9 +93,15 @@ properties/5/replication_mode = 1
 properties/6/path = NodePath("MultiplayerSynchronizer:sync_bstate_array")
 properties/6/spawn = true
 properties/6/replication_mode = 0
-properties/7/path = NodePath("AnimationPlayer:current_animation")
+properties/7/path = NodePath("MeshInstance3D/Hoover:visible")
 properties/7/spawn = true
 properties/7/replication_mode = 1
+properties/8/path = NodePath("MeshInstance3D/spear:visible")
+properties/8/spawn = true
+properties/8/replication_mode = 1
+properties/9/path = NodePath("AnimationPlayer:current_animation")
+properties/9/spawn = true
+properties/9/replication_mode = 1
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_1iiag"]
 height = 1.0
