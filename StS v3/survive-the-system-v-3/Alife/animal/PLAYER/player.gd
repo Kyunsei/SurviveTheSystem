@@ -102,10 +102,24 @@ func drop(id, number):
 func equip_item(item):
 	item_hold = item
 	if item_hold:
+		#print("12121")
 		update_item_hold_texture.rpc(item["inventory_icon"])
+		show_selected(item_hold, int(name))
 		#$MeshInstance3D/Sprite3D_holdItem.texture = load(item["inventory_icon"])
 	else:
 		update_item_hold_texture.rpc(null)
+		hide_bound_objects()
+func show_selected(item, peer_id):
+		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
+		var slot = item["Data"][0]		
+		if slot["inventory_path"] == spear_path:
+			update_item_hold_texture.rpc(null)
+			get_node("MeshInstance3D").get_node("spear").show()
+		else:
+			hide_bound_objects()
+
+func hide_bound_objects():
+	get_node("MeshInstance3D").get_node("spear").hide()
 
 @rpc("any_peer","call_local")
 func update_item_hold_texture(path):
@@ -366,7 +380,6 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 #"fixed" version :
 @rpc("any_peer","call_local")
 func spear_attack():
-	print("called")
 	spear_attack_animation.rpc_id(int(name))
 	
 

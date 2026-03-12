@@ -112,7 +112,24 @@ func remove_selected(peer_id):
 func get_selected(_peer_id):
 	if current_index != null:
 		var slot = items[current_index][0].item["Data"][0]		
+		print(slot["inventory_path"])
 		return slot
+		
+func show_selected(idx, peer_id):
+	if current_index != null:
+		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
+		var slot = items[current_index][0].item["Data"][0]		
+		if slot["inventory_path"] == spear_path:
+				player.get_node("MeshInstance3D").get_node("spear").show()
+
+func hide_selected(idx, peer_id):
+	if current_index != null:
+		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
+		var slot = items[current_index][0].item["Data"][0]		
+		if slot["inventory_path"] == spear_path:
+			player.get_node("MeshInstance3D").get_node("spear").hide()
+
+
 
 '@rpc("authority","call_remote")
 func equip_item_at_index(idx):
@@ -121,19 +138,22 @@ func equip_item_at_index(idx):
 	if slot:
 		return slot
 	return null'
-
+#old version
 func select_item(idx, peer_id):
 	if idx != null:   #mean unselected	
 		var slot = items[idx][0]
 		if  slot:
 			slot.is_selected()
+			#show_selected(idx,peer_id)
 			
 	if current_index  != null:
 		if current_index != idx:
 			items[current_index][0].is_deselected()	
+			#hide_selected(idx, peer_id)
 	
 	current_index = idx
 	change_index.rpc_id(1,peer_id,idx)
+
 
 
 @rpc("authority","call_remote")
@@ -156,10 +176,11 @@ func _process(_delta: float) -> void:
 		#print ("----")
 		if Input.is_action_just_pressed("slot1"):
 			select_item(0,int(player.name))
-		if Input.is_action_just_pressed("slot3"):
-			select_item(2,int(player.name))
+			#show_selected(0, int(player.name))
 		if Input.is_action_just_pressed("slot2"):
 			select_item(1,int(player.name))
+		if Input.is_action_just_pressed("slot3"):
+			select_item(2,int(player.name))
 		if Input.is_action_just_pressed("slot4"):
 			select_item(3,int(player.name))
 		if Input.is_action_just_pressed("unequip"):

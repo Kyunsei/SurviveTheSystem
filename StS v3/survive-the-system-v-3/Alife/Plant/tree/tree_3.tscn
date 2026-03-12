@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://3w7arlxybvgv"]
+
+[ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="1_m8mmk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sreol"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+shading_mode = 0
+albedo_texture = ExtResource("1_m8mmk")
+texture_filter = 0
+
+[sub_resource type="QuadMesh" id="QuadMesh_w411y"]
+material = SubResource("StandardMaterial3D_sreol")
+
+[node name="Tree3" type="Node3D" unique_id=689786316]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=271387007]
+cast_shadow = 0
+mesh = SubResource("QuadMesh_w411y")
