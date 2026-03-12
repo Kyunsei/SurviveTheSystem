@@ -38,7 +38,7 @@ static func on_use(player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BE
 	
 static func eat(player):
 	#print ("eaten cat ratio")
-	var value = 50
+	var value = 100
 	var inventory = player.get_node("Player_HUD").get_node("Inventory")
 	var item_eaten = inventory.remove_selected(int(player.name))
 	if item_eaten:

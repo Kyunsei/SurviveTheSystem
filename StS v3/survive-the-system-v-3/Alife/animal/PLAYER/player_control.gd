@@ -131,9 +131,9 @@ func UseITEM():
 			for t in targets:
 				if t is Dictionary:
 					if t != player.lifedata:
-						alife_manager.Attack(t,5)
+						alife_manager.Attack(t,1)
 				else:
-					alife_manager.Attack(t,5)
+					alife_manager.Attack(t,1)
 				
 				
 
