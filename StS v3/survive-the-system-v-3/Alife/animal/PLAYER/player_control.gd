@@ -96,11 +96,12 @@ func _physics_process(delta: float) -> void:
 			#print("player health is "+ str(player.current_health))
 			#print("player hunger is "+ str(player.current_hunger))
 			if Input.is_action_just_pressed("pick_up") :
-				var Area3d = %Pick_up_Area3D
-				Area3d.show()
-				pick_up.rpc_id(1)
-				await get_tree().create_timer(0.2).timeout
-				Area3d.hide()
+				pass
+				#var Area3d = %Pick_up_Area3D
+				#Area3d.show()
+				#pick_up.rpc_id(1)
+				#await get_tree().create_timer(0.2).timeout
+				#Area3d.hide()
 			if Input.is_action_just_pressed("show_status") :
 				show_stats_menu()
 				

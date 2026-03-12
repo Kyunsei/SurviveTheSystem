@@ -27,6 +27,7 @@ var current_health = max_health
 var current_hunger = max_hunger
 @onready var health_bar = $MeshInstance3D/Status_bar/SubViewport/ProgressBarHealth
 @onready var energy_bar = $MeshInstance3D/Status_bar/SubViewport2/ProgressBarEnergy
+var immune_to_death = false
 
 #upgrades variable here
 var catnation_credits = 1
@@ -276,20 +277,22 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 
 @rpc("any_peer","call_local")
 func death(_id):
-	$CollisionShape3D.disabled = true
-	velocity = Vector3.ZERO
-	gravity = 0
-	fall_gravity = 0
-	low_jump_gravity = 0
-	max_speed = 0
-	sprint_speed = 0
-	base_jump = 0
-	$MeshInstance3D.hide()
-	get_parent().drop_bones.rpc_id(1, position)
-	await get_tree().create_timer(3.0).timeout
-	respawn()
-	respawn_server.rpc_id(1)
-	#$CatBones.show()
+	if immune_to_death == false:
+		immune_to_death = true
+		$CollisionShape3D.disabled = true
+		velocity = Vector3.ZERO
+		gravity = 0
+		fall_gravity = 0
+		low_jump_gravity = 0
+		max_speed = 0
+		sprint_speed = 0
+		base_jump = 0
+		$MeshInstance3D.hide()
+		get_parent().drop_bones.rpc_id(1, global_position)
+		await get_tree().create_timer(3.0).timeout
+		respawn()
+		respawn_server.rpc_id(1)
+		#$CatBones.show()
 
 #@rpc("any_peer","call_local")
 func respawn():
@@ -303,7 +306,8 @@ func respawn():
 	inventory_capacity_upgrade = 1
 	$CollisionShape3D.disabled = false
 	$MeshInstance3D.show()
-
+	await get_tree().create_timer(1).timeout
+	immune_to_death = false
 @rpc("any_peer","call_local")
 func respawn_server():
 	lifedata["current_health"] = 100
