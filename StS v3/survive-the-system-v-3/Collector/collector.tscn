@@ -24,7 +24,7 @@ albedo_color = Color(0.33333334, 0.73333335, 0.4745098, 0.19607843)
 material = SubResource("StandardMaterial3D_dwx45")
 size = Vector3(1.4, 3.8, 1.4)
 
-[node name="Collector" type="Node3D" unique_id=987041243 groups=["Collector"]]
+[node name="Collector" type="AnimatableBody3D" unique_id=529367699 groups=["Collector"]]
 script = ExtResource("1_0s0nn")
 
 [node name="Collector_model" parent="." unique_id=812750137 instance=ExtResource("1_mrs3r")]

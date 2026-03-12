@@ -42,6 +42,8 @@ func _physics_process(delta):
 
 
 
+
+
 # 🔽 Call this to move platform down
 func go_down():
 	if multiplayer.is_server():
@@ -65,7 +67,7 @@ func go_up():
 		if global_position == down_position:
 			target_position = start_position
 			moving = true
-			
+
 			
 #VERSION WITH VELOCITY
 #extends AnimatableBody3D
