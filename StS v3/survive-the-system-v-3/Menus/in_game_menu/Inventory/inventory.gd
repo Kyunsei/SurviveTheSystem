@@ -112,22 +112,24 @@ func remove_selected(peer_id):
 func get_selected(_peer_id):
 	if current_index != null:
 		var slot = items[current_index][0].item["Data"][0]		
-		print(slot["inventory_path"])
+		#print(slot["inventory_path"])
 		return slot
 		
 func show_selected(idx, peer_id):
 	if current_index != null:
 		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
-		var slot = items[current_index][0].item["Data"][0]		
-		if slot["inventory_path"] == spear_path:
-				player.get_node("MeshInstance3D").get_node("spear").show()
+		var slot = items[current_index][0].item["Data"][0]	
+		if slot is Dictionary:	
+			if slot["inventory_path"] == spear_path:
+					player.get_node("MeshInstance3D").get_node("spear").show()
 
 func hide_selected(idx, peer_id):
 	if current_index != null:
 		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
 		var slot = items[current_index][0].item["Data"][0]		
-		if slot["inventory_path"] == spear_path:
-			player.get_node("MeshInstance3D").get_node("spear").hide()
+		if slot is Dictionary:	
+			if slot["inventory_path"] == spear_path:
+				player.get_node("MeshInstance3D").get_node("spear").hide()
 
 
 
