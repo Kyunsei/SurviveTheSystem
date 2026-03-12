@@ -30,7 +30,7 @@ func _physics_process(delta):
 		
 		global_position = global_position.move_toward(target_position, move_speed * delta)
 		if collector_grabbed == true:
-			collector.global_position = global_position.move_toward(target_position, move_speed * delta)
+			collector.global_position = collector.global_position.move_toward(target_position, move_speed * delta)
 		# Stop when reached
 		if global_position.distance_to(target_position) < 0.01:
 			global_position = target_position
