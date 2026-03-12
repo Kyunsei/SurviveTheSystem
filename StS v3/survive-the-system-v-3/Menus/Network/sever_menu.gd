@@ -1,7 +1,7 @@
 extends Control
 
-var IP_ADDRESS = "127.0.0.1" #"158.41.57.177"
-var PORT = 12345
+var IP_ADDRESS = "127.0.0.1"
+var PORT = 10000
 var MAX_CLIENTS = 5
 var alifemanager
 
@@ -87,3 +87,7 @@ func _on_check_button_toggled(toggled_on: bool) -> void:
 		GlobalSimulationParameter.DEBUG_grass_sim = 1
 	else:
 		GlobalSimulationParameter.DEBUG_grass_sim = 0
+
+
+func _on_port_text_changed(new_text: String) -> void:
+	PORT = int(new_text)

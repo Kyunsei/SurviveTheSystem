@@ -1,12 +1,12 @@
 extends Control
 
-var IP_ADDRESS = "127.0.0.1" #"158.41.57.177"
+var IP_ADDRESS = "127.0.0.1"
 var Local_address = "127.0.0.1"
-var V_address ="195.26.116.181" 
-var K_address = "92.107.162.231"
+var V_address ="" 
+var K_address = ""
 var newIP = ""
 #var tried_already = false
-var PORT = 12345
+var PORT = 10000
 
 var peer: ENetMultiplayerPeer
 
@@ -79,7 +79,7 @@ func _on_button_play_pressed() -> void:
 
 
 func _on_button_localconnect_pressed() -> void:
-	connect_to_server(IP_ADDRESS, PORT)
+	connect_to_server(Local_address, PORT)
 
 
 func _on_button_onlineconnect_pressed() -> void:
@@ -90,3 +90,15 @@ func _on_button_onlineconnect_pressed() -> void:
 func _on_button_onlineconnect_2_pressed() -> void:
 	newIP =V_address
 	connect_to_server(newIP, PORT)
+
+
+func _on_button_online_pressed() -> void:
+	connect_to_server(IP_ADDRESS, PORT)
+
+
+func _on_port_text_changed(new_text: String) -> void:
+	PORT = int(new_text)
+
+
+func _on_ip_text_changed(new_text: String) -> void:
+	IP_ADDRESS = new_text
