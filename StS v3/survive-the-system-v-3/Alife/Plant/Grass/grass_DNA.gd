@@ -33,7 +33,7 @@ func Init():
 #INVENTORY
 
 	Sprite_path = "res://Alife/Plant/Grass/grass.png"  #TO DEFINE HERE BEST WAY
-	Stack_amount = 100
+	Stack_amount = 300
 
 
 

@@ -97,7 +97,7 @@ func upgrade_inventory_capacity():
 	if p.catnation_credits >=p.inventory_upgrade_cost:
 		p.catnation_credits -=p.inventory_upgrade_cost
 		p.inventory_upgrade_cost += 1
-		p.inventory_capacity_upgrade += 0.2
+		p.inventory_capacity_upgrade += 0.5
 		p.lifedata["Inventory_capacity"] = p.inventory_capacity_upgrade
 		print("your maximum inventory capacity is " +str(p.inventory_capacity_upgrade) +" times bigger")
 		p.lifedata["Money"] = p.catnation_credits

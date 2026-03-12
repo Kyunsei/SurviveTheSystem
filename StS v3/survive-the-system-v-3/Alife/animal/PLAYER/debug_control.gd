@@ -45,10 +45,16 @@ func _physics_process(_delta: float) -> void:
 					tuto_HUD.show()
 			if Input.is_action_just_pressed("F3"):
 				change_server_simulation_speed.rpc_id(1,600)
+			if Input.is_action_just_pressed("F4"):
+				grant_player_money.rpc_id(1, int(player.name))
 				
 			if Input.is_action_just_pressed("F5"):
 				player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer.rpc_id(1,multiplayer.get_unique_id())
 
+@rpc("any_peer","call_remote")
+func grant_player_money(id):
+	player.catnation_credits += 100
+	player.update_status_of_player.rpc_id(id)
 func _process(_delta: float) -> void:
 	if multiplayer.is_server():
 		if isWorldAccelerated:
