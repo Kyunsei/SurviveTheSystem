@@ -18,7 +18,7 @@ func _ready():
 		collector_init_position = collector.global_position
 		start_position = global_position
 		target_position = start_position 
-		collector_target_position = start_position -Vector3(0,5,0)
+		collector_target_position = start_position -Vector3(1,2,0)
 
 
 func _physics_process(delta):
@@ -53,7 +53,7 @@ func go_down():
 			return
 		
 		if global_position == start_position:
-			target_position = collector.global_position + Vector3(0,5,0)
+			target_position = collector.global_position + Vector3(1,2,0)
 			moving = true
 
 
@@ -64,7 +64,7 @@ func go_up():
 		if moving:
 			return
 		
-		var down_position = collector.global_position + Vector3(0,5,0)
+		var down_position = collector.global_position + Vector3(1,2,0)
 		collector_grabbed = true
 		if global_position == down_position:
 			target_position = start_position

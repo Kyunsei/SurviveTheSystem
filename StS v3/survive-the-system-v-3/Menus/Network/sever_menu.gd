@@ -54,6 +54,10 @@ func start_server():
 	multiplayer.multiplayer_peer = peer
 	$Label.text = $Label.text + "\nServer ONLINE"
 	server_started.emit()
+	
+	GlobalSimulationParameter.simulation_speed = 20000
+	await get_tree().create_timer(1).timeout
+	GlobalSimulationParameter.simulation_speed = 1
 
 func stop_server():
 	if peer:

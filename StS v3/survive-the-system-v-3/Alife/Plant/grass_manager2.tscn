@@ -128,23 +128,24 @@ multimesh = SubResource("MultiMesh_2xdm7")
 visible = false
 
 [node name="ProgressBar" type="ProgressBar" parent="CanvasLayer" unique_id=1728687036]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
+anchors_preset = -1
+anchor_left = 0.42100695
+anchor_right = 0.5572917
+anchor_bottom = 0.06944445
 offset_left = -43.0
-offset_top = 8.0
+offset_top = 40.0
 offset_right = 37.0
-offset_bottom = 35.0
+offset_bottom = 67.0
 grow_horizontal = 2
 max_value = 2000.0
 value = 100.0
 metadata/_edit_use_anchors_ = true
 
 [node name="Label" type="Label" parent="CanvasLayer" unique_id=1782219292]
-offset_left = 518.0
-offset_top = 33.0
-offset_right = 630.0
-offset_bottom = 56.0
+offset_left = 503.0
+offset_top = 121.0
+offset_right = 615.0
+offset_bottom = 144.0
 text = "Loading World"
 metadata/_edit_use_anchors_ = true
 

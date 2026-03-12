@@ -10,6 +10,7 @@ func _ready() :
 	pass
 
 
+		
 
 func interact():
 	if currently_active == false:

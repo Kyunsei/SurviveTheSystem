@@ -174,7 +174,8 @@ func _ready() -> void:
 		health_bar.max_value = lifedata["Max_health"]
 		energy_bar.max_value = lifedata["Max_energy"]
 		#update_status_of_player(inventory_capacity_upgrade, catnation_credits)
-		
+	
+			
 func _physics_process(_delta: float) -> void:
 	if is_multiplayer_authority() :
 		velocity.x = direction.x *speed 
@@ -220,9 +221,9 @@ func _process(delta: float) -> void:
 			if vacuum_turned_on:
 				vacuum_tick -= delta
 
-			if vacuum_tick <= 0:
-				vacuum_tick = vacuum_interval
-				vacuum_loop()
+				if vacuum_tick <= 0:
+					vacuum_tick = vacuum_interval
+					vacuum_loop()
 
 	if escape_timer_running and is_multiplayer_authority():
 		escape_time_left -= delta
@@ -415,7 +416,6 @@ func vacuum_loop():
 	var targets = alife_manager.get_alife_in_area(vacuum_action_range.global_position,
 	 												vacuum_action_range.shape.size)
 
-	#print(targets)
 	if targets:
 		for t in targets:
 			if t is Dictionary:

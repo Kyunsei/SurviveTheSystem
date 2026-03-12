@@ -17,7 +17,7 @@ script = ExtResource("1_gvlmv")
 layout_mode = 0
 offset_right = 1154.0
 offset_bottom = 650.0
-color = Color(0.63035613, 0.71958494, 0.6441582, 1)
+color = Color(0.56315976, 0.72343546, 0.75434816, 1)
 
 [node name="Label" type="Label" parent="." unique_id=107063769]
 layout_mode = 1
@@ -107,10 +107,10 @@ text = "not connected"
 
 [node name="Label2" type="Label" parent="." unique_id=2068020746]
 layout_mode = 0
-offset_left = 868.0
-offset_top = 615.0
-offset_right = 1138.0
-offset_bottom = 638.0
+offset_left = 22.0
+offset_top = 614.0
+offset_right = 292.0
+offset_bottom = 637.0
 text = "Developed by Izva & Kyunsei/Scylla"
 
 [node name="Label3" type="Label" parent="." unique_id=608636581]
@@ -156,12 +156,12 @@ offset_bottom = 265.0
 theme_override_font_sizes/font_size = 12
 
 [node name="Tree" type="Sprite2D" parent="." unique_id=403313920]
-position = Vector2(1033, 496.00003)
+position = Vector2(105, 498)
 scale = Vector2(1.6093754, 1.6093754)
 texture = ExtResource("2_2pcs6")
 
 [node name="PlayerCat" type="Sprite2D" parent="." unique_id=256826407]
-position = Vector2(916, 575)
+position = Vector2(229, 568)
 texture = ExtResource("3_7wpka")
 
 [connection signal="pressed" from="HBoxContainer/Button_localconnect" to="." method="_on_button_localconnect_pressed"]

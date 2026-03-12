@@ -17,7 +17,6 @@ func add_item(new_item, peer_id):
 				
 		item = new_item
 		item_count += 1
-			
 		Update_info_multiplayer.rpc_id(peer_id, new_item)
 		if new_item["inventory_icon"] is String:
 			item_icon.texture = load(new_item["inventory_icon"])

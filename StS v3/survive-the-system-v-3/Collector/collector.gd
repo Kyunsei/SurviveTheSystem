@@ -7,8 +7,11 @@ var credit_gain = 0
 var collecting = true
 var timer_to_escape = int(91)
 var safe_timer = int(6)
-var factor = 0.005
+var factor =  0.005
 var InsideBiomassInitHeight
+
+
+var isWorldAccelerated = false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	InsideBiomassInitHeight = 3.8
@@ -102,18 +105,21 @@ func start_escape_phase(player):
 	Biomass_collected = 0
 	max_biomass = max_biomass * 1.5
 	update_label()
-	start_go_button()
 	check_escape_results(player)
 	
 
 func check_escape_results(player):
 	spaceship.get_node("Collector_ship").go_up()
+	
 	for p in player.get_parent().player_array:
 		p.stop_escape_ui.rpc()
 		if p.position.y >= 90:
 			p.escape_success.rpc_id(int(p.name))
 		else:
 			p.Die.rpc_id(int(p.name), int(p.name))
+	Start_time_wrap()
+
+
 
 func stop_go_button():
 	spaceship.get_node("go_button").currently_active = true
@@ -143,3 +149,29 @@ func update_insideBiomass():
 func credit_player(player):
 	player.catnation_credits += credit_gain 
 	player.lifedata["Money"] = player.catnation_credits
+
+
+
+
+func _process(_delta: float) -> void:
+	if multiplayer.is_server():
+		if isWorldAccelerated:
+			if get_parent().get_node("Alife manager").get_node("Grass_Manager2").Grass_simulator_time <0 :
+				GlobalSimulationParameter.simulation_speed = 1
+				#get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 2000 
+				isWorldAccelerated = false 
+				for p in get_parent().get_node("Alife manager").player_array:
+					p.get_parent().get_node("Grass_Manager2").send_full_state_to_peer(int(p.name))
+				start_go_button()
+
+func Start_time_wrap():
+	change_server_simulation_speed(600)
+
+		
+
+@rpc("any_peer","call_remote")
+func change_server_simulation_speed(value):
+	if isWorldAccelerated == false:
+		get_parent().get_node("Alife manager").get_node("Grass_Manager2").Grass_simulator_time = 500
+		GlobalSimulationParameter.simulation_speed = value
+		isWorldAccelerated = true
