@@ -36,10 +36,10 @@ horizontal_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1166853070]
 layout_mode = 0
-offset_left = 390.0
-offset_top = 209.0
-offset_right = 856.0
-offset_bottom = 273.0
+offset_left = 389.0
+offset_top = 236.0
+offset_right = 855.0
+offset_bottom = 300.0
 theme_override_constants/separation = 96
 
 [node name="Button_localconnect" type="Button" parent="HBoxContainer" unique_id=1929637958]
@@ -68,10 +68,10 @@ text = "Connect Online"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=340213268]
 layout_mode = 0
-offset_left = 527.0
-offset_top = 341.0
-offset_right = 651.0
-offset_bottom = 499.0
+offset_left = 529.0
+offset_top = 377.0
+offset_right = 653.0
+offset_bottom = 535.0
 
 [node name="Button_Play_solo" type="Button" parent="VBoxContainer" unique_id=803088402]
 visible = false
@@ -86,6 +86,7 @@ disabled = true
 text = "Play"
 
 [node name="Button_Settings" type="Button" parent="VBoxContainer" unique_id=1419502925]
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 disabled = true
@@ -98,60 +99,60 @@ text = "Quit"
 
 [node name="Label_server" type="Label" parent="." unique_id=730387435]
 layout_mode = 0
-offset_left = 538.0
-offset_top = 284.0
-offset_right = 650.0
-offset_bottom = 307.0
+offset_left = 532.0
+offset_top = 320.0
+offset_right = 644.0
+offset_bottom = 343.0
 text = "not connected"
 
 [node name="Label2" type="Label" parent="." unique_id=2068020746]
 layout_mode = 0
-offset_left = 871.0
-offset_top = 616.0
-offset_right = 1141.0
-offset_bottom = 639.0
+offset_left = 868.0
+offset_top = 615.0
+offset_right = 1138.0
+offset_bottom = 638.0
 text = "Developed by Izva & Kyunsei/Scylla"
 
 [node name="Label3" type="Label" parent="." unique_id=608636581]
 layout_mode = 0
-offset_left = 809.0
-offset_top = 213.0
-offset_right = 1079.0
-offset_bottom = 236.0
+offset_left = 813.0
+offset_top = 240.0
+offset_right = 1083.0
+offset_bottom = 263.0
 text = "IP"
 
 [node name="Label4" type="Label" parent="." unique_id=53467762]
 layout_mode = 0
-offset_left = 800.0
-offset_top = 246.0
-offset_right = 1070.0
-offset_bottom = 269.0
+offset_left = 804.0
+offset_top = 273.0
+offset_right = 1074.0
+offset_bottom = 296.0
 text = "Port"
 
 [node name="Label5" type="Label" parent="." unique_id=845132563]
 layout_mode = 0
-offset_left = 922.0
-offset_top = 198.0
-offset_right = 1208.0
-offset_bottom = 300.0
+offset_left = 926.0
+offset_top = 225.0
+offset_right = 1212.0
+offset_bottom = 327.0
 text = "To use Online:
 You need to open your port
  on your router/modem "
 
 [node name="Port" type="LineEdit" parent="." unique_id=1602316941]
 layout_mode = 0
-offset_left = 841.0
-offset_top = 244.0
-offset_right = 909.5
-offset_bottom = 269.0
+offset_left = 845.0
+offset_top = 271.0
+offset_right = 913.5
+offset_bottom = 296.0
 theme_override_font_sizes/font_size = 12
 
 [node name="IP" type="LineEdit" parent="." unique_id=1664407735]
 layout_mode = 0
-offset_left = 841.0
-offset_top = 213.0
-offset_right = 909.5
-offset_bottom = 238.0
+offset_left = 845.0
+offset_top = 240.0
+offset_right = 913.5
+offset_bottom = 265.0
 theme_override_font_sizes/font_size = 12
 
 [node name="Tree" type="Sprite2D" parent="." unique_id=403313920]
