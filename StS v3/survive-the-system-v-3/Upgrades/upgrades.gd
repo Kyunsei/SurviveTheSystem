@@ -4,7 +4,12 @@ var p
 var credits = 0
 var step = 3 #0
 var cat_ration_cost = 3
+var spearaxe_cost = 5
+var vacuum_cost = 5
 const CAT_RATION = "res://objects/cat_ration/cat_ration.tscn"
+const SPEARAXE = "res://objects/cat_ration/Object_spear.tscn"
+const VACUUM = "res://objects/cat_ration/Object_Vacuum.tscn"
+
 var object_spawned_position = Vector3(-4, 94, -2)
 
 func display_text(dialogue_box, text):
@@ -18,6 +23,8 @@ func _ready():
 	$PopupMenu.add_item("ONE cat ration /// COST : 3", 3)
 	$PopupMenu.add_item("", 4)
 	$PopupMenu.set_item_disabled(4, true)
+	$PopupMenu.add_item("ONE Spear weapon /// COST : 5", 5)
+	$PopupMenu.add_item("ONE Vacuum tool /// COST : 5", 6)
 	#$PopupMenu.set_item_disabled(3, true)
 
 			
@@ -44,6 +51,10 @@ func _on_popup_menu_id_pressed(id):
 			buy_cat_ration.rpc_id(1)
 		4:
 			pass
+		5:
+			buy_spearaxe.rpc_id(1)
+		6:
+			buy_vacuum.rpc_id(1)
 	await get_tree().process_frame
 	$PopupMenu.popup()
 
@@ -113,6 +124,21 @@ func buy_cat_ration():
 		get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(CAT_RATION,object_spawned_position)
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 
+@rpc("any_peer","call_remote")
+func buy_spearaxe():
+	if p.catnation_credits >= spearaxe_cost:
+		p.catnation_credits -=spearaxe_cost
+		p.lifedata["Money"] = p.catnation_credits
+		get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(SPEARAXE,object_spawned_position)
+		update_credits.rpc_id(int(p.name), p.catnation_credits)
+
+@rpc("any_peer","call_remote")
+func buy_vacuum():
+	if p.catnation_credits >= vacuum_cost:
+		p.catnation_credits -=vacuum_cost
+		p.lifedata["Money"] = p.catnation_credits
+		get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(VACUUM,object_spawned_position)
+		update_credits.rpc_id(int(p.name), p.catnation_credits)
 
 @rpc("any_peer","call_remote")
 func update_credits(new_credits):

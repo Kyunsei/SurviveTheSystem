@@ -29,7 +29,7 @@ var current_hunger = max_hunger
 @onready var energy_bar = $MeshInstance3D/Status_bar/SubViewport2/ProgressBarEnergy
 
 #upgrades variable here
-var catnation_credits = 1
+var catnation_credits = 1000
 var inv_capacity = 0.0
 var inventory_capacity_upgrade = 1
 var pickup_capacity = 0.0
@@ -56,7 +56,10 @@ var inventory_HUD
 var inventory = {}
 var inventory_count = 0
 var item_hold = []
-
+var vacuum_turned_on = false
+var vacuum_action_range 
+var vacuum_tick := 0.0
+var vacuum_interval := 0.15
 
 
 var dialogue_box 
@@ -111,15 +114,27 @@ func equip_item(item):
 		hide_bound_objects()
 func show_selected(item, peer_id):
 		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
+		var vacuum_path = "res://objects/cat_ration/Object_Vacuum.tscn"
 		var slot = item["Data"][0]		
-		if slot["inventory_path"] == spear_path:
-			update_item_hold_texture.rpc(null)
-			get_node("MeshInstance3D").get_node("spear").show()
+		if slot is Dictionary:
+			if slot["inventory_path"] == spear_path:
+				update_item_hold_texture.rpc(null)
+				get_node("MeshInstance3D").get_node("spear").show()
+				get_node("MeshInstance3D").get_node("Hoover").hide()
+				$AnimationPlayer.play("init_pos_vacuum")
+				vacuum_turned_on = false
+			elif slot["inventory_path"] == vacuum_path:
+				update_item_hold_texture.rpc(null)
+				get_node("MeshInstance3D").get_node("Hoover").show()
+				get_node("MeshInstance3D").get_node("spear").hide()
 		else:
 			hide_bound_objects()
 
 func hide_bound_objects():
 	get_node("MeshInstance3D").get_node("spear").hide()
+	get_node("MeshInstance3D").get_node("Hoover").hide()
+	$AnimationPlayer.play("init_pos_vacuum")
+	vacuum_turned_on = false
 
 @rpc("any_peer","call_local")
 func update_item_hold_texture(path):
@@ -145,7 +160,7 @@ func move_player_position(pos):
 
 
 func _ready() -> void:
-
+	vacuum_action_range = $MeshInstance3D/spear_Area3D/CollisionShape3D
 	if is_multiplayer_authority():
 		$MeshInstance3D/Status_bar.show()
 		%Camera3D.current = true
@@ -201,7 +216,13 @@ func _process(delta: float) -> void:
 			update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
 			update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
 			sync_lifedata.rpc_id(int(name), lifedata)
-		
+			if vacuum_turned_on:
+				vacuum_tick -= delta
+
+			if vacuum_tick <= 0:
+				vacuum_tick = vacuum_interval
+				vacuum_loop()
+
 	if escape_timer_running and is_multiplayer_authority():
 		escape_time_left -= delta
 		var current_time := int(escape_time_left)
@@ -354,30 +375,7 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 	
 	
 #OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!
-#original before the fix
-#@rpc("any_peer","call_local")
-#func spear_attack():
-	#print("called")
-	#spear_attack_animation.rpc_id(int(name))
-	#
-#
-	##var center = player.position
-	#var area = $MeshInstance3D/spear_Area3D
-	#var collision = $MeshInstance3D/spear_Area3D/CollisionShape3D
-	#var targets = get_parent().get_alife_in_area(area.global_position, collision.shape.size)
-	##print(area.global_position, collision.shape.size, area.position)
-	##print(targets)
-	#if targets : #and $AnimationPlayer.is_playing():
-		#for t in targets:
-			#if t is Dictionary:
-				#if t != lifedata:
-					#get_parent().Attack(t,5)
-					#print("hit player")
-			#else:
-				#get_parent().Attack(t,5)
-				#print("hit non player")
 
-#"fixed" version :
 @rpc("any_peer","call_local")
 func spear_attack():
 	spear_attack_animation.rpc_id(int(name))
@@ -387,11 +385,11 @@ func spear_attack():
 	var area = $MeshInstance3D/spear_Area3D
 	var collision = $MeshInstance3D/spear_Area3D/CollisionShape3D
 	var extents = collision.shape.size/2
-	var basis = collision.global_transform.basis.orthonormalized()
+	var basiss = collision.global_transform.basis.orthonormalized()
 	var world_extents = Vector3(
-	abs(basis.x.x) * extents.x + abs(basis.y.x) * extents.y + abs(basis.z.x) * extents.z,
-	abs(basis.x.y) * extents.x + abs(basis.y.y) * extents.y + abs(basis.z.y) * extents.z,
-	abs(basis.x.z) * extents.x + abs(basis.y.z) * extents.y + abs(basis.z.z) * extents.z
+	abs(basiss.x.x) * extents.x + abs(basiss.y.x) * extents.y + abs(basiss.z.x) * extents.z,
+	abs(basiss.x.y) * extents.x + abs(basiss.y.y) * extents.y + abs(basiss.z.y) * extents.z,
+	abs(basiss.x.z) * extents.x + abs(basiss.y.z) * extents.y + abs(basiss.z.z) * extents.z
 )
 	var targets = get_parent().get_alife_in_area(area.global_position, world_extents)
 	#print(area.global_position, collision.shape.size, area.position)
@@ -405,7 +403,47 @@ func spear_attack():
 			else:
 				get_parent().Attack(t,5)
 				print("hit non player")
-				
+
+@rpc("any_peer","call_local")
+func vacuum_activation():
+	vacuum_animation.rpc_id(int(name))
+
+@rpc("any_peer","call_local")
+func vacuum_loop():
+	var alife_manager = get_parent()
+	var targets = alife_manager.get_alife_in_area(vacuum_action_range.global_position,
+	 												vacuum_action_range.shape.size)
+
+	#print(targets)
+	if targets:
+		for t in targets:
+			if t is Dictionary:
+				if t != lifedata:
+					#print(t)
+					#alife_manager.interact(t,player)
+					if add_to_inventory(t):
+						#print("added")
+						alife_manager.remove(t)	
+			else:
+				if add_to_inventory(t):
+					alife_manager.remove(t)	
+
+func add_to_inventory(alife):
+		#print(alife["Species"])
+		var inventory = get_node("Player_HUD").get_node("Inventory")
+		if alife is Dictionary:
+
+			if inventory.add_item(inventory.prep_alife(alife),int(name)):
+				return true
+			else:
+				return false
+				#queue_free()
+		else:
+			if inventory.add_item(inventory.prep_newgrass(alife),int(name)):
+				return true
+			else:
+				return false
+
 
 
 @rpc("any_peer","call_remote")
@@ -413,5 +451,20 @@ func spear_attack_animation():
 	$AnimationPlayer.play("spear_attack_2")
 	await $AnimationPlayer.animation_finished
 	$AnimationPlayer.play_backwards("spear_attack_1")
+@rpc("any_peer","call_remote")
+func vacuum_animation():
+	if vacuum_turned_on == false:
+		$AnimationPlayer.play("vacuum_on_2")
+		set_vacuum_state.rpc_id(1, true) # tell server
+		vacuum_turned_on = true
+	else:
+		$AnimationPlayer.play("init_pos_vacuum")
+		set_vacuum_state.rpc_id(1, false) # tell server
+		vacuum_turned_on = false
+@rpc("any_peer","call_remote")
+func set_vacuum_state(state: bool):
+	vacuum_turned_on = state
+
+
 
 #OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!

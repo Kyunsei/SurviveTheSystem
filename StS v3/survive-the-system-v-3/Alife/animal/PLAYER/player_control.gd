@@ -189,6 +189,7 @@ func action():
 
 
 
+
 @rpc("any_peer","call_remote")
 func action_on_server():
 	var collision = Action_area.get_node("CollisionShape3D")

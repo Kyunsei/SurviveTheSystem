@@ -280,8 +280,8 @@ func Attack(grass,value):
 #version before trying to fix
 func get_alife_in_area(pos_center, area):
 	var results: Array = []
-	var min_pos = pos_center - area/2
-	var max_pos = pos_center + area/2
+	var min_pos = pos_center - area
+	var max_pos = pos_center + area
 	var min_grid: Vector3i = World.get_PositionInGrid(min_pos, World.bin_size)
 	var max_grid: Vector3i = World.get_PositionInGrid(max_pos, World.bin_size)
 		
