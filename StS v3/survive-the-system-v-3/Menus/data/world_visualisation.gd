@@ -52,12 +52,14 @@ func update():
 	
 	if isbinshow:	
 		i = show_bin(i,World.bin_array, World.bin_size)	
-	if islightshow:
+	elif islightshow:
 		i = show_bin(i,World.light_array, World.light_tile_size)
+	elif isfieldshow:
+		i = show_field(i)
+	elif isflowshow:
+		i = show_flow(i)		
 	if isalifeshow:
 		i = show_alife(i,alife_selected)
-	if isfieldshow:
-		i = show_field(i)
 		
 	mm.visible_instance_count = i
 	
@@ -109,13 +111,46 @@ func show_field(i):
 			)
 		
 		mm.set_instance_transform_2d(i, t)
-		var value = float(arr[bin])/25.0	
+		var value = float(arr[bin])/1.0	
 		var col = Color(value, value, value, 1.0)		
 		mm.set_instance_color(i, col )	
 		i+= 1
 	return i
 
 
+func show_flow(i):
+	if alife_selected == 0:
+		return i
+	var arr: PackedVector3Array = alifemanager.get_node("Grass_Manager2").flow_world_array[alife_selected-1]
+	
+	for bin in range(arr.size()):
+		var t : Transform2D
+		var tile_number = Vector3i(World.World_Size/ World.bin_size)
+		
+		var conv_tile_size = Vector2()
+		conv_tile_size.x = panel_size.x / tile_number.x
+		conv_tile_size.y = panel_size.y / tile_number.z	
+		var x = (bin % int(tile_number.x) )  * conv_tile_size.x +  conv_tile_size.x/2
+		@warning_ignore("integer_division")
+		var y = (bin / int(tile_number.x) % int(tile_number.z) )* conv_tile_size.y + +  conv_tile_size.y/2
+
+		
+		var stupid_factor = Vector2(World.bin_size.x, World.bin_size.z) / Vector2(5,5)
+		var stupid_scale = panel_size/ Vector2(World.World_Size.x, World.World_Size.z)  * stupid_factor
+		stupid_scale.y = stupid_scale.y/4
+		
+		print("pos: ", arr)
+		#print("bin: ", bin)
+		#print("arr.size(): ", arr.size())
+		var direction = arr[bin]
+		var angle = Vector2(direction.x,direction.z).angle() 
+
+		t = Transform2D(angle, stupid_scale, 0.0, Vector2(x, y))
+		
+		mm.set_instance_transform_2d(i, t)
+		mm.set_instance_color(i, Color(0.805, 0.805, 0.805, 1.0) )	
+		i+= 1
+	return i
 
 func show_bin(i,world_bin, tile_size):
 	for bin in range(world_bin.size()):

@@ -18,7 +18,7 @@ var size_array: PackedVector3Array  #NOT IN USE?
 var binID_array: PackedInt32Array
 
 var flow_world_array : Array[PackedVector3Array]
-var field_world_array : Array[PackedFloat64Array]
+var field_world_array : Array[PackedFloat32Array]
 
 #STATS
 var current_energy_array : PackedFloat64Array
@@ -114,6 +114,7 @@ func worker_loop(id):
 
 func update_smth(delta):
 
+	@warning_ignore("integer_division")
 	var chunk = int(entity_count / worker_count)
 	threads_done = 0
 	for i in range(worker_count):
@@ -254,6 +255,7 @@ func update(delta):
 		if GlobalSimulationParameter.simulation_speed > 0:
 			if World:
 				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
+			update_field()
 			LightSystem_to_plant(delta)
 			
 			for i in range(entity_count):
@@ -278,6 +280,71 @@ func update(delta):
 		FPS = Time.get_ticks_msec() - ss
 	
 	
+# World system — runs once per tick
+func update_field() -> void:
+	# Decay existing field
+	for s in field_world_array.size():
+		for i in field_world_array[s].size():
+			field_world_array[s][i] *= 0.85  # evaporate over time
+	
+	for i in range(entity_count):
+		var bin = binID_array[i]
+		var s = Species_array[i]
+		field_world_array[s][bin] += 1
+		
+	for s in field_world_array.size():
+		field_world_array[s] = diffuse(field_world_array[s])
+		
+	for s in species_list.size():
+		flow_world_array[s] = get_flow(field_world_array[s],flow_world_array[s] )
+
+func diffuse(field: PackedFloat32Array) :
+	var next := field.duplicate()
+	var GRID_WIDTH: int =  int(World.World_Size.x/ World.bin_size.x)
+	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
+	var diffusion_rate = 0.5
+	for cell in range(field.size()):
+		@warning_ignore("integer_division")
+		var row = cell / GRID_WIDTH
+		var col = cell % GRID_WIDTH
+		var sum  := 0.0
+		var count := 0
+		
+		if row > 0:                
+			sum += field[cell - GRID_WIDTH]; count += 1  # up
+		if row < GRID_HEIGHT - 1:  
+			sum += field[cell + GRID_WIDTH]; count += 1  # down
+		if col > 0:                
+			sum += field[cell - 1];          count += 1  # left
+		if col < GRID_WIDTH - 1:   
+			sum += field[cell + 1];          count += 1  # right
+
+		next[cell] = lerp(field[cell], sum / count, diffusion_rate) #CHECK DIFFUSION RATE HERE
+	
+	return next
+
+func get_flow(field: PackedFloat32Array, flow:PackedVector3Array):
+	var GRID_WIDTH: int =  int(World.World_Size.x/ World.bin_size.x)
+	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
+	var flow2 = flow.duplicate()
+	for i in GRID_WIDTH * GRID_HEIGHT:
+		@warning_ignore("integer_division")
+		var row := i / GRID_WIDTH
+		var col := i % GRID_WIDTH
+	
+	# Skip all edges — any would cause out-of-bounds
+		if row == 0 or row == GRID_HEIGHT - 1:
+			continue
+		if col == 0 or col == GRID_WIDTH - 1:
+			continue
+
+		flow[i] = Vector3(
+		field[i + 1]    - field[i - 1],     # x gradient
+		0,
+		field[i + GRID_WIDTH] - field[i - GRID_WIDTH]  # z gradient
+		)
+	return flow2
+
 
 
 
@@ -595,10 +662,12 @@ func build_world_bin_tables():
 	var count = species_list.size()
 
 	field_world_array.resize(count)
-	print(World.bin_array.size())
+	flow_world_array.resize(count)
+
 	for s in range(species_list.size()):
 		for t in range(World.bin_array.size()):
 			field_world_array[s].append(0.0)
+			flow_world_array[s].append(Vector3(0,0,0))
 
 
 func build_species_tables():
@@ -761,11 +830,11 @@ func put_in_world_bin(i):
 	if World.bin_array[new_bin_ID] == null:
 		World.bin_array[new_bin_ID] = [i]
 		World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
-		field_world_array[Species_array[i]][new_bin_ID] += 1.0
+		#field_world_array[Species_array[i]][new_bin_ID] += 1.0
 	else:	
 		World.bin_array[new_bin_ID].append(i) 
 		World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
-		field_world_array[Species_array[i]][new_bin_ID] += 1
+		#field_world_array[Species_array[i]][new_bin_ID] += 1
 
 
 	#binID_array[i] = new_bin_ID
@@ -776,7 +845,7 @@ func remove_from_world_bin(i):
 		if World.bin_array[binID_array[i]].has(i):
 			World.bin_array[binID_array[i]].erase(i)
 			World.bin_sum_array[Species_array[i]][binID_array[i]] -= 1
-			field_world_array[Species_array[i]][binID_array[i]] -= 1
+			#field_world_array[Species_array[i]][binID_array[i]] -= 1
 			binID_array[i] = -1
 
 
