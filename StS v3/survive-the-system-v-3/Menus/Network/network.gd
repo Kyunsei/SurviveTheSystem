@@ -14,3 +14,6 @@ func _decide_start_scene():
 	elif "--client" in args:
 		$client_menu.show()
 		$server_menu.hide()
+	
+	#$client_menu.hide()
+	#$server_menu.show()

@@ -93,6 +93,8 @@ func _on_button_onlineconnect_2_pressed() -> void:
 
 
 func _on_button_online_pressed() -> void:
+	print(IP_ADDRESS)
+	print(PORT)
 	connect_to_server(IP_ADDRESS, PORT)
 
 
