@@ -318,7 +318,7 @@ func respawn_server():
 	lifedata["Alive"] = 1
 	lifedata["Inventory_capacity"] = 1
 
-
+@rpc("any_peer","call_remote")
 func update_status_of_player():
 		#print("somethinf status")
 		#lifedata["Money"] = catnation_credits
