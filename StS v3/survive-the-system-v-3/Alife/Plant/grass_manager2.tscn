@@ -125,6 +125,7 @@ cast_shadow = 3
 multimesh = SubResource("MultiMesh_2xdm7")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1771965466]
+visible = false
 
 [node name="ProgressBar" type="ProgressBar" parent="CanvasLayer" unique_id=1728687036]
 anchors_preset = 5

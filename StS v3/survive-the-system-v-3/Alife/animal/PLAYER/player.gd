@@ -115,18 +115,19 @@ func equip_item(item):
 func show_selected(item, peer_id):
 		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
 		var vacuum_path = "res://objects/cat_ration/Object_Vacuum.tscn"
-		var slot = item["Data"][0]		
+		var slot = item["Data"][0]	
 		if slot is Dictionary:
-			if slot["inventory_path"] == spear_path:
-				update_item_hold_texture.rpc(null)
-				get_node("MeshInstance3D").get_node("spear").show()
-				get_node("MeshInstance3D").get_node("Hoover").hide()
-				$AnimationPlayer.play("init_pos_vacuum")
-				vacuum_turned_on = false
-			elif slot["inventory_path"] == vacuum_path:
-				update_item_hold_texture.rpc(null)
-				get_node("MeshInstance3D").get_node("Hoover").show()
-				get_node("MeshInstance3D").get_node("spear").hide()
+			if slot.has("inventory_path"):
+				if slot["inventory_path"] == spear_path:
+					update_item_hold_texture.rpc(null)
+					get_node("MeshInstance3D").get_node("spear").show()
+					get_node("MeshInstance3D").get_node("Hoover").hide()
+					$AnimationPlayer.play("init_pos_vacuum")
+					vacuum_turned_on = false
+				elif slot["inventory_path"] == vacuum_path:
+					update_item_hold_texture.rpc(null)
+					get_node("MeshInstance3D").get_node("Hoover").show()
+					get_node("MeshInstance3D").get_node("spear").hide()
 		else:
 			hide_bound_objects()
 

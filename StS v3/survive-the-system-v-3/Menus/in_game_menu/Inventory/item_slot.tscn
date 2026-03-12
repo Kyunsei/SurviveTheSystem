@@ -9,6 +9,12 @@ offset_bottom = 40.0
 texture = ExtResource("1_ngik4")
 script = ExtResource("2_4hcyo")
 
+[node name="Panel" type="Panel" parent="." unique_id=631682766]
+modulate = Color(1, 1, 1, 0.43529412)
+layout_mode = 0
+offset_right = 135.0
+offset_bottom = 130.0
+
 [node name="Item_label" type="Label" parent="." unique_id=1982407719]
 layout_mode = 0
 offset_right = 40.0

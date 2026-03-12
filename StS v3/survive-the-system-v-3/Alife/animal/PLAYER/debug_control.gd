@@ -44,7 +44,7 @@ func _physics_process(_delta: float) -> void:
 				else:	
 					tuto_HUD.show()
 			if Input.is_action_just_pressed("F3"):
-				change_server_simulation_speed.rpc_id(1,300)
+				change_server_simulation_speed.rpc_id(1,600)
 				
 			if Input.is_action_just_pressed("F5"):
 				player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer.rpc_id(1,multiplayer.get_unique_id())
@@ -56,11 +56,14 @@ func _process(_delta: float) -> void:
 				GlobalSimulationParameter.simulation_speed = 1
 				#get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 2000 
 				isWorldAccelerated = false 
+				for p in player.get_parent().player_array:
+					player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer(int(p.name))
+
 		
 
 @rpc("any_peer","call_remote")
 func change_server_simulation_speed(value):
 	if isWorldAccelerated == false:
-		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 2000
+		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 1000
 		GlobalSimulationParameter.simulation_speed = value
 		isWorldAccelerated = true
