@@ -356,18 +356,28 @@ func calculate_flow_at_bin(s: int, bin: int):
 	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
 	var row := bin / GRID_WIDTH
 	var col := bin % GRID_WIDTH
-	
-	# Skip all edges — any would cause out-of-bounds
-	if row == 0 or row == GRID_HEIGHT - 1:
-		return Vector3(0,0,0)
-	if col == 0 or col == GRID_WIDTH - 1:
-		return Vector3(0,0,0)
+	var dx := 0.0
+	var dz := 0.0
 
-	var flow = Vector3(
-	field_world_array[s][bin + 1]    - field_world_array[s][bin - 1],     # x gradient
-	0,
-	field_world_array[s][bin + GRID_WIDTH] - field_world_array[s][bin - GRID_WIDTH]  # z gradient
-	)
+	# X gradient
+	if col > 0 and col < GRID_WIDTH - 1:
+		dx = field_world_array[s][bin + 1] - field_world_array[s][bin - 1]  # central
+	elif col == 0:
+		dx = field_world_array[s][bin + 1] - field_world_array[s][bin]      # forward
+	else:
+		dx = field_world_array[s][bin] - field_world_array[s][bin - 1]      # backward
+
+
+	# Z gradient
+	if row > 0 and row < GRID_HEIGHT - 1:
+		dz = field_world_array[s][bin + GRID_WIDTH] - field_world_array[s][bin - GRID_WIDTH]
+	elif row == 0:
+		dz = field_world_array[s][bin + GRID_WIDTH] - field_world_array[s][bin]
+	else:
+		dz = field_world_array[s][bin] - field_world_array[s][bin - GRID_WIDTH]
+
+
+	var flow = Vector3(dx, 0, dz)
 	return flow
 
 
