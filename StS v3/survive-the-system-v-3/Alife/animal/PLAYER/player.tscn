@@ -26,6 +26,13 @@ size = Vector3(2, 2, 2)
 [sub_resource type="BoxShape3D" id="BoxShape3D_kcrxs"]
 size = Vector3(2, 3, 6)
 
+[sub_resource type="BoxMesh" id="BoxMesh_5e6c6"]
+material = SubResource("StandardMaterial3D_5e6c6")
+size = Vector3(2, 2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lwlqs"]
+size = Vector3(2, 3, 2)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_geoiu"]
 transparency = 1
 albedo_color = Color(1, 1, 1, 0.20784314)
@@ -409,6 +416,7 @@ mesh = SubResource("CylinderMesh_31v8x")
 
 [node name="spear_Area3D" type="Area3D" parent="MeshInstance3D" unique_id=1844384283]
 transform = Transform3D(0.9659258, 0.25881907, 0, -0.25881907, 0.9659258, 0, 0, 0, 1, -0.10000001, -0.20000002, -0.6)
+visible = false
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D/spear_Area3D" unique_id=815655520]
 transform = Transform3D(0.9659258, -0.25881907, 0, 0.25881907, 0.9659258, 0, 0, 0, 1, -0.13287702, 0.68908906, -0.85)
@@ -418,6 +426,18 @@ mesh = SubResource("BoxMesh_kcrxs")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/spear_Area3D" unique_id=1954593525]
 transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, -0.1294095, 0.7029629, -2.15)
 shape = SubResource("BoxShape3D_kcrxs")
+
+[node name="vacuum_Area3D" type="Area3D" parent="MeshInstance3D" unique_id=670962876]
+transform = Transform3D(0.9659258, 0.25881907, 0, -0.25881907, 0.9659258, 0, 0, 0, 1, -0.10000001, -0.20000002, -0.6)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D/vacuum_Area3D" unique_id=1169013471]
+transform = Transform3D(0.9659258, -0.25881907, 0, 0.25881907, 0.9659258, 0, 0, 0, 1, -0.13287702, 0.68908906, -0.85)
+visible = false
+mesh = SubResource("BoxMesh_5e6c6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/vacuum_Area3D" unique_id=2050466429]
+transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, -0.1294095, 0.7029629, -0.6)
+shape = SubResource("BoxShape3D_lwlqs")
 
 [node name="Area3D" type="Area3D" parent="MeshInstance3D" unique_id=970604991]
 unique_name_in_owner = true

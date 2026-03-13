@@ -28,6 +28,7 @@ var current_hunger = max_hunger
 @onready var health_bar = $MeshInstance3D/Status_bar/SubViewport/ProgressBarHealth
 @onready var energy_bar = $MeshInstance3D/Status_bar/SubViewport2/ProgressBarEnergy
 var immune_to_death = false
+var is_alive = true
 
 #upgrades variable here
 var catnation_credits = 1
@@ -162,7 +163,7 @@ func move_player_position(pos):
 
 
 func _ready() -> void:
-	vacuum_action_range = $MeshInstance3D/spear_Area3D/CollisionShape3D
+	vacuum_action_range = $MeshInstance3D/vacuum_Area3D/CollisionShape3D
 	if is_multiplayer_authority():
 		$MeshInstance3D/Status_bar.show()
 		%Camera3D.current = true
@@ -282,6 +283,7 @@ func _on_pick_up_area_3d_area_entered(area: Area3D) -> void:
 
 @rpc("any_peer","call_local")
 func death(_id):
+	is_alive = false
 	if immune_to_death == false:
 		immune_to_death = true
 		$CollisionShape3D.disabled = true
@@ -302,6 +304,7 @@ func death(_id):
 #@rpc("any_peer","call_local")
 func respawn():
 	go_back_to_ship(0)
+	#is_alive = true
 	gravity = 60
 	fall_gravity = 90
 	low_jump_gravity = 240
@@ -315,6 +318,7 @@ func respawn():
 	immune_to_death = false
 @rpc("any_peer","call_local")
 func respawn_server():
+	#is_alive = true
 	lifedata["current_health"] = 100
 	lifedata["current_energy"] = 200
 	lifedata["Max_energy"] = 200
