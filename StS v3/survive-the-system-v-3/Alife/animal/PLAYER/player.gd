@@ -61,7 +61,7 @@ var vacuum_turned_on = false
 var vacuum_action_range 
 var vacuum_tick := 0.0
 var vacuum_interval := 0.15
-
+var spear_animation_in_course = false
 
 var dialogue_box 
 
@@ -217,6 +217,7 @@ func _process(delta: float) -> void:
 				#Die()
 				Die.rpc_id(1, int(name))
 
+
 			update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
 			update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
 			sync_lifedata.rpc_id(int(name), lifedata)
@@ -261,6 +262,9 @@ func change_bin():
 @rpc("any_peer","call_local")
 func Die(id):
 	if lifedata["Alive"] == 1:
+		lifedata["Alive"] = 0
+		death.rpc_id(id,id)
+	elif lifedata["current_health"] <= 0:
 		lifedata["Alive"] = 0
 		death.rpc_id(id,id)
 	
@@ -385,7 +389,8 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 
 @rpc("any_peer","call_local")
 func spear_attack():
-	spear_attack_animation.rpc_id(int(name))
+	if spear_animation_in_course == false:
+		spear_attack_animation.rpc_id(int(name))
 	
 
 	#var center = player.position
@@ -403,7 +408,7 @@ func spear_attack():
 	var targets = get_parent().get_alife_in_area(pos_center, world_extents)
 	#print(area.global_position, collision.shape.size, area.position)
 	#print(targets)
-	if targets : #and $AnimationPlayer.is_playing():
+	if targets and targets.is_in_group("player") == false : #and $AnimationPlayer.is_playing():
 		for t in targets:
 			if t is Dictionary:
 				if t != lifedata:
@@ -412,7 +417,17 @@ func spear_attack():
 			else:
 				get_parent().Attack(t,25)
 				#print("hit non player")
+	check_player_hit.rpc_id(1, 25, area)
 
+	#elif t.has_meta("alife_id"):  
+	#var alife_data = get_parent().get_alife_by_id(t.get_meta("alife_id"))
+	#get_parent().Attack(alife_data, 5)
+@rpc("any_peer","call_local")
+func check_player_hit(dmg, areaofaction):
+	var interacted_areas = areaofaction.get_overlapping_areas()
+	for t in interacted_areas:
+		if t.is_in_group("spear_hit") and t.get_parent()!= self :
+			get_parent().Attack(t.get_parent().lifedata, dmg)
 @rpc("any_peer","call_local")
 func vacuum_activation():
 	vacuum_animation.rpc_id(int(name))
@@ -456,9 +471,12 @@ func add_to_inventory(alife):
 
 @rpc("any_peer","call_remote")
 func spear_attack_animation():
+	spear_animation_in_course = true
 	$AnimationPlayer.play("spear_attack_2")
 	await $AnimationPlayer.animation_finished
 	$AnimationPlayer.play_backwards("spear_attack_1")
+	await $AnimationPlayer.animation_finished
+	spear_animation_in_course = false
 @rpc("any_peer","call_remote")
 func vacuum_animation():
 	if vacuum_turned_on == false:
