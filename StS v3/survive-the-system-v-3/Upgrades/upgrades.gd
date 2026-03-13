@@ -84,8 +84,8 @@ func upgrade_energy():
 	if p.catnation_credits >=p.energy_upgrade_cost:
 		p.catnation_credits -=p.energy_upgrade_cost
 		p.energy_upgrade_cost += 1
-		p.lifedata["Max_energy"] += 20
-		p.lifedata["current_energy"] += 20
+		p.lifedata["Max_energy"] += 50
+		p.lifedata["current_energy"] += 50
 		print("your max energy is now " +str(p.lifedata["Max_energy"]))
 		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)

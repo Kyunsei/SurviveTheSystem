@@ -1,7 +1,7 @@
 extends Node3D
 
 var Biomass_collected = 0
-var max_biomass = 100
+var max_biomass = 50
 var credit_gain = 0
 @onready var spaceship: Node3D = $"../SPACESHIP"
 var collecting = true
@@ -103,7 +103,8 @@ func start_escape_phase(player):
 				p.force_escape_time.rpc_id(int(p.name), safe_timer)
 	collecting = true
 	Biomass_collected = 0
-	max_biomass = max_biomass * 1.5
+	max_biomass += 50
+	max_biomass *= 1.5
 	update_label()
 	check_escape_results(player)
 	
@@ -136,7 +137,7 @@ func set_world_readiness(yesorno):
 
 
 func update_label():
-	$collected_amount_Label3D.text = "Biomass collected " + str(round(Biomass_collected)) + " /" + str(max_biomass)
+	$collected_amount_Label3D.text = "Biomass collected " + str(int(round(Biomass_collected))) + " /" + str(int(round(max_biomass)))
 	update_insideBiomass()
 
 func update_insideBiomass():

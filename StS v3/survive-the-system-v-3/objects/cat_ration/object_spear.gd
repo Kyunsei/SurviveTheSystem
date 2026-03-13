@@ -32,8 +32,8 @@ static func on_use(player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BE
 			else:
 				player.get_parent().Attack(t,5)
 				print("hit non player")'
-
-	player.spear_attack.rpc_id(1)
+	if player.spear_animation_in_course == false:
+		player.spear_attack.rpc_id(1)
 	#var center = player.position
 	#var size = Vector3(2,2,2)
 	#var targets = player.get_parent().get_alife_in_area(player.position, size)

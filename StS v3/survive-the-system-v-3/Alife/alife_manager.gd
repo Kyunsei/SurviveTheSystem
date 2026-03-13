@@ -140,7 +140,9 @@ func _process(delta: float) -> void:
 
 @rpc("any_peer","call_local")
 func put_in_world_bin(g):
-	var bin_ID = 0
+	#var bin_ID = 0 old way, below works better to hit crabs
+	#var bin_ID = g["bin_ID"] if g.has("bin_ID") else -1 // this works well but is ugly
+	var bin_ID = g.get("bin_ID", null) #esthetic and works
 	var w_pos = World.get_PositionInGrid(g["position"],World.bin_size)
 	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
 	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
@@ -316,7 +318,44 @@ func get_alife_in_area(pos_center, area):
 									results.append(element)
 
 	return results
-
+	#trying a fix below ::::
+#func get_alife_in_area(pos_center: Vector3, area: Vector3) -> Array:
+	#var results: Array = []
+#
+	## Calculate min/max positions of the AABB
+	#var min_pos = pos_center - area
+	#var max_pos = pos_center + area
+#
+	## Convert only XZ to grid coordinates (ignore Y for verticality)
+	#var min_grid: Vector3i = World.get_PositionInGrid(Vector3(min_pos.x, 0, min_pos.z), World.bin_size)
+	#var max_grid: Vector3i = World.get_PositionInGrid(Vector3(max_pos.x, 0, max_pos.z), World.bin_size)
+#
+	#for x in range(min_grid.x, max_grid.x + 1):
+		#for z in range(min_grid.z, max_grid.z + 1):
+#
+			## Use a single Y-layer (0) to access the bin array
+			#var index: int = World.index_3dto1d(x, 0, z, World.bin_size)
+#
+			## Check if index is valid
+			#if index < 0 or index >= World.bin_array.size():
+				#continue
+#
+			#var bin = World.bin_array[index]
+			#if bin:
+				#for element in bin:
+					#var p: Vector3
+					#if element is Dictionary:
+						#p = element["position"]
+					#else:
+						#p = get_node("Grass_Manager2").position_array[element]
+#
+					## Full AABB check using actual Y positions
+					#if p.x >= min_pos.x and p.x <= max_pos.x \
+					#and p.y >= min_pos.y and p.y <= max_pos.y \
+					#and p.z >= min_pos.z and p.z <= max_pos.z:
+						#results.append(element)
+#
+	#return results
 	
 
 @rpc("any_peer","call_local")
