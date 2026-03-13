@@ -397,7 +397,9 @@ func spear_attack():
 	abs(basiss.x.y) * extents.x + abs(basiss.y.y) * extents.y + abs(basiss.z.y) * extents.z,
 	abs(basiss.x.z) * extents.x + abs(basiss.y.z) * extents.y + abs(basiss.z.z) * extents.z
 )
-	var targets = get_parent().get_alife_in_area(area.global_position, world_extents)
+	var forward = -area.global_transform.basis.z
+	var pos_center = area.global_position + forward * extents.z
+	var targets = get_parent().get_alife_in_area(pos_center, world_extents)
 	#print(area.global_position, collision.shape.size, area.position)
 	#print(targets)
 	if targets : #and $AnimationPlayer.is_playing():
