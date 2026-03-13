@@ -408,13 +408,13 @@ func spear_attack():
 	var targets = get_parent().get_alife_in_area(pos_center, world_extents)
 	#print(area.global_position, collision.shape.size, area.position)
 	#print(targets)
-	if targets and targets.is_in_group("player") == false : #and $AnimationPlayer.is_playing():
+	if targets and targets.has("peer_id") == false: #and $AnimationPlayer.is_playing():
 		for t in targets:
 			if t is Dictionary:
 				if t != lifedata:
 					get_parent().Attack(t,25)
 					#print("hit player")
-			else:
+			else :
 				get_parent().Attack(t,25)
 				#print("hit non player")
 	check_player_hit.rpc_id(1, 25, area)
