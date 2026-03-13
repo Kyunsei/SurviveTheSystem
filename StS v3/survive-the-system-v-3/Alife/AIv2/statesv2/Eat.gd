@@ -1,0 +1,56 @@
+extends STATE
+class_name EAT_STATE
+
+@export var food_type : PackedInt32Array
+
+func evaluate(_manager,_i, _DNA):
+	var bin = _manager.binID_array[_i]
+	var score: float = 0
+	if bin == null:
+		return score 
+
+	for f in food_type:
+		score = _manager.field_world_array[f][bin] - 20
+
+	print( "Eat score is " + str(score))
+	return score
+
+
+func enter(_manager,_i, _DNA):
+	print("Eat selected")
+	
+
+func exit(_manager,_i, _DNA):
+	pass
+
+func update(manager,i, _DNA, _delta):
+	#print("EATING")
+	var bin = manager.binID_array[i]
+	print(manager.field_world_array[0][bin])
+	print(manager.field_world_array[0][bin+1])
+
+	var ti = find_closest_in_bin(manager,i, bin,  0)
+	if ti:
+		manager.Active[ti] = 0
+		#manager.current_energy_array[i] += manager.current_biomass_array[ti]
+	#print(manager.current_energy_array[i])
+
+
+func find_closest_in_bin(manager,i, bin,  t_sp):
+	var closest = null
+	var closest_distance = INF
+	
+	for ti in manager.World.bin_array[bin]:
+		if ti is Dictionary:
+			print("OLD SYSTEM STILL IN BIN")
+		else:
+			if manager.Active[ti] == 0:
+				continue
+			if manager.Species_array[ti] != t_sp:
+				continue
+			var t_pos = manager.position_array[ti]
+			var distance = manager.position_array[i].distance_to(t_pos)
+			if distance < closest_distance:
+					closest_distance = distance
+					closest = ti
+	return closest	

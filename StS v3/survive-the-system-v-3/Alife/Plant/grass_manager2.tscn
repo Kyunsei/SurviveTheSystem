@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://dr3a0hgnctbxq" path="res://Alife/Plant/tree/TREE_DNA.gd" id="4_nt0jf"]
 [ext_resource type="Script" uid="uid://dj8ux7osvyk1j" path="res://Alife/Plant/Moss/MOSS.gd" id="5_2xdm7"]
 [ext_resource type="Script" uid="uid://dqvbcbtdwfsju" path="res://Alife/Plant/mulitmesh2.gd" id="5_hbvxf"]
+[ext_resource type="Resource" uid="uid://yi3lcyvwh8vv" path="res://Alife/animal/Herbivor/Sheep/SHEEP.tres" id="6_axxor"]
 [ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="6_hbvxf"]
 [ext_resource type="QuadMesh" uid="uid://cemxkaiaso15s" path="res://Alife/Plant/Moss/moss_ground.tres" id="8_5nq35"]
 [ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/animal/Herbivor/SHEEP.png" id="8_dysbp"]
@@ -98,7 +99,7 @@ properties/1/replication_mode = 1
 
 [node name="Grass_Manager" type="Node3D" unique_id=2019447816]
 script = ExtResource("1_0gklr")
-species_list = Array[ExtResource("2_eguq1")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35")])
+species_list = Array[ExtResource("2_eguq1")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35"), ExtResource("6_axxor")])
 
 [node name="grass" type="MultiMeshInstance3D" parent="." unique_id=931824674]
 multimesh = SubResource("MultiMesh_nt0jf")

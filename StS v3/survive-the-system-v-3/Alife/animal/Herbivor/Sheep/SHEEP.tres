@@ -1,7 +1,11 @@
 [gd_resource type="Resource" script_class="SHEEP" format=3 uid="uid://yi3lcyvwh8vv"]
 
 [ext_resource type="Script" uid="uid://6g7oj0av4g6x" path="res://Alife/animal/Herbivor/Sheep/sheep_dna.gd" id="1_etrcu"]
+[ext_resource type="Script" uid="uid://btfv6wp0e0836" path="res://Alife/AIv2/STATE.gd" id="2_5vjvr"]
+[ext_resource type="Resource" uid="uid://dm64kpxefkb8c" path="res://Alife/animal/Herbivor/Sheep/state/EAT_SHEEP.tres" id="3_5vjvr"]
+[ext_resource type="Resource" uid="uid://srnyuo6l368s" path="res://Alife/animal/Herbivor/Sheep/state/GOTO_SHEEP.tres" id="3_8xjmd"]
 
 [resource]
 script = ExtResource("1_etrcu")
+state_array = Array[ExtResource("2_5vjvr")]([ExtResource("3_8xjmd"), ExtResource("3_5vjvr")])
 metadata/_custom_type_script = "uid://6g7oj0av4g6x"

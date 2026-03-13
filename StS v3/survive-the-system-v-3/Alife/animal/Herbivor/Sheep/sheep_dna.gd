@@ -1,7 +1,10 @@
 extends DNA
 class_name SHEEP
-@export var state_array : Array[STATE]
 
+
+
+@export var state_array : Array[STATE]
+var current_state : STATE
 
 func Init():
 		
@@ -51,30 +54,36 @@ func Growth(manager, i, _delta):
 
 func Update(_manager, _i, _delta):
 	choose_action(_manager, _i)	
-
+	update_action(_manager, _i, _delta)
 			
 func choose_action(manager, i):
-	if state_array.size() < 1:
+	if state_array.size() <= 0:
+		
 		return
 	var best_score : float = 0
 	var score : float
-	var best_action : STATE
-	for s in state_array:
-		score = s.evaluate(manager, i)		
+	var best_action : int
+	for si in range(state_array.size()):
+		score = state_array[si].evaluate(manager, i,self)		
 		if score > best_score:
 			best_score = score
-			best_action = s
+			best_action = si
 		
 		elif score == best_score:
-			#print("equal_score")
 			if randi() == 1:
-				best_action = s
-	'if best_action:
-		if best_action ==current_state:
-			if current_state.isFinish == false:
+				best_action = si
+	if best_action != null:
+		if best_action == manager.current_finite_state_array[i]:
+			#if current_state.isFinish == false:
 				return
 		#get_parent().get_node("debugLabel").text =best_action.name
-		if current_state:
-			current_state.exit()
-		best_action.enter()
-		current_state = best_action'
+
+		if state_array[manager.current_finite_state_array[i]]:
+			state_array[manager.current_finite_state_array[i]].exit(manager, i,self)
+			
+		state_array[best_action].enter(manager, i,self)
+		manager.current_finite_state_array[i] = best_action
+
+
+func update_action(_manager, _i, _delta):
+	state_array[_manager.current_finite_state_array[_i]].update(_manager, _i,self, _delta)

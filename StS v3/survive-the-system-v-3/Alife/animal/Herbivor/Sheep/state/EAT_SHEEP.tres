@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EAT_STATE" format=3 uid="uid://dm64kpxefkb8c"]
+
+[ext_resource type="Script" uid="uid://bjxrr7mr4nwni" path="res://Alife/AIv2/statesv2/Eat.gd" id="1_80s50"]
+
+[resource]
+script = ExtResource("1_80s50")
+food_type = PackedInt32Array(0)
+metadata/_custom_type_script = "uid://bjxrr7mr4nwni"

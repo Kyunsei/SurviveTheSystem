@@ -13,14 +13,18 @@ var Grass_simulator_time = 0
 #var id : PackedInt32Array
 
 #WORLD
+var flow_world_array : Array[PackedVector3Array]
+var field_world_array : Array[PackedFloat64Array]
+
+
+
+
+
+#STATS
 var position_array : PackedVector3Array
 var size_array: PackedVector3Array  #NOT IN USE? 
 var binID_array: PackedInt32Array
 
-var flow_world_array : Array[PackedVector3Array]
-var field_world_array : Array[PackedFloat32Array]
-
-#STATS
 var current_energy_array : PackedFloat64Array
 var current_health_array : PackedFloat32Array
 var current_life_state_array : PackedInt32Array
@@ -29,9 +33,12 @@ var Alive_array : PackedInt32Array
 var current_biomass_array : PackedFloat32Array
 var Species_array : PackedInt32Array
 var current_speed : PackedFloat32Array
+var current_finite_state_array :  PackedInt32Array
 
+#PLANT SPECIFIC 
+var light_index_array : Array = []
 
-#SPECIES SPECIFICIC
+#SPECIES SPECIFICIC WILL ALL MOVE TO DNA?
 @export var species_list : Array[DNA]
 #var species_id_array : Array =[]
 var species_max_energy : Array[PackedFloat32Array]
@@ -46,15 +53,9 @@ var species_reproduction_spread : Array[PackedFloat32Array]
 var species_reproduction_number : Array[PackedInt32Array]
 var species_biomass : Array[PackedFloat32Array]
 
-#New SPECIES SYSTEM
 
 
 
-
-#PLANT SPECIFIC 
-var light_index_array : Array = []
-#var Photosynthesis_absorbtion_array : PackedFloat32Array
-#var Photosynthesis_range_array : PackedFloat32Array
 
 
 #FOR MANAGER
@@ -212,8 +213,8 @@ func _process(_delta):
 
 	mutex.lock()
 	Spawn_and_Kill()
-	for w in workers:
-		print(w.start)
+	'for w in workers:
+		print(w.start)'
 	mutex.unlock()	
 
 
@@ -257,7 +258,7 @@ func update(delta):
 				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
 			update_field()
 			LightSystem_to_plant(delta)
-			
+			#print(flow_world_array[0])
 			for i in range(entity_count):
 				if Active[i] == 1:
 					#continue
@@ -283,26 +284,30 @@ func update(delta):
 # World system — runs once per tick
 func update_field() -> void:
 	# Decay existing field
-	for s in field_world_array.size():
-		for i in field_world_array[s].size():
-			field_world_array[s][i] *= 0.85  # evaporate over time
+	for s in range(field_world_array.size()):
+		for i in range(field_world_array[s].size()):
+			field_world_array[s][i] *= 0.5#85  # evaporate over time
 	
 	for i in range(entity_count):
+		if Active[i] == 0:
+			continue
 		var bin = binID_array[i]
 		var s = Species_array[i]
 		field_world_array[s][bin] += 1
+		#field_world_array[s][bin] = min(field_world_array[s][bin],10.0)
+
 		
-	for s in field_world_array.size():
+	for s in range(field_world_array.size()):
 		field_world_array[s] = diffuse(field_world_array[s])
 		
-	for s in species_list.size():
+	for s in range(species_list.size()):
 		flow_world_array[s] = get_flow(field_world_array[s],flow_world_array[s] )
 
-func diffuse(field: PackedFloat32Array) :
+func diffuse(field: PackedFloat64Array) :
 	var next := field.duplicate()
 	var GRID_WIDTH: int =  int(World.World_Size.x/ World.bin_size.x)
 	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
-	var diffusion_rate = 0.5
+	var diffusion_rate = 0.25
 	for cell in range(field.size()):
 		@warning_ignore("integer_division")
 		var row = cell / GRID_WIDTH
@@ -323,7 +328,7 @@ func diffuse(field: PackedFloat32Array) :
 	
 	return next
 
-func get_flow(field: PackedFloat32Array, flow:PackedVector3Array):
+func get_flow(field: PackedFloat64Array, flow:PackedVector3Array):
 	var GRID_WIDTH: int =  int(World.World_Size.x/ World.bin_size.x)
 	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
 	var flow2 = flow.duplicate()
@@ -345,6 +350,25 @@ func get_flow(field: PackedFloat32Array, flow:PackedVector3Array):
 		)
 	return flow2
 
+
+func calculate_flow_at_bin(s: int, bin: int):
+	var GRID_WIDTH: int =  int(World.World_Size.x/ World.bin_size.x)
+	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
+	var row := bin / GRID_WIDTH
+	var col := bin % GRID_WIDTH
+	
+	# Skip all edges — any would cause out-of-bounds
+	if row == 0 or row == GRID_HEIGHT - 1:
+		return Vector3(0,0,0)
+	if col == 0 or col == GRID_WIDTH - 1:
+		return Vector3(0,0,0)
+
+	var flow = Vector3(
+	field_world_array[s][bin + 1]    - field_world_array[s][bin - 1],     # x gradient
+	0,
+	field_world_array[s][bin + GRID_WIDTH] - field_world_array[s][bin - GRID_WIDTH]  # z gradient
+	)
+	return flow
 
 
 
@@ -590,6 +614,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
 		binID_array.append(get_worldbin_index(pos))	
 		light_index_array.append(get_lightIndex(i))
+		current_finite_state_array.append(0)
 		put_in_light_bin(i)
 		put_in_world_bin(i)
 
@@ -607,6 +632,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
 		binID_array[i] =  get_worldbin_index(pos)
 		light_index_array[i] = get_lightIndex(i)
+		current_finite_state_array[i] = 0
 		put_in_light_bin(i)
 		put_in_world_bin(i)
 

@@ -14,8 +14,7 @@
 [ext_resource type="Script" uid="uid://dhs3c3gl6pkjm" path="res://Alife/Plant/Grass/grass_DNA.gd" id="13_ck1yl"]
 [ext_resource type="Script" uid="uid://dr3a0hgnctbxq" path="res://Alife/Plant/tree/TREE_DNA.gd" id="14_jmkf0"]
 [ext_resource type="Script" uid="uid://dj8ux7osvyk1j" path="res://Alife/Plant/Moss/MOSS.gd" id="15_go1ug"]
-[ext_resource type="Script" uid="uid://6g7oj0av4g6x" path="res://Alife/animal/Herbivor/Sheep/sheep_dna.gd" id="16_ck1yl"]
-[ext_resource type="Script" uid="uid://btfv6wp0e0836" path="res://Alife/AIv2/STATE.gd" id="17_jmkf0"]
+[ext_resource type="Resource" uid="uid://yi3lcyvwh8vv" path="res://Alife/animal/Herbivor/Sheep/SHEEP.tres" id="15_vcetm"]
 
 [sub_resource type="Resource" id="Resource_yp710"]
 script = ExtResource("13_ck1yl")
@@ -28,10 +27,6 @@ metadata/_custom_type_script = "uid://dr3a0hgnctbxq"
 [sub_resource type="Resource" id="Resource_5nq35"]
 script = ExtResource("15_go1ug")
 metadata/_custom_type_script = "uid://dj8ux7osvyk1j"
-
-[sub_resource type="Resource" id="Resource_jmkf0"]
-script = ExtResource("16_ck1yl")
-metadata/_custom_type_script = "uid://6g7oj0av4g6x"
 
 [node name="Alife manager" type="Node3D" unique_id=1345180502]
 script = ExtResource("1_yx3o6")
@@ -54,7 +49,7 @@ _spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk", "uid://dp2plghkprved
 spawn_path = NodePath("..")
 
 [node name="Grass_Manager2" parent="." unique_id=2019447816 instance=ExtResource("9_byu03")]
-species_list = Array[ExtResource("12_vcetm")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35"), SubResource("Resource_jmkf0")])
+species_list = Array[ExtResource("12_vcetm")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35"), ExtResource("15_vcetm")])
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=275810104]
 _spawnable_scenes = PackedStringArray("uid://dv0s2jhvhfe0v")
