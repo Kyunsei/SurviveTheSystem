@@ -140,7 +140,8 @@ func _process(delta: float) -> void:
 
 @rpc("any_peer","call_local")
 func put_in_world_bin(g):
-	var bin_ID = 0
+	#var bin_ID = 0 old way, below works better to hit crabs
+	var bin_ID = g["bin_ID"] if g.has("bin_ID") else -1
 	var w_pos = World.get_PositionInGrid(g["position"],World.bin_size)
 	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
 	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)

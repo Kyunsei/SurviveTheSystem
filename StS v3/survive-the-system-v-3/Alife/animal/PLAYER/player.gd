@@ -179,6 +179,7 @@ func _ready() -> void:
 			
 func _physics_process(_delta: float) -> void:
 	if is_multiplayer_authority() :
+		#print("Player pos:", global_position, " lifedata pos:", lifedata["position"])
 		velocity.x = direction.x *speed 
 		velocity.z = direction.z *speed 
 		#data_movement_to_server.rpc_id(1, global_position)
@@ -246,10 +247,10 @@ func sync_lifedata(data: Dictionary):
 @rpc("any_peer","call_local")
 func change_bin():
 	if lifedata.size()>0:
-		lifedata["position"] = position
+		lifedata["position"] = global_position
 
 		var old_bin = lifedata["bin_ID"]
-		var current_bin = get_parent().get_worldbin_index(position)
+		var current_bin = get_parent().get_worldbin_index(global_position)
 
 		if old_bin == current_bin:
 			return
