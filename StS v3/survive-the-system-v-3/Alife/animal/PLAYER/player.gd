@@ -407,11 +407,11 @@ func spear_attack():
 		for t in targets:
 			if t is Dictionary:
 				if t != lifedata:
-					get_parent().Attack(t,5)
-					print("hit player")
+					get_parent().Attack(t,25)
+					#print("hit player")
 			else:
-				get_parent().Attack(t,5)
-				print("hit non player")
+				get_parent().Attack(t,25)
+				#print("hit non player")
 
 @rpc("any_peer","call_local")
 func vacuum_activation():
