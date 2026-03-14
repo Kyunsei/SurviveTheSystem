@@ -1,6 +1,7 @@
 extends Area3D
 
 var p 
+var local_p_id
 var pop_up_menu_open = false
 var credits = 0
 var step = 3 #0
@@ -10,6 +11,7 @@ var vacuum_cost = 5
 const CAT_RATION = "res://objects/cat_ration/cat_ration.tscn"
 const SPEARAXE = "res://objects/cat_ration/Object_spear.tscn"
 const VACUUM = "res://objects/cat_ration/Object_Vacuum.tscn"
+var Alife_manager 
 
 
 var object_spawned_position = Vector3(-4, 94, -2)
@@ -28,10 +30,12 @@ func _ready():
 	$PopupMenu.add_item("ONE Spear weapon /// COST : 5", 5)
 	$PopupMenu.add_item("ONE Vacuum tool /// COST : 5", 6)
 	#$PopupMenu.set_item_disabled(3, true)
+	Alife_manager = get_parent().get_parent().get_node("Alife manager")
 
 			
 func interact(player):
-	p = player
+	#p = player
+	set_player_currently_interacting.rpc_id(int(player.name), int(player.name))
 	update_credits.rpc_id(int(player.name), player.catnation_credits)
 	show_popup.rpc_id(int(player.name))
 	update_inventory_costs.rpc_id(int(player.name), player.inventory_upgrade_cost)
@@ -39,25 +43,28 @@ func interact(player):
 	update_energy_costs.rpc_id(int(player.name), player.energy_upgrade_cost)
 	#update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
 
+@rpc("any_peer","call_remote")
+func set_player_currently_interacting(id):
+	local_p_id = id
 
 @rpc("any_peer","call_remote")
 func _on_popup_menu_id_pressed(id):
 	match id:
 		0:
-			upgrade_inventory_capacity.rpc_id(1)
+			upgrade_inventory_capacity.rpc_id(1, local_p_id)
 			#upgrade_inventory_capacity.rpc_id(int(p.name))
 		1:
-			upgrade_health.rpc_id(1)
+			upgrade_health.rpc_id(1, local_p_id)
 		2:
-			upgrade_energy.rpc_id(1)
+			upgrade_energy.rpc_id(1, local_p_id)
 		3:
-			buy_cat_ration.rpc_id(1)
+			buy_cat_ration.rpc_id(1, local_p_id)
 		4:
 			pass
 		5:
-			buy_spearaxe.rpc_id(1)
+			buy_spearaxe.rpc_id(1, local_p_id)
 		6:
-			buy_vacuum.rpc_id(1)
+			buy_vacuum.rpc_id(1, local_p_id)
 	await get_tree().process_frame
 	$PopupMenu.popup()
 
@@ -75,7 +82,7 @@ func show_popup():
 		$PopupMenu.popup() # Display the menu
 	
 @rpc("any_peer","call_local")
-func upgrade_health():
+func upgrade_health(id):
 	if p.catnation_credits >=p.health_upgrade_cost:
 		p.catnation_credits -=p.health_upgrade_cost
 		p.health_upgrade_cost += 1
@@ -87,32 +94,36 @@ func upgrade_health():
 		update_health_costs.rpc_id(int(p.name), p.health_upgrade_cost)
 
 @rpc("any_peer","call_local")
-func upgrade_energy():
-	if p.catnation_credits >=p.energy_upgrade_cost:
-		p.catnation_credits -=p.energy_upgrade_cost
-		p.energy_upgrade_cost += 1
-		p.lifedata["Max_energy"] += 50
-		p.lifedata["current_energy"] += 50
-		#print("your max energy is now " +str(p.lifedata["Max_energy"]))
-		p.lifedata["Money"] = p.catnation_credits
-		update_credits.rpc_id(int(p.name), p.catnation_credits)
-		update_energy_costs.rpc_id(int(p.name), p.energy_upgrade_cost)
+func upgrade_energy(id):
+	for p in Alife_manager.player_array :
+		if p.name == str(id) :
+			if p.catnation_credits >=p.energy_upgrade_cost:
+				p.catnation_credits -=p.energy_upgrade_cost
+				p.energy_upgrade_cost += 1
+				p.lifedata["Max_energy"] += 50
+				p.lifedata["current_energy"] += 50
+				#print("your max energy is now " +str(p.lifedata["Max_energy"]))
+				p.lifedata["Money"] = p.catnation_credits
+				update_credits.rpc_id(int(p.name), p.catnation_credits)
+				update_energy_costs.rpc_id(int(p.name), p.energy_upgrade_cost)
 
 #@rpc("any_peer","call_remote")
 @rpc("any_peer","call_local")
-func upgrade_inventory_capacity():
-	if p.catnation_credits >=p.inventory_upgrade_cost:
-		p.catnation_credits -=p.inventory_upgrade_cost
-		p.inventory_upgrade_cost += 1
-		p.inventory_capacity_upgrade += 0.5
-		p.lifedata["Inventory_capacity"] = p.inventory_capacity_upgrade
-		#print("your maximum inventory capacity is " +str(p.inventory_capacity_upgrade) +" times bigger")
-		p.lifedata["Money"] = p.catnation_credits
-		update_credits.rpc_id(int(p.name), p.catnation_credits)
-		update_inventory_costs.rpc_id(int(p.name), p.inventory_upgrade_cost)
+func upgrade_inventory_capacity(id):
+	for p in Alife_manager.player_array :
+		if p.name == str(id) :
+			if p.catnation_credits >=p.inventory_upgrade_cost:
+				p.catnation_credits -=p.inventory_upgrade_cost
+				p.inventory_upgrade_cost += 1
+				p.inventory_capacity_upgrade += 0.5
+				p.lifedata["Inventory_capacity"] = p.inventory_capacity_upgrade
+				#print("your maximum inventory capacity is " +str(p.inventory_capacity_upgrade) +" times bigger")
+				p.lifedata["Money"] = p.catnation_credits
+				update_credits.rpc_id(int(p.name), p.catnation_credits)
+				update_inventory_costs.rpc_id(int(p.name), p.inventory_upgrade_cost)
 		
 @rpc("any_peer","call_local")
-func upgrade_range():
+func upgrade_range(id):
 	if p.catnation_credits >=p.range_upgrade_cost:
 		p.catnation_credits -=p.range_upgrade_cost
 		p.range_upgrade_cost += 1
@@ -124,7 +135,7 @@ func upgrade_range():
 		update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
 
 @rpc("any_peer","call_local")
-func buy_cat_ration():
+func buy_cat_ration(id):
 	if p.catnation_credits >= cat_ration_cost:
 		p.catnation_credits -=cat_ration_cost
 		p.lifedata["Money"] = p.catnation_credits
@@ -132,7 +143,7 @@ func buy_cat_ration():
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 
 @rpc("any_peer","call_local")
-func buy_spearaxe():
+func buy_spearaxe(id):
 	if p.catnation_credits >= spearaxe_cost:
 		p.catnation_credits -=spearaxe_cost
 		p.lifedata["Money"] = p.catnation_credits
@@ -140,7 +151,7 @@ func buy_spearaxe():
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 
 @rpc("any_peer","call_local")
-func buy_vacuum():
+func buy_vacuum(id):
 	if p.catnation_credits >= vacuum_cost:
 		p.catnation_credits -=vacuum_cost
 		p.lifedata["Money"] = p.catnation_credits
