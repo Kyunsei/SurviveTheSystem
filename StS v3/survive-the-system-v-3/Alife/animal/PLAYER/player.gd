@@ -518,7 +518,6 @@ func show_label_above_player(string, color, time, type):
 	label.position = Vector3(0, 0.9, 0)
 	label.modulate = color
 	add_child(label)
-	print(label.position)
 	var tween = label.create_tween()
 	tween.tween_property(label, "position:y", label.position.y + 0.5, time)
 	var tween2 = label.create_tween()
