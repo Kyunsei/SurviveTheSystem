@@ -87,7 +87,6 @@ func start_escape_phase(player):
 	for p in player.get_parent().player_array:
 		p.show_escape_timer.rpc_id(int(p.name), timer_to_escape)
 		p.start_escape_ui.rpc_id(int(p.name), timer_to_escape) # shows UI timer
-		credit_player(p)
 
 	var remaining_time = timer_to_escape
 
@@ -111,6 +110,7 @@ func start_escape_phase(player):
 
 func check_escape_results(player):
 	spaceship.get_node("Collector_ship").go_up()
+	credit_player(player)
 	
 	for p in player.get_parent().player_array:
 		p.stop_escape_ui.rpc()

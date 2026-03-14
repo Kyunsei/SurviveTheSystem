@@ -581,5 +581,12 @@ libraries/ = SubResource("AnimationLibrary_x6f2s")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Spear_hit_detection_area3D" unique_id=770832084]
 shape = SubResource("BoxShape3D_x6f2s")
 
+[node name="Player_update_label3D" type="Label3D" parent="." unique_id=1708159425]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.84, 0)
+visible = false
+transparency = 0.2
+billboard = 1
+text = "test"
+
 [connection signal="area_entered" from="MeshInstance3D/Pick_up_Area3D" to="." method="_on_pick_up_area_3d_area_entered"]
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="MultiplayerSynchronizer" method="_on_synchronized"]

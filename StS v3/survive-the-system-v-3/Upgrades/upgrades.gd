@@ -1,6 +1,7 @@
 extends Area3D
 
-var p
+var p 
+var pop_up_menu_open = false
 var credits = 0
 var step = 3 #0
 var cat_ration_cost = 3
@@ -9,6 +10,7 @@ var vacuum_cost = 5
 const CAT_RATION = "res://objects/cat_ration/cat_ration.tscn"
 const SPEARAXE = "res://objects/cat_ration/Object_spear.tscn"
 const VACUUM = "res://objects/cat_ration/Object_Vacuum.tscn"
+
 
 var object_spawned_position = Vector3(-4, 94, -2)
 
@@ -30,12 +32,13 @@ func _ready():
 			
 func interact(player):
 	p = player
-	update_credits.rpc_id(int(player.name), p.catnation_credits)
+	update_credits.rpc_id(int(player.name), player.catnation_credits)
 	show_popup.rpc_id(int(player.name))
-	update_inventory_costs.rpc_id(int(p.name), p.inventory_upgrade_cost)
-	update_health_costs.rpc_id(int(p.name), p.health_upgrade_cost)
-	update_energy_costs.rpc_id(int(p.name), p.energy_upgrade_cost)
+	update_inventory_costs.rpc_id(int(player.name), player.inventory_upgrade_cost)
+	update_health_costs.rpc_id(int(player.name), player.health_upgrade_cost)
+	update_energy_costs.rpc_id(int(player.name), player.energy_upgrade_cost)
 	#update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
+
 
 @rpc("any_peer","call_remote")
 func _on_popup_menu_id_pressed(id):
@@ -60,14 +63,18 @@ func _on_popup_menu_id_pressed(id):
 
 
 func _on_popup_menu_popup_hide() -> void:
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	#if pop_up_menu_open == true :
+		#pop_up_menu_open = false
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 @rpc("any_peer","call_remote")
 func show_popup():
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	$PopupMenu.popup() # Display the menu
+	#if pop_up_menu_open == false :
+		#pop_up_menu_open = true
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		$PopupMenu.popup() # Display the menu
 	
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func upgrade_health():
 	if p.catnation_credits >=p.health_upgrade_cost:
 		p.catnation_credits -=p.health_upgrade_cost
@@ -79,7 +86,7 @@ func upgrade_health():
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_health_costs.rpc_id(int(p.name), p.health_upgrade_cost)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func upgrade_energy():
 	if p.catnation_credits >=p.energy_upgrade_cost:
 		p.catnation_credits -=p.energy_upgrade_cost
@@ -104,7 +111,7 @@ func upgrade_inventory_capacity():
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_inventory_costs.rpc_id(int(p.name), p.inventory_upgrade_cost)
 		
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func upgrade_range():
 	if p.catnation_credits >=p.range_upgrade_cost:
 		p.catnation_credits -=p.range_upgrade_cost
@@ -116,7 +123,7 @@ func upgrade_range():
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func buy_cat_ration():
 	if p.catnation_credits >= cat_ration_cost:
 		p.catnation_credits -=cat_ration_cost
@@ -124,7 +131,7 @@ func buy_cat_ration():
 		get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(CAT_RATION,object_spawned_position)
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func buy_spearaxe():
 	if p.catnation_credits >= spearaxe_cost:
 		p.catnation_credits -=spearaxe_cost
@@ -132,7 +139,7 @@ func buy_spearaxe():
 		get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(SPEARAXE,object_spawned_position)
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func buy_vacuum():
 	if p.catnation_credits >= vacuum_cost:
 		p.catnation_credits -=vacuum_cost

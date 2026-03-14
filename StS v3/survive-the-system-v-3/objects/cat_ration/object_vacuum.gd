@@ -3,7 +3,8 @@ var area
 @export var action_size = Vector3(2,2,2)
 var timer = 0.5
 func _ready():
-		area = $attack_area
+	pass
+		#area = $attack_area
 
 func _process(delta: float) -> void:
 	timer -= delta

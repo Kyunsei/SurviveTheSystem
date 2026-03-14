@@ -30,8 +30,21 @@ var current_hunger = max_hunger
 var immune_to_death = false
 var is_alive = true
 
-#upgrades variable here
-var catnation_credits = 1
+#MONEY MONEY MONEY MONEY MONEY
+var catnation_credits :int = 1: 
+	set(current_money): 
+		if catnation_credits != current_money: 
+			var previous_money = catnation_credits
+			catnation_credits = current_money
+			lifedata["Money"] = current_money
+			set_current_money(previous_money)
+
+func set_current_money(prev_money: int) -> int:
+	var difference := prev_money - catnation_credits
+	show_label_above_player.rpc_id(int(name),-difference, Color(1.0, 0.843, 0.0, 1.0), 1.0, " money")
+	return difference
+#MONEY MONEY MONEY MONEY MONEY
+
 var inv_capacity = 0.0
 var inventory_capacity_upgrade = 1
 var pickup_capacity = 0.0
@@ -69,7 +82,6 @@ var dialogue_box
 var lifedata = {}
 
 #INVENTORY HERE
-
 
 
 ###########INVENTORY HELPER FUNCTION
@@ -495,6 +507,27 @@ func vacuum_animation():
 func set_vacuum_state(state: bool):
 	vacuum_turned_on = state
 
-
+@rpc("any_peer","call_remote")
+func show_label_above_player(string, color, time, type):
+	var label := Label3D.new()
+	if string > 0:
+		label.text = "Gained " + str(abs(string)) + str(type)
+	else :
+		label.text = "Lost " + str(abs(string)) + str(type)
+	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label.position = Vector3(0, 0.9, 0)
+	label.modulate = color
+	add_child(label)
+	print(label.position)
+	var tween = label.create_tween()
+	tween.tween_property(label, "position:y", label.position.y + 0.5, time)
+	var tween2 = label.create_tween()
+	tween2.tween_property(label, "modulate:a", 0.0, time)
+	var tween3 = label.create_tween()
+	tween3.tween_property(label, "outline_modulate:a", 0.0, time)
+	await tween.finished
+	label.queue_free()
+	#await get_tree().create_timer(time).timeout
+	#label.queue_free()
 
 #OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!
