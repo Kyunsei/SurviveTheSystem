@@ -81,7 +81,7 @@ func upgrade_health():
 		p.health_upgrade_cost += 1
 		p.lifedata["Max_health"] += 20
 		p.lifedata["current_health"] += 20
-		print("your max health is now " +str(p.lifedata["Max_health"]))
+		#print("your max health is now " +str(p.lifedata["Max_health"]))
 		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_health_costs.rpc_id(int(p.name), p.health_upgrade_cost)
@@ -93,7 +93,7 @@ func upgrade_energy():
 		p.energy_upgrade_cost += 1
 		p.lifedata["Max_energy"] += 50
 		p.lifedata["current_energy"] += 50
-		print("your max energy is now " +str(p.lifedata["Max_energy"]))
+		#print("your max energy is now " +str(p.lifedata["Max_energy"]))
 		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_energy_costs.rpc_id(int(p.name), p.energy_upgrade_cost)
@@ -106,7 +106,7 @@ func upgrade_inventory_capacity():
 		p.inventory_upgrade_cost += 1
 		p.inventory_capacity_upgrade += 0.5
 		p.lifedata["Inventory_capacity"] = p.inventory_capacity_upgrade
-		print("your maximum inventory capacity is " +str(p.inventory_capacity_upgrade) +" times bigger")
+		#print("your maximum inventory capacity is " +str(p.inventory_capacity_upgrade) +" times bigger")
 		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_inventory_costs.rpc_id(int(p.name), p.inventory_upgrade_cost)
@@ -118,7 +118,7 @@ func upgrade_range():
 		p.range_upgrade_cost += 1
 		p.pickup_capacity += 1.0
 		p.pickup_range_upgrade = p.pickup_capacity*5 + 1.0
-		print("your maximum pick-up range is " +str(p.pickup_range_upgrade) +" times bigger")
+		#print("your maximum pick-up range is " +str(p.pickup_range_upgrade) +" times bigger")
 		p.lifedata["Money"] = p.catnation_credits
 		update_credits.rpc_id(int(p.name), p.catnation_credits)
 		update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
@@ -158,21 +158,21 @@ func update_credits(new_credits):
 
 @rpc("any_peer","call_remote")
 func update_inventory_costs(new_cost):
-	print(new_cost)
+	#print(new_cost)
 	$PopupMenu.set_item_text(0, "Inventory maximum capacity up /// COST : "+ str(new_cost))
 	#$PopupMenu.set_item_text(1, "More maximum health /// COST : "+ str(health_upgrade_cost))
 	
 @rpc("any_peer","call_remote")
 func update_health_costs(new_cost):
-	print(new_cost)
+	#print(new_cost)
 	$PopupMenu.set_item_text(1, "More maximum health /// COST : " + str(new_cost))
 
 @rpc("any_peer","call_remote")
 func update_energy_costs(new_cost):
-	print(new_cost)
+	#print(new_cost)
 	$PopupMenu.set_item_text(2, "More maximum energy /// COST : " + str(new_cost))
 	
 @rpc("any_peer","call_remote")
 func update_range_costs(new_cost):
-	print(new_cost)
+	#print(new_cost)
 	$PopupMenu.set_item_text(3, "Increased pick-up range /// COST : " + str(new_cost))
