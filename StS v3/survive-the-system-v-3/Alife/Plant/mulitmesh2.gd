@@ -42,7 +42,7 @@ func draw_all_grass(id, pos, state, alive, active):
 func update_drawn_grass(id_array, pos_array, state_array, alive_array, active_array):
 	
 	if !id_to_slot.has(id_array):
-		print("strange: grass need update but not instantiated (yet?)")
+		#print("strange: grass need update but not instantiated (yet?)")
 		return
 	var slot = id_to_slot[id_array]
 	

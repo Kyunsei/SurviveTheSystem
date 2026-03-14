@@ -10,14 +10,15 @@ func evaluate(_manager,_i, _DNA):
 		return score 
 
 	for f in food_type:
-		score = _manager.field_world_array[f][bin] - 20
+		score =  _manager.sum_species_world_array[f][bin]
 
-	print( "Eat score is " + str(score))
+	#print( "Eat score is " + str(score))
 	return score
 
 
 func enter(_manager,_i, _DNA):
-	print("Eat selected")
+	#print("Eat selected")
+	pass
 	
 
 func exit(_manager,_i, _DNA):
@@ -26,12 +27,18 @@ func exit(_manager,_i, _DNA):
 func update(manager,i, _DNA, _delta):
 	#print("EATING")
 	var bin = manager.binID_array[i]
-	print(manager.field_world_array[0][bin])
-	print(manager.field_world_array[0][bin+1])
+	#print(manager.field_world_array[0][bin])
+	#print(manager.field_world_array[0][bin+1])
+	#print(manager.calculate_flow_at_bin(0,bin).normalized())
 
 	var ti = find_closest_in_bin(manager,i, bin,  0)
-	if ti:
-		manager.Active[ti] = 0
+	if ti != null:
+
+
+		manager.current_health_array[ti] = -100
+		manager._pending_kills.append(ti)
+		#manager.Active[ti] = 0
+
 		#manager.current_energy_array[i] += manager.current_biomass_array[ti]
 	#print(manager.current_energy_array[i])
 
@@ -45,8 +52,10 @@ func find_closest_in_bin(manager,i, bin,  t_sp):
 			print("OLD SYSTEM STILL IN BIN")
 		else:
 			if manager.Active[ti] == 0:
+				#print("nonactive")
 				continue
 			if manager.Species_array[ti] != t_sp:
+				#print("nongrass")
 				continue
 			var t_pos = manager.position_array[ti]
 			var distance = manager.position_array[i].distance_to(t_pos)

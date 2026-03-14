@@ -15,6 +15,9 @@ var Grass_simulator_time = 0
 #WORLD
 var flow_world_array : Array[PackedVector3Array]
 var field_world_array : Array[PackedFloat64Array]
+var species_world_array : Array[PackedInt32Array]
+var sum_species_world_array : Array[PackedInt32Array]
+
 
 
 
@@ -286,7 +289,7 @@ func update_field() -> void:
 	# Decay existing field
 	for s in range(field_world_array.size()):
 		for i in range(field_world_array[s].size()):
-			field_world_array[s][i] *= 0.5#85  # evaporate over time
+			field_world_array[s][i] *= 0.85  # evaporate over time
 	
 	for i in range(entity_count):
 		if Active[i] == 0:
@@ -699,11 +702,15 @@ func build_world_bin_tables():
 
 	field_world_array.resize(count)
 	flow_world_array.resize(count)
+	species_world_array.resize(count)
+	sum_species_world_array.resize(count)
 
 	for s in range(species_list.size()):
 		for t in range(World.bin_array.size()):
 			field_world_array[s].append(0.0)
 			flow_world_array[s].append(Vector3(0,0,0))
+			sum_species_world_array[s].append(0)
+			#species_world_array[s].append([])
 
 
 func build_species_tables():
@@ -865,13 +872,14 @@ func put_in_world_bin(i):
 		#g["bin_ID"] = new_bin_ID
 	if World.bin_array[new_bin_ID] == null:
 		World.bin_array[new_bin_ID] = [i]
-		World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
-		#field_world_array[Species_array[i]][new_bin_ID] += 1.0
+		#World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
+		#species_world_array[Species_array[i]][new_bin_ID] += 1
+		sum_species_world_array[Species_array[i]][new_bin_ID] += 1
 	else:	
 		World.bin_array[new_bin_ID].append(i) 
-		World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
-		#field_world_array[Species_array[i]][new_bin_ID] += 1
-
+		#World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
+		#species_world_array[Species_array[i]][new_bin_ID] += 1
+		sum_species_world_array[Species_array[i]][new_bin_ID] += 1
 
 	#binID_array[i] = new_bin_ID
 	
@@ -880,8 +888,9 @@ func remove_from_world_bin(i):
 	if binID_array[i] >= 0:
 		if World.bin_array[binID_array[i]].has(i):
 			World.bin_array[binID_array[i]].erase(i)
-			World.bin_sum_array[Species_array[i]][binID_array[i]] -= 1
-			#field_world_array[Species_array[i]][binID_array[i]] -= 1
+			#World.bin_sum_array[Species_array[i]][binID_array[i]] -= 1
+			sum_species_world_array[Species_array[i]][binID_array[i]] -= 1
+			field_world_array[Species_array[i]][binID_array[i]] -= 1
 			binID_array[i] = -1
 
 
