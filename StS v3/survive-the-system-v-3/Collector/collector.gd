@@ -110,9 +110,9 @@ func start_escape_phase(player):
 
 func check_escape_results(player):
 	spaceship.get_node("Collector_ship").go_up()
-	credit_player(player)
 	
 	for p in player.get_parent().player_array:
+		credit_player(p)
 		p.stop_escape_ui.rpc()
 		if p.position.y >= 90:
 			p.escape_success.rpc_id(int(p.name))
