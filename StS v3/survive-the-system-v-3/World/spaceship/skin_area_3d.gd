@@ -63,6 +63,15 @@ func change_player_skin(skin_index: int, player_id):
 	Super_p = get_parent().get_parent().get_node("Alife manager").get_node(str(player_id))
 	print(Super_p)
 	var mesh = Super_p.get_node_or_null("MeshInstance3D")
+	var mesh2 = Super_p.get_node_or_null("MeshInstance3D").get_node("body")
+	var mesh3 = Super_p.get_node_or_null("MeshInstance3D").get_node("leftarm")
+	var mesh4 = Super_p.get_node_or_null("MeshInstance3D").get_node("leftarm2")
+	var mesh5 = Super_p.get_node_or_null("MeshInstance3D").get_node("rightarm")
+	var mesh6 = Super_p.get_node_or_null("MeshInstance3D").get_node("rightarm2")
+	var mesh7 = Super_p.get_node_or_null("MeshInstance3D").get_node("leftleg")
+	var mesh8 = Super_p.get_node_or_null("MeshInstance3D").get_node("leftleg2")
+	var mesh9 = Super_p.get_node_or_null("MeshInstance3D").get_node("rightleg")
+	var mesh10 = Super_p.get_node_or_null("MeshInstance3D").get_node("rightleg2")
 	if mesh == null:
 		print("MeshInstance3D not found")
 		return
@@ -71,9 +80,27 @@ func change_player_skin(skin_index: int, player_id):
 	#if material == null:
 	material = StandardMaterial3D.new()
 	mesh.set_surface_override_material(0, material)
+	mesh2.set_surface_override_material(0, material)
+	mesh3.set_surface_override_material(0, material)
+	mesh4.set_surface_override_material(0, material)
+	mesh5.set_surface_override_material(0, material)
+	mesh6.set_surface_override_material(0, material)
+	mesh7.set_surface_override_material(0, material)
+	mesh8.set_surface_override_material(0, material)
+	mesh9.set_surface_override_material(0, material)
+	mesh10.set_surface_override_material(0, material)
 
 	material.albedo_texture = skins[skin_index]
 	mesh.set_surface_override_material(0, material)  # Ensure update
+	mesh2.set_surface_override_material(0, material)
+	mesh3.set_surface_override_material(0, material)
+	mesh4.set_surface_override_material(0, material)
+	mesh5.set_surface_override_material(0, material)
+	mesh6.set_surface_override_material(0, material)
+	mesh7.set_surface_override_material(0, material)
+	mesh8.set_surface_override_material(0, material)
+	mesh9.set_surface_override_material(0, material)
+	mesh10.set_surface_override_material(0, material)
 	print("Skin changed to index: ", skin_index)
 	
 

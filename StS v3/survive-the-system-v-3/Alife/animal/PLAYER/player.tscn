@@ -13,7 +13,9 @@ albedo_color = Color(0.093700476, 0.10681253, 0.21656331, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_31v8x"]
 material = SubResource("StandardMaterial3D_6t5sv")
-height = 1.0
+top_radius = 0.2
+bottom_radius = 0.2
+height = 0.2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5e6c6"]
 transparency = 1
@@ -45,16 +47,16 @@ size = Vector3(1.2, 2, 2)
 size = Vector3(1.2, 2, 2)
 
 [sub_resource type="SphereMesh" id="SphereMesh_geoiu"]
-radius = 0.1
-height = 0.5
+radius = 0.05
+height = 0.14
 
 [sub_resource type="PrismMesh" id="PrismMesh_geoiu"]
 left_to_right = 1.0
-size = Vector3(0.6, 0.4, 0.2)
+size = Vector3(0.2, 0.25, 0.1)
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_2y45n"]
-radius = 0.05
-height = 0.8
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_5e6c6"]
+radius = 0.02
+height = 0.5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2y45n"]
 transparency = 1
@@ -77,6 +79,21 @@ viewport_path = NodePath("MeshInstance3D/Status_bar/SubViewport2")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2y45n"]
 size = Vector3(1.5, 1.2, 1.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kcrxs"]
+albedo_color = Color(0.093700476, 0.10681253, 0.21656331, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_5e6c6"]
+material = SubResource("StandardMaterial3D_kcrxs")
+top_radius = 0.15
+bottom_radius = 0.15
+height = 0.4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_kcrxs"]
+material = SubResource("StandardMaterial3D_6t5sv")
+top_radius = 0.05
+bottom_radius = 0.05
+height = 0.2
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qrp1o"]
 properties/0/path = NodePath(".:position")
@@ -111,6 +128,7 @@ properties/9/spawn = true
 properties/9/replication_mode = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5e6c6"]
+size = Vector3(0.5, 1, 0.5)
 
 [sub_resource type="Animation" id="Animation_5e6c6"]
 length = 0.001
@@ -121,10 +139,10 @@ tracks/0/path = NodePath("MeshInstance3D/spear:rotation")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.001),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(0, 0, -0.26179942)]
+"values": [Vector3(0, 0, -0.26179942), Vector3(0, 0, -0.26179942)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -133,10 +151,10 @@ tracks/1/path = NodePath("MeshInstance3D/spear:position")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.001),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(-0.10000001, -0.20000002, -0.6)]
+"values": [Vector3(0.05, -0.39, -0.23), Vector3(0.049999982, -0.39000002, -0.23000002)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -148,7 +166,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector3(1.1, -0.19999999, -0.7999999)]
+"values": [Vector3(0.68, -0.41, -0.56)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -172,7 +190,7 @@ tracks/4/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector3(1, 1, 1)]
+"values": [Vector3(0.6, 0.6, 0.6)]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
@@ -181,10 +199,10 @@ tracks/5/path = NodePath("MeshInstance3D/spear:scale")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.001),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(2, 5, 2)]
+"values": [Vector3(2, 5, 2), Vector3(2, 5, 2)]
 }
 
 [sub_resource type="Animation" id="Animation_vk34y"]
@@ -200,7 +218,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(1.1, -0.19999999, -0.7999999), Vector3(1.1, -0.19999999, -0.7999999)]
+"values": [Vector3(0.68, -0.41, -0.56), Vector3(0.68, -0.41, -0.56)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -224,7 +242,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(1, 1, 1), Vector3(1, 1, 1)]
+"values": [Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6)]
 }
 
 [sub_resource type="Animation" id="Animation_x6f2s"]
@@ -255,7 +273,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.3),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(-0.10000001, -0.20000002, -0.6), Vector3(-0.10000001, -0.20000002, -0.6)]
+"values": [Vector3(0.05, -0.39, -0.23), Vector3(-0.10000001, -0.20000002, -0.6)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -295,7 +313,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 0.1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(-0.10000001, -0.20000002, -0.6), Vector3(-0.10000001, -0.20000002, -0.6)]
+"values": [Vector3(0.05, -0.39, -0.23), Vector3(-0.10000001, -0.20000002, -0.6)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -324,7 +342,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
-"values": [Vector3(1.1, -0.19999999, -0.7999999), Vector3(1.12, -0.2, -0.8), Vector3(1.08, -0.2, -0.8), Vector3(1.12, -0.2, -0.8), Vector3(1.1, -0.2, -0.8)]
+"values": [Vector3(0.68, -0.41, -0.63), Vector3(0.69, -0.4, -0.62), Vector3(0.7, -0.39, -0.61), Vector3(0.69, -0.4, -0.62), Vector3(0.68, -0.41, -0.63)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -348,7 +366,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
-"values": [Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1)]
+"values": [Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6)]
 }
 
 [sub_resource type="Animation" id="Animation_8poul"]
@@ -362,10 +380,10 @@ tracks/0/path = NodePath("MeshInstance3D/Hoover:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.05, 0.1, 0.10002215, 0.15, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
-"values": [Vector3(1.1, -0.19999999, -0.7999999), Vector3(1.11, -0.21, -0.79), Vector3(1.09, -0.19, -0.81), Vector3(1.1, -0.19999999, -0.7999999), Vector3(1.11, -0.21, -0.78), Vector3(1.1, -0.19999999, -0.7999999)]
+"values": [Vector3(0.68, -0.41, -0.56), Vector3(0.69, -0.4, -0.52), Vector3(0.7, -0.39, -0.54), Vector3(0.69, -0.4, -0.52), Vector3(0.68, -0.41, -0.56)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -374,10 +392,10 @@ tracks/1/path = NodePath("MeshInstance3D/Hoover:rotation")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.05, 0.1, 0.10002215, 0.15, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
-"values": [Vector3(0, 3.1415925, 0), Vector3(0, 3.159046, 0), Vector3(0, 3.1241393, 0), Vector3(0, 3.106686, 0), Vector3(0, 3.159046, 0), Vector3(0, 3.1415925, 0)]
+"values": [Vector3(0, 3.1415925, 0), Vector3(0.017453292, 3.159046, -0.017453292), Vector3(-0.017453292, 3.1241393, 0.017453292), Vector3(0.017453292, 3.159046, -0.017453292), Vector3(0, 3.1415925, 0)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -386,10 +404,10 @@ tracks/2/path = NodePath("MeshInstance3D/Hoover:scale")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.05, 0.1, 0.10002215, 0.15, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
 "update": 0,
-"values": [Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1)]
+"values": [Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_x6f2s"]
@@ -404,6 +422,7 @@ _data = {
 }
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_x6f2s"]
+size = Vector3(0.5, 1, 0.5)
 
 [node name="Player" type="CharacterBody3D" unique_id=1092654110 groups=["player"]]
 physics_interpolation_mode = 1
@@ -412,6 +431,7 @@ script = ExtResource("1_qrp1o")
 [node name="Player_HUD" parent="." unique_id=1065555217 instance=ExtResource("2_2y45n")]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=175010637]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 mesh = SubResource("CylinderMesh_31v8x")
 
 [node name="spear_Area3D" type="Area3D" parent="MeshInstance3D" unique_id=1844384283]
@@ -424,11 +444,12 @@ visible = false
 mesh = SubResource("BoxMesh_kcrxs")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/spear_Area3D" unique_id=1954593525]
-transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, -0.1294095, 0.7029629, -2.15)
+transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, -0.025881857, 0.31659254, -2.4299998)
 shape = SubResource("BoxShape3D_kcrxs")
 
 [node name="vacuum_Area3D" type="Area3D" parent="MeshInstance3D" unique_id=670962876]
 transform = Transform3D(0.9659258, 0.25881907, 0, -0.25881907, 0.9659258, 0, 0, 0, 1, -0.10000001, -0.20000002, -0.6)
+visible = false
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D/vacuum_Area3D" unique_id=1169013471]
 transform = Transform3D(0.9659258, -0.25881907, 0, 0.25881907, 0.9659258, 0, 0, 0, 1, -0.13287702, 0.68908906, -0.85)
@@ -436,7 +457,7 @@ visible = false
 mesh = SubResource("BoxMesh_5e6c6")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/vacuum_Area3D" unique_id=2050466429]
-transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, -0.1294095, 0.7029629, -0.6)
+transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881904, 0.9659258, 0, 0, 0, 1, -0.0388228, 0.36488882, -0.48000002)
 shape = SubResource("BoxShape3D_lwlqs")
 
 [node name="Area3D" type="Area3D" parent="MeshInstance3D" unique_id=970604991]
@@ -454,27 +475,28 @@ shape = SubResource("BoxShape3D_geoiu")
 [node name="Decorum" type="Node3D" parent="MeshInstance3D" unique_id=1162204555]
 
 [node name="Eyes1" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=1660529858]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.20800495, 0.19331414, -0.39909828)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.068004966, 0.023314148, -0.16909829)
 mesh = SubResource("SphereMesh_geoiu")
 
 [node name="Eyes2" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=1976340497]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16866833, 0.19331414, -0.40778136)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06866832, 0.023314148, -0.16778138)
 mesh = SubResource("SphereMesh_geoiu")
 
 [node name="ears1" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=666245996]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.17400604, 0.57784826, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.104006045, 0.22784826, 0)
 mesh = SubResource("PrismMesh_geoiu")
 
 [node name="ears2" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=351004003]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -0.17599396, 0.57784826, 0)
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -0.105993964, 0.22784826, 0)
 mesh = SubResource("PrismMesh_geoiu")
 
-[node name="tail" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=1726480256]
-transform = Transform3D(1, 0, 0, 0, 0.8660253, -0.49999997, 0, 0.49999997, 0.8660253, 0, 0, 0.63000005)
-mesh = SubResource("CapsuleMesh_2y45n")
+[node name="tail" type="MeshInstance3D" parent="MeshInstance3D/Decorum" unique_id=1017402875]
+transform = Transform3D(1, 0, 0, 0, 0.8660254, -0.5, 0, 0.5, 0.8660254, 0, -0.17, 0.25)
+mesh = SubResource("CapsuleMesh_5e6c6")
 
 [node name="Pick_up_Area3D" type="Area3D" parent="MeshInstance3D" unique_id=466998613]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.27, 0)
 visible = false
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D/Pick_up_Area3D" unique_id=513375016]
@@ -483,7 +505,7 @@ mesh = SubResource("SphereMesh_1iiag")
 
 [node name="pick_up_CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/Pick_up_Area3D" unique_id=88021762]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.07, -1)
 shape = SubResource("SphereShape3D_2y45n")
 
 [node name="Sprite3D_holdItem" type="Sprite3D" parent="MeshInstance3D" unique_id=1393918006]
@@ -541,16 +563,51 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
 visible = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/Action_Area3D" unique_id=285623758]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.120000005, -0.5)
 shape = SubResource("BoxShape3D_2y45n")
 
 [node name="Hoover" parent="MeshInstance3D" unique_id=1633460261 instance=ExtResource("3_1vr6m")]
-transform = Transform3D(-1, 0, 1.509958e-07, 0, 1, 0, -1.509958e-07, 0, -1, 1.1, -0.19999999, -0.7999999)
+transform = Transform3D(-0.6, 0, 9.059749e-08, 0, 0.6, 0, -9.059749e-08, 0, -0.6, 0.68, -0.41, -0.56)
 visible = false
 
 [node name="spear" parent="MeshInstance3D" unique_id=922266187 instance=ExtResource("4_5e6c6")]
-transform = Transform3D(1.9318516, 1.2940954, 0, -0.51763815, 4.829629, 0, 0, 0, 2, -0.10000001, -0.20000002, -0.6)
-visible = false
+transform = Transform3D(1.9318516, 1.2940954, 0, -0.51763815, 4.829629, 0, 0, 0, 2, 0.05, -0.39, -0.23)
+
+[node name="body" type="MeshInstance3D" parent="MeshInstance3D" unique_id=90035932]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.29999995, 0)
+mesh = SubResource("CylinderMesh_5e6c6")
+
+[node name="leftarm" type="MeshInstance3D" parent="MeshInstance3D" unique_id=1759634300]
+transform = Transform3D(0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0, 1, -0.22999999, -0.20999995, 0)
+mesh = SubResource("CylinderMesh_kcrxs")
+
+[node name="leftarm2" type="MeshInstance3D" parent="MeshInstance3D" unique_id=1631828581]
+transform = Transform3D(0.9999999, 0, 0, 0, 0.4999999, -0.8660254, 0, 0.8660254, 0.49999997, -0.29999998, -0.31999993, -0.02)
+mesh = SubResource("CylinderMesh_kcrxs")
+
+[node name="rightarm" type="MeshInstance3D" parent="MeshInstance3D" unique_id=2116676430]
+transform = Transform3D(0.7071067, -0.7071068, 0, 0.7071068, 0.7071067, 0, 0, 0, 1, 0.22999999, -0.21999994, 0)
+mesh = SubResource("CylinderMesh_kcrxs")
+
+[node name="rightarm2" type="MeshInstance3D" parent="MeshInstance3D" unique_id=820432719]
+transform = Transform3D(-3.7855166e-08, 8.940697e-08, 1, 0.9999998, -4.7665257e-08, 2.2954008e-08, 2.1855694e-08, 0.99999994, -2.9802322e-08, 0.31, -0.29999995, -0.08)
+mesh = SubResource("CylinderMesh_kcrxs")
+
+[node name="leftleg" type="MeshInstance3D" parent="MeshInstance3D" unique_id=156670210]
+transform = Transform3D(0.9999999, 0, 0, 0, 0.9659257, -0.258819, 0, 0.258819, 0.9659258, -0.08, -0.5899999, 0)
+mesh = SubResource("CylinderMesh_kcrxs")
+
+[node name="leftleg2" type="MeshInstance3D" parent="MeshInstance3D" unique_id=1178442879]
+transform = Transform3D(0.9999999, 0, 0, 0, 0.9659256, 0.258819, 0, -0.25881904, 0.9659257, -0.08, -0.79999995, -3.7252903e-09)
+mesh = SubResource("CylinderMesh_kcrxs")
+
+[node name="rightleg" type="MeshInstance3D" parent="MeshInstance3D" unique_id=388034869]
+transform = Transform3D(0.9999999, 0, 0, 0, 0.9659257, -0.258819, 0, 0.258819, 0.9659258, 0.099999994, -0.5899999, 0)
+mesh = SubResource("CylinderMesh_kcrxs")
+
+[node name="rightleg2" type="MeshInstance3D" parent="MeshInstance3D" unique_id=584785238]
+transform = Transform3D(0.9999999, 0, 0, 0, 0.9659256, 0.258819, 0, -0.25881904, 0.9659257, 0.099999994, -0.79999995, -3.7252903e-09)
+mesh = SubResource("CylinderMesh_kcrxs")
 
 [node name="Player_control" type="Node" parent="." unique_id=1336833191]
 script = ExtResource("1_31v8x")
