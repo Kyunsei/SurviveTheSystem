@@ -53,8 +53,10 @@ func Growth(manager, i, _delta):
 			return true
 
 func Update(_manager, _i, _delta):
-	choose_action(_manager, _i)	
-	update_action(_manager, _i, _delta)
+	if _manager.Alive_array[_i] == 1:
+		choose_action(_manager, _i)	
+		update_action(_manager, _i, _delta)
+		Homeostasis(_manager,_i,_delta)
 			
 func choose_action(manager, i):
 	if state_array.size() <= 0:
@@ -83,6 +85,27 @@ func choose_action(manager, i):
 			
 		state_array[best_action].enter(manager, i,self)
 		manager.current_finite_state_array[i] = best_action
+
+
+func Homeostasis(manager,i,delta):
+	var s = manager.Species_array[i]
+	var t = 0 # min(t,manager.species_photosynthesis_range[s].size()-1)
+	if manager.current_health_array[i] <= 0:
+		manager.Death(i)
+		manager._pending_update.append(i)
+		return
+		
+	var area = max(1,(manager.species_photosynthesis_range[s][t] * 2) * (manager.species_photosynthesis_range[s][t] * 2 ))
+	t = min(manager.current_life_state_array[i],manager.species_homeostasis_cost[s].size()-1)
+	manager.current_energy_array[i] -= manager.species_homeostasis_cost[s][t] * area * GlobalSimulationParameter.simulation_speed * delta
+	#Regenerate_Health(i,s,t,delta)
+		
+	
+
+	if manager.current_energy_array[i] <= 0:
+		manager.current_health_array[i] -= manager.species_homeostasis_cost[s][t]  * GlobalSimulationParameter.simulation_speed * delta
+
+
 
 
 func update_action(_manager, _i, _delta):

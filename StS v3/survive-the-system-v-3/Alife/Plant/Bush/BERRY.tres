@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="BERRY" format=3 uid="uid://bii474fuh3ny6"]
+
+[ext_resource type="Script" uid="uid://dtaayymr58hlp" path="res://Alife/Plant/Bush/berry_DNA.gd" id="1_2w7kw"]
+
+[resource]
+script = ExtResource("1_2w7kw")
+metadata/_custom_type_script = "uid://dtaayymr58hlp"

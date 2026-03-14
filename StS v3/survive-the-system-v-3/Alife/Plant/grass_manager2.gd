@@ -749,6 +749,36 @@ func build_species_tables():
 
 ###CONECT TO WORLD
 
+
+func get_index_in_bin_around(bin_array,i,radius):
+	var bin_index = binID_array[i]
+	var result : PackedInt32Array
+	var GRID_WIDTH: int =  int(World.World_Size.x/ World.bin_size.x)
+	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
+
+	var row = bin_index / GRID_WIDTH
+	var col = bin_index % GRID_WIDTH
+	for dy in range(-radius, radius + 1):
+		for dx in range(-radius, radius + 1):
+			var nx = col + dx
+			var ny = row + dy
+			# Edge clamp — skip cells outside grid bounds
+			if nx < 0 or nx >= GRID_WIDTH:
+				continue
+			if ny < 0 or ny >= GRID_HEIGHT:
+				continue
+
+			var neighbor_bin = ny * GRID_WIDTH + nx
+
+			# Append all agent indices stored in that bin
+			var agents_in_bin: PackedInt32Array = bin_array[neighbor_bin]
+			for agent_idx in agents_in_bin:
+				result.append(agent_idx)
+	return result
+
+
+
+
 func get_worldbin_index(current_pos):
 	var bin_index
 	if World:
@@ -918,11 +948,14 @@ func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):
 				$moss.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
 		elif si == 3:
 				$sheep.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
+		elif si == 4:
+				$berry.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
 	$grass.multimesh.visible_instance_count = $grass.instance_number
 	$tree.multimesh.visible_instance_count = $tree.instance_number		
 	$moss.multimesh.visible_instance_count = $moss.instance_number	
 	$sheep.multimesh.visible_instance_count = $sheep.instance_number		
-	
+	$berry.multimesh.visible_instance_count = $berry.instance_number		
+
 
 @rpc("authority", "call_remote", "reliable") 			
 func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array):
@@ -936,6 +969,8 @@ func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,spe
 			$moss.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
 		elif s == 3:
 			$sheep.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
+		elif s == 4:
+			$berry.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
 
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(id_array,species_array):
@@ -949,7 +984,8 @@ func erase_grass(id_array,species_array):
 			$moss.remove_grass(id_array[c])
 		elif s == 3:
 			$sheep.remove_grass(id_array[c])			
-			
+		elif s == 4:
+			$berry.remove_grass(id_array[c])				
 
 @rpc("any_peer","call_remote")
 func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_array,species_array):
@@ -957,6 +993,8 @@ func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_a
 	$tree.init()
 	$moss.init()
 	$sheep.init()
+	$berry.init()
+
 	for c in range(id_array.size()):
 		var s = species_array[c]
 		if s == 0:
@@ -967,11 +1005,14 @@ func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_a
 			$moss.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
 		elif s == 3:
 			$sheep.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
-		
+		elif s == 4:
+			$berry.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
+				
 	$grass.multimesh.visible_instance_count = $grass.instance_number
 	$tree.multimesh.visible_instance_count = $tree.instance_number
 	$moss.multimesh.visible_instance_count = $moss.instance_number
 	$sheep.multimesh.visible_instance_count = $sheep.instance_number
+	$berry.multimesh.visible_instance_count = $berry.instance_number
 
 func update_grass_time():
 	if Grass_simulator_time > 0:

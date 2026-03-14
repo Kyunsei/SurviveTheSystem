@@ -9,10 +9,12 @@
 [ext_resource type="Script" uid="uid://dqvbcbtdwfsju" path="res://Alife/Plant/mulitmesh2.gd" id="5_hbvxf"]
 [ext_resource type="Resource" uid="uid://yi3lcyvwh8vv" path="res://Alife/animal/Herbivor/Sheep/SHEEP.tres" id="6_axxor"]
 [ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="6_hbvxf"]
+[ext_resource type="Resource" uid="uid://bii474fuh3ny6" path="res://Alife/Plant/Bush/BERRY.tres" id="7_jpkr0"]
 [ext_resource type="QuadMesh" uid="uid://cemxkaiaso15s" path="res://Alife/Plant/Moss/moss_ground.tres" id="8_5nq35"]
 [ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/animal/Herbivor/SHEEP.png" id="8_dysbp"]
 [ext_resource type="QuadMesh" uid="uid://bm1k4t0khab06" path="res://Alife/Plant/Moss/moss.tres" id="8_ixbrm"]
 [ext_resource type="SphereMesh" uid="uid://c0f8vwlqbesnh" path="res://Alife/Plant/tree/shadow_mesh.tres" id="8_vuq5v"]
+[ext_resource type="Texture2D" uid="uid://c3mhy3ho6ovbu" path="res://Alife/Plant/Bush/berry_5.png" id="9_8rc0f"]
 
 [sub_resource type="Resource" id="Resource_yp710"]
 script = ExtResource("3_eguq1")
@@ -30,6 +32,28 @@ metadata/_custom_type_script = "uid://dj8ux7osvyk1j"
 transform_format = 1
 use_colors = true
 mesh = ExtResource("4_lxqh2")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_batcg"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("9_8rc0f")
+backlight_enabled = true
+backlight = Color(1, 1, 1, 1)
+texture_filter = 0
+billboard_mode = 2
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_r6o52"]
+material = SubResource("StandardMaterial3D_batcg")
+size = Vector2(4, 4)
+center_offset = Vector3(0, 2, 0)
+
+[sub_resource type="MultiMesh" id="MultiMesh_5wgv5"]
+transform_format = 1
+use_colors = true
+mesh = SubResource("QuadMesh_r6o52")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dysbp"]
 transparency = 2
@@ -99,10 +123,14 @@ properties/1/replication_mode = 1
 
 [node name="Grass_Manager" type="Node3D" unique_id=2019447816]
 script = ExtResource("1_0gklr")
-species_list = Array[ExtResource("2_eguq1")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35"), ExtResource("6_axxor")])
+species_list = Array[ExtResource("2_eguq1")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35"), ExtResource("6_axxor"), ExtResource("7_jpkr0")])
 
 [node name="grass" type="MultiMeshInstance3D" parent="." unique_id=931824674]
 multimesh = SubResource("MultiMesh_nt0jf")
+script = ExtResource("5_hbvxf")
+
+[node name="berry" type="MultiMeshInstance3D" parent="." unique_id=1289057152]
+multimesh = SubResource("MultiMesh_5wgv5")
 script = ExtResource("5_hbvxf")
 
 [node name="sheep" type="MultiMeshInstance3D" parent="." unique_id=805820802]
