@@ -1,6 +1,6 @@
 extends Area3D
 
-var p 
+#var p 
 var local_p_id
 var pop_up_menu_open = false
 var credits = 0
@@ -83,15 +83,17 @@ func show_popup():
 	
 @rpc("any_peer","call_local")
 func upgrade_health(id):
-	if p.catnation_credits >=p.health_upgrade_cost:
-		p.catnation_credits -=p.health_upgrade_cost
-		p.health_upgrade_cost += 1
-		p.lifedata["Max_health"] += 20
-		p.lifedata["current_health"] += 20
-		#print("your max health is now " +str(p.lifedata["Max_health"]))
-		p.lifedata["Money"] = p.catnation_credits
-		update_credits.rpc_id(int(p.name), p.catnation_credits)
-		update_health_costs.rpc_id(int(p.name), p.health_upgrade_cost)
+		for p in Alife_manager.player_array :
+			if p.name == str(id) :
+				if p.catnation_credits >=p.health_upgrade_cost:
+					p.catnation_credits -=p.health_upgrade_cost
+					p.health_upgrade_cost += 1
+					p.lifedata["Max_health"] += 20
+					p.lifedata["current_health"] += 20
+					#print("your max health is now " +str(p.lifedata["Max_health"]))
+					p.lifedata["Money"] = p.catnation_credits
+					update_credits.rpc_id(int(p.name), p.catnation_credits)
+					update_health_costs.rpc_id(int(p.name), p.health_upgrade_cost)
 
 @rpc("any_peer","call_local")
 func upgrade_energy(id):
@@ -124,39 +126,47 @@ func upgrade_inventory_capacity(id):
 		
 @rpc("any_peer","call_local")
 func upgrade_range(id):
-	if p.catnation_credits >=p.range_upgrade_cost:
-		p.catnation_credits -=p.range_upgrade_cost
-		p.range_upgrade_cost += 1
-		p.pickup_capacity += 1.0
-		p.pickup_range_upgrade = p.pickup_capacity*5 + 1.0
-		#print("your maximum pick-up range is " +str(p.pickup_range_upgrade) +" times bigger")
-		p.lifedata["Money"] = p.catnation_credits
-		update_credits.rpc_id(int(p.name), p.catnation_credits)
-		update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
+	for p in Alife_manager.player_array :
+		if p.name == str(id) :
+			if p.catnation_credits >=p.range_upgrade_cost:
+				p.catnation_credits -=p.range_upgrade_cost
+				p.range_upgrade_cost += 1
+				p.pickup_capacity += 1.0
+				p.pickup_range_upgrade = p.pickup_capacity*5 + 1.0
+				#print("your maximum pick-up range is " +str(p.pickup_range_upgrade) +" times bigger")
+				p.lifedata["Money"] = p.catnation_credits
+				update_credits.rpc_id(int(p.name), p.catnation_credits)
+				update_range_costs.rpc_id(int(p.name), p.range_upgrade_cost)
 
 @rpc("any_peer","call_local")
 func buy_cat_ration(id):
-	if p.catnation_credits >= cat_ration_cost:
-		p.catnation_credits -=cat_ration_cost
-		p.lifedata["Money"] = p.catnation_credits
-		get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(CAT_RATION,object_spawned_position)
-		update_credits.rpc_id(int(p.name), p.catnation_credits)
+	for p in Alife_manager.player_array :
+		if p.name == str(id) :
+			if p.catnation_credits >= cat_ration_cost:
+				p.catnation_credits -=cat_ration_cost
+				p.lifedata["Money"] = p.catnation_credits
+				get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(CAT_RATION,object_spawned_position)
+				update_credits.rpc_id(int(p.name), p.catnation_credits)
 
 @rpc("any_peer","call_local")
 func buy_spearaxe(id):
-	if p.catnation_credits >= spearaxe_cost:
-		p.catnation_credits -=spearaxe_cost
-		p.lifedata["Money"] = p.catnation_credits
-		get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(SPEARAXE,object_spawned_position)
-		update_credits.rpc_id(int(p.name), p.catnation_credits)
+	for p in Alife_manager.player_array :
+		if p.name == str(id) :
+			if p.catnation_credits >= spearaxe_cost:
+				p.catnation_credits -=spearaxe_cost
+				p.lifedata["Money"] = p.catnation_credits
+				get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(SPEARAXE,object_spawned_position)
+				update_credits.rpc_id(int(p.name), p.catnation_credits)
 
 @rpc("any_peer","call_local")
 func buy_vacuum(id):
-	if p.catnation_credits >= vacuum_cost:
-		p.catnation_credits -=vacuum_cost
-		p.lifedata["Money"] = p.catnation_credits
-		get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(VACUUM,object_spawned_position)
-		update_credits.rpc_id(int(p.name), p.catnation_credits)
+	for p in Alife_manager.player_array :
+		if p.name == str(id) :
+			if p.catnation_credits >= vacuum_cost:
+				p.catnation_credits -=vacuum_cost
+				p.lifedata["Money"] = p.catnation_credits
+				get_parent().alifemanager.get_node("Item_Manager").spawn_new_item(VACUUM,object_spawned_position)
+				update_credits.rpc_id(int(p.name), p.catnation_credits)
 
 @rpc("any_peer","call_remote")
 func update_credits(new_credits):
