@@ -24,37 +24,14 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 
 static func on_use(player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BEFORE
 
-	'#var center = player.position
-	var size = Vector3(2,2,2)
-	var targets = player.get_parent().get_alife_in_area(player.position, size)
-	#player.get_node("MeshInstance3D").get_node("Area3D").show()
-	if targets:
-		for t in targets:
-			if t is Dictionary:
-				if t != player.lifedata:
-					player.get_parent().Attack(t,5)
-					print("hit player")
-			else:
-				player.get_parent().Attack(t,5)
-				print("hit non player")'
-	if player.spear_animation_in_course == false:
+	if player.spear_animation_in_course == false and player.speardefense == false:
 		player.spear_attack.rpc_id(1)
-	#var center = player.position
-	#var size = Vector3(2,2,2)
-	#var targets = player.get_parent().get_alife_in_area(player.position, size)
-	##player.get_node("MeshInstance3D").get_node("Area3D").show()
-	#if targets:
-		#for t in targets:
-			#if t is Dictionary:
-				#if t != player.lifedata:
-					#player.get_parent().Attack(t,5)
-					#print("hit player")
-			#else:
-				#player.get_parent().Attack(t,5)
-				#print("hit non player")
 
-	
-	
+static func on_use_secondary(player, state):
+	if state == false:
+		player.spear_defense.rpc_id(1, 1)
+	elif state == true:
+		player.spear_defense.rpc_id(1, 0)
 	
 static func eat(_player):
 	#print ("eaten cat ratio")

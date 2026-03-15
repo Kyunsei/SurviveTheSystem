@@ -9,6 +9,7 @@ var itemData = {
 	"inventory_path": "",
 	"Species": Alifedata.enum_speciesID.ITEM,
 	"Use": on_use,
+	"Use_secondary": on_use_secondary,
 	"Eat": eat
 }
 
@@ -38,6 +39,9 @@ func add_to_player(body,peer_id):
 
 static func on_use(_player):
 	print("used and did something" )
+
+static func on_use_secondary(_player, state):
+	print("used secondary and did something" + str(state) )
 
 static func eat(_player):
 	print("eat something" )

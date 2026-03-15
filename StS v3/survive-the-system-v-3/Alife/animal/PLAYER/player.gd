@@ -76,6 +76,9 @@ var vacuum_action_range
 var vacuum_tick := 0.0
 var vacuum_interval := 0.15
 var spear_animation_in_course = false
+var time_before_attack
+var secondary_hold = false
+var speardefense = false
 
 var dialogue_box 
 
@@ -192,10 +195,15 @@ func _ready() -> void:
 			
 func _physics_process(_delta: float) -> void:
 	if is_multiplayer_authority() :
+
 		#print("Player pos:", global_position, " lifedata pos:", lifedata["position"])
 		velocity.x = direction.x *speed 
 		velocity.z = direction.z *speed 
 		#data_movement_to_server.rpc_id(1, global_position)
+		if Input.is_action_just_pressed("secondary_use"):
+			secondary_hold = true
+		if Input.is_action_just_released("secondary_use"):
+			secondary_hold = false
 		if speed >= 10:
 			$PlayerAnimater.speed_scale = 2
 		else:
@@ -415,11 +423,10 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 
 @rpc("any_peer","call_local")
 func spear_attack():
-	if spear_animation_in_course == false:
+	if spear_animation_in_course == false and speardefense == false:
+		time_before_attack = 0.4
+		spear_animation_in_course = true
 		spear_attack_animation.rpc_id(int(name))
-	
-
-	#var center = player.position
 	var area = $MeshInstance3D/spear_Area3D
 	var collision = $MeshInstance3D/spear_Area3D/CollisionShape3D
 	var extents = collision.shape.size/2
@@ -432,40 +439,62 @@ func spear_attack():
 	var forward = -area.global_transform.basis.z
 	var pos_center = area.global_position + forward * extents.z
 	var targets = get_parent().get_alife_in_area(pos_center, world_extents)
-	#print(area.global_position, collision.shape.size, area.position)
-	#print(targets)
-	if targets: # and targets.has("peer_id") == false: #and $AnimationPlayer.is_playing():
+	if targets: 
 		for t in targets:
 			if t is Dictionary:
 				if t != lifedata and t["Species"] != Alifedata.enum_speciesID.CAT:
 					get_parent().Attack(t,25)
-					#print("hit player")
 			else :
 				get_parent().Attack(t,25)
-				#print("hit non player")
 	check_player_hit.rpc_id(1, 25, area)
+	await get_tree().create_timer(time_before_attack).timeout
+	spear_animation_in_course = false
 
-	#elif t.has_meta("alife_id"):  
-	#var alife_data = get_parent().get_alife_by_id(t.get_meta("alife_id"))
-	#get_parent().Attack(alife_data, 5)
+@rpc("any_peer","call_remote")
+func spear_attack_animation():
+	$AnimationPlayer.play("spear_attack_2")
+	await $AnimationPlayer.animation_finished
+	$AnimationPlayer.play_backwards("spear_attack_1")
+	await $AnimationPlayer.animation_finished
 @rpc("any_peer","call_local")
 func check_player_hit(dmg, areaofaction):
 	var interacted_areas = areaofaction.get_overlapping_areas()
 	for t in interacted_areas:
 		if t.is_in_group("spear_hit") and t.get_parent()!= self :
-			get_parent().Attack(t.get_parent().lifedata, dmg)
-			if t.get_parent().lifedata["current_health"] > 0:
-				t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),-25, Color(1.0, 0.1, 0.0, 1.0), 1.0, " Health")
-@rpc("any_peer","call_local")
-func vacuum_activation():
-	vacuum_animation.rpc_id(int(name))
+			if t.get_parent().speardefense == false:
+				get_parent().Attack(t.get_parent().lifedata, dmg)
+				if t.get_parent().lifedata["current_health"] > 0:
+					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),-dmg, Color(1.0, 0.1, 0.0, 1.0), 1.0, " Health")
+			else :
+				if t.get_parent().lifedata["current_health"] > 0:
+					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),dmg, Color(0.5, 0.5, 0.5, 1.0), 1.0, " Damage Blocked")
 
 @rpc("any_peer","call_local")
-func vacuum_loop():
+func spear_defense(number):
+	spear_defense_animation.rpc_id(int(name), number)
+
+@rpc("any_peer","call_remote")
+func spear_defense_animation(defendingornot):
+	if defendingornot == 0:
+		$AnimationPlayer.play("spear_going_to_defense")
+		await $AnimationPlayer.animation_finished
+		$AnimationPlayer.play("spear_in_defense")
+		set_speardefense_state.rpc_id(1, true) # tell server
+	else:
+		print("going back")
+		$AnimationPlayer.play_backwards("spear_going_to_defense")
+		await $AnimationPlayer.animation_finished
+		$AnimationPlayer.play("RESET")
+		set_speardefense_state.rpc_id(1, false) # tell server
+@rpc("any_peer","call_remote")
+func set_speardefense_state(state: bool):
+	speardefense = state
+
+@rpc("any_peer","call_local")
+func speardefending():
 	var alife_manager = get_parent()
 	var targets = alife_manager.get_alife_in_area(vacuum_action_range.global_position,
 	 												vacuum_action_range.shape.size)
-
 	if targets:
 		for t in targets:
 			if t is Dictionary:
@@ -478,6 +507,47 @@ func vacuum_loop():
 			else:
 				if add_to_inventory(t):
 					alife_manager.remove(t)	
+
+@rpc("any_peer","call_local")
+func vacuum_activation():
+	vacuum_animation.rpc_id(int(name))
+
+@rpc("any_peer","call_remote")
+func vacuum_animation():
+	if vacuum_turned_on == false:
+		$AnimationPlayer.play("vacuum_on_2")
+		set_vacuum_state.rpc_id(1, true) # tell server
+		vacuum_turned_on = true
+	else:
+		$AnimationPlayer.play("init_pos_vacuum")
+		set_vacuum_state.rpc_id(1, false) # tell server
+		vacuum_turned_on = false
+
+@rpc("any_peer","call_remote")
+func set_vacuum_state(state: bool):
+	vacuum_turned_on = state
+
+@rpc("any_peer","call_local")
+func vacuum_loop():
+	var alife_manager = get_parent()
+	var targets = alife_manager.get_alife_in_area(vacuum_action_range.global_position,
+	 												vacuum_action_range.shape.size)
+	if targets:
+		for t in targets:
+			if t is Dictionary:
+				if t != lifedata:
+					#print(t)
+					#alife_manager.interact(t,player)
+					if add_to_inventory(t):
+						#print("added")
+						alife_manager.remove(t)	
+			else:
+				if add_to_inventory(t):
+					alife_manager.remove(t)	
+
+
+
+
 
 func add_to_inventory(alife):
 		#print(alife["Species"])
@@ -496,29 +566,6 @@ func add_to_inventory(alife):
 				return false
 
 
-
-@rpc("any_peer","call_remote")
-func spear_attack_animation():
-	spear_animation_in_course = true
-	$AnimationPlayer.play("spear_attack_2")
-	await $AnimationPlayer.animation_finished
-	$AnimationPlayer.play_backwards("spear_attack_1")
-	await $AnimationPlayer.animation_finished
-	spear_animation_in_course = false
-@rpc("any_peer","call_remote")
-func vacuum_animation():
-	if vacuum_turned_on == false:
-		$AnimationPlayer.play("vacuum_on_2")
-		set_vacuum_state.rpc_id(1, true) # tell server
-		vacuum_turned_on = true
-	else:
-		$AnimationPlayer.play("init_pos_vacuum")
-		set_vacuum_state.rpc_id(1, false) # tell server
-		vacuum_turned_on = false
-@rpc("any_peer","call_remote")
-func set_vacuum_state(state: bool):
-	vacuum_turned_on = state
-
 @rpc("any_peer","call_remote")
 func show_label_above_player(string, color, time, type):
 	var label := Label3D.new()
@@ -528,6 +575,8 @@ func show_label_above_player(string, color, time, type):
 	else :
 		label.text = "Lost " + str(abs(string)) + str(type)
 		label.modulate += Color(0.0, -0.6, 0.0, 0.0) #reder color normally
+	if type == " Damage Blocked":
+		label.text = "" + str(abs(string)) + str(type)
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.position = Vector3(0, 0.9, 0)
 	add_child(label)

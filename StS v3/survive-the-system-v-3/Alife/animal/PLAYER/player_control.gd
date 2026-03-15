@@ -66,6 +66,13 @@ func _physics_process(delta: float) -> void:
 				UseITEM.rpc_id(1)
 				await get_tree().create_timer(0.2).timeout
 				player_action_area.hide()
+
+			if Input.is_action_just_pressed("secondary_use"):
+				UseITEM_secondary.rpc_id(1, true)
+				await get_tree().create_timer(0.2).timeout
+				player_action_area.hide()
+			if Input.is_action_just_released("secondary_use"):
+				UseITEM_secondary.rpc_id(1, false)
 				
 			
 			if Input.is_action_just_pressed("action1"):						
@@ -137,7 +144,28 @@ func UseITEM():
 						alife_manager.Attack(t,1)
 				else:
 					alife_manager.Attack(t,1)
-				
+
+@rpc("any_peer","call_local")
+func UseITEM_secondary(state):	
+	#print(player.item_hold)
+	if player.item_hold:
+		if player.item_hold["Data"][0] is Dictionary:
+			if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
+				player.item_hold["Data"][0]["Use_secondary"].call(player, state)
+			else:
+				print("alife entitity action_secondary")
+		else:
+			print("alife entitity action_secondary")
+	else:
+		var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
+		 												player_action_area.get_node("CollisionShape3D").shape.size)
+		if targets:
+			for t in targets:
+				if t is Dictionary:
+					if t != player.lifedata:
+						alife_manager.Attack(t,1)
+				else:
+					alife_manager.Attack(t,1)
 				
 
 @rpc("any_peer","call_local")
