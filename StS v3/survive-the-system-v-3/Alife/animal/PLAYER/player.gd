@@ -155,11 +155,15 @@ func show_selected(item, peer_id):
 						$PlayerAnimater.play("hold_spear_position")
 					$AnimationPlayer.play("init_pos_vacuum")
 					vacuum_turned_on = false
+					set_vacuum_state.rpc_id(1, false) 
 				elif slot["inventory_path"] == vacuum_path:
 					update_item_hold_texture.rpc(null)
 					get_node("MeshInstance3D").get_node("Hoover").show()
 					get_node("MeshInstance3D").get_node("spear").hide()
 					reset_arm_position()
+					spear_back_to_origin()
+					vacuum_turned_on = false
+					set_vacuum_state.rpc_id(1, false) 
 			else :
 				reset_arm_position()
 		else:
@@ -180,6 +184,7 @@ func hide_bound_objects():
 	get_node("MeshInstance3D").get_node("Hoover").hide()
 	$AnimationPlayer.play("init_pos_vacuum")
 	vacuum_turned_on = false
+	set_vacuum_state.rpc_id(1, false) 
 
 @rpc("any_peer","call_local")
 func update_item_hold_texture(path):
