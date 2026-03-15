@@ -526,13 +526,14 @@ func spear_defense_animation(defendingornot):
 
 
 func spear_back_to_origin():
-	$AnimationPlayer.play_backwards("spear_going_to_defense")
-	$PlayerAnimater.play_backwards("hold_spear_to_block_position")
-	await $AnimationPlayer.animation_finished
-	$AnimationPlayer.play("base_spear_position")
-	if $MeshInstance3D/spear.is_visible_in_tree():
-		$PlayerAnimater.play("hold_spear_position")
-	set_speardefense_state.rpc_id(1, false) # tell server
+	if $PlayerAnimater.current_animation in spear_animations:
+		$AnimationPlayer.play_backwards("spear_going_to_defense")
+		$PlayerAnimater.play_backwards("hold_spear_to_block_position")
+		await $AnimationPlayer.animation_finished
+		$AnimationPlayer.play("base_spear_position")
+		if $MeshInstance3D/spear.is_visible_in_tree():
+			$PlayerAnimater.play("hold_spear_position")
+		set_speardefense_state.rpc_id(1, false) # tell server
 @rpc("any_peer","call_remote")
 func set_speardefense_state(state: bool):
 	speardefense = state
