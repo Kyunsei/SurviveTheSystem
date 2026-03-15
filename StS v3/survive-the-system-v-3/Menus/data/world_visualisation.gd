@@ -3,6 +3,7 @@ extends Control
 var alifemanager
 var World
 var mm
+var mm2
 var panel_size : Vector2
 var color_list = [Color(0.0, 0.345, 0.0, 1.0),Color(0.507, 0.207, 0.164, 1.0),Color(0.0, 0.117, 1.0, 1.0),Color(0.635, 0.635, 0.635, 1.0),Color(0.638, 0.398, 0.895, 1.0),Color(0.976, 0.11, 0.0, 1.0),Color(0.826, 0.826, 0.826, 1.0)]
 var isOn = true
@@ -28,16 +29,45 @@ func _ready() -> void:
 	World = get_parent().get_parent().get_parent().get_node("World")
 	panel_size = $Panel.size
 	mm = $MultiMeshInstance2D.multimesh# MultiMesh.new()
+	mm2 = $MultiMeshInstance_flow2D2.multimesh
 	mm.transform_format = MultiMesh.TRANSFORM_2D
 	mm.instance_count = 1000000
+	mm2.instance_count = 1000000
+
 	var quad = QuadMesh.new()
 	quad.size = Vector2(4, 4)
 	$Alife_select.get_popup().id_pressed.connect(_on_menu_button_pressed)
 
 	#var instance = MultiMeshInstance2D.new()
 	#instance.multimesh = mm
-	mm.mesh = quad
+	
 	update()
+
+
+func build_quad_mesh():
+	var quad = QuadMesh.new()
+	quad.size = Vector2(4, 4)
+	return quad
+
+
+func build_triangle_mesh():
+	var mesh = ArrayMesh.new()
+	
+	var vertices = PackedVector3Array([
+		Vector3(0,-.5,0),
+		Vector3(5,0,0),
+		Vector3(0,.5,0)
+	])
+	
+	var arrays = []
+	
+	arrays.resize(Mesh.ARRAY_MAX)
+	arrays[Mesh.ARRAY_VERTEX] = vertices
+	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES,arrays)
+	
+	return mesh
+	
+
 
 func _process(delta: float) -> void:
 	update_time -= delta
@@ -57,7 +87,7 @@ func update():
 	elif isfieldshow:
 		i = show_field(i)
 	elif isflowshow:
-		i = show_flow(i)		
+		show_flow()		
 	if isalifeshow:
 		i = show_alife(i,alife_selected)
 		
@@ -88,6 +118,7 @@ func position_conversion(pos):
 func show_field(i):
 	if alife_selected == 0:
 		return i
+	mm.mesh = build_quad_mesh()
 	var arr = alifemanager.get_node("Grass_Manager2").field_world_array[alife_selected-1]
 	for bin in range(World.bin_array.size()):
 		var t : Transform2D
@@ -118,11 +149,14 @@ func show_field(i):
 	return i
 
 
-func show_flow(i):
-	if alife_selected == 0:
-		return i
-	var arr: PackedVector3Array = alifemanager.get_node("Grass_Manager2").flow_world_array[alife_selected-1]
+func show_flow():
 	
+
+	var i = 0
+	mm2.mesh = build_triangle_mesh()
+
+	var arr: PackedFloat64Array = alifemanager.get_node("Grass_Manager2").field_world_array[alife_selected-1]
+	var manager = alifemanager.get_node("Grass_Manager2")
 	for bin in range(arr.size()):
 		var t : Transform2D
 		var tile_number = Vector3i(World.World_Size/ World.bin_size)
@@ -136,23 +170,28 @@ func show_flow(i):
 
 		
 		var stupid_factor = Vector2(World.bin_size.x, World.bin_size.z) / Vector2(5,5)
-		var stupid_scale = panel_size/ Vector2(World.World_Size.x, World.World_Size.z)  * stupid_factor
-		stupid_scale.y = stupid_scale.y/4
+		var stupid_scale =  panel_size/ Vector2(World.World_Size.x, World.World_Size.z)  * stupid_factor
+		#stupid_scale.y = stupid_scale.y/4
 		
-		print("pos: ", arr)
+		#print("pos: ", arr)
 		#print("bin: ", bin)
 		#print("arr.size(): ", arr.size())
-		var direction = arr[bin]
+		var direction = manager.calculate_flow_at_bin(alife_selected-1,bin)
 		var angle = Vector2(direction.x,direction.z).angle() 
 
 		t = Transform2D(angle, stupid_scale, 0.0, Vector2(x, y))
 		
-		mm.set_instance_transform_2d(i, t)
-		mm.set_instance_color(i, Color(0.805, 0.805, 0.805, 1.0) )	
+		mm2.set_instance_transform_2d(i, t)
+		mm2.set_instance_color(i, Color(0.805, 0.805, 0.805, 1.0) )	
 		i+= 1
+		mm.visible_instance_count = i
+	mm2.visible_instance_count = i
+
 	return i
 
 func show_bin(i,world_bin, tile_size):
+	mm.mesh = build_quad_mesh()
+
 	for bin in range(world_bin.size()):
 		var t : Transform2D
 		var tile_number = Vector3i(World.World_Size/ tile_size)
@@ -193,6 +232,7 @@ func show_bin(i,world_bin, tile_size):
 
 
 func show_alife(i, sp):
+	mm.mesh = build_quad_mesh()
 
 	
 	var c = 0

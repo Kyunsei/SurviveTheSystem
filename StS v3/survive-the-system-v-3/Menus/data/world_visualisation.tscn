@@ -12,6 +12,10 @@ material = SubResource("StandardMaterial3D_0xxk1")
 use_colors = true
 mesh = SubResource("QuadMesh_m88ol")
 
+[sub_resource type="MultiMesh" id="MultiMesh_hqwiw"]
+use_colors = true
+mesh = SubResource("QuadMesh_m88ol")
+
 [node name="WorldVisualisation" type="Control" unique_id=2031418219]
 layout_mode = 3
 anchors_preset = 15
@@ -29,6 +33,9 @@ color = Color(0.103743516, 0.10374353, 0.103743516, 1)
 
 [node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="." unique_id=112460]
 multimesh = SubResource("MultiMesh_4a1by")
+
+[node name="MultiMeshInstance_flow2D2" type="MultiMeshInstance2D" parent="." unique_id=147154064]
+multimesh = SubResource("MultiMesh_hqwiw")
 
 [node name="Button" type="CheckButton" parent="." unique_id=1957476633]
 layout_mode = 0

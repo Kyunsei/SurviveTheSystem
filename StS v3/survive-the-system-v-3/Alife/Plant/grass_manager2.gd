@@ -13,7 +13,7 @@ var Grass_simulator_time = 0
 #var id : PackedInt32Array
 
 #WORLD
-var flow_world_array : Array[PackedVector3Array]
+#var flow_world_array : Array[PackedVector3Array]
 var field_world_array : Array[PackedFloat64Array]
 var species_world_array : Array[PackedInt32Array]
 var sum_species_world_array : Array[PackedInt32Array]
@@ -303,8 +303,8 @@ func update_field() -> void:
 	for s in range(field_world_array.size()):
 		field_world_array[s] = diffuse(field_world_array[s])
 		
-	for s in range(species_list.size()):
-		flow_world_array[s] = get_flow(field_world_array[s],flow_world_array[s] )
+	#for s in range(species_list.size()):
+	#	flow_world_array[s] = get_flow(field_world_array[s],flow_world_array[s] )
 
 func diffuse(field: PackedFloat64Array) :
 	var next := field.duplicate()
@@ -701,14 +701,14 @@ func build_world_bin_tables():
 	var count = species_list.size()
 
 	field_world_array.resize(count)
-	flow_world_array.resize(count)
+	#flow_world_array.resize(count)
 	species_world_array.resize(count)
 	sum_species_world_array.resize(count)
 
 	for s in range(species_list.size()):
 		for t in range(World.bin_array.size()):
 			field_world_array[s].append(0.0)
-			flow_world_array[s].append(Vector3(0,0,0))
+			#flow_world_array[s].append(Vector3(0,0,0))
 			sum_species_world_array[s].append(0)
 			#species_world_array[s].append([])
 
@@ -894,7 +894,7 @@ func put_in_world_bin(i):
 	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
 	if new_bin_ID < 0 or new_bin_ID >= World.bin_array.size():
 		print("life out of world")
-		#remove_from_world_bin(i)
+		remove_from_world_bin(i)
 		return
 	if bin_ID != new_bin_ID:
 		remove_from_world_bin(i)
@@ -920,7 +920,7 @@ func remove_from_world_bin(i):
 			World.bin_array[binID_array[i]].erase(i)
 			#World.bin_sum_array[Species_array[i]][binID_array[i]] -= 1
 			sum_species_world_array[Species_array[i]][binID_array[i]] -= 1
-			field_world_array[Species_array[i]][binID_array[i]] -= 1
+			#field_world_array[Species_array[i]][binID_array[i]] -= 1
 			binID_array[i] = -1
 
 
