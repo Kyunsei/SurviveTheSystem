@@ -21,20 +21,21 @@ func update(_manager,_i, _DNA, _delta):
 	var bin_flow = _manager.calculate_flow_at_bin(0,bin)
 
 	var field = _manager.field_world_array[0][bin]
-	#print(field)
 	var step =  bin_flow.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
-	var target_distance  =  log(field / 1.0) / 0.15 
-	#print(target_distance)
-	#print(step)
-	var estimated_target = _manager.position_array[_i] - bin_flow.normalized() * target_distance
-	#print(estimated_target)
+	var count = _manager.sum_species_world_array[0][bin]
+	print(field)
+
+	if count > 0 :
+		pass
+		#var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,1)
 	
+	
+	#var target_distance  =  log(field / 1.0) / 0.15 
+	#var estimated_target = _manager.position_array[_i] - bin_flow.normalized() * target_distance
 	'if step.length() > abs(target_distance):
 		_manager.position_array[_i] = estimated_target
 	else:'
-	
-	_manager.position_array[_i] += step
-		
+	_manager.position_array[_i] += step	
 	_manager.position_array[_i].x = clamp(_manager.position_array[_i].x , -_manager.World.World_Size.x/2+1, _manager.World.World_Size.x/2-1)
 	_manager.position_array[_i].z = clamp(_manager.position_array[_i].z , -_manager.World.World_Size.z/2+1 , _manager.World.World_Size.z/2-1)
 
@@ -42,11 +43,7 @@ func update(_manager,_i, _DNA, _delta):
 
 	change_bin(_manager,_i)
 	
-	#_manager.calculate_flow_at_bin(0,bin)
-	#_manager.put_in_world_bin(_i)
 	
-	#print(_manager.calculate_flow_at_bin(0,bin))
-	#print(_manager.position_array[_i])
 	
 func change_bin(_manager,_i):
 	var old_bin = _manager.binID_array[_i]
