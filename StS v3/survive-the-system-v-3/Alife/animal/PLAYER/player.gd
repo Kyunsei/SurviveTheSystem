@@ -454,6 +454,8 @@ func check_player_hit(dmg, areaofaction):
 	for t in interacted_areas:
 		if t.is_in_group("spear_hit") and t.get_parent()!= self :
 			get_parent().Attack(t.get_parent().lifedata, dmg)
+			if t.get_parent().lifedata["current_health"] > 0:
+				t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),-25, Color(1.0, 0.1, 0.0, 1.0), 1.0, " Health")
 @rpc("any_peer","call_local")
 func vacuum_activation():
 	vacuum_animation.rpc_id(int(name))
@@ -520,13 +522,14 @@ func set_vacuum_state(state: bool):
 @rpc("any_peer","call_remote")
 func show_label_above_player(string, color, time, type):
 	var label := Label3D.new()
+	label.modulate = color
 	if string > 0:
 		label.text = "Gained " + str(abs(string)) + str(type)
 	else :
 		label.text = "Lost " + str(abs(string)) + str(type)
+		label.modulate += Color(0.0, -0.6, 0.0, 0.0) #reder color normally
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.position = Vector3(0, 0.9, 0)
-	label.modulate = color
 	add_child(label)
 	var tween = label.create_tween()
 	tween.tween_property(label, "position:y", label.position.y + 0.5, time)
