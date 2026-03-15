@@ -78,8 +78,10 @@ func on_disconnection(id):
 		pass
 	else:
 		if get_parent().get_parent().get_node("Alife manager").has_node(str(id)):
-			get_parent().get_parent().get_node("Alife manager").get_node(str(id)).queue_free()
-			get_parent().get_parent().get_node("Alife manager").erase(str(id))
+			var p = get_parent().get_parent().get_node("Alife manager").get_node(str(id))
+			get_parent().get_parent().get_node("Alife manager").player_array.erase(p)
+
+			p.queue_free()
 
 	
 
