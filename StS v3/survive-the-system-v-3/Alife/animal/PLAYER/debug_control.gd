@@ -1,7 +1,7 @@
 extends Node
 class_name DEBUG_control
 
-
+@export var DEBUG_ACTIVE = false
 var player : Node3D
 var player_action_area : Node3D
 var camera_anchor : Node3D
@@ -32,6 +32,8 @@ func _physics_process(_delta: float) -> void:
 	if player.is_multiplayer_authority():
 		if player.isdebuging:
 			if Input.is_action_just_pressed("f1"):
+				if DEBUG_ACTIVE == false:
+					return
 				if player.World.light_grid_visible :
 					player.World.light_grid_visible = false
 					
@@ -44,18 +46,28 @@ func _physics_process(_delta: float) -> void:
 				else:	
 					tuto_HUD.show()
 			if Input.is_action_just_pressed("F3"):
+				if DEBUG_ACTIVE == false:
+					return
 				change_server_simulation_speed.rpc_id(1,600)
 			if Input.is_action_just_pressed("F4"):
+				if DEBUG_ACTIVE == false:
+					return
 				grant_player_money.rpc_id(1, int(player.name))
 				
 			if Input.is_action_just_pressed("F5"):
 				player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer.rpc_id(1,multiplayer.get_unique_id())
+			if Input.is_action_just_pressed("action1"):
+				if DEBUG_ACTIVE == false:
+					return
+				player.get_parent().get_node("beast_manager").spawn_new_beast.rpc_id(1, player.position, Alifedata.enum_speciesID.SHEEP)
 
 @rpc("any_peer","call_remote")
 func grant_player_money(id):
 	player.catnation_credits += 100
 	player.update_status_of_player.rpc_id(id)
 func _process(_delta: float) -> void:
+	if DEBUG_ACTIVE == false:
+		return
 	if multiplayer.is_server():
 		if isWorldAccelerated:
 			if get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time <0 :

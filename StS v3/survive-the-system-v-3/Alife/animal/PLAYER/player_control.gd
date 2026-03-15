@@ -75,8 +75,8 @@ func _physics_process(delta: float) -> void:
 				UseITEM_secondary.rpc_id(1, false)
 				
 			
-			if Input.is_action_just_pressed("action1"):						
-				player.get_parent().get_node("beast_manager").spawn_new_beast.rpc_id(1, player.position, Alifedata.enum_speciesID.SHEEP)
+			#if Input.is_action_just_pressed("action1"):						
+				#player.get_parent().get_node("beast_manager").spawn_new_beast.rpc_id(1, player.position, Alifedata.enum_speciesID.SHEEP)
 			
 
 			if player.position.y < -200:
