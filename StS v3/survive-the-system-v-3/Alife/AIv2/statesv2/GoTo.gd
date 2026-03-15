@@ -1,7 +1,7 @@
 extends STATE
 class_name GOTO_STATE
 
-var speed = 5
+var speed = 50
 
 func evaluate(_manager,_i, _DNA):
 	var t = _manager.current_life_state_array[_i] 
@@ -22,15 +22,18 @@ func update(_manager,_i, _DNA, _delta):
 
 	var field = _manager.field_world_array[0][bin]
 	#print(field)
-	var step =  bin_flow.normalized()  * speed * _delta * GlobalSimulationParameter.simulation_speed 
-	var target_distance  =  log(field / 10.0) / 0.15 
-	#print(target_distance)
-	var estimated_target = _manager.position_array[_i] + bin_flow.normalized() * target_distance
+	var step =  bin_flow.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
+	var target_distance  =  log(field / 1.0) / 0.15 
+	print(target_distance)
+	print(step)
+	var estimated_target = _manager.position_array[_i] - bin_flow.normalized() * target_distance
+	print(estimated_target)
 	
-	if step.length() > abs(target_distance):
+	'if step.length() > abs(target_distance):
 		_manager.position_array[_i] = estimated_target
-	else:
-		_manager.position_array[_i] += step
+	else:'
+	
+	_manager.position_array[_i] += step
 		
 	_manager.position_array[_i].x = clamp(_manager.position_array[_i].x , -_manager.World.World_Size.x/2+1, _manager.World.World_Size.x/2-1)
 	_manager.position_array[_i].z = clamp(_manager.position_array[_i].z , -_manager.World.World_Size.z/2+1 , _manager.World.World_Size.z/2-1)
