@@ -1,13 +1,15 @@
 [gd_scene format=3 uid="uid://dp2plghkprved"]
 
 [ext_resource type="Texture2D" uid="uid://i25jcnprvf1b" path="res://objects/cat_ration/spear1.png" id="1_qkpm6"]
+[ext_resource type="Texture2D" uid="uid://cqq0vyu1a00hn" path="res://assets/assets kyun/invisible1.png" id="1_ylptj"]
 [ext_resource type="Script" uid="uid://bt04ol8opksq0" path="res://objects/cat_ration/object_spear.gd" id="2_qmbw5"]
 [ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="3_3crlt"]
+[ext_resource type="PackedScene" uid="uid://dnm54piw4bqn6" path="res://objects/spear.tscn" id="5_3crlt"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
 transparency = 1
 shading_mode = 0
-albedo_texture = ExtResource("1_qkpm6")
+albedo_texture = ExtResource("1_ylptj")
 billboard_mode = 2
 
 [sub_resource type="QuadMesh" id="QuadMesh_5kluo"]
@@ -29,6 +31,9 @@ radius = 1.0
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
+properties/1/path = NodePath("spear:position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_qkpm6"]
 size = Vector3(2, 2, 2)
@@ -55,6 +60,9 @@ replication_config = SubResource("SceneReplicationConfig_8f30t")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="attack_area" unique_id=438161156]
 shape = SubResource("BoxShape3D_qkpm6")
+
+[node name="spear" parent="." unique_id=922266187 instance=ExtResource("5_3crlt")]
+transform = Transform3D(-2, 4.371139e-07, 0, -1.7484555e-07, -5, 0, 0, 0, 2, 0, 1, 0)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]

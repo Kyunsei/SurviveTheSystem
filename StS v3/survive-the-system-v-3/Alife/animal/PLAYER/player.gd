@@ -196,12 +196,17 @@ func _physics_process(_delta: float) -> void:
 		velocity.x = direction.x *speed 
 		velocity.z = direction.z *speed 
 		#data_movement_to_server.rpc_id(1, global_position)
+		if speed >= 10:
+			$PlayerAnimater.speed_scale = 2
+		else:
+			$PlayerAnimater.speed_scale = 1
 		if velocity.x != 0 or velocity.z != 0:
 			if not $PlayerAnimater.is_playing() or $PlayerAnimater.current_animation != "leg_movement":
 				$PlayerAnimater.play("leg_movement")
 		else:
 			if $PlayerAnimater.current_animation == "leg_movement":
 				$PlayerAnimater.stop()
+
 		if direction != Vector3(0,0,0):
 			$MeshInstance3D.rotation.y = $camera_anchor.rotation.y 
 			#$Action_Area3D.rotation.y = $camera_anchor.rotation.y 

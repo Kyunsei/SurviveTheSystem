@@ -14,7 +14,7 @@ const VACUUM = "res://objects/cat_ration/Object_Vacuum.tscn"
 var Alife_manager 
 
 
-var object_spawned_position = Vector3(-4, 94, -2)
+var object_spawned_position = Vector3(-4, 93.5, -2)
 
 func display_text(dialogue_box, text):
 	dialogue_box.show()

@@ -2,8 +2,13 @@ extends Item
 var area
 @export var attack_size = Vector3(2,2,2)
 var timer = 0.5
+var physical_spear_on_ground
 func _ready():
 		area = $attack_area
+		physical_spear_on_ground = $spear
+		physical_spear_on_ground.rotation_degrees.x = randf_range(-5.0, 5.0)
+		physical_spear_on_ground.rotation_degrees.y = randf_range(0.0, 0.0)
+		physical_spear_on_ground.rotation_degrees.z = randf_range(175.0, 185.0)
 
 func _process(delta: float) -> void:
 	timer -= delta

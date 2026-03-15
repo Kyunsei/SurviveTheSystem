@@ -2,9 +2,10 @@ extends Item
 var area
 @export var action_size = Vector3(2,2,2)
 var timer = 0.5
+var vacuum_physical_obj
 func _ready():
-	pass
-		#area = $attack_area
+	vacuum_physical_obj = $Pivot
+	vacuum_physical_obj.rotation_degrees.y = randf_range(0.0, 360.0)
 
 func _process(delta: float) -> void:
 	timer -= delta

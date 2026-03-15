@@ -1,13 +1,15 @@
 [gd_scene format=3 uid="uid://dbwdx01q5ioyq"]
 
+[ext_resource type="Texture2D" uid="uid://cqq0vyu1a00hn" path="res://assets/assets kyun/invisible1.png" id="1_0t6gk"]
 [ext_resource type="Texture2D" uid="uid://m4dj1s0c2v5h" path="res://assets/assets kyun/vacuum3.png" id="1_5as1h"]
 [ext_resource type="Script" uid="uid://b7ipkp6udgsrq" path="res://objects/cat_ration/object_vacuum.gd" id="2_1ogrj"]
 [ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="3_0t6gk"]
+[ext_resource type="PackedScene" uid="uid://br0id6ya8hqd2" path="res://assets/asset dabols/Hoover.fbx" id="5_atpi4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
 transparency = 1
 shading_mode = 0
-albedo_texture = ExtResource("1_5as1h")
+albedo_texture = ExtResource("1_0t6gk")
 billboard_mode = 2
 
 [sub_resource type="QuadMesh" id="QuadMesh_5kluo"]
@@ -29,6 +31,9 @@ radius = 1.0
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
 properties/0/replication_mode = 1
+properties/1/path = NodePath("Pivot:position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_qkpm6"]
 size = Vector3(2, 2, 2)
@@ -55,6 +60,11 @@ replication_config = SubResource("SceneReplicationConfig_8f30t")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Action_area" unique_id=438161156]
 shape = SubResource("BoxShape3D_qkpm6")
+
+[node name="Pivot" type="Node3D" parent="." unique_id=1198149916]
+
+[node name="Hoover" parent="Pivot" unique_id=1633460261 instance=ExtResource("5_atpi4")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, -0.5, -0.35, 0.6)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
