@@ -702,7 +702,7 @@ func build_world_bin_tables():
 
 	field_world_array.resize(count)
 	#flow_world_array.resize(count)
-	species_world_array.resize(count)
+	#species_world_array.resize(count)
 	sum_species_world_array.resize(count)
 
 	for s in range(species_list.size()):

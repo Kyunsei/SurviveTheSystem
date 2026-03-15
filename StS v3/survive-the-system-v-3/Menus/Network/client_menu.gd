@@ -65,7 +65,8 @@ func on_connection_failed():
 func on_server_disconnected():
 	$Label_server.text = "Server OFFLINE"
 	$VBoxContainer/Button_Play.disabled = true
-
+	show()
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	#print("here SERVER")
 	connect_to_server(IP_ADDRESS, PORT)
 
