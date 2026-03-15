@@ -29,6 +29,7 @@ var current_hunger = max_hunger
 @onready var energy_bar = $MeshInstance3D/Status_bar/SubViewport2/ProgressBarEnergy
 var immune_to_death = false
 var is_alive = true
+var skin_index:int = 0 : set = set_skin
 
 #MONEY MONEY MONEY MONEY MONEY
 var catnation_credits :int = 1: 
@@ -124,6 +125,27 @@ func drop(id, number):
 		else:
 			get_parent().get_node("Grass_Manager").ask_for_spawn_grass(pos,obj["Species"])'
 
+func set_skin(value:int):
+	skin_index = value
+	apply_skin()
+func apply_skin():
+
+	var skins = [
+		preload("res://assets/assets kyun/deep_blue1.png"),
+		preload("res://assets/assets kyun/ground_texture128.png"),
+		preload("res://assets/assets kyun/grass_texture128.png"),
+		preload("res://assets/assets kyun/collector_texture.png"),
+		preload("res://assets/assets kyun/shiptexture_1.png"),
+		preload("res://assets/assets kyun/rayed1.png")
+	]
+
+	var material = StandardMaterial3D.new()
+	material.albedo_texture = skins[skin_index]
+
+	for child in $MeshInstance3D.get_children():
+		if child is MeshInstance3D:
+			child.set_surface_override_material(0, material)
+	$MeshInstance3D.set_surface_override_material(0, material)
 
 ####################################
 
@@ -212,6 +234,7 @@ func move_player_position(pos):
 func _ready() -> void:
 	vacuum_action_range = $MeshInstance3D/vacuum_Area3D/CollisionShape3D
 	if is_multiplayer_authority():
+		apply_skin()
 		$PlayerAnimater.play("base_arm_position")
 		$MeshInstance3D/Status_bar.show()
 		%Camera3D.current = true
