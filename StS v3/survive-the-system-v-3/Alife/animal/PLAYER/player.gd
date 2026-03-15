@@ -84,8 +84,15 @@ var dialogue_box
 
 var lifedata = {}
 
-#INVENTORY HERE
-
+#INVENTORY ABOVE
+#ANIMATION VARIABLES ANIMATION VARIABLES ANIMATION VARIABLES ANIMATION VARIABLES
+var spear_animations = [
+	"hold_spear_to_strike",
+	"hold_spear_to_strike_2",
+	"hold_spear_position",
+	"base_to_hold_spear"
+]
+#ANIMATION VARIABLES ANIMATION VARIABLES ANIMATION VARIABLES ANIMATION VARIABLES
 
 ###########INVENTORY HELPER FUNCTION
 
@@ -133,22 +140,39 @@ func show_selected(item, peer_id):
 		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
 		var vacuum_path = "res://objects/cat_ration/Object_Vacuum.tscn"
 		var slot = item["Data"][0]	
-		if slot is Dictionary:
+		var holding
+		if slot is Dictionary: 
 			if slot.has("inventory_path"):
 				if slot["inventory_path"] == spear_path:
 					update_item_hold_texture.rpc(null)
 					get_node("MeshInstance3D").get_node("spear").show()
 					get_node("MeshInstance3D").get_node("Hoover").hide()
+					if $PlayerAnimater.current_animation not in spear_animations:
+						$PlayerAnimater.play("base_to_hold_spear")
+						await $PlayerAnimater.animation_finished
+						$PlayerAnimater.play("hold_spear_position")
 					$AnimationPlayer.play("init_pos_vacuum")
 					vacuum_turned_on = false
 				elif slot["inventory_path"] == vacuum_path:
 					update_item_hold_texture.rpc(null)
 					get_node("MeshInstance3D").get_node("Hoover").show()
 					get_node("MeshInstance3D").get_node("spear").hide()
+					reset_arm_position()
+			else :
+				reset_arm_position()
 		else:
 			hide_bound_objects()
+		
+func reset_arm_position():
+	if $PlayerAnimater.current_animation in spear_animations:
+		$PlayerAnimater.play_backwards("base_to_hold_spear")
+		await $PlayerAnimater.animation_finished
+		$PlayerAnimater.play("base_arm_position")
+
+		
 
 func hide_bound_objects():
+	reset_arm_position()
 	get_node("MeshInstance3D").get_node("spear").hide()
 	get_node("MeshInstance3D").get_node("Hoover").hide()
 	$AnimationPlayer.play("init_pos_vacuum")
@@ -180,6 +204,7 @@ func move_player_position(pos):
 func _ready() -> void:
 	vacuum_action_range = $MeshInstance3D/vacuum_Area3D/CollisionShape3D
 	if is_multiplayer_authority():
+		$PlayerAnimater.play("base_arm_position")
 		$MeshInstance3D/Status_bar.show()
 		%Camera3D.current = true
 		World = get_parent().get_parent().get_node("World") #NEED TO BE CHANGED TO ASK SERVER INFO
@@ -205,15 +230,15 @@ func _physics_process(_delta: float) -> void:
 		if Input.is_action_just_released("secondary_use"):
 			secondary_hold = false
 		if speed >= 10:
-			$PlayerAnimater.speed_scale = 2
+			$PlayerAnimaterLeg.speed_scale = 2
 		else:
-			$PlayerAnimater.speed_scale = 1
+			$PlayerAnimaterLeg.speed_scale = 1
 		if velocity.x != 0 or velocity.z != 0:
-			if not $PlayerAnimater.is_playing() or $PlayerAnimater.current_animation != "leg_movement":
-				$PlayerAnimater.play("leg_movement")
+			if not $PlayerAnimaterLeg.is_playing() or $PlayerAnimaterLeg.current_animation != "leg_movement":
+				$PlayerAnimaterLeg.play("leg_movement")
 		else:
-			if $PlayerAnimater.current_animation == "leg_movement":
-				$PlayerAnimater.stop()
+			if $PlayerAnimaterLeg.current_animation == "leg_movement":
+				$PlayerAnimaterLeg.stop()
 
 		if direction != Vector3(0,0,0):
 			$MeshInstance3D.rotation.y = $camera_anchor.rotation.y 
@@ -453,9 +478,14 @@ func spear_attack():
 @rpc("any_peer","call_remote")
 func spear_attack_animation():
 	$AnimationPlayer.play("spear_attack_2")
+	$PlayerAnimater.play("hold_spear_to_strike_2")
 	await $AnimationPlayer.animation_finished
 	$AnimationPlayer.play_backwards("spear_attack_1")
+	$PlayerAnimater.play_backwards("hold_spear_to_strike")
 	await $AnimationPlayer.animation_finished
+	$AnimationPlayer.play("RESET")
+	if get_node("MeshInstance3D").get_node("spear").is_visible_in_tree():
+		$PlayerAnimater.play("hold_spear_position")
 @rpc("any_peer","call_local")
 func check_player_hit(dmg, areaofaction):
 	var interacted_areas = areaofaction.get_overlapping_areas()
@@ -576,7 +606,7 @@ func show_label_above_player(string, color, time, type):
 		label.text = "Lost " + str(abs(string)) + str(type)
 		label.modulate += Color(0.0, -0.6, 0.0, 0.0) #reder color normally
 	if type == " Damage Blocked":
-		label.text = "" + str(abs(string)) + str(type)
+		label.text = "Blocked " + str(abs(string)) + " Damage"
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.position = Vector3(0, 0.9, 0)
 	add_child(label)
