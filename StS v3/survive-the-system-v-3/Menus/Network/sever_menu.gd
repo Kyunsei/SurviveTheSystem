@@ -79,6 +79,8 @@ func on_disconnection(id):
 	else:
 		if get_parent().get_parent().get_node("Alife manager").has_node(str(id)):
 			get_parent().get_parent().get_node("Alife manager").get_node(str(id)).queue_free()
+			get_parent().get_parent().get_node("Alife manager").erase(str(id))
+
 	
 
 

@@ -86,11 +86,11 @@ func update():
 		i = show_bin(i,World.light_array, World.light_tile_size)
 	elif isfieldshow:
 		i = show_field(i)
-	elif isflowshow:
-		show_flow()		
+	
 	if isalifeshow:
 		i = show_alife(i,alife_selected)
-		
+	
+	show_flow()
 	mm.visible_instance_count = i
 	
 	'for g in alifemanager.get_node("beast_manager").beast_dict.values():
@@ -150,44 +150,43 @@ func show_field(i):
 
 
 func show_flow():
-	
-
 	var i = 0
-	mm2.mesh = build_triangle_mesh()
+	if isflowshow:
+	
+		mm2.mesh = build_triangle_mesh()
 
-	var arr: PackedFloat64Array = alifemanager.get_node("Grass_Manager2").field_world_array[alife_selected-1]
-	var manager = alifemanager.get_node("Grass_Manager2")
-	for bin in range(arr.size()):
-		var t : Transform2D
-		var tile_number = Vector3i(World.World_Size/ World.bin_size)
-		
-		var conv_tile_size = Vector2()
-		conv_tile_size.x = panel_size.x / tile_number.x
-		conv_tile_size.y = panel_size.y / tile_number.z	
-		var x = (bin % int(tile_number.x) )  * conv_tile_size.x +  conv_tile_size.x/2
-		@warning_ignore("integer_division")
-		var y = (bin / int(tile_number.x) % int(tile_number.z) )* conv_tile_size.y + +  conv_tile_size.y/2
+		var arr: PackedFloat64Array = alifemanager.get_node("Grass_Manager2").field_world_array[alife_selected-1]
+		var manager = alifemanager.get_node("Grass_Manager2")
+		for bin in range(arr.size()):
+			var t : Transform2D
+			var tile_number = Vector3i(World.World_Size/ World.bin_size)
+			
+			var conv_tile_size = Vector2()
+			conv_tile_size.x = panel_size.x / tile_number.x
+			conv_tile_size.y = panel_size.y / tile_number.z	
+			var x = (bin % int(tile_number.x) )  * conv_tile_size.x +  conv_tile_size.x/2
+			@warning_ignore("integer_division")
+			var y = (bin / int(tile_number.x) % int(tile_number.z) )* conv_tile_size.y + +  conv_tile_size.y/2
 
-		
-		var stupid_factor = Vector2(World.bin_size.x, World.bin_size.z) / Vector2(5,5)
-		var stupid_scale =  panel_size/ Vector2(World.World_Size.x, World.World_Size.z)  * stupid_factor
-		#stupid_scale.y = stupid_scale.y/4
-		
-		#print("pos: ", arr)
-		#print("bin: ", bin)
-		#print("arr.size(): ", arr.size())
-		var direction = manager.calculate_flow_at_bin(alife_selected-1,bin)
-		var angle = Vector2(direction.x,direction.z).angle() 
+			
+			var stupid_factor = Vector2(World.bin_size.x, World.bin_size.z) / Vector2(5,5)
+			var stupid_scale =  panel_size/ Vector2(World.World_Size.x, World.World_Size.z)  * stupid_factor
+			#stupid_scale.y = stupid_scale.y/4
+			
+			#print("pos: ", arr)
+			#print("bin: ", bin)
+			#print("arr.size(): ", arr.size())
+			var direction = manager.calculate_flow_at_bin(alife_selected-1,bin)
+			var angle = Vector2(direction.x,direction.z).angle() 
 
-		t = Transform2D(angle, stupid_scale, 0.0, Vector2(x, y))
-		
-		mm2.set_instance_transform_2d(i, t)
-		mm2.set_instance_color(i, Color(0.805, 0.805, 0.805, 1.0) )	
-		i+= 1
-		mm.visible_instance_count = i
+			t = Transform2D(angle, stupid_scale, 0.0, Vector2(x, y))
+			
+			mm2.set_instance_transform_2d(i, t)
+			mm2.set_instance_color(i, Color(0.805, 0.805, 0.805, 1.0) )	
+			i+= 1
+			mm.visible_instance_count = i
 	mm2.visible_instance_count = i
 
-	return i
 
 func show_bin(i,world_bin, tile_size):
 	mm.mesh = build_quad_mesh()

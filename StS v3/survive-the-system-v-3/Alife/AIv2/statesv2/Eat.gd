@@ -13,7 +13,7 @@ func evaluate(_manager,_i, _DNA):
 		score =  _manager.sum_species_world_array[f][bin]
 
 	#print( "Eat score is " + str(score))
-	return score
+	return  0 #score
 
 
 func enter(_manager,_i, _DNA):
