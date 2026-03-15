@@ -4,11 +4,13 @@ var player : Node3D
 var pitch : float = 0.0
 var mouse_captured = false
 @export var min_pitch :  float = deg_to_rad(-40)
-@export var max_pitch :  float = deg_to_rad(0)
+@export var max_pitch :  float = deg_to_rad(30)
 @export var mouse_sensitivity = 0.002
 
 @export var camera_speed = 5
 @export var camera_zoom_speed = 50
+@export var min_zoom : float = 2.0
+@export var max_zoom : float = 4.0
 
 
 @export var pitch_anchor : Node3D
@@ -44,21 +46,21 @@ func _process(delta: float) -> void:
 	if player.is_multiplayer_authority():
 		#global_position.y = max(global_position.y, 2.0)
 		if Input.is_action_pressed("Camera_zoom_in"):
-			position.z -= camera_zoom_speed*delta
+			position.z = max(min_zoom, position.z - camera_zoom_speed * delta)
 		if Input.is_action_pressed("Camera_zoom_out"):
-			position.z += camera_zoom_speed*delta
+			position.z = min(max_zoom, position.z + camera_zoom_speed * delta)
 		if Input.is_action_just_pressed("Mousewheel_in"):
-			position.z -= camera_zoom_speed*delta
+			position.z = max(min_zoom, position.z - camera_zoom_speed * delta)
 		if Input.is_action_just_pressed("Mousewheel_out"):
-			position.z += camera_zoom_speed*delta	
-		if Input.is_action_pressed("offset_camera_down"):
-			position.y -= camera_speed*delta
-		if Input.is_action_pressed("offset_camera_up"):
-			position.y += camera_speed*delta
-		if Input.is_action_pressed("offset_camera_left"):
-			position.x -= camera_speed*delta
-		if Input.is_action_pressed("offset_camera_right"):
-			position.x += camera_speed*delta
+			position.z = min(max_zoom, position.z + camera_zoom_speed * delta)
+		#if Input.is_action_pressed("offset_camera_down"):
+			#position.y -= camera_speed*delta
+		#if Input.is_action_pressed("offset_camera_up"):
+			#position.y += camera_speed*delta
+		#if Input.is_action_pressed("offset_camera_left"):
+			#position.x -= camera_speed*delta
+		#if Input.is_action_pressed("offset_camera_right"):
+			#position.x += camera_speed*delta
 
 
 

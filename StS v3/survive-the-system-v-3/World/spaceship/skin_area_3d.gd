@@ -1,22 +1,22 @@
 extends Area3D
 var p
 var Super_p
-var skins = [
-	preload("res://assets/assets kyun/ground_texture128.png"), # skin 1
-	preload("res://assets/assets kyun/grass_texture128.png"),  # skin 2
-	preload("res://assets/assets kyun/collector_texture.png"),  # skin 3
-	preload("res://assets/assets kyun/shiptexture_1.png"),  # skin 4
-	preload("res://assets/assets kyun/spaceship_texture1.png"), # skin 5
-]
-
+#var skins = [
+	#preload("res://assets/assets kyun/ground_texture128.png"), # skin 1
+	#preload("res://assets/assets kyun/grass_texture128.png"),  # skin 2
+	#preload("res://assets/assets kyun/collector_texture.png"),  # skin 3
+	#preload("res://assets/assets kyun/shiptexture_1.png"),  # skin 4
+	#preload("res://assets/assets kyun/spaceship_texture1.png"), # skin 5
+#]
+ #MOVE INTO PLAYER.GD
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	$PopupMenu.add_item("1", 0)
-	$PopupMenu.add_item("2", 1)
-	$PopupMenu.add_item("3", 2)
-	$PopupMenu.add_item("4", 3)
-	$PopupMenu.add_item("5", 4)
-	$PopupMenu.add_item("rayé", 5)
+	$PopupMenu.add_item("Deep blue", 0)
+	$PopupMenu.add_item("Orange camo", 1)
+	$PopupMenu.add_item("Green camo", 2)
+	$PopupMenu.add_item("Snow camo", 3)
+	$PopupMenu.add_item("Orange striped", 4)
+	$PopupMenu.add_item("Deep blue striped", 5)
 
 @rpc("any_peer","call_remote")
 func _on_popup_menu_id_pressed(id):

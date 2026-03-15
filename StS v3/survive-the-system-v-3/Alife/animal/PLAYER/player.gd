@@ -135,7 +135,7 @@ func apply_skin():
 		preload("res://assets/assets kyun/ground_texture128.png"),
 		preload("res://assets/assets kyun/grass_texture128.png"),
 		preload("res://assets/assets kyun/collector_texture.png"),
-		preload("res://assets/assets kyun/shiptexture_1.png"),
+		preload("res://assets/assets kyun/rayed2.png"),
 		preload("res://assets/assets kyun/rayed1.png")
 	]
 

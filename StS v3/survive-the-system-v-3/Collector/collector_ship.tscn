@@ -16,7 +16,7 @@ material = SubResource("StandardMaterial3D_jyloi")
 size = Vector3(5, 1, 5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_gj6ol"]
-size = Vector3(0.2, 0.95, 3.6)
+size = Vector3(0.2, 1.1, 4.8)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_tf2qa"]
 margin = 0.0
@@ -50,63 +50,75 @@ script = ExtResource("1_okm20")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.7, 0)
 mesh = SubResource("BoxMesh_m4dhe")
 
-[node name="barrier_staticbody" type="StaticBody3D" parent="." unique_id=456167716]
+[node name="barrier_staticbody" type="AnimatableBody3D" parent="." unique_id=1775481548]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="barrier_staticbody" unique_id=2024433675]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3999999, 0.8, -5.9604645e-08)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3999999, 0.725, -5.9604645e-08)
 shape = SubResource("BoxShape3D_gj6ol")
 
 [node name="CollisionShape3D4" type="CollisionShape3D" parent="barrier_staticbody" unique_id=912199288]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4000003, 0.8, -5.9604645e-08)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4000003, 0.725, -5.9604645e-08)
 shape = SubResource("BoxShape3D_gj6ol")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="barrier_staticbody" unique_id=1915190893]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.3841858e-07, 0.8, -2.4)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.3841858e-07, 0.725, -2.4)
 shape = SubResource("BoxShape3D_gj6ol")
 
 [node name="CollisionShape3D3" type="CollisionShape3D" parent="barrier_staticbody" unique_id=1071198113]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.3841858e-07, 0.8, 2.1999998)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.3841858e-07, 0.725, 2.3999999)
 shape = SubResource("BoxShape3D_gj6ol")
 
 [node name="barriers" type="Node3D" parent="." unique_id=895882590]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)
 
 [node name="Barrier" parent="barriers" unique_id=300521391 instance=ExtResource("2_okm20")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1000001, 0.7, -2.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.40000013, 0.7, -2.4)
+
+[node name="Barrier7" parent="barriers" unique_id=1083539139 instance=ExtResource("2_okm20")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6000003, 0.7, -2.4)
 
 [node name="Barrier2" parent="barriers" unique_id=178634627 instance=ExtResource("2_okm20")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.100000024, 0.7, -2.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8000001, 0.7, -2.4)
 
 [node name="Barrier3" parent="barriers" unique_id=1264740915 instance=ExtResource("2_okm20")]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1.1, 0.7, -2.4)
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1.8000001, 0.7, -2.4)
 
 [node name="Barrier4" parent="barriers" unique_id=490016429 instance=ExtResource("2_okm20")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4, 0.7, -1.1)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4, 0.7, -1.6)
 
 [node name="Barrier5" parent="barriers" unique_id=1784697793 instance=ExtResource("2_okm20")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4, 0.7, 0.100000024)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4, 0.7, -0.39999998)
 
 [node name="Barrier6" parent="barriers" unique_id=815317261 instance=ExtResource("2_okm20")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4, 0.7, 1.3000001)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4, 0.7, 0.8000001)
+
+[node name="Barrier14" parent="barriers" unique_id=2097124761 instance=ExtResource("2_okm20")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.4, 0.7, 2)
 
 [node name="Barrier8" parent="barriers" unique_id=681322409 instance=ExtResource("2_okm20")]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1.1000001, 0.7, 2.2)
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 1.6000001, 0.7, 2.4)
 
 [node name="Barrier9" parent="barriers" unique_id=563879799 instance=ExtResource("2_okm20")]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -0.099999964, 0.7, 2.2)
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0.40000004, 0.7, 2.4)
 
 [node name="Barrier10" parent="barriers" unique_id=1345971915 instance=ExtResource("2_okm20")]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -1.3, 0.7, 2.2)
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -0.79999995, 0.7, 2.4)
+
+[node name="Barrier15" parent="barriers" unique_id=1375690486 instance=ExtResource("2_okm20")]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -2, 0.7, 2.4)
 
 [node name="Barrier11" parent="barriers" unique_id=629067657 instance=ExtResource("2_okm20")]
-transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -2.4, 0.7, 1.1000001)
+transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -2.4, 0.7, 1.6000001)
 
 [node name="Barrier12" parent="barriers" unique_id=1124731438 instance=ExtResource("2_okm20")]
-transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -2.4, 0.7, -0.099999964)
+transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -2.4, 0.7, 0.40000004)
 
 [node name="Barrier13" parent="barriers" unique_id=1522183006 instance=ExtResource("2_okm20")]
-transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -2.4, 0.7, -1.3)
+transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -2.4, 0.7, -0.79999995)
+
+[node name="Barrier16" parent="barriers" unique_id=1090110364 instance=ExtResource("2_okm20")]
+transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -2.4, 0.7, -2)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=680751226]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.7, 0)
@@ -116,7 +128,7 @@ shape = SubResource("BoxShape3D_tf2qa")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8000001, 0)
 mesh = SubResource("BoxMesh_tf2qa")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="column" unique_id=1188969162]
+[node name="StaticBody3D" type="AnimatableBody3D" parent="column" unique_id=2029917543]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="column/StaticBody3D" unique_id=45604299]
 shape = SubResource("BoxShape3D_h5hgu")
