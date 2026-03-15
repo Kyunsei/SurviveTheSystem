@@ -90,7 +90,9 @@ var spear_animations = [
 	"hold_spear_to_strike",
 	"hold_spear_to_strike_2",
 	"hold_spear_position",
-	"base_to_hold_spear"
+	"base_to_hold_spear",
+	"hold_spear_to_block_position",
+	"block_position",
 ]
 #ANIMATION VARIABLES ANIMATION VARIABLES ANIMATION VARIABLES ANIMATION VARIABLES
 
@@ -172,6 +174,7 @@ func reset_arm_position():
 		
 
 func hide_bound_objects():
+	spear_back_to_origin()
 	reset_arm_position()
 	get_node("MeshInstance3D").get_node("spear").hide()
 	get_node("MeshInstance3D").get_node("Hoover").hide()
@@ -507,36 +510,31 @@ func spear_defense(number):
 func spear_defense_animation(defendingornot):
 	if defendingornot == 0:
 		$AnimationPlayer.play("spear_going_to_defense")
+		$PlayerAnimater.play("hold_spear_to_block_position")
 		await $AnimationPlayer.animation_finished
+		if $MeshInstance3D/spear.is_visible_in_tree():
+			$PlayerAnimater.play("block_position")
 		$AnimationPlayer.play("spear_in_defense")
 		set_speardefense_state.rpc_id(1, true) # tell server
 	else:
-		print("going back")
-		$AnimationPlayer.play_backwards("spear_going_to_defense")
-		await $AnimationPlayer.animation_finished
-		$AnimationPlayer.play("RESET")
-		set_speardefense_state.rpc_id(1, false) # tell server
+		spear_back_to_origin()
+
+
+func spear_back_to_origin():
+	$AnimationPlayer.play_backwards("spear_going_to_defense")
+	$PlayerAnimater.play_backwards("hold_spear_to_block_position")
+	await $AnimationPlayer.animation_finished
+	$AnimationPlayer.play("base_spear_position")
+	if $MeshInstance3D/spear.is_visible_in_tree():
+		$PlayerAnimater.play("hold_spear_position")
+	set_speardefense_state.rpc_id(1, false) # tell server
 @rpc("any_peer","call_remote")
 func set_speardefense_state(state: bool):
 	speardefense = state
 
 @rpc("any_peer","call_local")
 func speardefending():
-	var alife_manager = get_parent()
-	var targets = alife_manager.get_alife_in_area(vacuum_action_range.global_position,
-	 												vacuum_action_range.shape.size)
-	if targets:
-		for t in targets:
-			if t is Dictionary:
-				if t != lifedata:
-					#print(t)
-					#alife_manager.interact(t,player)
-					if add_to_inventory(t):
-						#print("added")
-						alife_manager.remove(t)	
-			else:
-				if add_to_inventory(t):
-					alife_manager.remove(t)	
+	pass
 
 @rpc("any_peer","call_local")
 func vacuum_activation():
