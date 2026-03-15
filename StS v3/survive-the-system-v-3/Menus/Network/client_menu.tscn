@@ -170,5 +170,6 @@ texture = ExtResource("3_7wpka")
 [connection signal="pressed" from="HBoxContainer/Button_online" to="." method="_on_button_online_pressed"]
 [connection signal="pressed" from="VBoxContainer/Button_Play_solo" to="." method="_on_button_play_solo_pressed"]
 [connection signal="pressed" from="VBoxContainer/Button_Play" to="." method="_on_button_play_pressed"]
+[connection signal="pressed" from="VBoxContainer/Button_Quit" to="." method="_on_button_quit_pressed"]
 [connection signal="text_changed" from="Port" to="." method="_on_port_text_changed"]
 [connection signal="text_changed" from="IP" to="." method="_on_ip_text_changed"]

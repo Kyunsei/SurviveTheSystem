@@ -105,3 +105,7 @@ func _on_port_text_changed(new_text: String) -> void:
 
 func _on_ip_text_changed(new_text: String) -> void:
 	IP_ADDRESS = new_text
+
+
+func _on_button_quit_pressed() -> void:
+	get_tree().quit()
