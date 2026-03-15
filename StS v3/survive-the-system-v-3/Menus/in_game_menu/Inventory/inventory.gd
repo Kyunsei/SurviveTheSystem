@@ -52,7 +52,8 @@ func prep_alife(alife):
 	var item ={}
 
 	item["name"] = str(alife["Species"])
-	item["inventory_icon"] = alife["Sprites"]
+	if alife.has("Sprites"):
+		item["inventory_icon"] = alife["Sprites"]
 
 	item["Data"] = [alife]
 	#item["inventory_path"] = null

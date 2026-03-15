@@ -275,6 +275,7 @@ func _process(delta: float) -> void:
 				lifedata["current_energy"] -= 0.5*delta
 			if lifedata["current_energy"] > 49 and lifedata["current_health"]<lifedata["Max_health"]:
 				lifedata["current_health"] += 1*delta
+				lifedata["current_energy"] -= 1*delta
 			if lifedata["current_energy"] <= 0:
 				lifedata["current_health"] -= 1*delta
 			if lifedata["current_health"] <= 0:
@@ -534,7 +535,7 @@ func spear_back_to_origin():
 		if $MeshInstance3D/spear.is_visible_in_tree():
 			$PlayerAnimater.play("hold_spear_position")
 		set_speardefense_state.rpc_id(1, false) # tell server
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func set_speardefense_state(state: bool):
 	speardefense = state
 
@@ -557,7 +558,7 @@ func vacuum_animation():
 		set_vacuum_state.rpc_id(1, false) # tell server
 		vacuum_turned_on = false
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func set_vacuum_state(state: bool):
 	vacuum_turned_on = state
 

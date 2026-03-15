@@ -24,10 +24,10 @@ func update(_manager,_i, _DNA, _delta):
 	#print(field)
 	var step =  bin_flow.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
 	var target_distance  =  log(field / 1.0) / 0.15 
-	print(target_distance)
-	print(step)
+	#print(target_distance)
+	#print(step)
 	var estimated_target = _manager.position_array[_i] - bin_flow.normalized() * target_distance
-	print(estimated_target)
+	#print(estimated_target)
 	
 	'if step.length() > abs(target_distance):
 		_manager.position_array[_i] = estimated_target
