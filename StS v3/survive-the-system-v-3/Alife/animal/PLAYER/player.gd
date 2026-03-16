@@ -189,8 +189,9 @@ func show_selected(item, peer_id):
 					spear_back_to_origin()
 					vacuum_turned_on = false
 					set_vacuum_state.rpc_id(1, false) 
-			else :
-				reset_arm_position()
+				else :
+					reset_arm_position()
+					hide_bound_objects()
 		else:
 			hide_bound_objects()
 		
