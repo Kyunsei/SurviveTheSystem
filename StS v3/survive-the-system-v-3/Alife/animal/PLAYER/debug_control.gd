@@ -56,11 +56,7 @@ func _physics_process(_delta: float) -> void:
 				
 			if Input.is_action_just_pressed("F5"):
 				player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer.rpc_id(1,multiplayer.get_unique_id())
-			if Input.is_action_just_pressed("action1"):
-				if DEBUG_ACTIVE == false:
-					return
-				player.get_parent().get_node("beast_manager").spawn_new_beast.rpc_id(1, player.position, Alifedata.enum_speciesID.SHEEP)
-
+	
 @rpc("any_peer","call_remote")
 func grant_player_money(id):
 	player.catnation_credits += 100

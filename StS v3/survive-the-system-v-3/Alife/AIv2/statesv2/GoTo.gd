@@ -3,6 +3,8 @@ class_name GOTO_STATE
 
 var speed = 10
 
+@export var target_species : int = 0
+
 func evaluate(_manager,_i, _DNA):
 	#ENERGY PART
 	var bin = _manager.binID_array[_i]
@@ -11,7 +13,7 @@ func evaluate(_manager,_i, _DNA):
 
 	#TARGET PART???
 	var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,1)
-	var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,0)
+	var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,target_species)
 	if close_target_id:
 		var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
 		#var dir2 = Vector2(dir.x,dir.z)
@@ -29,15 +31,15 @@ func exit(_manager,_i, _DNA):
 
 func update(_manager,_i, _DNA, _delta):
 	var bin = _manager.binID_array[_i]
-	var bin_flow = _manager.calculate_flow_at_bin(0,bin)
+	var bin_flow = _manager.calculate_flow_at_bin(target_species,bin)
 	var dir := Vector3(0,0,0)
-	var field = _manager.field_world_array[0][bin]
+	var field = _manager.field_world_array[target_species][bin]
 	var step =  bin_flow.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
-	var count = _manager.sum_species_world_array[0][bin]
+	var count = _manager.sum_species_world_array[target_species][bin]
 	#print(field)
 	if count > 0 :
 		var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,1)
-		var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,0)
+		var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,target_species)
 		if close_target_id:
 			dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
 			step =  dir.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)

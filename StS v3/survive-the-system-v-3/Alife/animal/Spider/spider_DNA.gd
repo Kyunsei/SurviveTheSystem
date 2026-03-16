@@ -1,5 +1,5 @@
 extends DNA
-class_name SHEEP
+class_name SPIDERCRAB
 
 
 
@@ -8,7 +8,6 @@ var current_state : STATE
 
 func Init():
 		
-
 
 	# --- Core metabolism ---
 	Max_energy =[1000,1000]
@@ -39,8 +38,8 @@ func Init():
 
 #INVENTORY
 
-	Sprite_path = "res://Alife/animal/Herbivor/sheep2.png"
-	Stack_amount = 100
+	Sprite_path ="res://Alife/animal/Spider/Spidercrab.png" 
+	Stack_amount = 10
 	
 	
 func Update(_manager, _i, _delta):
@@ -48,7 +47,7 @@ func Update(_manager, _i, _delta):
 	if _manager.Alive_array[_i] == 1:
 		choose_action(_manager, _i)	
 		update_action(_manager, _i, _delta)
-		Homeostasis(_manager,_i,_delta)
+		#Homeostasis(_manager,_i,_delta)
 			
 
 func Growth(manager, i, _delta):

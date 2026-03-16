@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="GOTO_STATE" format=3 uid="uid://c5u0nn8eo4vvu"]
+
+[ext_resource type="Script" uid="uid://bodkfy05sdh6y" path="res://Alife/AIv2/statesv2/GoTo.gd" id="1_idw27"]
+
+[resource]
+script = ExtResource("1_idw27")
+target_species = 4
+metadata/_custom_type_script = "uid://bodkfy05sdh6y"

@@ -76,7 +76,7 @@ func init():
 				if GlobalSimulationParameter.DEBUG_grass_sim == 0:
 					$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.GRASS)
 				else:
-					$Grass_Manager2.Spawn_New_Grass(pos,0)
+					$Grass_Manager2.Spawn_New_Grass(pos,$Grass_Manager2.SPECIES_ID.GRASS)
 			for i in range(0):
 				var pos = get_random_worldpos()
 				if GlobalSimulationParameter.DEBUG_grass_sim == 0:
@@ -89,10 +89,14 @@ func init():
 			GlobalSimulationParameter.simulation_speed = 20000
 			await get_tree().create_timer(1).timeout
 			GlobalSimulationParameter.simulation_speed = 1
+			for i in range(5):
+				var pos = get_random_worldpos()
+				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
+				$Grass_Manager2.Spawn_New_Grass(pos,$Grass_Manager2.SPECIES_ID.SHEEP)
 			for i in range(1):
 				var pos = get_random_worldpos()
 				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
-				$Grass_Manager2.Spawn_New_Grass(pos,3)
+				$Grass_Manager2.Spawn_New_Grass(pos,$Grass_Manager2.SPECIES_ID.SPIDERCRAB)
 
 
 func get_random_worldpos():

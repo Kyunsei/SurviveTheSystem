@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="SPIDERCRAB" format=3 uid="uid://o5ojwk7t2tbv"]
+
+[ext_resource type="Script" uid="uid://b0ania0ikbcmn" path="res://Alife/animal/Spider/spider_DNA.gd" id="1_hbxx4"]
+[ext_resource type="Script" uid="uid://btfv6wp0e0836" path="res://Alife/AIv2/STATE.gd" id="2_trg4d"]
+[ext_resource type="Resource" uid="uid://c5u0nn8eo4vvu" path="res://Alife/animal/Spider/state/GOTO_SPIDER.tres" id="3_jkvi2"]
+[ext_resource type="Resource" uid="uid://cruax8co3es7c" path="res://Alife/animal/Spider/state/EAT_SPIDER.tres" id="4_c55gh"]
+
+[resource]
+script = ExtResource("1_hbxx4")
+state_array = Array[ExtResource("2_trg4d")]([ExtResource("3_jkvi2"), ExtResource("4_c55gh")])
+metadata/_custom_type_script = "uid://b0ania0ikbcmn"

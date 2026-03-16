@@ -4,8 +4,10 @@ extends Node3D
 #
 # v2 of grass/plant manager  
 # fully ECS here hopefully will help performance gain...
-# v3 MULTITHREAD!!!!
+# v3 update in DNA ressource now
+#v4 multithread oneday?
 #######################
+
 
 
 var FPS : float
@@ -42,7 +44,26 @@ var current_finite_state_array :  PackedInt32Array
 var light_index_array : Array = []
 
 #SPECIES SPECIFICIC WILL ALL MOVE TO DNA?
-@export var species_list : Array[DNA]
+enum SPECIES_ID {GRASS,TREE,MOSS,BERRY,SHEEP,CAT,SPIDERCRAB}
+var SPECIES = {
+	SPECIES_ID.GRASS: preload("res://Alife/Plant/Grass/GRASS.tres") ,
+	SPECIES_ID.TREE: preload("res://Alife/Plant/tree/TREE.tres"),
+	SPECIES_ID.MOSS:preload("res://Alife/Plant/Moss/MOSS_GENOME.tres"),
+	SPECIES_ID.BERRY:preload("res://Alife/Plant/Bush/BERRY.tres"),
+	SPECIES_ID.SHEEP:preload("res://Alife/animal/Herbivor/Sheep/SHEEP.tres"),
+	SPECIES_ID.CAT:preload("res://Alife/animal/PLAYER/CAT_DNA.tres"),
+	SPECIES_ID.SPIDERCRAB:preload("res://Alife/animal/Spider/SPIDERCRAB_DNA.tres")
+}
+
+@onready var SPECIES_RENDERERS = { 
+	SPECIES_ID.GRASS: $grass,
+	 SPECIES_ID.TREE: $tree,
+	 SPECIES_ID.MOSS: $moss,
+	 SPECIES_ID.SHEEP: $sheep,
+	 SPECIES_ID.BERRY: $berry,
+	SPECIES_ID.SPIDERCRAB : $spidercrab
+	 }
+#@export var species_list : Array[DNA]
 #var species_id_array : Array =[]
 var species_max_energy : Array[PackedFloat32Array]
 var species_max_health : Array[PackedFloat32Array]
@@ -414,7 +435,7 @@ func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 
 		
 func entity_update(i,delta):
-	species_list[Species_array[i]].Update(self,i,delta)
+	SPECIES[Species_array[i]].Update(self,i,delta)
 	
 		
 			
@@ -473,7 +494,7 @@ func Regenerate_Health(i,s,t,delta):
 
 	
 func Growth(i,s,_t,delta):
-	if species_list[s].Growth(self,i,delta):
+	if SPECIES[s].Growth(self,i,delta):
 		_pending_update.append(i)
 
 func Death(i):
@@ -616,18 +637,21 @@ func Spawn_and_Kill():
 func Build_New_Grass(i:int,pos: Vector3, sp:int):
 	if i >= Species_array.size():
 		Species_array.append(sp)
-		current_energy_array.append(species_list[sp].Max_energy[0]/2) #HERE MAYBE
+		current_energy_array.append(SPECIES[sp].Max_energy[0]/2) #HERE MAYBE
 		current_health_array.append(species_max_health[sp][0])
 		current_life_state_array.append(0)
 		current_age_array.append(0)
-		current_speed.append(species_list[sp].Max_speed[0])
+		current_speed.append(SPECIES[sp].Max_speed[0])
 		Alive_array.append(1)
 		Active.append(1)
 		current_biomass_array.append(species_biomass[sp][0])
 		position_array.append(pos)
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
-		#if binID_array :
-		binID_array.append(get_worldbin_index(pos))	
+		#print(get_worldbin_index(pos))
+		if get_worldbin_index(pos) :
+			binID_array.append(get_worldbin_index(pos))	
+		else:
+			binID_array.append(-1)
 		light_index_array.append(get_lightIndex(i))
 		current_finite_state_array.append(0)
 		put_in_light_bin(i)
@@ -636,7 +660,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 
 	else:
 		Species_array[i] = sp
-		current_energy_array[i] = species_list[sp].Max_energy[0]/2 #HERE MAYBE
+		current_energy_array[i] = SPECIES[sp].Max_energy[0]/2 #HERE MAYBE
 		current_health_array[i] = species_max_health[sp][0]
 		current_life_state_array[i] = 0
 		current_age_array[i] = 0
@@ -703,14 +727,14 @@ func remove_duplicate_in_index_array(A,B):
 	return unique_array
 
 func build_world_bin_tables():
-	var count = species_list.size()
+	var count = SPECIES.size()
 
 	field_world_array.resize(count)
 	#flow_world_array.resize(count)
 	#species_world_array.resize(count)
 	sum_species_world_array.resize(count)
 
-	for s in range(species_list.size()):
+	for s in range(SPECIES.size()):
 		for t in range(World.bin_array.size()):
 			field_world_array[s].append(0.0)
 			#flow_world_array[s].append(Vector3(0,0,0))
@@ -719,7 +743,7 @@ func build_world_bin_tables():
 
 
 func build_species_tables():
-	var count = species_list.size()
+	var count = SPECIES.size()
 
 	species_max_energy.resize(count)
 	species_max_health.resize(count)
@@ -734,10 +758,12 @@ func build_species_tables():
 	species_biomass.resize(count)
 	
 
-	for s in species_list:
-		s.Init()
+	for key in SPECIES_ID:
+
 		
-		var id = s.species_id	
+		var id = SPECIES_ID[key] #s.species_id	
+		var s = SPECIES[id]
+		s.Init()
 		species_max_energy[id] = s.Max_energy
 		species_max_health[id] = s.Max_health
 		species_max_age[id] = s.Max_age
@@ -909,7 +935,7 @@ func put_in_world_bin(i):
 	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
 	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
 	if new_bin_ID < 0 or new_bin_ID >= World.bin_array.size():
-		print("life out of world")
+		#print("life out of world")
 		remove_from_world_bin(i)
 		return
 	if bin_ID != new_bin_ID:
@@ -957,79 +983,43 @@ func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):
 	for c in range(id_array.size()):
 		var i = id_array[c]
 		var si = sp_array[c]
-		if si == 0:
-				$grass.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
-		elif si == 1:
-				$tree.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
-		elif si == 2:
-				$moss.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
-		elif si == 3:
-				$sheep.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
-		elif si == 4:
-				$berry.draw_new_grass(i, pos_array[c])#, state_array, alive_array)
-	$grass.multimesh.visible_instance_count = $grass.instance_number
-	$tree.multimesh.visible_instance_count = $tree.instance_number		
-	$moss.multimesh.visible_instance_count = $moss.instance_number	
-	$sheep.multimesh.visible_instance_count = $sheep.instance_number		
-	$berry.multimesh.visible_instance_count = $berry.instance_number		
+		var renderer = SPECIES_RENDERERS[si]
+		renderer.draw_new_grass(i, pos_array[c])
+	
+	for r in SPECIES_RENDERERS.values():
+		r.multimesh.visible_instance_count = r.instance_number
+			
 
 
 @rpc("authority", "call_remote", "reliable") 			
 func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array):
 	for c in range(id_array.size()):
 		var s = species_array[c]
-		if s == 0:
-			$grass.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
-		elif s == 1:
-			$tree.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
-		elif s == 2:
-			$moss.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
-		elif s == 3:
-			$sheep.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
-		elif s == 4:
-			$berry.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
+		var renderer = SPECIES_RENDERERS[s]
+		renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
 
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(id_array,species_array):
 	for c in range(id_array.size()):
 		var s = species_array[c]
-		if s == 0:
-			$grass.remove_grass(id_array[c])
-		elif s == 1:
-			$tree.remove_grass(id_array[c])
-		elif s == 2:
-			$moss.remove_grass(id_array[c])
-		elif s == 3:
-			$sheep.remove_grass(id_array[c])			
-		elif s == 4:
-			$berry.remove_grass(id_array[c])				
+		var renderer = SPECIES_RENDERERS[s]
+		renderer.remove_grass(id_array[c])
+				
 
 @rpc("any_peer","call_remote")
 func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_array,species_array):
-	$grass.init()
-	$tree.init()
-	$moss.init()
-	$sheep.init()
-	$berry.init()
+
+	for r in SPECIES_RENDERERS.values():
+		r.init()
 
 	for c in range(id_array.size()):
 		var s = species_array[c]
-		if s == 0:
-			$grass.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
-		elif s == 1:
-			$tree.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
-		elif s == 2:
-			$moss.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
-		elif s == 3:
-			$sheep.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
-		elif s == 4:
-			$berry.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
-				
-	$grass.multimesh.visible_instance_count = $grass.instance_number
-	$tree.multimesh.visible_instance_count = $tree.instance_number
-	$moss.multimesh.visible_instance_count = $moss.instance_number
-	$sheep.multimesh.visible_instance_count = $sheep.instance_number
-	$berry.multimesh.visible_instance_count = $berry.instance_number
+		var renderer = SPECIES_RENDERERS[s]
+		renderer.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
+	
+	for r in SPECIES_RENDERERS.values():
+		r.multimesh.visible_instance_count = r.instance_number
+
 
 func update_grass_time():
 	if Grass_simulator_time > 0:

@@ -4,8 +4,8 @@ class_name GRASS
 
 func Init():
 		
-	species_id = 0
-	display_name = "GRASS"
+	#species_id = 0
+	#display_name = "GRASS"
 
 	# --- Core metabolism ---
 	Max_energy =[1100,1100]
@@ -45,8 +45,7 @@ func Growth(manager, i, _delta):
 			#return true
 			manager._pending_update.append(i)
 			
-func Update(manager, i, delta):
-	
+func Update(manager, i, delta):	
 	var s = manager.Species_array[i]
 	var t = manager.current_life_state_array[i]
 	if manager.Alive_array[i] == 1:

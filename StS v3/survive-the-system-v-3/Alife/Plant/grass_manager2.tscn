@@ -1,32 +1,15 @@
 [gd_scene format=3 uid="uid://b4aghfi4iytr7"]
 
 [ext_resource type="Script" uid="uid://rxenc0br8qof" path="res://Alife/Plant/grass_manager2.gd" id="1_0gklr"]
-[ext_resource type="Script" uid="uid://whqmtmn23lj8" path="res://Alife/DNA.gd" id="2_eguq1"]
-[ext_resource type="Script" uid="uid://dhs3c3gl6pkjm" path="res://Alife/Plant/Grass/grass_DNA.gd" id="3_eguq1"]
 [ext_resource type="QuadMesh" uid="uid://ossnpdi2f01p" path="res://Alife/Plant/Grass/grass_mesh.tres" id="4_lxqh2"]
-[ext_resource type="Script" uid="uid://dr3a0hgnctbxq" path="res://Alife/Plant/tree/TREE_DNA.gd" id="4_nt0jf"]
-[ext_resource type="Script" uid="uid://dj8ux7osvyk1j" path="res://Alife/Plant/Moss/MOSS.gd" id="5_2xdm7"]
+[ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/animal/Spider/Spidercrab.png" id="5_2xdm7"]
 [ext_resource type="Script" uid="uid://dqvbcbtdwfsju" path="res://Alife/Plant/mulitmesh2.gd" id="5_hbvxf"]
-[ext_resource type="Resource" uid="uid://yi3lcyvwh8vv" path="res://Alife/animal/Herbivor/Sheep/SHEEP.tres" id="6_axxor"]
 [ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="6_hbvxf"]
-[ext_resource type="Resource" uid="uid://bii474fuh3ny6" path="res://Alife/Plant/Bush/BERRY.tres" id="7_jpkr0"]
 [ext_resource type="QuadMesh" uid="uid://cemxkaiaso15s" path="res://Alife/Plant/Moss/moss_ground.tres" id="8_5nq35"]
 [ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/animal/Herbivor/SHEEP.png" id="8_dysbp"]
 [ext_resource type="QuadMesh" uid="uid://bm1k4t0khab06" path="res://Alife/Plant/Moss/moss.tres" id="8_ixbrm"]
 [ext_resource type="SphereMesh" uid="uid://c0f8vwlqbesnh" path="res://Alife/Plant/tree/shadow_mesh.tres" id="8_vuq5v"]
 [ext_resource type="Texture2D" uid="uid://c3mhy3ho6ovbu" path="res://Alife/Plant/Bush/berry_5.png" id="9_8rc0f"]
-
-[sub_resource type="Resource" id="Resource_yp710"]
-script = ExtResource("3_eguq1")
-metadata/_custom_type_script = "uid://dhs3c3gl6pkjm"
-
-[sub_resource type="Resource" id="Resource_vuq5v"]
-script = ExtResource("4_nt0jf")
-metadata/_custom_type_script = "uid://dr3a0hgnctbxq"
-
-[sub_resource type="Resource" id="Resource_5nq35"]
-script = ExtResource("5_2xdm7")
-metadata/_custom_type_script = "uid://dj8ux7osvyk1j"
 
 [sub_resource type="MultiMesh" id="MultiMesh_nt0jf"]
 transform_format = 1
@@ -55,7 +38,7 @@ transform_format = 1
 use_colors = true
 mesh = SubResource("QuadMesh_r6o52")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dysbp"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5nq35"]
 transparency = 2
 alpha_scissor_threshold = 0.5
 alpha_antialiasing_mode = 0
@@ -67,12 +50,34 @@ texture_filter = 0
 billboard_mode = 2
 billboard_keep_scale = true
 
-[sub_resource type="QuadMesh" id="QuadMesh_axxor"]
-material = SubResource("StandardMaterial3D_dysbp")
-size = Vector2(8, 8)
-center_offset = Vector3(0, 4, 0)
+[sub_resource type="QuadMesh" id="QuadMesh_ixbrm"]
+material = SubResource("StandardMaterial3D_5nq35")
+size = Vector2(16, 16)
+center_offset = Vector3(0, 8, 0)
 
 [sub_resource type="MultiMesh" id="MultiMesh_8rc0f"]
+transform_format = 1
+use_colors = true
+mesh = SubResource("QuadMesh_ixbrm")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dysbp"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource("5_2xdm7")
+backlight_enabled = true
+backlight = Color(1, 1, 1, 1)
+texture_filter = 0
+billboard_mode = 2
+billboard_keep_scale = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_axxor"]
+material = SubResource("StandardMaterial3D_dysbp")
+size = Vector2(16, 16)
+center_offset = Vector3(0, 8, 0)
+
+[sub_resource type="MultiMesh" id="MultiMesh_5nq35"]
 transform_format = 1
 use_colors = true
 mesh = SubResource("QuadMesh_axxor")
@@ -123,7 +128,6 @@ properties/1/replication_mode = 1
 
 [node name="Grass_Manager" type="Node3D" unique_id=2019447816]
 script = ExtResource("1_0gklr")
-species_list = Array[ExtResource("2_eguq1")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35"), ExtResource("6_axxor"), ExtResource("7_jpkr0")])
 
 [node name="grass" type="MultiMeshInstance3D" parent="." unique_id=931824674]
 multimesh = SubResource("MultiMesh_nt0jf")
@@ -135,6 +139,10 @@ script = ExtResource("5_hbvxf")
 
 [node name="sheep" type="MultiMeshInstance3D" parent="." unique_id=805820802]
 multimesh = SubResource("MultiMesh_8rc0f")
+script = ExtResource("5_hbvxf")
+
+[node name="spidercrab" type="MultiMeshInstance3D" parent="." unique_id=1838867359]
+multimesh = SubResource("MultiMesh_5nq35")
 script = ExtResource("5_hbvxf")
 
 [node name="moss" type="MultiMeshInstance3D" parent="." unique_id=1789365190]

@@ -65,11 +65,11 @@ func prep_newgrass(i):
 	var grassmanager = player.get_parent().get_node("Grass_Manager2")
 	var item ={}
 	var s = grassmanager.Species_array[i]
-	item["name"] =grassmanager.species_list[s].display_name
-	item["inventory_icon"] =grassmanager.species_list[s].Sprite_path
+	item["name"] =grassmanager.SPECIES[s].display_name
+	item["inventory_icon"] =grassmanager.SPECIES[s].Sprite_path
 	item["Data"] = [i]
 	#item["inventory_path"] = null
-	item["stack_amount"] = floori(player.inventory_capacity_upgrade*grassmanager.species_list[s].Stack_amount) #update here
+	item["stack_amount"] = floori(player.inventory_capacity_upgrade*grassmanager.SPECIES[s].Stack_amount) #update here
 	return item
 
 func add_item(item, peer_id):
