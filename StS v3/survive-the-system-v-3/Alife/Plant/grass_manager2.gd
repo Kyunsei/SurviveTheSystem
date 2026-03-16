@@ -615,7 +615,7 @@ func Spawn_and_Kill():
 func Build_New_Grass(i:int,pos: Vector3, sp:int):
 	if i >= Species_array.size():
 		Species_array.append(sp)
-		current_energy_array.append(0) #HERE MAYBE
+		current_energy_array.append(species_list[sp].Max_energy[0]/2) #HERE MAYBE
 		current_health_array.append(species_max_health[sp][0])
 		current_life_state_array.append(0)
 		current_age_array.append(0)
@@ -634,7 +634,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 
 	else:
 		Species_array[i] = sp
-		current_energy_array[i] = 0 #HERE MAYBE
+		current_energy_array[i] = species_list[sp].Max_energy[0]/2 #HERE MAYBE
 		current_health_array[i] = species_max_health[sp][0]
 		current_life_state_array[i] = 0
 		current_age_array[i] = 0
@@ -643,7 +643,10 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		current_biomass_array[i] = species_biomass[sp][0]
 		position_array[i] = pos
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
-		binID_array[i] =  get_worldbin_index(pos)
+		if get_worldbin_index(pos):
+			binID_array[i] =  get_worldbin_index(pos)
+		else:
+			binID_array[i] = -1
 		light_index_array[i] = get_lightIndex(i)
 		current_finite_state_array[i] = 0
 		put_in_light_bin(i)
@@ -771,9 +774,10 @@ func get_index_in_bin_around(bin_array,i,radius):
 			var neighbor_bin = ny * GRID_WIDTH + nx
 
 			# Append all agent indices stored in that bin
-			var agents_in_bin: PackedInt32Array = bin_array[neighbor_bin]
-			for agent_idx in agents_in_bin:
-				result.append(agent_idx)
+			if bin_array[neighbor_bin]:
+				var agents_in_bin: PackedInt32Array = bin_array[neighbor_bin]
+				for agent_idx in agents_in_bin:
+					result.append(agent_idx)
 	return result
 
 
@@ -781,13 +785,15 @@ func get_index_in_bin_around(bin_array,i,radius):
 
 func get_worldbin_index(current_pos):
 	var bin_index
-	if World:
+	if World :
 		if current_pos.x > -World.World_Size.x/2  and current_pos.x < World.World_Size.x/2 :
-			if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.z/2 :			
-				var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
-				bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-				if bin_index < World.bin_array.size() and bin_index >= 0 :
-					return bin_index
+			if current_pos.z > -World.World_Size.z/2  and current_pos.z < World.World_Size.z/2 :	
+				if current_pos.y > -World.World_Size.y/2  and current_pos.y < World.World_Size.y/2 :			
+		
+					var w_pos = World.get_PositionInGrid(current_pos,World.bin_size)
+					bin_index = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
+					if bin_index < World.bin_array.size() and bin_index >= 0 :
+						return bin_index
 		return null
 		
 

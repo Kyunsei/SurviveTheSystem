@@ -13,9 +13,15 @@
 [ext_resource type="Script" uid="uid://whqmtmn23lj8" path="res://Alife/DNA.gd" id="12_vcetm"]
 [ext_resource type="Script" uid="uid://dhs3c3gl6pkjm" path="res://Alife/Plant/Grass/grass_DNA.gd" id="13_ck1yl"]
 [ext_resource type="Script" uid="uid://dr3a0hgnctbxq" path="res://Alife/Plant/tree/TREE_DNA.gd" id="14_jmkf0"]
+[ext_resource type="Script" uid="uid://6g7oj0av4g6x" path="res://Alife/animal/Herbivor/Sheep/sheep_dna.gd" id="15_ed0sb"]
 [ext_resource type="Script" uid="uid://dj8ux7osvyk1j" path="res://Alife/Plant/Moss/MOSS.gd" id="15_go1ug"]
-[ext_resource type="Resource" uid="uid://yi3lcyvwh8vv" path="res://Alife/animal/Herbivor/Sheep/SHEEP.tres" id="15_vcetm"]
 [ext_resource type="Resource" uid="uid://bii474fuh3ny6" path="res://Alife/Plant/Bush/BERRY.tres" id="16_ck1yl"]
+[ext_resource type="Script" uid="uid://btfv6wp0e0836" path="res://Alife/AIv2/STATE.gd" id="16_kx4ty"]
+[ext_resource type="Script" uid="uid://bodkfy05sdh6y" path="res://Alife/AIv2/statesv2/GoTo.gd" id="17_4n3lg"]
+[ext_resource type="Script" uid="uid://bjxrr7mr4nwni" path="res://Alife/AIv2/statesv2/Eat.gd" id="18_ag4gg"]
+[ext_resource type="Script" uid="uid://cvfh5k10re333" path="res://Alife/AIv2/statesv2/Avoid.gd" id="19_j8agp"]
+[ext_resource type="Resource" uid="uid://bcollday8qm71" path="res://Alife/animal/Herbivor/Sheep/state/REPRODUCE_SHEEP.tres" id="20_kx4ty"]
+[ext_resource type="Resource" uid="uid://dgk3b6y8ic5mp" path="res://Alife/animal/PLAYER/CAT_DNA.tres" id="22_4n3lg"]
 
 [sub_resource type="Resource" id="Resource_yp710"]
 script = ExtResource("13_ck1yl")
@@ -28,6 +34,24 @@ metadata/_custom_type_script = "uid://dr3a0hgnctbxq"
 [sub_resource type="Resource" id="Resource_5nq35"]
 script = ExtResource("15_go1ug")
 metadata/_custom_type_script = "uid://dj8ux7osvyk1j"
+
+[sub_resource type="Resource" id="Resource_pqrwj"]
+script = ExtResource("17_4n3lg")
+metadata/_custom_type_script = "uid://bodkfy05sdh6y"
+
+[sub_resource type="Resource" id="Resource_1ie4o"]
+script = ExtResource("18_ag4gg")
+food_type = PackedInt32Array(0)
+metadata/_custom_type_script = "uid://bjxrr7mr4nwni"
+
+[sub_resource type="Resource" id="Resource_wvsds"]
+script = ExtResource("19_j8agp")
+metadata/_custom_type_script = "uid://cvfh5k10re333"
+
+[sub_resource type="Resource" id="Resource_y5mkx"]
+script = ExtResource("15_ed0sb")
+state_array = Array[ExtResource("16_kx4ty")]([SubResource("Resource_pqrwj"), SubResource("Resource_1ie4o"), SubResource("Resource_wvsds"), ExtResource("20_kx4ty")])
+metadata/_custom_type_script = "uid://6g7oj0av4g6x"
 
 [node name="Alife manager" type="Node3D" unique_id=1345180502]
 script = ExtResource("1_yx3o6")
@@ -50,7 +74,7 @@ _spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk", "uid://dp2plghkprved
 spawn_path = NodePath("..")
 
 [node name="Grass_Manager2" parent="." unique_id=2019447816 instance=ExtResource("9_byu03")]
-species_list = Array[ExtResource("12_vcetm")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35"), ExtResource("15_vcetm"), ExtResource("16_ck1yl")])
+species_list = Array[ExtResource("12_vcetm")]([SubResource("Resource_yp710"), SubResource("Resource_vuq5v"), SubResource("Resource_5nq35"), SubResource("Resource_y5mkx"), ExtResource("16_ck1yl"), ExtResource("22_4n3lg")])
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=275810104]
 _spawnable_scenes = PackedStringArray("uid://dv0s2jhvhfe0v")

@@ -1,11 +1,23 @@
 extends STATE
 class_name GOTO_STATE
 
-var speed = 50
+var speed = 10
 
 func evaluate(_manager,_i, _DNA):
+
+	#ENERGY PART
+	var bin = _manager.binID_array[_i]
 	var t = _manager.current_life_state_array[_i] 
 	var score = 1 -  _manager.current_energy_array[_i] / _DNA.Max_energy[t]
+
+	#TARGET PART???
+	var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,1)
+	var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,0)
+	if close_target_id:
+		var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
+		#var dir2 = Vector2(dir.x,dir.z)
+		if dir.length() < 0.1:
+			score -= _manager.sum_species_world_array[0][bin]/25.  #25 is the max life in a place...
 	#print( "GoTo score is " + str(score))
 	return score
 
@@ -19,44 +31,30 @@ func exit(_manager,_i, _DNA):
 func update(_manager,_i, _DNA, _delta):
 	var bin = _manager.binID_array[_i]
 	var bin_flow = _manager.calculate_flow_at_bin(0,bin)
-
+	var dir := Vector3(0,0,0)
 	var field = _manager.field_world_array[0][bin]
 	var step =  bin_flow.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
 	var count = _manager.sum_species_world_array[0][bin]
-	print(field)
-
+	#print(field)
 	if count > 0 :
-		pass
-		#var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,1)
-	
-	
-	#var target_distance  =  log(field / 1.0) / 0.15 
-	#var estimated_target = _manager.position_array[_i] - bin_flow.normalized() * target_distance
-	'if step.length() > abs(target_distance):
-		_manager.position_array[_i] = estimated_target
-	else:'
-	_manager.position_array[_i] += step	
-	_manager.position_array[_i].x = clamp(_manager.position_array[_i].x , -_manager.World.World_Size.x/2+1, _manager.World.World_Size.x/2-1)
-	_manager.position_array[_i].z = clamp(_manager.position_array[_i].z , -_manager.World.World_Size.z/2+1 , _manager.World.World_Size.z/2-1)
+		var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,1)
+		var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,0)
+		if close_target_id:
+			dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
+			step =  dir.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
+			if step.length() > dir.length():
+				_manager.position_array[_i] = _manager.position_array[close_target_id]
+			else:
+				_manager.position_array[_i] += step	
+	else:
+		_manager.position_array[_i] += step	
+		
+	_manager.position_array[_i].x = clamp(_manager.position_array[_i].x , -_manager.World.World_Size.x/2, _manager.World.World_Size.x/2)
+	_manager.position_array[_i].z = clamp(_manager.position_array[_i].z , -_manager.World.World_Size.z/2 , _manager.World.World_Size.z/2)
 
 	_manager._pending_update.append(_i)
 
 	change_bin(_manager,_i)
 	
-	
-	
-func change_bin(_manager,_i):
-	var old_bin = _manager.binID_array[_i]
-	var current_bin = _manager.get_real_current_bin(_i)
 
-
-	if old_bin == current_bin:
-		return
-	else:		
-		_manager.remove_from_world_bin(_i)
-		_manager.put_in_world_bin(_i)
-	
-	
-	
-	
 	

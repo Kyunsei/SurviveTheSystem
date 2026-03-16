@@ -51,6 +51,9 @@ class_name DNA
 
 # --- BEHAVIOUR FUNCTIONS ---
 
+func Init():
+	pass
+
 func growth(_manager, _i, _delta):
 	pass
 

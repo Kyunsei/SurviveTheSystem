@@ -4,8 +4,10 @@
 [ext_resource type="Script" uid="uid://btfv6wp0e0836" path="res://Alife/AIv2/STATE.gd" id="2_5vjvr"]
 [ext_resource type="Resource" uid="uid://dm64kpxefkb8c" path="res://Alife/animal/Herbivor/Sheep/state/EAT_SHEEP.tres" id="3_5vjvr"]
 [ext_resource type="Resource" uid="uid://srnyuo6l368s" path="res://Alife/animal/Herbivor/Sheep/state/GOTO_SHEEP.tres" id="3_8xjmd"]
+[ext_resource type="Resource" uid="uid://c71aw26bn0esq" path="res://Alife/animal/Herbivor/Sheep/state/AVOID_SHEEP.tres" id="5_d5rkh"]
+[ext_resource type="Resource" uid="uid://bcollday8qm71" path="res://Alife/animal/Herbivor/Sheep/state/REPRODUCE_SHEEP.tres" id="6_n20u7"]
 
 [resource]
 script = ExtResource("1_etrcu")
-state_array = Array[ExtResource("2_5vjvr")]([ExtResource("3_8xjmd"), ExtResource("3_5vjvr")])
+state_array = Array[ExtResource("2_5vjvr")]([ExtResource("3_8xjmd"), ExtResource("3_5vjvr"), ExtResource("5_d5rkh"), ExtResource("6_n20u7")])
 metadata/_custom_type_script = "uid://6g7oj0av4g6x"

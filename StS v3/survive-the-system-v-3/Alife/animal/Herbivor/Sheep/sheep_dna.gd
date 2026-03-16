@@ -12,10 +12,10 @@ func Init():
 	display_name = "SHEEP"
 
 	# --- Core metabolism ---
-	Max_energy =[1100,1100]
+	Max_energy =[1000,1000]
 	Max_health  =[4,4]
 	Max_age  = [100,100]
-	Homeostasis_cost  =[0.00]
+	Homeostasis_cost  =[0.10]
 	Decomposition_speed =[1]
 
 	# --- Plant Related ----
@@ -31,7 +31,7 @@ func Init():
 	Reproduction_cost  =[500,500]
 	Reproduction_spread  =[5,5]
 	Reproduction_number =[1,1]
-	Biomass =[5,10] #MAYBE NO LONGER IN USE
+	Biomass =[5000,5000] #MAYBE NO LONGER IN USE
 
 #--- RENDERING ----
 
@@ -42,7 +42,14 @@ func Init():
 
 	Sprite_path = "res://Alife/animal/Herbivor/sheep2.png"
 	Stack_amount = 100
-
+	
+	
+func Update(_manager, _i, _delta):
+	if _manager.Alive_array[_i] == 1:
+		choose_action(_manager, _i)	
+		update_action(_manager, _i, _delta)
+		Homeostasis(_manager,_i,_delta)
+			
 
 func Growth(manager, i, _delta):
 	if manager.current_life_state_array[i] < 6:
@@ -52,12 +59,7 @@ func Growth(manager, i, _delta):
 			manager.current_biomass_array[i] += 5
 			return true
 
-func Update(_manager, _i, _delta):
-	if _manager.Alive_array[_i] == 1:
-		choose_action(_manager, _i)	
-		update_action(_manager, _i, _delta)
-		Homeostasis(_manager,_i,_delta)
-			
+
 func choose_action(manager, i):
 	if state_array.size() <= 0:
 		
@@ -100,12 +102,8 @@ func Homeostasis(manager,i,delta):
 	manager.current_energy_array[i] -= manager.species_homeostasis_cost[s][t] * area * GlobalSimulationParameter.simulation_speed * delta
 	#Regenerate_Health(i,s,t,delta)
 		
-	
-
 	if manager.current_energy_array[i] <= 0:
 		manager.current_health_array[i] -= manager.species_homeostasis_cost[s][t]  * GlobalSimulationParameter.simulation_speed * delta
-
-
 
 
 func update_action(_manager, _i, _delta):

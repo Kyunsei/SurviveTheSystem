@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="CAT" format=3 uid="uid://dgk3b6y8ic5mp"]
+
+[ext_resource type="Script" uid="uid://vg5kqt3aluv7" path="res://Alife/animal/PLAYER/cat_dna.gd" id="1_w7qng"]
+[ext_resource type="Script" uid="uid://btfv6wp0e0836" path="res://Alife/AIv2/STATE.gd" id="2_7v21f"]
+
+[resource]
+script = ExtResource("1_w7qng")
+metadata/_custom_type_script = "uid://vg5kqt3aluv7"

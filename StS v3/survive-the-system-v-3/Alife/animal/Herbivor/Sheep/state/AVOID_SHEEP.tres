@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="AVOID_STATE" format=3 uid="uid://c71aw26bn0esq"]
+
+[ext_resource type="Script" uid="uid://cvfh5k10re333" path="res://Alife/AIv2/statesv2/Avoid.gd" id="1_bwmwi"]
+
+[resource]
+script = ExtResource("1_bwmwi")
+metadata/_custom_type_script = "uid://cvfh5k10re333"

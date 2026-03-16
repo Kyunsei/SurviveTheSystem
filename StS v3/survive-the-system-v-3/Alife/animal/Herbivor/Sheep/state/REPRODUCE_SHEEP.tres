@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="REPRODUCE_STATE" format=3 uid="uid://bcollday8qm71"]
+
+[ext_resource type="Script" uid="uid://p46t278pnno" path="res://Alife/AIv2/statesv2/Reproduce.gd" id="1_k0lgy"]
+
+[resource]
+script = ExtResource("1_k0lgy")
+metadata/_custom_type_script = "uid://p46t278pnno"
