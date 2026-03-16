@@ -4,10 +4,7 @@ class_name GOTO_STATE
 var speed = 10
 
 func evaluate(_manager,_i, _DNA):
-
 	#ENERGY PART
-	if _i is int:
-		return
 	var bin = _manager.binID_array[_i]
 	var t = _manager.current_life_state_array[_i] 
 	var score = 1 -  _manager.current_energy_array[_i] / _DNA.Max_energy[t]
@@ -31,8 +28,6 @@ func exit(_manager,_i, _DNA):
 	pass
 
 func update(_manager,_i, _DNA, _delta):
-	if _i is int:
-		return
 	var bin = _manager.binID_array[_i]
 	var bin_flow = _manager.calculate_flow_at_bin(0,bin)
 	var dir := Vector3(0,0,0)
