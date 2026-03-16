@@ -51,6 +51,8 @@ func Update(_manager, _i, _delta):
 
 	
 func change_bin(_manager,_i):
+	if _i is int:
+		return
 	var old_bin = _manager.binID_array[_i]
 	var current_bin = _manager.get_real_current_bin(_i)
 

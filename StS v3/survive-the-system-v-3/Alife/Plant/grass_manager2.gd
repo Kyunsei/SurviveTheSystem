@@ -294,6 +294,8 @@ func update_field() -> void:
 	for i in range(entity_count):
 		if Active[i] == 0:
 			continue
+		if i is int:
+			return
 		var bin = binID_array[i]
 		var s = Species_array[i]
 		field_world_array[s][bin] += 1
@@ -625,7 +627,8 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		current_biomass_array.append(species_biomass[sp][0])
 		position_array.append(pos)
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
-		binID_array.append(get_worldbin_index(pos))	
+		if binID_array :
+			binID_array.append(get_worldbin_index(pos))	
 		light_index_array.append(get_lightIndex(i))
 		current_finite_state_array.append(0)
 		put_in_light_bin(i)
@@ -644,8 +647,12 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		position_array[i] = pos
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
 		if get_worldbin_index(pos):
+			if i is int:
+				return
 			binID_array[i] =  get_worldbin_index(pos)
 		else:
+			if i is int:
+				return
 			binID_array[i] = -1
 		light_index_array[i] = get_lightIndex(i)
 		current_finite_state_array[i] = 0
@@ -894,6 +901,10 @@ func get_real_current_bin(i):
 	return new_bin_ID
 
 func put_in_world_bin(i):
+	if i == null :
+		return
+	if i is int:
+		return
 	var bin_ID = binID_array[i]
 	var w_pos = World.get_PositionInGrid(position_array[i],World.bin_size)
 	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
@@ -921,6 +932,8 @@ func put_in_world_bin(i):
 	
 	
 func remove_from_world_bin(i):
+	if i is int:
+		return
 	if binID_array[i] >= 0:
 		if World.bin_array[binID_array[i]].has(i):
 			World.bin_array[binID_array[i]].erase(i)

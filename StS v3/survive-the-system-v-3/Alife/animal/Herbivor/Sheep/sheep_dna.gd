@@ -68,6 +68,8 @@ func choose_action(manager, i):
 	var score : float
 	var best_action : int
 	for si in range(state_array.size()):
+		if si is int:
+			return
 		score = state_array[si].evaluate(manager, i,self)		
 		if score > best_score:
 			best_score = score
