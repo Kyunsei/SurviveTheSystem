@@ -4,13 +4,13 @@ class_name AVOID_STATE
 var speed = 50
 
 func evaluate(_manager,_i, _DNA):
-	return 0.0
+	#return 0.0
 	var bin = _manager.binID_array[_i]
 	#var bin_flow = _manager.calculate_flow_at_bin(1,bin)
-	var field = _manager.field_world_array[1][bin]
+	var field = _manager.field_world_array[5][bin]
 
 	var score = field * 10
-	print( "AVOID score is " + str(score))
+	#print( "AVOID score is " + str(score))
 
 	return score
 
@@ -23,7 +23,7 @@ func exit(_manager,_i, _DNA):
 
 func update(_manager,_i, _DNA, _delta):
 	var bin = _manager.binID_array[_i]
-	var bin_flow = _manager.calculate_flow_at_bin(1,bin)
+	var bin_flow = _manager.calculate_flow_at_bin(5,bin)
 	var step =  -bin_flow.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
 
 	_manager.position_array[_i] += step	

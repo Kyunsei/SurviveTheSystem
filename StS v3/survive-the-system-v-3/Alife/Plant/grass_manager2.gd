@@ -863,25 +863,33 @@ func put_in_light_bin(idx):
 
 
 func remove_from_world(i):
-	remove_from_light_bin(i)
-	remove_from_world_bin(i)
-	light_index_array[i] = []
-	Active[i] = 0
-	_pending_update.append(i)
-	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
-		get_parent().current_life_count_by_species[Species_array[i]] -= 1
-	
-func add_to_world(i,pos):
-	position_array[i] = pos
-	put_in_world_bin(i)
-	put_in_light_bin(i)
-	light_index_array[i] = get_lightIndex(i)
-	Active[i] = 1
-	_pending_update.append(i)
-	if 	get_parent().current_life_count_by_species.has(Species_array[i]):
-		get_parent().current_life_count_by_species[Species_array[i]] += 1
+	if Species_array[i] == 5: #CAT
+		return
+		print("THIS IS CAT to remove")
 	else:
-		get_parent().current_life_count_by_species[Species_array[i]] = 1
+		remove_from_light_bin(i)
+		remove_from_world_bin(i)
+		light_index_array[i] = []
+		Active[i] = 0
+		_pending_update.append(i)
+		if 	get_parent().current_life_count_by_species.has(Species_array[i]):
+			get_parent().current_life_count_by_species[Species_array[i]] -= 1
+		
+func add_to_world(i,pos):
+	if Species_array[i] == 5: #CAT
+		return
+		print("THIS IS CAT to be added")
+	else:
+		position_array[i] = pos
+		put_in_world_bin(i)
+		put_in_light_bin(i)
+		light_index_array[i] = get_lightIndex(i)
+		Active[i] = 1
+		_pending_update.append(i)
+		if 	get_parent().current_life_count_by_species.has(Species_array[i]):
+			get_parent().current_life_count_by_species[Species_array[i]] += 1
+		else:
+			get_parent().current_life_count_by_species[Species_array[i]] = 1
 
 func remove_from_light_bin(idx):	
 	for li in light_index_array[idx]:

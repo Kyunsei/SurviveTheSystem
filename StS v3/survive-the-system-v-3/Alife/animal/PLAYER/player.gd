@@ -31,6 +31,9 @@ var immune_to_death = false
 var is_alive = true
 var skin_index:int = 0 : set = set_skin
 
+var alifemanager_id : int
+
+
 #MONEY MONEY MONEY MONEY MONEY
 var catnation_credits :int = 1: 
 	set(current_money): 
@@ -277,6 +280,7 @@ func _physics_process(_delta: float) -> void:
 			pass
 			#var target_yaw := atan2(direction.x, -direction.z)
 		move_and_slide()
+		
 		change_bin.rpc_id(1)
 @rpc("any_peer","call_remote",)
 func data_movement_to_server(pos):
@@ -337,15 +341,17 @@ func sync_lifedata(data: Dictionary):
 func change_bin():
 	if lifedata.size()>0:
 		lifedata["position"] = global_position
+		get_parent().get_node("Grass_Manager2").position_array[alifemanager_id] = global_position
+		#alifemanager_id
 
-		var old_bin = lifedata["bin_ID"]
+		'var old_bin = lifedata["bin_ID"]
 		var current_bin = get_parent().get_worldbin_index(global_position)
 
 		if old_bin == current_bin:
 			return
 		else:		
 			get_parent().remove_from_world_bin(lifedata)
-			get_parent().put_in_world_bin(lifedata)
+			get_parent().put_in_world_bin(lifedata)'
 
 @rpc("any_peer","call_local")
 func Die(id):

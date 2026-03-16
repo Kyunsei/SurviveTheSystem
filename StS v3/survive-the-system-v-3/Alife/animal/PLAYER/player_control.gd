@@ -261,6 +261,8 @@ func action_on_server():
 						#print("added")
 						alife_manager.remove(t)	
 			else:
+				if alife_manager.get_node("Grass_Manager2").Species_array[t]==5:
+					return
 				if add_to_inventory(t):
 					alife_manager.remove(t)	
 					

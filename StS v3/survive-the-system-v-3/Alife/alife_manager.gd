@@ -207,10 +207,10 @@ func spawn_player(id,pos):
 		current_life_count_by_species[Alifedata.enum_speciesID.CAT] += 1
 	else:
 		current_life_count_by_species[Alifedata.enum_speciesID.CAT] = 1
-	player_array.append(new_player)
 	
-	$Grass_Manager2.Spawn_New_Grass(pos,5)
-
+	var newid = $Grass_Manager2.Spawn_New_Grass(pos,5)
+	new_player.alifemanager_id = newid
+	player_array.append(new_player)
 
 
 	
@@ -218,7 +218,7 @@ func spawn_player(id,pos):
 func interact(grass,player):
 	print("is alifemanger interact function still called somwhere?")
 	player.add_to_inventory(grass,1)
-	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
+	if grass["Species"]== Alifedata.enum_speciesID.SHEEP:
 		$beast_manager._pending_kills.append(grass)	
 	else:
 		$Grass_Manager._pending_external_kills.append(grass)
@@ -227,7 +227,8 @@ func interact(grass,player):
 
 func remove(grass):
 	if grass is Dictionary:
-		if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
+		print("DEPRECTED OLD SYSTEM to remove alife")
+		'if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
 			$beast_manager.ask_for_Kill(grass)	
 		elif grass["Species"]== Alifedata.enum_speciesID.CAT:
 			print("not yet done for player")	
@@ -235,13 +236,14 @@ func remove(grass):
 			$beast_manager.ask_for_Kill(grass)	
 
 		else:
-			$Grass_Manager._pending_external_kills.append(grass)
+			$Grass_Manager._pending_external_kills.append(grass)'
 	else:
 		$Grass_Manager2.remove_from_world(grass)
 
 func add(grass, pos):
 	if grass is Dictionary:
-		pos.y = 0
+		print("DEPRECTED OLD SYSTEM to add alife")
+		'pos.y = 0
 		grass["position"] = pos
 		if grass["Species"]== Alifedata.enum_speciesID.SHEEP:	
 			$beast_manager.Ask_to_spawn(grass)	
@@ -251,7 +253,7 @@ func add(grass, pos):
 		elif grass["Species"]== Alifedata.enum_speciesID.SPIDERCRAB:	
 			$beast_manager.Ask_to_spawn(grass)	
 		else:
-			$Grass_Manager.Ask_for_spawn(grass)
+			$Grass_Manager.Ask_for_spawn(grass)'
 	else:
 		pos.y = 0
 		$Grass_Manager2.add_to_world(grass,pos)
