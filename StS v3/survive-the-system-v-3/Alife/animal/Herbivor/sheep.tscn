@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://bba3or5r3sxn1"]
 
 [ext_resource type="Script" uid="uid://dng4tmgsqripm" path="res://Alife/animal/Herbivor/sheep.gd" id="1_61knv"]
-[ext_resource type="Script" uid="uid://dovwjxpu3l7pm" path="res://Alife/AI/StateManager.gd" id="3_t1rd4"]
-[ext_resource type="Script" uid="uid://b1ed7n1e5j12v" path="res://Alife/AI/states/move.gd" id="4_oulcr"]
-[ext_resource type="Script" uid="uid://blwiuyhycfj5j" path="res://Alife/AI/states/dying.gd" id="5_gjfga"]
-[ext_resource type="Script" uid="uid://befcqr7hv7m5r" path="res://Alife/AI/states/eat.gd" id="6_voeaq"]
-[ext_resource type="Script" uid="uid://d1vorrs2hlill" path="res://Alife/AI/states/reproduce.gd" id="7_dndam"]
+[ext_resource type="Script" uid="uid://dovwjxpu3l7pm" path="res://Z_NOTMOREINUSE/AI/StateManager.gd" id="3_t1rd4"]
+[ext_resource type="Script" uid="uid://b1ed7n1e5j12v" path="res://Z_NOTMOREINUSE/AI/states/move.gd" id="4_oulcr"]
+[ext_resource type="Script" uid="uid://blwiuyhycfj5j" path="res://Z_NOTMOREINUSE/AI/states/dying.gd" id="5_gjfga"]
+[ext_resource type="Script" uid="uid://befcqr7hv7m5r" path="res://Z_NOTMOREINUSE/AI/states/eat.gd" id="6_voeaq"]
+[ext_resource type="Script" uid="uid://d1vorrs2hlill" path="res://Z_NOTMOREINUSE/AI/states/reproduce.gd" id="7_dndam"]
 [ext_resource type="Script" uid="uid://byxmqknlkkhwi" path="res://Alife/animal/Herbivor/Growth_sheep.gd" id="8_gjfga"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_hq4mw"]

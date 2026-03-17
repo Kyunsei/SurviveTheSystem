@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://thsj6h0d3ou"]
 
-[ext_resource type="Script" uid="uid://b0rgwgwxfi0l5" path="res://Alife/Plant/grass_manager.gd" id="1_6phr0"]
+[ext_resource type="Script" uid="uid://b0rgwgwxfi0l5" path="res://Z_NOTMOREINUSE/grass_manager.gd" id="1_6phr0"]
 [ext_resource type="PackedScene" uid="uid://ygo4je6307vn" path="res://objects/grass_object/object_grass.tscn" id="2_wac1v"]
 [ext_resource type="QuadMesh" uid="uid://ossnpdi2f01p" path="res://Alife/Plant/Grass/grass_mesh.tres" id="3_lfald"]
 [ext_resource type="Script" uid="uid://d3ia50ysrfoi6" path="res://Alife/Plant/multimesh.gd" id="3_mcq2d"]

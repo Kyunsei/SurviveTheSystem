@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" uid="uid://dndkftgkcc1je" path="res://Alife/animal/Spider/spider.gd" id="1_2eadm"]
 [ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/animal/Spider/Spidercrab.png" id="2_2eadm"]
-[ext_resource type="Script" uid="uid://dovwjxpu3l7pm" path="res://Alife/AI/StateManager.gd" id="2_3oiml"]
-[ext_resource type="Script" uid="uid://b3yvys18hn26m" path="res://Alife/AI/states/dying_spider.gd" id="4_ef62s"]
-[ext_resource type="Script" uid="uid://c2np7inye38m5" path="res://Alife/AI/states/eat_spider.gd" id="5_2eadm"]
-[ext_resource type="Script" uid="uid://bejd1j5mjgnru" path="res://Alife/AI/states/reproduce_spider.gd" id="6_uf5tp"]
-[ext_resource type="Script" uid="uid://cvo0kj8obxo58" path="res://Alife/AI/states/move_spider.gd" id="7_py03d"]
+[ext_resource type="Script" uid="uid://dovwjxpu3l7pm" path="res://Z_NOTMOREINUSE/AI/StateManager.gd" id="2_3oiml"]
+[ext_resource type="Script" uid="uid://b3yvys18hn26m" path="res://Z_NOTMOREINUSE/AI/states/dying_spider.gd" id="4_ef62s"]
+[ext_resource type="Script" uid="uid://c2np7inye38m5" path="res://Z_NOTMOREINUSE/AI/states/eat_spider.gd" id="5_2eadm"]
+[ext_resource type="Script" uid="uid://bejd1j5mjgnru" path="res://Z_NOTMOREINUSE/AI/states/reproduce_spider.gd" id="6_uf5tp"]
+[ext_resource type="Script" uid="uid://cvo0kj8obxo58" path="res://Z_NOTMOREINUSE/AI/states/move_spider.gd" id="7_py03d"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_voeaq"]
 transparency = 1
