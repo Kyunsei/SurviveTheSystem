@@ -221,11 +221,12 @@ func update_item_hold_texture(path):
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
+	#set_multiplayer_authority(1)
 
 
 @rpc("any_peer","call_remote")
 func go_back_to_ship(pos):
-	var ship_pos = get_parent().get_parent().get_node("SPACESHIP").position
+	var ship_pos = get_parent().get_parent().get_node("SPACESHIP").position +Vector3(0,1,0)
 	ship_pos.x += pos
 	position = ship_pos
 
@@ -252,14 +253,12 @@ func _ready() -> void:
 		energy_bar.max_value = lifedata["Max_energy"]
 		#update_status_of_player(inventory_capacity_upgrade, catnation_credits)
 	
-			
+
 func _physics_process(_delta: float) -> void:
 	if is_multiplayer_authority() :
-
-		#print("Player pos:", global_position, " lifedata pos:", lifedata["position"])
+		
 		velocity.x = direction.x *speed 
 		velocity.z = direction.z *speed 
-		#data_movement_to_server.rpc_id(1, global_position)
 		if Input.is_action_just_pressed("secondary_use"):
 			secondary_hold = true
 		if Input.is_action_just_released("secondary_use"):
@@ -280,18 +279,33 @@ func _physics_process(_delta: float) -> void:
 			#$Action_Area3D.rotation.y = $camera_anchor.rotation.y 
 			pass
 			#var target_yaw := atan2(direction.x, -direction.z)
+		transfer_velocity_to_server.rpc_id(1,velocity)
 		move_and_slide()
-		
-		change_bin.rpc_id(1)
+	if multiplayer.is_server():
+
+
+		currently_on_floor = is_on_floor()
+		if not is_on_floor():
+			if velocity.y > 0:
+				if Input.is_action_pressed("jump") :
+					
+					velocity.y -= gravity*_delta
+				else:
+					velocity.y -= low_jump_gravity * _delta
+			else :
+				velocity.y -= fall_gravity*_delta
+		move_and_slide()
+		give_position_to_others.rpc(global_position, currently_on_floor)
+		change_bin()
+
+
 @rpc("any_peer","call_remote",)
-func data_movement_to_server(pos):
-	giving_position_to_others.rpc(pos)
-@rpc("any_peer","call_local","unreliable")
-func giving_position_to_others(pos: Vector3) -> void:
-	if not is_multiplayer_authority():
-		# Smoothly interpolate to avoid vibration
-		global_position = pos
-		#global_position = pos
+func transfer_velocity_to_server(velo):
+	velocity = velo
+@rpc("any_peer")
+func give_position_to_others(pos, floorstate):
+	global_position = pos  
+	currently_on_floor = floorstate
 
 
 func _process(delta: float) -> void:

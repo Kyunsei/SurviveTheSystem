@@ -81,8 +81,6 @@ func _physics_process(delta: float) -> void:
 
 			if player.position.y < -200:
 				player.position = Vector3(1,1,1)
-			if Input.is_action_pressed("jump") :
-				total += delta
 			if Input.is_action_pressed("sprint") :
 				total2 += delta
 			if total2 > 0 :
@@ -91,9 +89,8 @@ func _physics_process(delta: float) -> void:
 				player.speed = player.max_speed
 			if Input.is_action_pressed("sprint") == false:
 				total2 = 0
-				
-			player.currently_on_floor = player.is_on_floor()
-			if not player.is_on_floor():
+			#player.currently_on_floor = player.is_on_floor()
+			if not player.currently_on_floor:
 				if player.velocity.y > 0:
 					if Input.is_action_pressed("jump") :
 						player.velocity.y -= player.gravity*delta
@@ -101,7 +98,7 @@ func _physics_process(delta: float) -> void:
 						player.velocity.y -= player.low_jump_gravity * delta
 				else :
 					player.velocity.y -= player.fall_gravity*delta
-			if Input.is_action_just_pressed("jump") and player.is_on_floor():
+			if Input.is_action_just_pressed("jump") and player.currently_on_floor:
 				player.velocity.y = player.base_jump
 			#print("player health is "+ str(player.current_health))
 			#print("player hunger is "+ str(player.current_hunger))
@@ -122,6 +119,8 @@ func _physics_process(delta: float) -> void:
 					Drop.rpc_id(1)
 			if Input.is_action_just_pressed("eat"):
 				eat_holding_item.rpc_id(1)
+
+
 
 
 @rpc("any_peer","call_local")

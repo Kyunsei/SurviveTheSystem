@@ -204,7 +204,7 @@ func spawn_player(id,pos):
 	var new_life_data = alifedata.build_lifedata(id,pos,Alifedata.enum_speciesID.CAT)
 	#new_life_data["position"] = pos
 	new_player.lifedata = new_life_data
-	#new_player.position = pos
+	new_player.position = pos
 	put_in_world_bin(new_life_data)	
 	self.call_deferred("add_child",new_player)
 	if 	current_life_count_by_species.has(Alifedata.enum_speciesID.CAT):
