@@ -61,7 +61,8 @@ var SPECIES = {
 	 SPECIES_ID.MOSS: $moss,
 	 SPECIES_ID.SHEEP: $sheep,
 	 SPECIES_ID.BERRY: $berry,
-	SPECIES_ID.SPIDERCRAB : $spidercrab
+	SPECIES_ID.SPIDERCRAB : $spidercrab,
+	SPECIES_ID.CAT : null
 	 }
 #@export var species_list : Array[DNA]
 #var species_id_array : Array =[]
@@ -984,10 +985,12 @@ func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):
 		var i = id_array[c]
 		var si = sp_array[c]
 		var renderer = SPECIES_RENDERERS[si]
-		renderer.draw_new_grass(i, pos_array[c])
+		if renderer:
+			renderer.draw_new_grass(i, pos_array[c])
 	
 	for r in SPECIES_RENDERERS.values():
-		r.multimesh.visible_instance_count = r.instance_number
+		if r != null:
+			r.multimesh.visible_instance_count = r.instance_number
 			
 
 
@@ -996,29 +999,34 @@ func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,spe
 	for c in range(id_array.size()):
 		var s = species_array[c]
 		var renderer = SPECIES_RENDERERS[s]
-		renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
+		if renderer:
+			renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
 
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(id_array,species_array):
 	for c in range(id_array.size()):
 		var s = species_array[c]
 		var renderer = SPECIES_RENDERERS[s]
-		renderer.remove_grass(id_array[c])
+		if renderer:
+			renderer.remove_grass(id_array[c])
 				
 
 @rpc("any_peer","call_remote")
 func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_array,species_array):
 
 	for r in SPECIES_RENDERERS.values():
-		r.init()
+		if r:
+			r.init()
 
 	for c in range(id_array.size()):
 		var s = species_array[c]
 		var renderer = SPECIES_RENDERERS[s]
-		renderer.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
+		if renderer:
+			renderer.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
 	
 	for r in SPECIES_RENDERERS.values():
-		r.multimesh.visible_instance_count = r.instance_number
+		if r:
+			r.multimesh.visible_instance_count = r.instance_number
 
 
 func update_grass_time():

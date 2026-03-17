@@ -74,7 +74,7 @@ billboard_keep_scale = true
 
 [sub_resource type="QuadMesh" id="QuadMesh_axxor"]
 material = SubResource("StandardMaterial3D_dysbp")
-size = Vector2(16, 16)
+size = Vector2(24, 24)
 center_offset = Vector3(0, 8, 0)
 
 [sub_resource type="MultiMesh" id="MultiMesh_5nq35"]

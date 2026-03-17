@@ -91,6 +91,7 @@ func _physics_process(delta: float) -> void:
 				player.speed = player.max_speed
 			if Input.is_action_pressed("sprint") == false:
 				total2 = 0
+				
 			player.currently_on_floor = player.is_on_floor()
 			if not player.is_on_floor():
 				if player.velocity.y > 0:
