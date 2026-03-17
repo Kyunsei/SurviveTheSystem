@@ -10,7 +10,7 @@ var mouse_captured = false
 @export var camera_speed = 5
 @export var camera_zoom_speed = 50
 @export var min_zoom : float = 2.0
-@export var max_zoom : float = 4.0
+@export var max_zoom : float = 40.0
 
 
 @export var pitch_anchor : Node3D
