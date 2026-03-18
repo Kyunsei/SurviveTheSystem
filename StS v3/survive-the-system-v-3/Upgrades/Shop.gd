@@ -42,6 +42,5 @@ func populate_grid():
 		grid.add_child(item_instance)
 		#
 		#
-		#
 		
 		

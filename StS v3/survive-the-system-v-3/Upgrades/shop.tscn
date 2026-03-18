@@ -3,50 +3,23 @@
 [ext_resource type="Script" uid="uid://bjft26rqg75l0" path="res://Upgrades/Shop.gd" id="1_to8av"]
 [ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="2_vet7c"]
 [ext_resource type="PackedScene" uid="uid://chj8kgpm5nn4l" path="res://Upgrades/shop_item.tscn" id="3_g1vqg"]
-
-[sub_resource type="Resource" id="Resource_g1vqg"]
-script = ExtResource("2_vet7c")
-metadata/_custom_type_script = "uid://udee2xxejlu"
-
-[sub_resource type="Resource" id="Resource_rukt4"]
-script = ExtResource("2_vet7c")
-metadata/_custom_type_script = "uid://udee2xxejlu"
-
-[sub_resource type="Resource" id="Resource_7awxw"]
-script = ExtResource("2_vet7c")
-metadata/_custom_type_script = "uid://udee2xxejlu"
-
-[sub_resource type="Resource" id="Resource_4jbah"]
-script = ExtResource("2_vet7c")
-metadata/_custom_type_script = "uid://udee2xxejlu"
-
-[sub_resource type="Resource" id="Resource_563av"]
-script = ExtResource("2_vet7c")
-metadata/_custom_type_script = "uid://udee2xxejlu"
+[ext_resource type="Resource" uid="uid://c2kjs1ha5myhl" path="res://objects/cat_ration/cat_ration.tres" id="3_rukt4"]
+[ext_resource type="Resource" uid="uid://omkpcwl4vqj5" path="res://objects/cat_ration/basic_vacuum.tres" id="4_4jbah"]
+[ext_resource type="Resource" uid="uid://dso47tip5qxom" path="res://objects/cat_ration/object_spear.tres" id="5_563av"]
 
 [node name="Node" type="Control" unique_id=1310314475]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_to8av")
-possible_items = Array[ExtResource("2_vet7c")]([SubResource("Resource_g1vqg"), SubResource("Resource_rukt4"), SubResource("Resource_7awxw"), SubResource("Resource_4jbah"), SubResource("Resource_563av")])
+possible_items = Array[ExtResource("2_vet7c")]([ExtResource("3_rukt4"), ExtResource("4_4jbah"), ExtResource("5_563av")])
 shop_item_scene = ExtResource("3_g1vqg")
 
 [node name="Panel" type="Panel" parent="." unique_id=708715316]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Label" type="Label" parent="Panel" unique_id=1592723126]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_right = 400.0
+offset_bottom = 400.0
 
 [node name="GridContainer" type="GridContainer" parent="Panel" unique_id=861745427]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Button" type="Button" parent="Panel" unique_id=352707891]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+offset_right = 400.0
+offset_bottom = 400.0

@@ -1,16 +1,21 @@
 [gd_scene format=3 uid="uid://chj8kgpm5nn4l"]
 
 [ext_resource type="Script" uid="uid://dan6hhrhduxb7" path="res://Upgrades/shop_item.gd" id="1_wuyhm"]
+[ext_resource type="Texture2D" uid="uid://ba3ghrf00sjvg" path="res://Alife/animal/Herbivor/sheep1.png" id="2_h1g10"]
 
 [node name="ShopItem" type="Button" unique_id=264215938]
+custom_minimum_size = Vector2(100, 100)
 offset_right = 8.0
 offset_bottom = 8.0
+size_flags_horizontal = 4
 script = ExtResource("1_wuyhm")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=195280870]
+custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
+texture = ExtResource("2_h1g10")
 
 [node name="Quantity" type="Label" parent="." unique_id=1754642656]
 layout_mode = 0

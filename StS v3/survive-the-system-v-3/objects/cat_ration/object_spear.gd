@@ -1,4 +1,5 @@
 extends Item
+
 var area
 @export var attack_size = Vector3(2,2,2)
 var timer = 0.5

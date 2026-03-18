@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bksfav3v0xjkn" path="res://objects/cat_ration/catration1.png" id="1_hfdmw"]
 [ext_resource type="Script" uid="uid://ba1uyk25r8lmq" path="res://objects/cat_ration/cat_ration.gd" id="2_wqbnr"]
-[ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="3_5kluo"]
+[ext_resource type="Resource" uid="uid://c2kjs1ha5myhl" path="res://objects/cat_ration/cat_ration.tres" id="3_8f30t"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
 transparency = 1
@@ -12,17 +12,6 @@ billboard_mode = 2
 
 [sub_resource type="QuadMesh" id="QuadMesh_5kluo"]
 material = SubResource("StandardMaterial3D_wqbnr")
-
-[sub_resource type="Resource" id="Resource_8f30t"]
-script = ExtResource("3_5kluo")
-name = "CatRation"
-type = "Food"
-inventory_icon = ExtResource("1_hfdmw")
-stack_amount = 10
-item_path = "res://objects/cat_ration/cat_ration.tscn"
-Durability = 100000.0
-Init_durability = 100000.0
-metadata/_custom_type_script = "uid://udee2xxejlu"
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_5kluo"]
 radius = 1.0
@@ -35,7 +24,7 @@ properties/0/replication_mode = 1
 [node name="Cat_Ration" type="MeshInstance3D" unique_id=1352666552]
 mesh = SubResource("QuadMesh_5kluo")
 script = ExtResource("2_wqbnr")
-item_ressources = SubResource("Resource_8f30t")
+item_ressources = ExtResource("3_8f30t")
 
 [node name="Timer" type="Timer" parent="." unique_id=1629208419]
 wait_time = 0.1
