@@ -37,7 +37,7 @@ func add_item(new_item, peer_id):
 @rpc("any_peer","call_local")
 func is_selected():
 	$ColorRect.show()
-	show_durability()
+	#show_durability()
 	#if 
 
 @rpc("any_peer","call_local")
@@ -90,15 +90,15 @@ func send_remove_info():
 	refresh_label( )
 
 @rpc("any_peer", "call_local")
-func show_durability():
+func show_durability(durability, init_durability):
 	if item:
-		if item["Durability"] == 100000.0:
+		if durability == 100000.0:
 			return
 		$ProgressBar.show()
 		if player.item_hold:
-			$ProgressBar.max_value = player.item_hold["Init_durability"]
-			$ProgressBar.value = player.item_hold["Durability"]
-	print(str($ProgressBar.max_value)+"/"+str($ProgressBar.value) )
+			$ProgressBar.max_value = init_durability
+			$ProgressBar.value = durability
+	#print(str($ProgressBar.max_value)+"/"+str($ProgressBar.value) )
 func hide_durability():
 	if item:
 		$ProgressBar.hide()

@@ -71,7 +71,7 @@ func init():
 				#$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.TREE)
 				$Grass_Manager2.Spawn_New_Grass(pos,4)
 
-			for i in range(500):
+			for i in range(0):
 				var pos = get_random_worldpos()
 				if GlobalSimulationParameter.DEBUG_grass_sim == 0:
 					$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.GRASS)

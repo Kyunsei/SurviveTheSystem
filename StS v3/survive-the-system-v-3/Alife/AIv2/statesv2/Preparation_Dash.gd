@@ -20,7 +20,7 @@ func evaluate(_manager,_i, _DNA):
 		if _manager.position_array[close_target_id].distance_to(_manager.position_array[_i]) > 3:	
 			score *= 0.0
 	if _manager.Species_array[_i] == 6:
-		print( "Prep score is " + str(score))
+		pass#print( "Prep score is " + str(score))
 	return score 
 
 func enter(_manager,_i, _DNA):

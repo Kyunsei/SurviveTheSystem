@@ -33,7 +33,7 @@ func evaluate(_manager,_i, _DNA):
 	'for f in food_type:
 		score =  _manager.sum_species_world_array[f][bin]'
 	if _manager.Species_array[_i] == 6:
-		print( "Eat score is " + str(score))
+		pass#print( "Eat score is " + str(score))
 	return  score
 
 

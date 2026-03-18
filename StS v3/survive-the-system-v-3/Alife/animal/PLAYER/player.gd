@@ -627,13 +627,14 @@ func vacuum_loop():
 
 
 func remove_durability(amount):
+	#print(multiplayer.is_server())
 	if item_hold:
 		
 		item_hold["Durability"] -= amount
-		print(item_hold["Durability"])
-		get_node("Player_HUD").get_node("Inventory").get_node("ItemSlot").show_durability.rpc_id(int(name))
+		#print(item_hold["Durability"])
+		get_node("Player_HUD").get_node("Inventory").get_node("ItemSlot").show_durability.rpc_id(int(name),item_hold["Durability"],item_hold["Init_durability"])
 		if item_hold["Durability"] <= 0 :
-			get_node("Player_HUD").get_node("Inventory").get_node("ItemSlot").get_node("ProgressBar")
+			#get_node("Player_HUD").get_node("Inventory").get_node("ItemSlot").get_node("ProgressBar")
 			get_node("Player_HUD").get_node("Inventory").remove_selected(int(name))
 
 
