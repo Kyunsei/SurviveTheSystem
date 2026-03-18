@@ -867,10 +867,11 @@ func put_in_light_bin(idx):
 		if pos.z <= -World.World_Size.z/2 or pos.z >= World.World_Size.z/2:
 				return
 		var bi = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
-		if World.light_bin[bi]:
-			World.light_bin[bi].append(idx)
-		else:
-			World.light_bin[bi]= [idx]
+		if bi >= 0 or bi < World.light_bin.size():			
+			if World.light_bin[bi]:
+				World.light_bin[bi].append(idx)
+			else:
+				World.light_bin[bi]= [idx]
 		#light_index.append(World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size))
 
 	else:

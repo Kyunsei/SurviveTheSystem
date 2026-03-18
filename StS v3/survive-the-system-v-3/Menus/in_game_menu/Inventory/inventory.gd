@@ -65,7 +65,7 @@ func prep_newgrass(i):
 	var grassmanager = player.get_parent().get_node("Grass_Manager2")
 	var item ={}
 	var s = grassmanager.Species_array[i]
-	item["name"] =grassmanager.SPECIES[s]
+	item["name"] =str(grassmanager.SPECIES[s])
 	item["inventory_icon"] =grassmanager.SPECIES[s].Sprite_path
 	item["Data"] = [i]
 	#item["inventory_path"] = null
