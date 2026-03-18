@@ -10,3 +10,4 @@ class_name ItemResource
 @export var stack_amount:int
 @export var item_path:String
 @export var Durability:float
+@export var Init_durability:float

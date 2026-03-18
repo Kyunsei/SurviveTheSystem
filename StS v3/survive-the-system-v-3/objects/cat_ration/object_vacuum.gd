@@ -11,7 +11,6 @@ var durability :int = 0:
 		if durability != amouuunt: 
 			var previous_number = durability
 			durability = amouuunt
-			itemData["Durability"] = amouuunt
 			set_current_durability(previous_number)
 
 func set_current_durability(prev_num: int) -> int:

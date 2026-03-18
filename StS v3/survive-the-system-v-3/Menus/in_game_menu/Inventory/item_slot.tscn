@@ -28,3 +28,13 @@ modulate = Color(1, 0.14901961, 1, 0.13333334)
 layout_mode = 0
 offset_right = 135.0
 offset_bottom = 126.0
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=490840281]
+visible = false
+layout_mode = 0
+offset_left = 10.0
+offset_top = 103.0
+offset_right = 128.0
+offset_bottom = 130.0
+value = 100.0
+fill_mode = 1

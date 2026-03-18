@@ -628,10 +628,28 @@ func vacuum_loop():
 
 func remove_durability(amount):
 	if item_hold:
+		
 		item_hold["Durability"] -= amount
 		print(item_hold["Durability"])
+		get_node("Player_HUD").get_node("Inventory").get_node("ItemSlot").show_durability.rpc_id(int(name))
 		if item_hold["Durability"] <= 0 :
+			get_node("Player_HUD").get_node("Inventory").get_node("ItemSlot").get_node("ProgressBar")
 			get_node("Player_HUD").get_node("Inventory").remove_selected(int(name))
+
+
+#func remove_durability(amount):
+	#if item_hold:
+		#item_hold["Durability"] -= amount
+		#print(item_hold["Durability"])
+#
+		#var slot = get_node("Player_HUD/Inventory/ItemSlot")
+		#slot.get_node("ProgressBar").value = item_hold["Durability"]
+#
+		#if item_hold["Durability"] <= 0:
+			#get_node("Player_HUD/Inventory").remove_selected(int(name))
+
+
+
 
 func add_to_inventory(alife):
 		#print(alife["Species"])

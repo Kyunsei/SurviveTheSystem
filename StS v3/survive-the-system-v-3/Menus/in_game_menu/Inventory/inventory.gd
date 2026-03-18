@@ -20,7 +20,7 @@ func _ready():
 			for y in range(column_size):
 				items[x].append([])
 				var instance = ITEM_SLOT.instantiate()
-				instance.global_position = Vector2(x*150,y*150)
+				instance.global_position = Vector2(x*150,y*150-35)
 				instance.slot_number = Vector2i(x,y)
 				add_child(instance, true)
 				items[x][y] = instance
@@ -41,6 +41,7 @@ func prep_item(new_item):
 	#item["inventory_path"] = new_item.item_ressources.item_path
 	item["stack_amount"] = new_item.item_ressources.stack_amount
 	item["Durability"] = new_item.item_ressources.Durability
+	item["Init_durability"] = new_item.item_ressources.Durability
 	new_item.itemData["inventory_path"] = new_item.item_ressources.item_path
 	item["Data"] = [new_item.itemData]
 
@@ -68,6 +69,8 @@ func prep_newgrass(i):
 	item["name"] =str(grassmanager.SPECIES[s])
 	item["inventory_icon"] =grassmanager.SPECIES[s].Sprite_path
 	item["Data"] = [i]
+	item["Durability"] = 100000.0 #dont touch that, needed to avoid a crash
+	item["Init_durability"] = 100000.0 #dont touch that, needed to avoid a crash
 	#item["inventory_path"] = null
 	item["stack_amount"] = floori(player.inventory_capacity_upgrade*grassmanager.SPECIES[s].Stack_amount) #update here
 	return item
