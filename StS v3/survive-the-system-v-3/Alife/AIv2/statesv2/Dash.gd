@@ -4,30 +4,26 @@ class_name DASH_STATE
 @export var dash_speed = 10000
 #var dash_speed = 10
 
+@export var Previous_State_ID : int = 3
 @export var target_species : int = 4
+
 
 func evaluate(_manager,_i, _DNA):
 	var score = 0
-	var t = _manager.current_life_state_array[_i] 
+	if _manager.current_finite_state_array[_i] == 	state_internal_id:
+		score = 100
+		
 
-	score += 1 -  _manager.current_energy_array[_i] / _DNA.Max_energy[t]
-
-	var bin = _manager.binID_array[_i]
-	var field = _manager.field_world_array[target_species][bin]
-	#print(field)
-	var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,2)
-	var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,target_species)
-	if close_target_id:
-		if _manager.position_array[close_target_id].distance_to(_manager.position_array[_i]) > 3:	
-			score *= 0.0
 	return score
 
 func enter(_manager,_i, _DNA):
+	_manager.timer_array[_i] =0.3
+	
 	pass
 
 
 func exit(_manager,_i, _DNA):
-	pass
+	_manager.current_finite_state_array[_i] = 0 #DEFAULT?
 
 func update(_manager,_i, _DNA, _delta):
 	var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,2)
@@ -45,6 +41,10 @@ func update(_manager,_i, _DNA, _delta):
 		_manager._pending_update.append(_i)
 
 		change_bin(_manager,_i)
-	
+	_manager.timer_array[_i] -=  _delta
+	if _manager.timer_array[_i] <= 0:
+		_manager.timer_array[_i] = 0
+		self.exit(_manager,_i, _DNA)
+
 
 	

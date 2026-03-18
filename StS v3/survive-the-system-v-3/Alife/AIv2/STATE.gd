@@ -5,6 +5,8 @@ var state_manager
 var player 
 var isFinish = true
 
+var state_internal_id : int
+
 func evaluate(_manager,_i, _DNA):
 	pass
 

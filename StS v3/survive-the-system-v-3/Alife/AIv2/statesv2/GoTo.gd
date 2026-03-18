@@ -1,9 +1,11 @@
 extends STATE
 class_name GOTO_STATE
 
-var speed = 10
+@export var speed = 10
 
 @export var target_species : int = 0
+@export var final_distance_to_target : float = 0.0
+
 
 func evaluate(_manager,_i, _DNA):
 	#ENERGY PART
@@ -17,8 +19,8 @@ func evaluate(_manager,_i, _DNA):
 	if close_target_id:
 		var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
 		#var dir2 = Vector2(dir.x,dir.z)
-		if dir.length() < 0.1:
-			score -= _manager.sum_species_world_array[0][bin]/25.  #25 is the max life in a place...
+		if dir.length() < final_distance_to_target:
+			score -= 1# _manager.sum_species_world_array[0][bin]/25.  #25 is the max life in a place...
 	#print( "GoTo score is " + str(score))
 	return score
 

@@ -42,6 +42,12 @@ func Init():
 	Stack_amount = 10
 	
 	
+#AI & state
+
+	for si in range(state_array.size()):
+		state_array[si].state_internal_id = si
+	
+	
 func Update(_manager, _i, _delta):
 
 	if _manager.Alive_array[_i] == 1:
