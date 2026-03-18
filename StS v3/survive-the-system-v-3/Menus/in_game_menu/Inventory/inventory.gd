@@ -40,8 +40,8 @@ func prep_item(new_item):
 	item["inventory_icon"] = new_item.item_ressources.inventory_icon.resource_path
 	#item["inventory_path"] = new_item.item_ressources.item_path
 	item["stack_amount"] = new_item.item_ressources.stack_amount
-	item["Durability"] = new_item.item_ressources.Durability
-	item["Init_durability"] = new_item.item_ressources.Durability
+	#item["Durability"] = new_item.item_ressources.Durability
+	#item["Init_durability"] = new_item.item_ressources.Durability
 	new_item.itemData["inventory_path"] = new_item.item_ressources.item_path
 	item["Data"] = [new_item.itemData]
 
@@ -135,6 +135,10 @@ func hide_selected(idx, peer_id):
 			if slot["inventory_path"] == spear_path:
 				player.get_node("MeshInstance3D").get_node("spear").hide()
 
+func update_durability(peer_id):
+	if current_index != null:
+		var slot = items[current_index][0]#["Data"][0]	
+		slot.show_durability.rpc_id(peer_id, slot.item["Data"][0]["durability"],slot.item["Data"][0]["Init_durability"])	
 
 
 '@rpc("authority","call_remote")
@@ -170,6 +174,8 @@ func change_index(peer_id,idx):
 		item = items[idx][0].item
 	player.equip_item(item)
 	player.equip_item.rpc_id(peer_id,item)
+	if item["Data"][0].has("durability"):
+		items[current_index][0].show_durability.rpc_id(peer_id,item["Data"][0]["durability"], item["Data"][0]["Init_durability"])
 
 
 

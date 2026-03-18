@@ -11,6 +11,8 @@ var itemData = {
 	"Use": on_use,
 	"Use_secondary": on_use_secondary,
 	"Eat": eat,
+	"durability": 100,
+	"Init_durability" :100
 }
 
 @rpc("any_peer","call_local")
