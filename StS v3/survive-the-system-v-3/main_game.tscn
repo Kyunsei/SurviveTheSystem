@@ -50,7 +50,7 @@ alifemanager = NodePath("../Alife manager")
 [node name="Platforms" type="Node3D" parent="SPACESHIP" unique_id=31927260]
 
 [node name="access_platform" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1562557445]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4512177e-06, -5.3999996, -16.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -2, -13.7)
 mesh = SubResource("BoxMesh_4srsv")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform" unique_id=2144043938]
@@ -58,94 +58,139 @@ mesh = SubResource("BoxMesh_4srsv")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform/StaticBody3D" unique_id=1495172998]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform2" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1279138200]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6785168e-06, -7.8999996, -19.2)
+[node name="access_platform2" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=200401923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -4, -15.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform2" unique_id=250250841]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform2" unique_id=61094164]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform2/StaticBody3D" unique_id=1743238681]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform2/StaticBody3D" unique_id=568533746]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform3" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1737346521]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.9582696e-06, -11.6, -22.400002)
+[node name="access_platform3" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=725190741]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999958, -6, -17.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform3" unique_id=1692237833]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform3" unique_id=1665794719]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform3/StaticBody3D" unique_id=1119917510]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform3/StaticBody3D" unique_id=296252292]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform4" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1176329007]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2904762e-06, -15.900002, -26.2)
+[node name="access_platform4" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1395611320]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999958, -8, -19.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform4" unique_id=1704527197]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform4" unique_id=966433380]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform4/StaticBody3D" unique_id=418705144]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform4/StaticBody3D" unique_id=1908292131]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform7" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=952627765]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.456579e-06, -18.2, -28.1)
+[node name="access_platform5" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1827846759]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999928, -10, -21.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform7" unique_id=1294947758]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform5" unique_id=2080401996]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform7/StaticBody3D" unique_id=1183167521]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform5/StaticBody3D" unique_id=440791113]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform8" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1226930952]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1068881e-06, -13.800001, -24.1)
+[node name="access_platform6" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=2073412883]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999928, -12, -23.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform8" unique_id=1297486526]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform6" unique_id=1586863082]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform8/StaticBody3D" unique_id=1732046500]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform6/StaticBody3D" unique_id=2114566023]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform9" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1551480612]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.1976911e-06, -3.6000023, -13.7)
+[node name="access_platform7" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1067672460]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999887, -14, -25.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform9" unique_id=1629054751]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform7" unique_id=1863714261]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform9/StaticBody3D" unique_id=1946375299]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform7/StaticBody3D" unique_id=1660445799]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform5" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=953729068]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.605198e-06, -22.2, -29.800001)
+[node name="access_platform8" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1598505795]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999887, -16, -27.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform5" unique_id=1861928039]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform8" unique_id=1064044094]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform5/StaticBody3D" unique_id=1480590590]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform8/StaticBody3D" unique_id=749039525]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform10" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1400209937]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8499817e-06, -25.5, -32.600002)
+[node name="access_platform9" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1645894127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999857, -18, -29.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform10" unique_id=1889429772]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform9" unique_id=677865407]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform10/StaticBody3D" unique_id=317345199]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform9/StaticBody3D" unique_id=1033220143]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform11" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=914843979]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4706832e-06, -34.6, -39.700005)
+[node name="access_platform10" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=11010973]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4999985, -20, -31.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform11" unique_id=2136922551]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform10" unique_id=94805554]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform11/StaticBody3D" unique_id=1020848531]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform10/StaticBody3D" unique_id=1225960369]
 shape = SubResource("BoxShape3D_mf81u")
 
-[node name="access_platform6" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=751692370]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1384768e-06, -30, -35.9)
+[node name="access_platform11" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1067094634]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999797, -22, -33.7)
 mesh = SubResource("BoxMesh_4srsv")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform6" unique_id=1520955318]
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform11" unique_id=1816107733]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform6/StaticBody3D" unique_id=109190610]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform11/StaticBody3D" unique_id=1049364858]
+shape = SubResource("BoxShape3D_mf81u")
+
+[node name="access_platform12" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1005844658]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999797, -24, -35.7)
+mesh = SubResource("BoxMesh_4srsv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform12" unique_id=553247090]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform12/StaticBody3D" unique_id=11221086]
+shape = SubResource("BoxShape3D_mf81u")
+
+[node name="access_platform13" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1292321573]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999768, -26, -37.7)
+mesh = SubResource("BoxMesh_4srsv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform13" unique_id=247723940]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform13/StaticBody3D" unique_id=1563855346]
+shape = SubResource("BoxShape3D_mf81u")
+
+[node name="access_platform14" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1164952561]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4999978, -28, -39.7)
+mesh = SubResource("BoxMesh_4srsv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform14" unique_id=1998869015]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform14/StaticBody3D" unique_id=265008380]
+shape = SubResource("BoxShape3D_mf81u")
+
+[node name="access_platform15" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=2093743222]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999747, -30, -41.7)
+mesh = SubResource("BoxMesh_4srsv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform15" unique_id=975075721]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform15/StaticBody3D" unique_id=1425452041]
+shape = SubResource("BoxShape3D_mf81u")
+
+[node name="access_platform16" type="MeshInstance3D" parent="SPACESHIP/Platforms" unique_id=1186981971]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.49999747, -32, -43.7)
+mesh = SubResource("BoxMesh_4srsv")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Platforms/access_platform16" unique_id=883401104]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform16/StaticBody3D" unique_id=1717702805]
 shape = SubResource("BoxShape3D_mf81u")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1281864913]

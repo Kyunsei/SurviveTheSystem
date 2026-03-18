@@ -23,6 +23,8 @@ inventory_icon = ExtResource("1_5as1h")
 stack_amount = 1
 item_path = "res://objects/cat_ration/Object_Vacuum.tscn"
 Durability = 300.0
+Name = "Basic vacuum"
+Max_quantity_in_shop = 5
 metadata/_custom_type_script = "uid://udee2xxejlu"
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_5kluo"]

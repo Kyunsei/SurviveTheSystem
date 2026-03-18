@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://chj8kgpm5nn4l"]
+
+[ext_resource type="Script" uid="uid://dan6hhrhduxb7" path="res://Upgrades/shop_item.gd" id="1_wuyhm"]
+
+[node name="ShopItem" type="Button" unique_id=264215938]
+offset_right = 8.0
+offset_bottom = 8.0
+script = ExtResource("1_wuyhm")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=195280870]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Quantity" type="Label" parent="." unique_id=1754642656]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
