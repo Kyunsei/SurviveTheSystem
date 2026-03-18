@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="FLOCK_STATE" format=3 uid="uid://dn3gssdelfyur"]
+
+[ext_resource type="Script" uid="uid://ckie44b04omkn" path="res://Alife/AIv2/statesv2/Flock.gd" id="1_y1i4o"]
+
+[resource]
+script = ExtResource("1_y1i4o")
+metadata/_custom_type_script = "uid://ckie44b04omkn"

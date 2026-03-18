@@ -25,6 +25,8 @@ func evaluate(_manager,_i, _DNA):
 		var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
 		if dir.length() > 0.2 or targets.size() == 0:
 			score *= 0  #25 is the max life in a place...
+		else:
+			score *= 2
 	else:
 		score *= 0
 

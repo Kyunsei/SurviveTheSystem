@@ -37,7 +37,7 @@ var current_age_array : PackedInt32Array
 var Alive_array : PackedInt32Array
 var current_biomass_array : PackedFloat32Array
 var Species_array : PackedInt32Array
-var current_speed : PackedFloat32Array
+var current_velocity_array : PackedVector3Array
 var current_finite_state_array :  PackedInt32Array
 
 #PLANT SPECIFIC 
@@ -471,18 +471,18 @@ func Homeostasis(i,s,t,delta):
 		current_health_array[i] -= species_homeostasis_cost[s][t]  * GlobalSimulationParameter.simulation_speed * delta
 
 
-func Move(i,delta):
-	if current_speed[i] == 0.:
+'func Move(i,delta):
+	if current_velocity_array[i] == 0.:
 		return
 	var direction = Vector3(randf_range(-1,1),0,randf_range(-1,1))
-	position_array[i] += direction * current_speed[i] * GlobalSimulationParameter.simulation_speed * delta
+	position_array[i] += direction * current_velocity_array[i] * GlobalSimulationParameter.simulation_speed * delta
 	position_array[i].x = clamp(position_array[i].x ,-World.World_Size.x/2,World.World_Size.x/2 )
 	position_array[i].z = clamp(position_array[i].z ,-World.World_Size.z/2,World.World_Size.z/2 )
 	
 	
 	if get_real_current_bin(i) != binID_array[i]:
 		put_in_world_bin(i)
-	_pending_update.append(i)
+	_pending_update.append(i)'
 
 func Regenerate_Health(i,s,t,delta):
 
@@ -642,7 +642,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		current_health_array.append(species_max_health[sp][0])
 		current_life_state_array.append(0)
 		current_age_array.append(0)
-		current_speed.append(SPECIES[sp].Max_speed[0])
+		current_velocity_array.append(Vector3.ZERO)
 		Alive_array.append(1)
 		Active.append(1)
 		current_biomass_array.append(species_biomass[sp][0])
@@ -669,6 +669,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		Active[i] = 1
 		current_biomass_array[i] = species_biomass[sp][0]
 		position_array[i] = pos
+		current_velocity_array[i] = Vector3.ZERO
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
 		if get_worldbin_index(pos):
 			binID_array[i] =  get_worldbin_index(pos)

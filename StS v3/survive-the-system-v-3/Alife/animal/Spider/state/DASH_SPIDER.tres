@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="DASH_STATE" format=3 uid="uid://gkqrebrumkk4"]
+
+[ext_resource type="Script" uid="uid://b0tus8sqa7gdr" path="res://Alife/AIv2/statesv2/Dash.gd" id="1_buvvt"]
+
+[resource]
+script = ExtResource("1_buvvt")
+metadata/_custom_type_script = "uid://b0tus8sqa7gdr"
