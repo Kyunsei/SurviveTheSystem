@@ -300,6 +300,8 @@ func _process(delta: float) -> void:
 			pass
 		else:
 			if lifedata["current_energy"] > 0:
+				if speed > 9:
+					lifedata["current_energy"] -= 0.5*delta
 				lifedata["current_energy"] -= 0.5*delta
 			if lifedata["current_energy"] > 49 and lifedata["current_health"]<lifedata["Max_health"]:
 				lifedata["current_health"] += 1*delta
@@ -487,6 +489,8 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 
 @rpc("any_peer","call_local")
 func spear_attack():
+	if lifedata["current_energy"]> 0 :
+		lifedata["current_energy"] -= 1
 	if spear_animation_in_course == false and speardefense == false:
 		time_before_attack = 0.4
 		spear_animation_in_course = true
@@ -504,6 +508,7 @@ func spear_attack():
 	var pos_center = area.global_position + forward * extents.z
 	var targets = get_parent().get_alife_in_area(pos_center, world_extents)
 	if targets: 
+		remove_durability(3)
 		for t in targets:
 			if t is Dictionary:
 				if t != lifedata and t["Species"] != Alifedata.enum_speciesID.CAT:
@@ -534,9 +539,15 @@ func check_player_hit(dmg, areaofaction):
 				get_parent().Attack(t.get_parent().lifedata, dmg)
 				if t.get_parent().lifedata["current_health"] > 0:
 					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),-dmg, Color(1.0, 0.1, 0.0, 1.0), 1.0, " Health")
+					remove_durability(3)
 			else :
 				if t.get_parent().lifedata["current_health"] > 0:
 					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),dmg, Color(0.5, 0.5, 0.5, 1.0), 1.0, " Damage Blocked")
+					remove_durability(10)
+					if t.get_parent().item_hold :
+						t.get_parent().remove_durability(1)
+					if t.get_parent().lifedata["current_energy"]> 0:
+						t.get_parent().lifedata["current_energy"] -=5
 
 @rpc("any_peer","call_local")
 func spear_defense(number):
@@ -604,15 +615,23 @@ func vacuum_loop():
 					#print(t)
 					#alife_manager.interact(t,player)
 					if add_to_inventory(t):
+						remove_durability(1)
 						#print("added")
 						alife_manager.remove(t)	
 			else:
+				if alife_manager.get_node("Grass_Manager2").Species_array[t] == 5: #cat
+					return
 				if add_to_inventory(t):
+					remove_durability(1)
 					alife_manager.remove(t)	
 
 
-
-
+func remove_durability(amount):
+	if item_hold:
+		item_hold["Durability"] -= amount
+		print(item_hold["Durability"])
+		if item_hold["Durability"] <= 0 :
+			get_node("Player_HUD").get_node("Inventory").remove_selected(int(name))
 
 func add_to_inventory(alife):
 		#print(alife["Species"])

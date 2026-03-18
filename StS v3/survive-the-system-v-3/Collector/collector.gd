@@ -1,7 +1,11 @@
 extends Node3D
 
 var Biomass_collected = 0
-var max_biomass = 50
+var max_biomass = 3000
+var first_biomass_threshold = 50
+var second_biomass_threshold = 200
+var third_biomass_threshold = 1000
+var fourth_biomass_threshold = 2000
 var credit_gain = 0
 @onready var spaceship: Node3D = $"../SPACESHIP"
 var collecting = true
@@ -56,9 +60,34 @@ func interact(player):
 			#player.remove_from_inventory(o,1)'
 		#player.inventory = {}
 		#player.inventory_count = 0
+		
+	if Biomass_collected >= first_biomass_threshold and collecting == true:
+		first_biomass_threshold +=100000
+		credit_gain += 10
+		print("First threshold reached")
+		for p in player.get_parent().player_array:
+			credit_player(p)
+	if Biomass_collected >= second_biomass_threshold and collecting == true:
+		second_biomass_threshold +=100000
+		credit_gain += 10
+		print("First threshold reached")
+		for p in player.get_parent().player_array:
+			credit_player(p)
+	if Biomass_collected >= third_biomass_threshold and collecting == true:
+		third_biomass_threshold +=100000
+		credit_gain += 10
+		print("First threshold reached")
+		for p in player.get_parent().player_array:
+			credit_player(p)
+	if Biomass_collected >= fourth_biomass_threshold and collecting == true:
+		fourth_biomass_threshold +=100000
+		update_insideBiomass()
+		credit_gain += 10
+		print("First threshold reached")
+		for p in player.get_parent().player_array:
+			credit_player(p)
 	if Biomass_collected >= max_biomass and collecting == true:
 		collecting = false
-		credit_gain += 10
 		print("BRAVO")
 		#var c = 0
 		spaceship.get_node("Collector_ship").go_down()

@@ -13,6 +13,7 @@ var collector_target_position
 var moving := false
 
 func _ready():
+	return
 	if multiplayer.is_server():
 		collector = get_parent().get_parent().get_node("Collector")
 		collector_init_position = collector.global_position
@@ -22,6 +23,7 @@ func _ready():
 
 
 func _physics_process(delta):
+	return
 	if multiplayer.is_server():
 		if collector_moving:
 			collector.global_position = collector.global_position.move_toward(collector_init_position, move_speed*2 * delta)
@@ -48,6 +50,7 @@ func _physics_process(delta):
 
 # 🔽 Call this to move platform down
 func go_down():
+	return
 	if multiplayer.is_server():
 		if moving:
 			return
@@ -59,6 +62,7 @@ func go_down():
 
 	# 🔼 Call this to move platform up (only if fully down)
 func go_up():
+	return
 	print("pressed")
 	if multiplayer.is_server():
 		if moving:
@@ -71,61 +75,3 @@ func go_up():
 			moving = true
 
 			
-#VERSION WITH VELOCITY
-#extends AnimatableBody3D
-#
-#@export var move_distance: float = 90.0
-#@export var move_speed: float = 10.0
-#
-#var start_position: Vector3
-#var target_position: Vector3
-#var moving := false
-#var velocity: Vector3 = Vector3.ZERO
-#
-#func _ready():
-	#if multiplayer.is_server():
-		#start_position = global_position
-		#target_position = start_position 
-#
-#
-#func _physics_process(delta):
-	#if multiplayer.is_server():
-		#if not moving:
-			#return
-		#
-		## Move using velocity
-		#global_position += velocity * delta
-		#
-		## Check if we've reached or passed the target
-		#var to_target = target_position - global_position
-		#if to_target.length() < 0.01 or to_target.dot(velocity) <= 0:
-			#global_position = target_position
-			#velocity = Vector3.ZERO
-			#moving = false
-#
-#
-## 🔽 Call this to move platform down
-#func go_down():
-	#if multiplayer.is_server():
-		#if moving:
-			#return
-		#
-		#if global_position == start_position:
-			#target_position = start_position - Vector3(0, move_distance, 0)
-			#velocity = (target_position - global_position).normalized() * move_speed
-			#moving = true
-#
-#
-## 🔼 Call this to move platform up (only if fully down)
-#func go_up():
-	#if multiplayer.is_server():
-		#if moving:
-			#return
-		#
-		#var down_position = start_position - Vector3(0, move_distance, 0)
-		#
-		#if global_position == down_position:
-			#target_position = start_position
-			#velocity = (target_position - global_position).normalized() * move_speed
-			#moving = true
-		#

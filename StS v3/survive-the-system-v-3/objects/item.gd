@@ -9,3 +9,4 @@ class_name ItemResource
 #@export var inventory_icon_path : String
 @export var stack_amount:int
 @export var item_path:String
+@export var Durability:float

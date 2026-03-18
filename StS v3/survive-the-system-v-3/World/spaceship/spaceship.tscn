@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://dnm54piw4bqn6" path="res://objects/spear.tscn" id="12_qscrw"]
 [ext_resource type="PackedScene" uid="uid://gfl2a22r2q8k" path="res://assets/asset dabols/tent.fbx" id="13_se27s"]
 [ext_resource type="PackedScene" uid="uid://qfu1yg6tgwwa" path="res://assets/asset dabols/axe 1.fbx" id="14_nk3pt"]
+[ext_resource type="PackedScene" uid="uid://chjic71ilko3" path="res://World/spaceship/merchant.tscn" id="15_nk3pt"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_2jlj7"]
 size = Vector3(13, 0.5, 9)
@@ -82,7 +83,8 @@ mesh = SubResource("BoxMesh_2jlj7")
 shape = SubResource("BoxShape3D_qscrw")
 
 [node name="moving_ground1" type="StaticBody3D" parent="ship" unique_id=1158021671]
-transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, 0, -15.1)
+transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, 0, -7.4)
+visible = false
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/moving_ground1" unique_id=1992877223]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -111,7 +113,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -6)
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.3, 0.6, -6.4)
 
 [node name="go_button" parent="." unique_id=2102924428 instance=ExtResource("5_ftgam")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -16.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 15.1, -16.1)
+visible = false
 script = ExtResource("6_oclds")
 
 [node name="Area3D_go_button" type="Area3D" parent="go_button" unique_id=1561342002]
@@ -128,7 +131,8 @@ text = "Press R!"
 replication_config = SubResource("SceneReplicationConfig_8txik")
 
 [node name="Collector_ship" parent="." unique_id=1273828613 instance=ExtResource("8_4e1qf")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0.20000002, 5.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 30.900002, 5.3)
+visible = false
 
 [node name="Skin_Area3D" parent="." unique_id=1912766374 instance=ExtResource("9_usqpj")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5, 0.5, -3.4999995)
@@ -188,5 +192,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8000007, 1.3000001, -1.8)
 
 [node name="axe 1" parent="." unique_id=293005357 instance=ExtResource("14_nk3pt")]
 transform = Transform3D(0.9659258, -0.75, -0.20096189, 0.25881907, 2.7990384, 0.75000006, 0, -0.77645725, 2.8977778, -6, 0.39999998, -3.3999996)
+
+[node name="Merchant" parent="." unique_id=306915305 instance=ExtResource("15_nk3pt")]
+transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, -5.4, 0.6, -11.7)
 
 [connection signal="area_entered" from="go_button/Area3D_go_button" to="go_button" method="_on_area_3d_area_entered"]

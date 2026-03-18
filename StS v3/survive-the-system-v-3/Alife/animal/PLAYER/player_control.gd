@@ -86,12 +86,14 @@ func _physics_process(delta: float) -> void:
 			if Input.is_action_pressed("sprint") :
 				total2 += delta
 			if total2 > 0 :
-				player.speed = player.sprint_speed
+				if player.lifedata["current_energy"]>0:
+					player.speed = player.sprint_speed
+				else :
+					player.speed = player.max_speed
 			if total2 == 0 :
 				player.speed = player.max_speed
 			if Input.is_action_pressed("sprint") == false:
 				total2 = 0
-				
 			player.currently_on_floor = player.is_on_floor()
 			if not player.is_on_floor():
 				if player.velocity.y > 0:
@@ -245,6 +247,8 @@ func action_on_server():
 			area.get_parent().go_up()
 		if area.name == "Skin_Area3D":
 			area.attribute_skin(player)
+		if area.name == "Merchant_Area":
+			area.interact(player)
 
 	
 	

@@ -40,7 +40,7 @@ func prep_item(new_item):
 	item["inventory_icon"] = new_item.item_ressources.inventory_icon.resource_path
 	#item["inventory_path"] = new_item.item_ressources.item_path
 	item["stack_amount"] = new_item.item_ressources.stack_amount
-	
+	item["Durability"] = new_item.item_ressources.Durability
 	new_item.itemData["inventory_path"] = new_item.item_ressources.item_path
 	item["Data"] = [new_item.itemData]
 

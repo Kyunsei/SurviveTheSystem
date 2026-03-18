@@ -132,6 +132,9 @@ properties/10/replication_mode = 1
 properties/11/path = NodePath(".:skin_index")
 properties/11/spawn = true
 properties/11/replication_mode = 1
+properties/12/path = NodePath(".:speed")
+properties/12/spawn = true
+properties/12/replication_mode = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5e6c6"]
 size = Vector3(0.5, 1, 0.5)

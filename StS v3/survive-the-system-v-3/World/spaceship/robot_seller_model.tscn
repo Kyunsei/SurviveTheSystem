@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://cjmlrm5yq0gi7"]
+
+[ext_resource type="Texture2D" uid="uid://dmrgatemcuitp" path="res://assets/assets kyun/fence_quad_grid.png" id="1_a1hyq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sudhp"]
+albedo_texture = ExtResource("1_a1hyq")
+uv1_triplanar = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_sb1ft"]
+material = SubResource("StandardMaterial3D_sudhp")
+top_radius = 0.4
+bottom_radius = 0.4
+height = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_62ckw"]
+albedo_texture = ExtResource("1_a1hyq")
+uv1_triplanar = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_h30ok"]
+material = SubResource("StandardMaterial3D_62ckw")
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cgqan"]
+albedo_color = Color(1, 0.12156863, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ku5mi"]
+material = SubResource("StandardMaterial3D_cgqan")
+size = Vector3(0.1, 0.1, 0.1)
+
+[node name="Robot_seller_model" type="MeshInstance3D" unique_id=1476346771]
+mesh = SubResource("CylinderMesh_sb1ft")
+
+[node name="Head" type="MeshInstance3D" parent="." unique_id=1103059783]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.52, 0)
+mesh = SubResource("CylinderMesh_h30ok")
+
+[node name="eye" type="MeshInstance3D" parent="Head" unique_id=1306389439]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15, 0, 0.45)
+mesh = SubResource("BoxMesh_ku5mi")
+
+[node name="eye2" type="MeshInstance3D" parent="Head" unique_id=1941810740]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.15, 0, 0.45)
+mesh = SubResource("BoxMesh_ku5mi")

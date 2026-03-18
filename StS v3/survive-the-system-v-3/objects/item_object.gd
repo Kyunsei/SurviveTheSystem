@@ -10,7 +10,8 @@ var itemData = {
 	"Species": Alifedata.enum_speciesID.ITEM,
 	"Use": on_use,
 	"Use_secondary": on_use_secondary,
-	"Eat": eat
+	"Eat": eat,
+	"Durability": 0
 }
 
 @rpc("any_peer","call_local")
@@ -45,3 +46,4 @@ static func on_use_secondary(_player, state):
 
 static func eat(_player):
 	print("eat something" )
+	

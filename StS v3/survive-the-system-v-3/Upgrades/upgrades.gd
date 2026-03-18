@@ -14,13 +14,15 @@ const VACUUM = "res://objects/cat_ration/Object_Vacuum.tscn"
 var Alife_manager 
 
 
-var object_spawned_position = Vector3(-4, 93.5, -2)
+var spawned_position = Vector3(-1.3, 0, -4.5)
+var object_spawned_position
 
 func display_text(dialogue_box, text):
 	dialogue_box.show()
 	dialogue_box.show_text(text)
 
 func _ready():
+	object_spawned_position = global_position+ spawned_position
 	$PopupMenu.add_item("Inventory maximum capacity up", 0)
 	$PopupMenu.add_item("More maximum health", 1)
 	$PopupMenu.add_item("", 2)
