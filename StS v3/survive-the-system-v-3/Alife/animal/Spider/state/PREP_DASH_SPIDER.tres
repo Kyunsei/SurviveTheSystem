@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="PREP_DASH_STATE" format=3 uid="uid://dk5ih48h5yf62"]
+
+[ext_resource type="Script" uid="uid://dafy7wxhvwmuc" path="res://Alife/AIv2/statesv2/Preparation_Dash.gd" id="1_5vwnp"]
+[ext_resource type="Resource" uid="uid://gkqrebrumkk4" path="res://Alife/animal/Spider/state/DASH_SPIDER.tres" id="1_wfql6"]
+
+[resource]
+script = ExtResource("1_5vwnp")
+next_state = ExtResource("1_wfql6")
+metadata/_custom_type_script = "uid://dafy7wxhvwmuc"

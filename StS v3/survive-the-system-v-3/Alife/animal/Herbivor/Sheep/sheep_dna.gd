@@ -35,7 +35,8 @@ func Init():
 #--- RENDERING ----
 
 #????
-
+	for si in range(state_array.size()):
+		state_array[si].state_internal_id = si
 
 #INVENTORY
 

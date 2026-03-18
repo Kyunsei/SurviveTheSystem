@@ -5,8 +5,9 @@
 [ext_resource type="Resource" uid="uid://c5u0nn8eo4vvu" path="res://Alife/animal/Spider/state/GOTO_SPIDER.tres" id="3_jkvi2"]
 [ext_resource type="Resource" uid="uid://cruax8co3es7c" path="res://Alife/animal/Spider/state/EAT_SPIDER.tres" id="4_c55gh"]
 [ext_resource type="Resource" uid="uid://gkqrebrumkk4" path="res://Alife/animal/Spider/state/DASH_SPIDER.tres" id="5_c55gh"]
+[ext_resource type="Resource" uid="uid://dk5ih48h5yf62" path="res://Alife/animal/Spider/state/PREP_DASH_SPIDER.tres" id="6_1scfw"]
 
 [resource]
 script = ExtResource("1_hbxx4")
-state_array = Array[ExtResource("2_trg4d")]([ExtResource("3_jkvi2"), ExtResource("4_c55gh"), ExtResource("5_c55gh")])
+state_array = Array[ExtResource("2_trg4d")]([ExtResource("3_jkvi2"), ExtResource("4_c55gh"), ExtResource("5_c55gh"), ExtResource("6_1scfw")])
 metadata/_custom_type_script = "uid://b0ania0ikbcmn"

@@ -37,7 +37,9 @@ var current_age_array : PackedInt32Array
 var Alive_array : PackedInt32Array
 var current_biomass_array : PackedFloat32Array
 var Species_array : PackedInt32Array
+
 var current_velocity_array : PackedVector3Array
+var timer_array : PackedFloat32Array
 var current_finite_state_array :  PackedInt32Array
 
 #PLANT SPECIFIC 
@@ -642,6 +644,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		current_health_array.append(species_max_health[sp][0])
 		current_life_state_array.append(0)
 		current_age_array.append(0)
+		timer_array.append(0)
 		current_velocity_array.append(Vector3.ZERO)
 		Alive_array.append(1)
 		Active.append(1)
@@ -667,6 +670,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		current_age_array[i] = 0
 		Alive_array[i] = 1
 		Active[i] = 1
+		timer_array[i]= 0
 		current_biomass_array[i] = species_biomass[sp][0]
 		position_array[i] = pos
 		current_velocity_array[i] = Vector3.ZERO
