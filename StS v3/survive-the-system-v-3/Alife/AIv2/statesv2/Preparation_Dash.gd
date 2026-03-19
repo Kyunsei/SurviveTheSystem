@@ -5,6 +5,9 @@ class_name PREP_DASH_STATE
 @export var next_state : STATE
 @export var next_state_id : int = 2
 @export var target_species : int = 4
+@export var max_distance_to_target : float = 1000
+@export var bin_vision_range : int = 4
+
 
 func evaluate(_manager,_i, _DNA):
 	var score = 0
@@ -14,13 +17,13 @@ func evaluate(_manager,_i, _DNA):
 	var bin = _manager.binID_array[_i]
 	var field = _manager.field_world_array[target_species][bin]
 	#print(field)
-	var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,2)
+	var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,bin_vision_range)
 	var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,target_species)
 	if close_target_id:
-		if _manager.position_array[close_target_id].distance_to(_manager.position_array[_i]) > 3:	
+		if _manager.position_array[close_target_id].distance_to(_manager.position_array[_i]) > max_distance_to_target:	
 			score *= 0.0
-	if _manager.Species_array[_i] == 6:
-		pass#print( "Prep score is " + str(score))
+	'if _manager.Species_array[_i] == 6:
+		print( "Prep score is " + str(score))'
 	return score 
 
 func enter(_manager,_i, _DNA):

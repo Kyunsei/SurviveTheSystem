@@ -81,6 +81,9 @@ func choose_action(manager, i):
 		elif score == best_score:
 			if randi() == 1:
 				best_action = si
+	if best_score == 0:
+		manager.current_finite_state_array[i] = -1
+		return
 	if best_action != null:
 		if best_action == manager.current_finite_state_array[i]:
 			#if current_state.isFinish == false:
@@ -112,4 +115,6 @@ func Homeostasis(manager,i,delta):
 
 
 func update_action(_manager, _i, _delta):
+	if _manager.current_finite_state_array[_i] < 0:
+		return
 	state_array[_manager.current_finite_state_array[_i]].update(_manager, _i,self, _delta)

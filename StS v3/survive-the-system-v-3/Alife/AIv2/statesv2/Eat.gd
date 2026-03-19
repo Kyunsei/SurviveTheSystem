@@ -3,6 +3,7 @@ class_name EAT_STATE
 
 @export var food_type : PackedInt32Array
 @export var target_species : int = 0
+@export var distance_to_eat : float = 0.2
 
 func evaluate(_manager,_i, _DNA):
 	var score: float = 0
@@ -16,14 +17,14 @@ func evaluate(_manager,_i, _DNA):
 	var t = _manager.current_life_state_array[_i] 
 	score += 1 -  _manager.current_energy_array[_i] / _DNA.Max_energy[t]
 	#print(_manager.current_energy_array[_i] / _DNA.Max_energy[t])
-
 	#DITANCE OF FOOD SCORE
 	#var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,1)
 	if _manager.sum_species_world_array[target_species][bin] > 0:
 		var targets = _manager.World.bin_array[bin]
 		var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,target_species)
 		var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
-		if dir.length() > 0.2 or targets.size() == 0:
+		#print(dir.length() )
+		if dir.length() > distance_to_eat or targets.size() == 0:
 			score *= 0  #25 is the max life in a place...
 		else:
 			score *= 2
@@ -59,8 +60,8 @@ func update(manager,i, _DNA, _delta):
 		#manager.current_health_array[ti] = -100
 		if manager._pending_kills.has(ti) == false:
 			manager._pending_kills.append(ti)
-			manager.current_energy_array[i] += manager.current_biomass_array[ti]
-
+			#manager.current_energy_array[i] += manager.current_biomass_array[ti]
+			manager.current_energy_array[i] = min(manager.current_energy_array[i],_DNA.Max_energy[0] )
 			
 		#manager.Active[ti] = 0
 
