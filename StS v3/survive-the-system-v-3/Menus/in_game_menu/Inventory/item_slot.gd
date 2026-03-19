@@ -99,5 +99,6 @@ func show_durability(durability, init_durability):
 			$ProgressBar.max_value = init_durability
 			$ProgressBar.value = durability
 	#print(str($ProgressBar.max_value)+"/"+str($ProgressBar.value) )
+
 func hide_durability():
 	$ProgressBar.hide()

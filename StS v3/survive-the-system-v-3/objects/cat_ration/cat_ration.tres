@@ -10,6 +10,6 @@ type = "Food"
 inventory_icon = ExtResource("1_b3muf")
 stack_amount = 10
 item_path = "res://objects/cat_ration/cat_ration.tscn"
-Durability = 100000.0
 Init_durability = 100000.0
+Price = 5.0
 metadata/_custom_type_script = "uid://udee2xxejlu"

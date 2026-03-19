@@ -30,7 +30,7 @@ func evaluate(_manager,_i, _DNA):
 	return score
 
 func enter(_manager,_i, _DNA):
-	print("goto")
+	#print("goto")
 	pass
 
 

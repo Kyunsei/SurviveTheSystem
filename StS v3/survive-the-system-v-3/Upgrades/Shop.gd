@@ -49,4 +49,5 @@ func shop_interacted():
 
 
 func _on_quit_pressed() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	get_parent().hide()

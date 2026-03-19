@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dan6hhrhduxb7" path="res://Upgrades/shop_item.gd" id="1_wuyhm"]
 [ext_resource type="Texture2D" uid="uid://ba3ghrf00sjvg" path="res://Alife/animal/Herbivor/sheep1.png" id="2_h1g10"]
+[ext_resource type="LabelSettings" uid="uid://dj3ciqlktrbfq" path="res://Upgrades/label_for_shop.tres" id="3_y6yvb"]
 
 [node name="ShopItem" type="Button" unique_id=264215938]
 custom_minimum_size = Vector2(100, 100)
@@ -15,9 +16,26 @@ custom_minimum_size = Vector2(50, 50)
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
+scale = Vector2(0.6, 0.6)
 texture = ExtResource("2_h1g10")
 
 [node name="Quantity" type="Label" parent="." unique_id=1754642656]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = 2.0
+offset_top = -1.0
+offset_right = 42.0
+offset_bottom = 22.0
+text = "Qty"
+label_settings = ExtResource("3_y6yvb")
+
+[node name="Price" type="Label" parent="." unique_id=1958153029]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 77.0
+offset_right = 108.0
+offset_bottom = 126.0
+text = "Price
+"
+label_settings = ExtResource("3_y6yvb")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]
