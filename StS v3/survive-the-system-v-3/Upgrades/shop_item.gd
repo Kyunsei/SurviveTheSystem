@@ -17,7 +17,5 @@ func setup(item: ItemResource, qty: int):
 	quantity = qty
 	#if item.inventory_icon:
 	image.texture = item.inventory_icon
-	print(item.inventory_icon)
-	print(image.texture)
 	if quantity:
 		quantity_label.text = str(quantity)

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://eouwi0lhmuet"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cbwrd"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_jfjiq"]
+material = SubResource("StandardMaterial3D_cbwrd")
+
+[node name="Shop_computer_model" type="MeshInstance3D" unique_id=1629386646]
+mesh = SubResource("BoxMesh_jfjiq")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=1988567941]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+text = "Shop"
+font_size = 45
+outline_size = 23

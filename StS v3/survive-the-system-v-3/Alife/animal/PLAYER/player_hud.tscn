@@ -159,4 +159,5 @@ grow_vertical = 2
 text = "Timer"
 label_settings = SubResource("LabelSettings_hfkfl")
 
-[node name="Node" parent="." unique_id=1310314475 instance=ExtResource("6_hfkfl")]
+[node name="Shop" parent="." unique_id=1310314475 instance=ExtResource("6_hfkfl")]
+visible = false

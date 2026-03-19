@@ -249,6 +249,8 @@ func action_on_server():
 			area.attribute_skin(player)
 		if area.name == "Merchant_Area":
 			area.interact(player)
+		if area.name == "Shop_area":
+			area.interact(player)
 
 	
 	

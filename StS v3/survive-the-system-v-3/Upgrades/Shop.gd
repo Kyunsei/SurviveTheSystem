@@ -9,7 +9,6 @@ var current_stock: Array = []
 func _ready():
 	generate_shop()
 	populate_grid()
-	print(current_stock)
 
 func generate_shop():
 	current_stock.clear()
@@ -44,3 +43,10 @@ func populate_grid():
 		#
 		
 		
+		
+func shop_interacted():
+	show()
+
+
+func _on_quit_pressed() -> void:
+	get_parent().hide()

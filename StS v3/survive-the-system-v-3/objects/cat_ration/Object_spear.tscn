@@ -1,8 +1,9 @@
 [gd_scene format=3 uid="uid://dp2plghkprved"]
 
+[ext_resource type="Texture2D" uid="uid://i25jcnprvf1b" path="res://objects/cat_ration/spear1.png" id="1_qkpm6"]
 [ext_resource type="Texture2D" uid="uid://cqq0vyu1a00hn" path="res://assets/assets kyun/invisible1.png" id="1_ylptj"]
 [ext_resource type="Script" uid="uid://bt04ol8opksq0" path="res://objects/cat_ration/object_spear.gd" id="2_qmbw5"]
-[ext_resource type="Resource" uid="uid://dso47tip5qxom" path="res://objects/cat_ration/object_spear.tres" id="3_qmbw5"]
+[ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="3_3crlt"]
 [ext_resource type="PackedScene" uid="uid://dnm54piw4bqn6" path="res://objects/spear.tscn" id="5_3crlt"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
@@ -42,7 +43,7 @@ size = Vector3(2, 2, 2)
 [node name="Object_spear" type="MeshInstance3D" unique_id=1352666552]
 mesh = SubResource("QuadMesh_5kluo")
 script = ExtResource("2_qmbw5")
-item_ressources = ExtResource("3_qmbw5")
+item_ressources = SubResource("Resource_qkpm6")
 
 [node name="Timer" type="Timer" parent="." unique_id=1629208419]
 wait_time = 0.1

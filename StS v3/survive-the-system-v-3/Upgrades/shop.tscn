@@ -23,3 +23,14 @@ offset_bottom = 400.0
 layout_mode = 0
 offset_right = 400.0
 offset_bottom = 400.0
+
+[node name="Quit" type="Button" parent="." unique_id=980240485]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 0
+offset_left = 278.0
+offset_top = 146.0
+offset_right = 328.0
+offset_bottom = 196.0
+text = "Quit"
+
+[connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]
