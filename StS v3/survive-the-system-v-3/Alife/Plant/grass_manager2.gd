@@ -47,6 +47,7 @@ var light_index_array : Array = []
 
 #SPECIES SPECIFICIC WILL ALL MOVE TO DNA?
 enum SPECIES_ID {GRASS,TREE,MOSS,BERRY,SHEEP,CAT,SPIDERCRAB}
+
 var SPECIES = {
 	SPECIES_ID.GRASS: preload("res://Alife/Plant/Grass/GRASS.tres") ,
 	SPECIES_ID.TREE: preload("res://Alife/Plant/tree/TREE.tres"),
