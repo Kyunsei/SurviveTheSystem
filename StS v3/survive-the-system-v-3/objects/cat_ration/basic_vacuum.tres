@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://omkpcwl4vqj5"]
 
 [ext_resource type="Texture2D" uid="uid://m4dj1s0c2v5h" path="res://assets/assets kyun/vacuum3.png" id="1_41vow"]
-[ext_resource type="PackedScene" uid="uid://dbwdx01q5ioyq" path="res://objects/cat_ration/Object_Vacuum.tscn" id="2_nx30f"]
 [ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="2_v4sg8"]
 
 [resource]
@@ -11,7 +10,5 @@ type = "Food"
 inventory_icon = ExtResource("1_41vow")
 stack_amount = 1
 item_path = "res://objects/cat_ration/Object_Vacuum.tscn"
-Name = "Basic vacuum"
 Price = 10.0
-item_scene = ExtResource("2_nx30f")
 metadata/_custom_type_script = "uid://udee2xxejlu"
