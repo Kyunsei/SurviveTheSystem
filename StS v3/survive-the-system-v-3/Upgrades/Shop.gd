@@ -30,13 +30,22 @@ func generate_shop():
 		})
 
 	# 3. Super Rare Items: 1/3 chance to spawn 1 from the pool
-	if randi_range(1, 3) == 1 and not legendary_item_pool.is_empty():
-		var legendary_choice = legendary_item_pool.duplicate()
-		legendary_choice.shuffle()
-		current_stock.append({
-			"item": legendary_choice[0],
-			"quantity": 1
-		})
+	if multiplayer.is_server():
+		if randi_range(1, 1) == 1 and not legendary_item_pool.is_empty():
+			var legendary_choice = legendary_item_pool.duplicate()
+			legendary_choice.shuffle()
+			current_stock.append({
+				"item": legendary_choice[0],
+				"quantity": 1
+			})
+	else:
+		if randi_range(1, 3) == 1 and not legendary_item_pool.is_empty():
+			var legendary_choice = legendary_item_pool.duplicate()
+			legendary_choice.shuffle()
+			current_stock.append({
+				"item": legendary_choice[0],
+				"quantity": 1
+			})
 
 func populate_grid():
 	for child in grid.get_children():
