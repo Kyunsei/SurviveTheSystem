@@ -24,7 +24,8 @@ size = Vector3(3, 0.2, 2)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4srsv"]
 albedo_texture = ExtResource("8_l5ukw")
-uv1_scale = Vector3(3, 1, 1)
+uv1_scale = Vector3(3, 0, 1)
+uv1_world_triplanar = true
 texture_filter = 0
 
 [sub_resource type="BoxMesh" id="BoxMesh_mf81u"]
@@ -47,6 +48,7 @@ size = Vector3(0.01, 2, 2)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aomqu"]
 albedo_texture = ExtResource("9_4srsv")
 uv1_scale = Vector3(3, 2, 3)
+texture_filter = 0
 
 [sub_resource type="BoxMesh" id="BoxMesh_krmtw"]
 material = SubResource("StandardMaterial3D_aomqu")
