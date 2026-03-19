@@ -37,12 +37,21 @@ func _ready() -> void:
 	var quad = QuadMesh.new()
 	quad.size = Vector2(4, 4)
 	$Alife_select.get_popup().id_pressed.connect(_on_menu_button_pressed)
-
+	
+	init_alife_select_choice_button()
 	#var instance = MultiMeshInstance2D.new()
 	#instance.multimesh = mm
 	
 	update()
 
+
+func init_alife_select_choice_button():
+	#$Alife_select.item_count = AlifeRegistry.SPECIES_ID.size()
+	var  popup =$Alife_select.get_popup()
+	popup.add_item("ALL")
+	for s in AlifeRegistry.SPECIES_ID.keys():
+		popup.add_item(str(s))
+ 
 
 func build_quad_mesh():
 	var quad = QuadMesh.new()
