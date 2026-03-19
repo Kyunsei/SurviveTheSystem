@@ -4,6 +4,7 @@ extends Control
 @export var shop_item_scene: PackedScene 
 var current_stock: Array = []
 @onready var grid = $Panel/GridContainer
+var player
 
 
 func _ready():
@@ -47,7 +48,25 @@ func populate_grid():
 func shop_interacted():
 	show()
 
-
+var playerz_id
+@rpc("any_peer", "call_local")
 func _on_quit_pressed() -> void:
+	#var local_id = multiplayer.get_unique_id()
+	print(str(player)+str("called on quit"))
+	block.rpc_id(1, playerz_id, false)
+	#player.set_input_blocked.rpc_id(playerz_id,false)
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	get_parent().hide()
+	
+@rpc("any_peer", "call_local")
+func know_who_is_player(player_id):
+	var player_list = get_parent().get_parent().get_parent().get_parent().get_node("Alife manager").player_array
+	print(str("player list:")+str(player_list))
+	for p in player_list:
+		if int(p.name) == player_id:
+			player = p
+			print(str("player from for loop :")+str(player))
+
+@rpc("any_peer", "call_remote")
+func block(peer_id, state:bool):
+	player.set_input_blocked.rpc_id(peer_id,peer_id,state)

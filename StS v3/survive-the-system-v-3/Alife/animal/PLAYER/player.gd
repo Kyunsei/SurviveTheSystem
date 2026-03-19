@@ -30,6 +30,7 @@ var current_hunger = max_hunger
 var immune_to_death = false
 var is_alive = true
 var skin_index:int = 0 : set = set_skin
+var input_blocked = false
 
 var alifemanager_id : int
 
@@ -255,7 +256,8 @@ func _ready() -> void:
 			
 func _physics_process(_delta: float) -> void:
 	if is_multiplayer_authority() :
-
+		if input_blocked:
+			return  
 		#print("Player pos:", global_position, " lifedata pos:", lifedata["position"])
 		velocity.x = direction.x *speed 
 		velocity.z = direction.z *speed 
@@ -296,6 +298,8 @@ func giving_position_to_others(pos: Vector3) -> void:
 
 func _process(delta: float) -> void:
 	if multiplayer.is_server():
+		if input_blocked:
+			return  
 		if int(name) == null:
 			pass
 		else:
@@ -694,3 +698,8 @@ func show_label_above_player(string, color, time, type):
 	#label.queue_free()
 
 #OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!
+
+@rpc("any_peer", "call_remote")
+func set_input_blocked(blocked: bool):
+	input_blocked = blocked
+	set_process_input(not blocked)  # disables _input() if blocked

@@ -6,23 +6,24 @@
 [ext_resource type="Resource" uid="uid://c2kjs1ha5myhl" path="res://objects/cat_ration/cat_ration.tres" id="3_rukt4"]
 [ext_resource type="Resource" uid="uid://omkpcwl4vqj5" path="res://objects/cat_ration/basic_vacuum.tres" id="4_4jbah"]
 [ext_resource type="Resource" uid="uid://dso47tip5qxom" path="res://objects/cat_ration/object_spear.tres" id="5_563av"]
+[ext_resource type="Resource" uid="uid://c1scwqh4dvuuw" path="res://objects/cat_ration/object_mango.tres" id="6_563av"]
 
 [node name="Node" type="Control" unique_id=1310314475]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_to8av")
-possible_items = Array[ExtResource("2_vet7c")]([ExtResource("3_rukt4"), ExtResource("4_4jbah"), ExtResource("5_563av")])
+possible_items = Array[ExtResource("2_vet7c")]([ExtResource("3_rukt4"), ExtResource("4_4jbah"), ExtResource("5_563av"), ExtResource("6_563av")])
 shop_item_scene = ExtResource("3_g1vqg")
 
 [node name="Panel" type="Panel" parent="." unique_id=708715316]
 layout_mode = 0
-offset_right = 400.0
-offset_bottom = 400.0
+offset_right = 1152.0
+offset_bottom = 648.0
 
 [node name="GridContainer" type="GridContainer" parent="Panel" unique_id=861745427]
 layout_mode = 0
-offset_right = 400.0
-offset_bottom = 400.0
+offset_right = 1152.0
+offset_bottom = 648.0
 
 [node name="Quit" type="Button" parent="." unique_id=980240485]
 custom_minimum_size = Vector2(50, 50)

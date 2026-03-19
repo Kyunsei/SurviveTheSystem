@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://c1scwqh4dvuuw"]
+
+[ext_resource type="Texture2D" uid="uid://cdkvnt6yjclcs" path="res://assets/assets kyun/mango1.png" id="1_03bx4"]
+[ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="2_saa6f"]
+
+[resource]
+script = ExtResource("2_saa6f")
+name = "mango"
+type = "Food"
+inventory_icon = ExtResource("1_03bx4")
+stack_amount = 1
+item_path = "res://objects/cat_ration/Object_mango.tscn"
+Init_durability = 100000.0
+Max_quantity_in_shop = 1
+Price = 100.0
+metadata/_custom_type_script = "uid://udee2xxejlu"
