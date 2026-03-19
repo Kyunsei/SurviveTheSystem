@@ -110,7 +110,8 @@ shape = SubResource("ConcavePolygonShape3D_2jlj7")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -6)
 
 [node name="Upgrade" parent="." unique_id=323732360 instance=ExtResource("4_ef02v")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.3, 0.6, -6.4)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.3, 23.7, -6.4)
+visible = false
 
 [node name="go_button" parent="." unique_id=2102924428 instance=ExtResource("5_ftgam")]
 transform = Transform3D(-1, 0, 2.9802322e-08, 0, 1, 0, -2.9802322e-08, 0, -1, -0.5, 0.7999996, 7.6000013)
@@ -195,7 +196,11 @@ transform = Transform3D(0.9659258, -0.75, -0.20096189, 0.25881907, 2.7990384, 0.
 [node name="Merchant" parent="." unique_id=306915305 instance=ExtResource("15_nk3pt")]
 transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, -5.4, 0.6, -11.7)
 
+[node name="Label3D" type="Label3D" parent="Merchant" unique_id=43562134]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+text = "Sell me your biomass!"
+
 [node name="Shop_area" parent="." unique_id=537030959 instance=ExtResource("16_0qcqw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4, 0.6, -19)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.9999995, 0.6, -5.7999997)
 
 [connection signal="area_entered" from="go_button/Area3D_go_button" to="go_button" method="_on_area_3d_area_entered"]

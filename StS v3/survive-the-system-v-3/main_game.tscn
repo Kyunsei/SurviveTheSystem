@@ -75,7 +75,7 @@ spawn_path = NodePath("../Alife manager")
 [node name="World" parent="." unique_id=642165895 instance=ExtResource("5_dugkq")]
 
 [node name="Collector" parent="." unique_id=987041243 instance=ExtResource("5_f52ns")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.9121866, 0, 5.899909)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.9121866, 2, 5.899909)
 
 [node name="SPACESHIP" parent="." unique_id=853925969 node_paths=PackedStringArray("alifemanager") instance=ExtResource("6_2pltu")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 32.899998, -27.8)

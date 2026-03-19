@@ -1,5 +1,7 @@
 extends Control
-@export var possible_items: Array[ItemResource]
+@export var basic_item_pool: Array[ItemResource]  # Contains the 3 specific basic items
+@export var rare_item_pool: Array[ItemResource] # Contains the 3 rare choices
+@export var legendary_item_pool: Array[ItemResource] # Contains the 5 super rare choices
 @export var shop_size: int = 5
 @export var shop_item_scene: PackedScene 
 var current_stock: Array = []
@@ -11,27 +13,31 @@ func _ready():
 	generate_shop()
 	populate_grid()
 
+
 func generate_shop():
-	current_stock.clear()
+	for item in basic_item_pool:
+		current_stock.append({
+			"item": item,
+			"quantity": randi_range(3, 5)
+		})
+	# 2. Rare Items: Choose 1 from the pool
+	if not rare_item_pool.is_empty():
+		var rare_choice = rare_item_pool.duplicate()
+		rare_choice.shuffle()
+		current_stock.append({
+			"item": rare_choice[0],
+			"quantity": 1
+		})
 
-	var pool = possible_items.duplicate()
-	pool.shuffle()
+	# 3. Super Rare Items: 1/3 chance to spawn 1 from the pool
+	if randi_range(1, 3) == 1 and not legendary_item_pool.is_empty():
+		var legendary_choice = legendary_item_pool.duplicate()
+		legendary_choice.shuffle()
+		current_stock.append({
+			"item": legendary_choice[0],
+			"quantity": 1
+		})
 
-	for i in range(shop_size):
-		if pool.is_empty():
-			break
-
-		var item = pool.pop_back()
-		var entry = {
-		"item": item,
-		"quantity": randi_range(1, item.Max_quantity_in_shop)
-		}
-
-		current_stock.append(entry)
-		
-		
-		
-		
 func populate_grid():
 	for child in grid.get_children():
 		child.queue_free()
@@ -40,8 +46,7 @@ func populate_grid():
 		var item_instance = shop_item_scene.instantiate()
 		item_instance.setup(entry["item"], entry["quantity"])
 		grid.add_child(item_instance)
-		#
-		#
+		
 		
 		
 		

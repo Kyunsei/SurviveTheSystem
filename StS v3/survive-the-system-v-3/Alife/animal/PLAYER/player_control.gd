@@ -86,10 +86,7 @@ func _physics_process(delta: float) -> void:
 			if Input.is_action_pressed("sprint") :
 				total2 += delta
 			if total2 > 0 :
-				if player.lifedata["current_energy"]>0:
 					player.speed = player.sprint_speed
-				else :
-					player.speed = player.max_speed
 			if total2 == 0 :
 				player.speed = player.max_speed
 			if Input.is_action_pressed("sprint") == false:
