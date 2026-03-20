@@ -10,7 +10,7 @@ func Init():
 		
 
 	# --- Core metabolism ---
-	Max_energy =[1000,1000]
+	Max_energy =[1000000,1000000]
 	Max_health  =[4,4]
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.10]
