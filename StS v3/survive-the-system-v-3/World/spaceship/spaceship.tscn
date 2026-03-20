@@ -64,6 +64,12 @@ properties/0/replication_mode = 1
 properties/1/path = NodePath("ship/moving_wall1:position")
 properties/1/spawn = true
 properties/1/replication_mode = 1
+properties/2/path = NodePath("ship/moving_ground2:position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("ship/moving_ground3:position")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [sub_resource type="QuadMesh" id="QuadMesh_2jlj7"]
 size = Vector2(6, 3.5)
@@ -91,6 +97,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 mesh = SubResource("PlaneMesh_se27s")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="ship/moving_ground1" unique_id=2141619969]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_w7yga")
+
+[node name="moving_ground2" type="StaticBody3D" parent="ship" unique_id=1839156586]
+transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, 0, -3)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/moving_ground2" unique_id=1037102978]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("PlaneMesh_se27s")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/moving_ground2" unique_id=1457658686]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+shape = SubResource("ConcavePolygonShape3D_w7yga")
+
+[node name="moving_ground3" type="StaticBody3D" parent="ship" unique_id=1691597140]
+transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, 0, -7)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ship/moving_ground3" unique_id=200447330]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+mesh = SubResource("PlaneMesh_se27s")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship/moving_ground3" unique_id=543788210]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 shape = SubResource("ConcavePolygonShape3D_w7yga")
 

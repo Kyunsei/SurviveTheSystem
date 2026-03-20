@@ -28,7 +28,7 @@ static func eat(_player):
 		_player.get_node("Player_HUD").get_node("Inventory").remove_selected(int(_player.name))
 		_player.lifedata["Max_energy"] += 50
 		_player.lifedata["current_energy"] += 50
-		_player.show_label_above_player.rpc_id(int(_player.name),50, Color(0.0, 1.0, 0.0, 1.0), 3.0, " maximum energy")
+		_player.show_label_above_player.rpc_id(int(_player.name),50, Color(0.0, 1.0, 0.0, 1.0), 3.0,"", " maximum energy")
 		print(_player.lifedata["Max_energy"])
 		print("You eat the Mango")
 		pass

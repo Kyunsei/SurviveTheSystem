@@ -29,6 +29,6 @@ static func eat(_player):
 		var value = 0.5
 		_player.inventory_capacity_upgrade += value
 		_player.lifedata["Inventory_capacity"] = _player.inventory_capacity_upgrade
-		_player.show_label_above_player.rpc_id(int(_player.name),value, Color(1.0, 1.0, 1.7, 1.0), 3.0, " inventory capacity")
+		_player.show_label_above_player.rpc_id(int(_player.name),value, Color(1.0, 1.0, 1.7, 1.0), 3.0, ""," inventory capacity")
 		print("You equip the beltpouch")
 		pass

@@ -6,6 +6,7 @@
 [ext_resource type="Resource" uid="uid://c2kjs1ha5myhl" path="res://objects/cat_ration/cat_ration.tres" id="3_rukt4"]
 [ext_resource type="Resource" uid="uid://omkpcwl4vqj5" path="res://objects/cat_ration/basic_vacuum.tres" id="4_4jbah"]
 [ext_resource type="Resource" uid="uid://dso47tip5qxom" path="res://objects/cat_ration/object_spear.tres" id="5_563av"]
+[ext_resource type="Resource" uid="uid://bvtkidrur2gao" path="res://objects/cat_ration/object_timewarp.tres" id="6_8vtdw"]
 [ext_resource type="Resource" uid="uid://c1scwqh4dvuuw" path="res://objects/cat_ration/object_mango.tres" id="6_563av"]
 [ext_resource type="Resource" uid="uid://cjkf0rm4ojw4m" path="res://objects/cat_ration/object_strawberry.tres" id="7_f4khi"]
 [ext_resource type="Resource" uid="uid://b2plhjlatrwnl" path="res://objects/cat_ration/object_beltpouch.tres" id="8_82ajy"]
@@ -14,7 +15,7 @@
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_to8av")
-basic_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("3_rukt4"), ExtResource("5_563av"), ExtResource("4_4jbah")])
+basic_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("3_rukt4"), ExtResource("5_563av"), ExtResource("4_4jbah"), ExtResource("6_8vtdw")])
 rare_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("8_82ajy"), ExtResource("6_563av"), ExtResource("7_f4khi")])
 legendary_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("8_82ajy"), ExtResource("6_563av"), ExtResource("7_f4khi")])
 shop_item_scene = ExtResource("3_g1vqg")

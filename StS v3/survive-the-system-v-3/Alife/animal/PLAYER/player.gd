@@ -46,7 +46,7 @@ var catnation_credits :int = 1:
 
 func set_current_money(prev_money: int) -> int:
 	var difference := prev_money - catnation_credits
-	show_label_above_player.rpc_id(int(name),-difference, Color(1.0, 0.843, 0.0, 1.0), 1.0, " money")
+	show_label_above_player.rpc_id(int(name),-difference, Color(1.0, 0.843, 0.0, 1.0), 1.0, ""," money")
 	return difference
 #MONEY MONEY MONEY MONEY MONEY
 
@@ -542,11 +542,11 @@ func check_player_hit(dmg, areaofaction):
 			if t.get_parent().speardefense == false:
 				get_parent().Attack(t.get_parent().lifedata, dmg)
 				if t.get_parent().lifedata["current_health"] > 0:
-					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),-dmg, Color(1.0, 0.1, 0.0, 1.0), 1.0, " Health")
+					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),-dmg, Color(1.0, 0.1, 0.0, 1.0), 1.0, ""," Health")
 					remove_durability(3)
 			else :
 				if t.get_parent().lifedata["current_health"] > 0:
-					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),dmg, Color(0.5, 0.5, 0.5, 1.0), 1.0, " Damage Blocked")
+					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),dmg, Color(0.5, 0.5, 0.5, 1.0), 1.0, ""," Damage Blocked")
 					remove_durability(10)
 					if t.get_parent().item_hold :
 						t.get_parent().remove_durability(1)
@@ -619,14 +619,14 @@ func vacuum_loop():
 					#print(t)
 					#alife_manager.interact(t,player)
 					if add_to_inventory(t):
-						remove_durability(1)
+						remove_durability(0.33)
 						#print("added")
 						alife_manager.remove(t)	
 			else:
 				if alife_manager.get_node("Grass_Manager2").Species_array[t] == 5: #CAT
 					return
 				if add_to_inventory(t):
-					remove_durability(1)
+					remove_durability(0.33)
 					alife_manager.remove(t)	
 
 
@@ -658,7 +658,7 @@ func add_to_inventory(alife):
 
 
 @rpc("any_peer","call_remote")
-func show_label_above_player(string, color, time, type):
+func show_label_above_player(string, color, time, Special, type):
 	var label := Label3D.new()
 	label.modulate = color
 	if string > 0:
@@ -668,6 +668,8 @@ func show_label_above_player(string, color, time, type):
 		label.modulate += Color(0.0, -0.6, 0.0, 0.0) #reder color normally
 	if type == " Damage Blocked":
 		label.text = "Blocked " + str(abs(string)) + " Damage"
+	if Special == "Special":
+		label.text = type
 	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	label.position = Vector3(0, 0.9, 0)
 	add_child(label)
@@ -688,3 +690,11 @@ func show_label_above_player(string, color, time, type):
 func set_input_blocked(blocked: bool):
 	input_blocked = blocked
 	set_process_input(not blocked)  # disables _input() if blocked
+
+var isWorldAccelerated = false
+@rpc("any_peer","call_remote")
+func change_server_simulation_speed(value):
+	if isWorldAccelerated == false:
+		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 1000
+		GlobalSimulationParameter.simulation_speed = value
+		isWorldAccelerated = true

@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://dj0phxbtj5qrh"]
+
+[ext_resource type="Texture2D" uid="uid://cbxwl3qin1sgr" path="res://assets/assets kyun/timewarp1.png" id="1_7upj6"]
+[ext_resource type="Script" uid="uid://boqedwlwtjg5q" path="res://objects/cat_ration/object_timewarp.gd" id="2_pr5ln"]
+[ext_resource type="Resource" uid="uid://bvtkidrur2gao" path="res://objects/cat_ration/object_timewarp.tres" id="3_pr5ln"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
+transparency = 1
+shading_mode = 0
+albedo_texture = ExtResource("1_7upj6")
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_5kluo"]
+material = SubResource("StandardMaterial3D_wqbnr")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_5kluo"]
+radius = 1.0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8f30t"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[node name="Object_timewarp" type="MeshInstance3D" unique_id=1352666552]
+mesh = SubResource("QuadMesh_5kluo")
+script = ExtResource("2_pr5ln")
+item_ressources = ExtResource("3_pr5ln")
+
+[node name="Timer" type="Timer" parent="." unique_id=1629208419]
+wait_time = 0.1
+one_shot = true
+autostart = true
+
+[node name="Area3D" type="Area3D" parent="." unique_id=1816790346]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1489730669]
+shape = SubResource("SphereShape3D_5kluo")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=979584649]
+replication_config = SubResource("SceneReplicationConfig_8f30t")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]

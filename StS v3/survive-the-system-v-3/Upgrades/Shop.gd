@@ -14,7 +14,43 @@ func _ready():
 	populate_grid()
 
 
+
 func generate_shop():
+	for item in basic_item_pool:
+		current_stock.append({
+			"item": item,
+			"quantity": randi_range(3, 5)
+		})
+	# 2. Rare Items: Choose 1 from the pool
+	if not rare_item_pool.is_empty():
+		var rare_choice = rare_item_pool.duplicate()
+		rare_choice.shuffle()
+		current_stock.append({
+			"item": rare_choice[0],
+			"quantity": 1
+		})
+
+	# 3. Super Rare Items: 1/3 chance to spawn 1 from the pool
+	if multiplayer.is_server():
+		if randi_range(1, 1) == 1 and not legendary_item_pool.is_empty():
+			var legendary_choice = legendary_item_pool.duplicate()
+			legendary_choice.shuffle()
+			current_stock.append({
+				"item": legendary_choice[0],
+				"quantity": 1
+			})
+	else:
+		if randi_range(1, 3) == 1 and not legendary_item_pool.is_empty():
+			var legendary_choice = legendary_item_pool.duplicate()
+			legendary_choice.shuffle()
+			current_stock.append({
+				"item": legendary_choice[0],
+				"quantity": 1
+			})
+
+@rpc("any_peer", "call_local")
+func generate_shop2():
+	print("generateshop2")
 	for item in basic_item_pool:
 		current_stock.append({
 			"item": item,
@@ -55,6 +91,17 @@ func populate_grid():
 		var item_instance = shop_item_scene.instantiate()
 		item_instance.setup(entry["item"], entry["quantity"])
 		grid.add_child(item_instance)
+
+@rpc("any_peer", "call_local")
+func populate_grid2():
+	print("populategrid2")
+	for child in grid.get_children():
+		child.queue_free()
+
+	for entry in current_stock:
+		var item_instance = shop_item_scene.instantiate()
+		item_instance.setup(entry["item"], entry["quantity"])
+		grid.add_child(item_instance)
 		
 		
 		
@@ -76,12 +123,19 @@ func _on_quit_pressed() -> void:
 @rpc("any_peer", "call_local")
 func know_who_is_player(player_id):
 	var player_list = get_parent().get_parent().get_parent().get_parent().get_node("Alife manager").player_array
-	print(str("player list:")+str(player_list))
+	#print(str("player list:")+str(player_list))
 	for p in player_list:
 		if int(p.name) == player_id:
 			player = p
-			print(str("player from for loop :")+str(player))
+			#print(str("player from for loop :")+str(player))
 
 @rpc("any_peer", "call_remote")
 func block(peer_id, state:bool):
 	player.set_input_blocked.rpc_id(peer_id,state)
+	
+	
+@rpc("authority", "call_local", "reliable")
+func sync_shop(player_id):
+	print("shop synced?")
+	generate_shop2.rpc_id(player_id)
+	populate_grid2.rpc_id(player_id)

@@ -29,6 +29,6 @@ static func eat(_player):
 		var value = 30
 		_player.lifedata["Max_health"] += value
 		_player.lifedata["current_health"] += value
-		_player.show_label_above_player.rpc_id(int(_player.name),value, Color(1.0, 0.4, 0.7, 1.0), 3.0, " maximum health")
+		_player.show_label_above_player.rpc_id(int(_player.name),value, Color(1.0, 0.4, 0.7, 1.0), 3.0,"", " maximum health")
 		print("You eat the Strawberry")
 		pass

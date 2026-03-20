@@ -15,6 +15,7 @@ var tuto_HUD : Control
 var timer_count = 10
 var isWorldAccelerated = false
 
+
 #signal grid_called
 
 func _ready() -> void:
@@ -70,14 +71,33 @@ func _process(_delta: float) -> void:
 				GlobalSimulationParameter.simulation_speed = 1
 				#get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 2000 
 				isWorldAccelerated = false 
+				var spaceship = player.get_parent().get_parent().get_node("SPACESHIP")
+				spaceship.open_entrance.rpc_id(1)
+				var shop = player.get_node("Player_HUD").get_node("Shop")
+				#shop.generate_shop()
+				#var new_stock = shop.current_stock
 				for p in player.get_parent().player_array:
+					var p_id = int(p.name)
+					var p_shop = p.get_node("Player_HUD/Shop") 
+					p_shop.sync_shop.rpc_id(1, p_id)
+					player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 5.0,"Shop got new items for sale")
 					player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer(int(p.name))
 
-		
+
+
 
 @rpc("any_peer","call_remote")
 func change_server_simulation_speed(value):
 	if isWorldAccelerated == false:
+		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 1000
+		GlobalSimulationParameter.simulation_speed = value
+		isWorldAccelerated = true
+		
+@rpc("any_peer","call_local")
+func change_server_simulation_speed2(value):
+	if isWorldAccelerated == false:
+		var spaceship = player.get_parent().get_parent().get_node("SPACESHIP")
+		spaceship.block_entrance.rpc_id(1)
 		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 1000
 		GlobalSimulationParameter.simulation_speed = value
 		isWorldAccelerated = true

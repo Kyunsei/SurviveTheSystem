@@ -24,3 +24,16 @@ func _process(_delta: float) -> void:
 		Init()
 		init = true
 	
+@rpc("any_peer","call_local")
+func block_entrance():
+	$ship/moving_ground3.position.z -= 7
+	$ship/moving_ground2.position.z += 7
+	#print("entrance blocked")
+	pass
+	
+@rpc("any_peer","call_local")
+func open_entrance():
+	$ship/moving_ground3.position.z += 7
+	$ship/moving_ground2.position.z -= 7
+	#print("entrance freed")
+	pass
