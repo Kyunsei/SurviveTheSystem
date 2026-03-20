@@ -10,7 +10,8 @@ var player
 
 
 func _ready():
-	generate_shop()
+	if multiplayer.is_server():
+		generate_shop()
 	populate_grid()
 
 
