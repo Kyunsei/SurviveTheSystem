@@ -44,7 +44,6 @@ func prep_item(new_item):
 	#item["Init_durability"] = new_item.item_ressources.Durability
 	new_item.itemData["inventory_path"] = new_item.item_ressources.item_path
 	item["Data"] = [new_item.itemData]
-	print(new_item.itemData)
 
 	#print(item)
 	return item
@@ -187,9 +186,6 @@ func change_index(peer_id,idx):
 
 func _process(_delta: float) -> void:
 	if player.is_multiplayer_authority():
-		#print(player.inventory_capacity_upgrade)
-		#print(multiplayer.get_unique_id())
-		#print ("----")
 		if Input.is_action_just_pressed("slot1"):
 			select_item(0,int(player.name))
 			#show_selected(0, int(player.name))

@@ -91,6 +91,8 @@ func buy_item(id, price, path):
 func change_quantity():
 	if quantity == null:
 		return
+	if quantity_label == null:
+		return
 	quantity -= 1
 	quantity_label.text = str("In stock: ") + str(quantity)
 	
