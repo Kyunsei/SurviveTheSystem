@@ -28,7 +28,7 @@ visible = false
 script = ExtResource("8_byu03")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Item_Manager" unique_id=1684953852]
-_spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk", "uid://dp2plghkprved", "uid://dbwdx01q5ioyq", "uid://dbanod5ff41km", "uid://dj0phxbtj5qrh")
+_spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk", "uid://dp2plghkprved", "uid://dbwdx01q5ioyq", "uid://dbanod5ff41km", "uid://dj0phxbtj5qrh", "uid://d0sojihfxo727", "uid://x5133e6ia1a8")
 spawn_path = NodePath("..")
 
 [node name="Grass_Manager2" parent="." unique_id=2019447816 instance=ExtResource("9_byu03")]
