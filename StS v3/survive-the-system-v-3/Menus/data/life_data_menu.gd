@@ -17,7 +17,7 @@ func _process(_delta: float) -> void:
 func update_number():
 	$Label.text = ""
 	for n in GlobalSimulationParameter.life_numbers:
-		$Label.text += "[color=%s]%s: %s[/color]\n" % [color_list[n].to_html(),Alifedata.enum_speciesID.keys()[n],GlobalSimulationParameter.life_numbers[n][-1]]
+		$Label.text += "[color=%s]%s: %s[/color]\n" % [color_list[n].to_html(),AlifeRegistry.SPECIES_ID.keys()[n],GlobalSimulationParameter.life_numbers[n][-1]]
 
 
 

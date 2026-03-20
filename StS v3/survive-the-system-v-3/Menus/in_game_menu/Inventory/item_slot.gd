@@ -92,12 +92,14 @@ func send_remove_info():
 @rpc("any_peer", "call_local")
 func show_durability(durability, init_durability):
 	if item:
-		if durability == 100000.0:
+		print(init_durability)
+		if init_durability == 100000.0:
 			return
 		$ProgressBar.show()
 		if player.item_hold:
 			$ProgressBar.max_value = init_durability
 			$ProgressBar.value = durability
 	#print(str($ProgressBar.max_value)+"/"+str($ProgressBar.value) )
+
 func hide_durability():
 	$ProgressBar.hide()

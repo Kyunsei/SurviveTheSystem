@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" uid="uid://csp4534h7vmrb" path="res://Collector/collector.tscn" id="5_f52ns"]
 [ext_resource type="PackedScene" uid="uid://cjq6scu5nepoj" path="res://World/spaceship/spaceship.tscn" id="6_2pltu"]
 [ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="7_f52ns"]
+[ext_resource type="Texture2D" uid="uid://fxf6w5dtyiu5" path="res://assets/assets kyun/tapis1.png" id="8_l5ukw"]
+[ext_resource type="Texture2D" uid="uid://csn75l145oimu" path="res://assets/assets kyun/tapis2.png" id="9_4srsv"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l5ukw"]
 albedo_texture = ExtResource("7_f52ns")
@@ -19,6 +21,38 @@ size = Vector3(3, 0.2, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_mf81u"]
 size = Vector3(3, 0.2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4srsv"]
+albedo_texture = ExtResource("8_l5ukw")
+uv1_scale = Vector3(3, 0, 1)
+uv1_world_triplanar = true
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_mf81u"]
+material = SubResource("StandardMaterial3D_4srsv")
+size = Vector3(0.01, 2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_02kkc"]
+size = Vector3(2, 0.05, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mf81u"]
+albedo_texture = ExtResource("9_4srsv")
+uv1_scale = Vector3(3, 2, 1)
+uv1_offset = Vector3(0, 2, 0)
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_02kkc"]
+material = SubResource("StandardMaterial3D_mf81u")
+size = Vector3(0.01, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aomqu"]
+albedo_texture = ExtResource("9_4srsv")
+uv1_scale = Vector3(3, 2, 3)
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_krmtw"]
+material = SubResource("StandardMaterial3D_aomqu")
+size = Vector3(0.01, 2, 2)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_f52ns"]
 properties/0/path = NodePath("Collector:position")
@@ -41,7 +75,7 @@ spawn_path = NodePath("../Alife manager")
 [node name="World" parent="." unique_id=642165895 instance=ExtResource("5_dugkq")]
 
 [node name="Collector" parent="." unique_id=987041243 instance=ExtResource("5_f52ns")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.9121866, 0, 5.899909)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.9121866, 2, 5.899909)
 
 [node name="SPACESHIP" parent="." unique_id=853925969 node_paths=PackedStringArray("alifemanager") instance=ExtResource("6_2pltu")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 32.899998, -27.8)
@@ -192,6 +226,298 @@ mesh = SubResource("BoxMesh_4srsv")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Platforms/access_platform16/StaticBody3D" unique_id=1717702805]
 shape = SubResource("BoxShape3D_mf81u")
+
+[node name="Carpets" type="Node3D" parent="SPACESHIP" unique_id=1568474445]
+
+[node name="carpet" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1694984342]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.4999987, -2.8999996, -14.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet" unique_id=1487750657]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet/StaticBody3D" unique_id=1308951580]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet29" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1776798293]
+transform = Transform3D(1.3113414e-07, 0, -1, 1, -4.371139e-08, 1.3113416e-07, -4.371139e-08, -1, 0, -0.49999875, -1.8999996, -13.705)
+mesh = SubResource("BoxMesh_02kkc")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet29" unique_id=1245471478]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet29/StaticBody3D" unique_id=330758124]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet2" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=547389634]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.49999857, -3.8949986, -15.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet2" unique_id=1758213334]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet2/StaticBody3D" unique_id=1671015556]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet3" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=458288075]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.4999985, -4.8999996, -16.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet3" unique_id=46555337]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet3/StaticBody3D" unique_id=262469740]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet4" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1036097617]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.4999984, -5.8949986, -17.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet4" unique_id=1390067074]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet4/StaticBody3D" unique_id=521888366]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet5" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=910894831]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.49999827, -6.8999996, -18.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet5" unique_id=212192573]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet5/StaticBody3D" unique_id=1577154545]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet6" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=224012228]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.49999815, -7.8949986, -19.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet6" unique_id=367425956]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet6/StaticBody3D" unique_id=1211354486]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet7" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=720136514]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.4999981, -8.9, -20.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet7" unique_id=1395617068]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet7/StaticBody3D" unique_id=1874309765]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet8" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=996326982]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.49999797, -9.894999, -21.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet8" unique_id=1012101641]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet8/StaticBody3D" unique_id=1345598751]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet9" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=2101251180]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.4999979, -10.9, -22.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet9" unique_id=820074822]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet9/StaticBody3D" unique_id=1576663121]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet10" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1412098230]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.4999978, -11.894999, -23.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet10" unique_id=715729726]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet10/StaticBody3D" unique_id=548039160]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet11" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=216876919]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.49999774, -12.9, -24.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet11" unique_id=1425768000]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet11/StaticBody3D" unique_id=1660791341]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet12" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=78484522]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.49999756, -13.894999, -25.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet12" unique_id=317543028]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet12/StaticBody3D" unique_id=160437350]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet13" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=225330888]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.4999975, -14.9, -26.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet13" unique_id=1617296141]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet13/StaticBody3D" unique_id=1352706242]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet14" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1411448633]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.49999738, -15.894999, -27.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet14" unique_id=16971756]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet14/StaticBody3D" unique_id=2037714204]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet15" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1621577863]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.4999973, -16.9, -28.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet15" unique_id=450311086]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet15/StaticBody3D" unique_id=1229769984]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet16" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1608342600]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.4999971, -17.894999, -29.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet16" unique_id=592364332]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet16/StaticBody3D" unique_id=2075960292]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet17" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=990382549]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.49999708, -18.9, -30.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet17" unique_id=1119931579]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet17/StaticBody3D" unique_id=1932824058]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet18" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1402046762]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.49999702, -19.894999, -31.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet18" unique_id=1227593424]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet18/StaticBody3D" unique_id=792812520]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet19" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=550407043]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.49999693, -20.9, -32.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet19" unique_id=1338091255]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet19/StaticBody3D" unique_id=50532787]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet20" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1721502740]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.49999675, -21.894999, -33.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet20" unique_id=21101523]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet20/StaticBody3D" unique_id=1228711865]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet21" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=76815414]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.49999672, -22.9, -34.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet21" unique_id=1565687788]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet21/StaticBody3D" unique_id=687190578]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet22" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1255746603]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.49999666, -23.894999, -35.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet22" unique_id=1218583998]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet22/StaticBody3D" unique_id=356478182]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet23" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1127103757]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.49999657, -24.9, -36.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet23" unique_id=349054305]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet23/StaticBody3D" unique_id=348527570]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet24" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1946037145]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.4999964, -25.894999, -37.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet24" unique_id=151508006]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet24/StaticBody3D" unique_id=1698072787]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet25" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=685620684]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.49999636, -26.9, -38.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet25" unique_id=614601536]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet25/StaticBody3D" unique_id=1859523424]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet26" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=1504270226]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.49999627, -27.894999, -39.71)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet26" unique_id=14234887]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet26/StaticBody3D" unique_id=86390009]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet27" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=208035019]
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -0.4999962, -28.9, -40.705)
+mesh = SubResource("BoxMesh_mf81u")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet27" unique_id=1877842517]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet27/StaticBody3D" unique_id=709769503]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
+
+[node name="carpet28" type="MeshInstance3D" parent="SPACESHIP/Carpets" unique_id=89003994]
+transform = Transform3D(-1.3113416e-07, -8.742278e-08, 1, 1, -4.371139e-08, 1.3113416e-07, 4.3711378e-08, 1, 8.742278e-08, -0.499996, -29.894999, -41.71)
+mesh = SubResource("BoxMesh_krmtw")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="SPACESHIP/Carpets/carpet28" unique_id=1053664614]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SPACESHIP/Carpets/carpet28/StaticBody3D" unique_id=1031509063]
+transform = Transform3D(-4.371137e-08, 1, -1.3113416e-07, -1, -4.371139e-08, -1.3113416e-07, -1.3113416e-07, 1.3113416e-07, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_02kkc")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1281864913]
 replication_config = SubResource("SceneReplicationConfig_f52ns")

@@ -30,6 +30,7 @@ var current_hunger = max_hunger
 var immune_to_death = false
 var is_alive = true
 var skin_index:int = 0 : set = set_skin
+var input_blocked = false
 
 var alifemanager_id : int
 
@@ -255,7 +256,8 @@ func _ready() -> void:
 			
 func _physics_process(_delta: float) -> void:
 	if is_multiplayer_authority() :
-
+		if input_blocked:
+			return  
 		#print("Player pos:", global_position, " lifedata pos:", lifedata["position"])
 		velocity.x = direction.x *speed 
 		velocity.z = direction.z *speed 
@@ -296,18 +298,24 @@ func giving_position_to_others(pos: Vector3) -> void:
 
 func _process(delta: float) -> void:
 	if multiplayer.is_server():
+		if input_blocked:
+			return  
 		if int(name) == null:
 			pass
 		else:
 			if lifedata["current_energy"] > 0:
 				if speed > 9:
+					lifedata["current_energy"] -= 1*delta
+				else:
 					lifedata["current_energy"] -= 0.5*delta
-				lifedata["current_energy"] -= 0.5*delta
 			if lifedata["current_energy"] > 49 and lifedata["current_health"]<lifedata["Max_health"]:
 				lifedata["current_health"] += 1*delta
 				lifedata["current_energy"] -= 1*delta
 			if lifedata["current_energy"] <= 0:
-				lifedata["current_health"] -= 1*delta
+				if speed > 9:
+					lifedata["current_health"] -= 1.5*delta
+				else: 
+					lifedata["current_health"] -= 1*delta
 			if lifedata["current_health"] <= 0:
 				#Die()
 				Die.rpc_id(1, int(name))
@@ -415,13 +423,9 @@ func respawn():
 @rpc("any_peer","call_local")
 func respawn_server():
 	#is_alive = true
-	lifedata["current_health"] = 100
-	lifedata["current_energy"] = 200
-	lifedata["Max_energy"] = 200
-	lifedata["Max_health"] = 100
-	inventory_capacity_upgrade = 1
+	lifedata["current_health"] = 50
+	lifedata["current_energy"] = 100
 	lifedata["Alive"] = 1
-	lifedata["Inventory_capacity"] = 1
 
 @rpc("any_peer","call_remote")
 func update_status_of_player():
@@ -633,22 +637,7 @@ func remove_durability(amount):
 		#print(item_hold["Durability"])
 		get_node("Player_HUD").get_node("Inventory").update_durability(int(name))
 		if item_hold["Data"][0]["durability"] <= 0 :
-			#get_node("Player_HUD").get_node("Inventory").get_node("ItemSlot").get_node("ProgressBar")
 			get_node("Player_HUD").get_node("Inventory").remove_selected(int(name))
-
-
-#func remove_durability(amount):
-	#if item_hold:
-		#item_hold["Durability"] -= amount
-		#print(item_hold["Durability"])
-#
-		#var slot = get_node("Player_HUD/Inventory/ItemSlot")
-		#slot.get_node("ProgressBar").value = item_hold["Durability"]
-#
-		#if item_hold["Durability"] <= 0:
-			#get_node("Player_HUD/Inventory").remove_selected(int(name))
-
-
 
 
 func add_to_inventory(alife):
@@ -694,3 +683,8 @@ func show_label_above_player(string, color, time, type):
 	#label.queue_free()
 
 #OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!
+
+@rpc("any_peer", "call_remote")
+func set_input_blocked(blocked: bool):
+	input_blocked = blocked
+	set_process_input(not blocked)  # disables _input() if blocked

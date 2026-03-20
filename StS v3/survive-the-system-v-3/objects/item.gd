@@ -11,5 +11,5 @@ class_name ItemResource
 @export var item_path:String
 #@export var durability:float
 @export var Init_durability:float
-@export var Name:String
 @export var Max_quantity_in_shop:int =5
+@export var Price:float = 1

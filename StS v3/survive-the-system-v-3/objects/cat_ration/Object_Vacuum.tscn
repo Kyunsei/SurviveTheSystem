@@ -24,6 +24,7 @@ stack_amount = 1
 item_path = "res://objects/cat_ration/Object_Vacuum.tscn"
 Init_durability = 300.0
 Name = "Basic vacuum"
+Price = 10.0
 metadata/_custom_type_script = "uid://udee2xxejlu"
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_5kluo"]

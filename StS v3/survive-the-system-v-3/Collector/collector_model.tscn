@@ -34,7 +34,7 @@ texture_filter = 0
 
 [sub_resource type="BoxMesh" id="BoxMesh_c8m64"]
 material = SubResource("StandardMaterial3D_r5pjn")
-size = Vector3(1.5, 4, 1.5)
+size = Vector3(3, 8, 3)
 
 [node name="Collector_model" type="Node3D" unique_id=812750137]
 
