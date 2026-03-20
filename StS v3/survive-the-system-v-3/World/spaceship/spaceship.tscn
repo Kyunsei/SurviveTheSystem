@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://gfl2a22r2q8k" path="res://assets/asset dabols/tent.fbx" id="13_se27s"]
 [ext_resource type="PackedScene" uid="uid://qfu1yg6tgwwa" path="res://assets/asset dabols/axe 1.fbx" id="14_nk3pt"]
 [ext_resource type="PackedScene" uid="uid://chjic71ilko3" path="res://World/spaceship/merchant.tscn" id="15_nk3pt"]
-[ext_resource type="PackedScene" uid="uid://xdftdnqf5rqk" path="res://Upgrades/shop_area.tscn" id="16_0qcqw"]
+[ext_resource type="PackedScene" uid="uid://25rdqxkav8k1" path="res://Upgrades/shop_area.tscn" id="16_0qcqw"]
 [ext_resource type="Texture2D" uid="uid://buygphmgtqybj" path="res://World/spaceship/sunflower.png" id="17_w0aba"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_2jlj7"]
@@ -125,7 +125,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 shape = SubResource("ConcavePolygonShape3D_w7yga")
 
 [node name="moving_ground3" type="StaticBody3D" parent="ship" unique_id=1691597140]
-transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, -0.02, -7)
+transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, 0, -7)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/moving_ground3" unique_id=200447330]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)

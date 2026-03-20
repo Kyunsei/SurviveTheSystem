@@ -95,6 +95,6 @@ func change_server_simulation_speed2(value):
 	if isWorldAccelerated == false:
 		var spaceship = player.get_parent().get_parent().get_node("SPACESHIP")
 		spaceship.block_entrance.rpc_id(1)
-		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 1000
+		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 250
 		GlobalSimulationParameter.simulation_speed = value
 		isWorldAccelerated = true
