@@ -89,6 +89,8 @@ func buy_item(id, price, path):
 
 @rpc("any_peer","call_remote")
 func change_quantity():
+	if quantity == null:
+		return
 	quantity -= 1
 	quantity_label.text = str("In stock: ") + str(quantity)
 	
