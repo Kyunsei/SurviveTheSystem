@@ -4,5 +4,5 @@
 
 [resource]
 script = ExtResource("1_80s50")
-food_type = PackedInt32Array(0)
+food_species_id = PackedInt32Array(0)
 metadata/_custom_type_script = "uid://bjxrr7mr4nwni"

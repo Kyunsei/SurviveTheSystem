@@ -1,8 +1,7 @@
 extends STATE
 class_name EAT_STATE
 
-@export var food_species_id : PackedInt32Array
-@export var target_species : int = 0
+var target_species : int = 0
 @export var distance_to_eat : float = 0.2
 
 func evaluate(_manager,_i, _DNA):
@@ -20,14 +19,13 @@ func evaluate(_manager,_i, _DNA):
 	#DITANCE OF FOOD SCORE
 	#var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,1)
 	var food_score = 0
-	for f in food_species_id:
+	for f in _DNA.food_species_id :
 		var fscore = 0
 		if _manager.sum_species_world_array[f][bin] > 0:
 			var targets = _manager.World.bin_array[bin]
-			var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,target_species)
+			var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,f)
 			if close_target_id:
 				var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
-				#print(dir.length() )
 				if dir.length() > distance_to_eat or targets.size() == 0:
 					fscore = 0  #25 is the max life in a place...
 				else:
@@ -56,17 +54,17 @@ func update(manager,i, _DNA, _delta):
 	#print(manager.field_world_array[0][bin])
 	#print(manager.field_world_array[0][bin+1])
 	#print(manager.calculate_flow_at_bin(0,bin).normalized())
+	for f in _DNA.food_species_id:
+		var ti = find_closest_in_bin(manager,i, bin,  f)
+		if ti != null:
 
-	var ti = find_closest_in_bin(manager,i, bin,  target_species)
-	if ti != null:
 
-
-		#manager.current_health_array[ti] = -100
-		if manager._pending_kills.has(ti) == false:
-			manager._pending_kills.append(ti)
-			manager.current_energy_array[i] += manager.current_biomass_array[ti]
-			manager.current_energy_array[i] = min(manager.current_energy_array[i],_DNA.Max_energy[0] )
-			
+			#manager.current_health_array[ti] = -100
+			if manager._pending_kills.has(ti) == false:
+				manager._pending_kills.append(ti)
+				manager.current_energy_array[i] += manager.current_biomass_array[ti]
+				manager.current_energy_array[i] = min(manager.current_energy_array[i],_DNA.Max_energy[0] )
+				
 		#manager.Active[ti] = 0
 
 		#manager.current_energy_array[i] += manager.current_biomass_array[ti]

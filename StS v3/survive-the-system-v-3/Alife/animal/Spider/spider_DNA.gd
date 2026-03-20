@@ -31,8 +31,10 @@ func Init():
 	Reproduction_number =[1,1]
 	Biomass =[5000,5000] #MAYBE NO LONGER IN USE
 
-#--- RENDERING ----
-
+#--- BEHAVIOUR ----
+	food_species_id  = [AlifeRegistry.SPECIES_ID.SHEEP,AlifeRegistry.SPECIES_ID.CAT]
+	danger_species_id = []
+	friend_species_id = []
 #????
 
 

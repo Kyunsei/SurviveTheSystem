@@ -32,8 +32,10 @@ func Init():
 	Reproduction_number =[1,1]
 	Biomass =[5000,5000] #MAYBE NO LONGER IN USE
 
-#--- RENDERING ----
-
+#--- BEHAVIOUR ----
+	food_species_id  = [AlifeRegistry.SPECIES_ID.GRASS]
+	danger_species_id = [AlifeRegistry.SPECIES_ID.CAT]
+	friend_species_id = [AlifeRegistry.SPECIES_ID.SHEEP]
 #????
 	for si in range(state_array.size()):
 		state_array[si].state_internal_id = si

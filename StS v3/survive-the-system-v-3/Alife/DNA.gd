@@ -48,8 +48,11 @@ class_name DNA
 @export var is_animal : bool = false'
 
 
-
 # --- BEHAVIOUR FUNCTIONS ---
+@export var food_species_id : PackedInt32Array
+@export var danger_species_id : PackedInt32Array
+@export var friend_species_id : PackedInt32Array
+
 
 func Init():
 	pass
