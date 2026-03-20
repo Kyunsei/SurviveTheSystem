@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://thsj6h0d3ou" path="res://Z_NOTMOREINUSE/Grass_Manager.tscn" id="6_ruoec"]
 [ext_resource type="PackedScene" uid="uid://dsidfhuppxvrw" path="res://Alife/animal/beast_manager.tscn" id="7_1roai"]
 [ext_resource type="Script" uid="uid://cww3w3dis212h" path="res://objects/item_manager.gd" id="8_byu03"]
-[ext_resource type="PackedScene" uid="uid://b4aghfi4iytr7" path="res://Alife/Plant/grass_manager2.tscn" id="9_byu03"]
+[ext_resource type="PackedScene" uid="uid://b4aghfi4iytr7" path="res://Alife/grass_manager2.tscn" id="9_byu03"]
 
 [node name="Alife manager" type="Node3D" unique_id=1345180502]
 script = ExtResource("1_yx3o6")
@@ -28,7 +28,7 @@ visible = false
 script = ExtResource("8_byu03")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="Item_Manager" unique_id=1684953852]
-_spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk", "uid://dp2plghkprved", "uid://dbwdx01q5ioyq", "uid://dbanod5ff41km", "uid://x5133e6ia1a8", "uid://d0sojihfxo727")
+_spawnable_scenes = PackedStringArray("uid://uhlobdlhytqk", "uid://dp2plghkprved", "uid://dbwdx01q5ioyq", "uid://dbanod5ff41km")
 spawn_path = NodePath("..")
 
 [node name="Grass_Manager2" parent="." unique_id=2019447816 instance=ExtResource("9_byu03")]

@@ -46,26 +46,28 @@ var current_finite_state_array :  PackedInt32Array
 var light_index_array : Array = []
 
 #SPECIES SPECIFICIC WILL ALL MOVE TO DNA?
-enum SPECIES_ID {GRASS,TREE,MOSS,BERRY,SHEEP,CAT,SPIDERCRAB}
+#enum SPECIES_ID {GRASS,TREE,MOSS,BERRY,SHEEP,CAT,SPIDERCRAB}
 
 var SPECIES = {
-	SPECIES_ID.GRASS: preload("res://Alife/Plant/Grass/GRASS.tres") ,
-	SPECIES_ID.TREE: preload("res://Alife/Plant/tree/TREE.tres"),
-	SPECIES_ID.MOSS:preload("res://Alife/Plant/Moss/MOSS_GENOME.tres"),
-	SPECIES_ID.BERRY:preload("res://Alife/Plant/Bush/BERRY.tres"),
-	SPECIES_ID.SHEEP:preload("res://Alife/animal/Herbivor/Sheep/SHEEP.tres"),
-	SPECIES_ID.CAT:preload("res://Alife/animal/PLAYER/CAT_DNA.tres"),
-	SPECIES_ID.SPIDERCRAB:preload("res://Alife/animal/Spider/SPIDERCRAB_DNA.tres")
+	AlifeRegistry.SPECIES_ID.GRASS: preload("res://Alife/Plant/Grass/GRASS.tres") ,
+	AlifeRegistry.SPECIES_ID.TREE: preload("res://Alife/Plant/tree/TREE.tres"),
+	AlifeRegistry.SPECIES_ID.MOSS:preload("res://Alife/Plant/Moss/MOSS_GENOME.tres"),
+	AlifeRegistry.SPECIES_ID.BERRY:preload("res://Alife/Plant/Bush/BERRY.tres"),
+	AlifeRegistry.SPECIES_ID.SHEEP:preload("res://Alife/animal/Herbivor/Sheep/SHEEP.tres"),
+	AlifeRegistry.SPECIES_ID.CAT:preload("res://Alife/animal/PLAYER/CAT_DNA.tres"),
+	AlifeRegistry.SPECIES_ID.SPIDERCRAB:preload("res://Alife/animal/Spider/SPIDERCRAB_DNA.tres"),
+	AlifeRegistry.SPECIES_ID.SPIKYFLOWER: preload("res://Alife/Plant/spikyflower/SPIKY.tres")
 }
 
 @onready var SPECIES_RENDERERS = { 
-	SPECIES_ID.GRASS: $grass,
-	 SPECIES_ID.TREE: $tree,
-	 SPECIES_ID.MOSS: $moss,
-	 SPECIES_ID.SHEEP: $sheep,
-	 SPECIES_ID.BERRY: $berry,
-	SPECIES_ID.SPIDERCRAB : $spidercrab,
-	SPECIES_ID.CAT : null
+	AlifeRegistry.SPECIES_ID.GRASS: $grass,
+	 AlifeRegistry.SPECIES_ID.TREE: $tree,
+	AlifeRegistry. SPECIES_ID.MOSS: $moss,
+	AlifeRegistry. SPECIES_ID.SHEEP: $sheep,
+	 AlifeRegistry.SPECIES_ID.BERRY: $berry,
+	AlifeRegistry.SPECIES_ID.SPIDERCRAB : $spidercrab,	
+	AlifeRegistry.SPECIES_ID.CAT : null,
+	AlifeRegistry.SPECIES_ID.SPIKYFLOWER : $spiky
 	 }
 #@export var species_list : Array[DNA]
 #var species_id_array : Array =[]
@@ -765,10 +767,10 @@ func build_species_tables():
 	species_biomass.resize(count)
 	
 
-	for key in SPECIES_ID:
+	for key in AlifeRegistry.SPECIES_ID:
 
 		
-		var id = SPECIES_ID[key] #s.species_id	
+		var id = AlifeRegistry.SPECIES_ID[key] #s.species_id	
 		var s = SPECIES[id]
 		s.Init()
 		species_max_energy[id] = s.Max_energy

@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="SPIKYFLOWER" format=3 uid="uid://5xs4csg13e2w"]
+
+[ext_resource type="Script" uid="uid://7q1jv3xiofwp" path="res://Alife/Plant/spikyflower/spikyflower_dna.gd" id="1_ri8a1"]
+
+[resource]
+script = ExtResource("1_ri8a1")
+metadata/_custom_type_script = "uid://7q1jv3xiofwp"
