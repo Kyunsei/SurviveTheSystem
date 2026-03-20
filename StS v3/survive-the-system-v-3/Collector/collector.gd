@@ -11,7 +11,8 @@ var credit_gain = 0
 var collecting = true
 var timer_to_escape = int(91)
 var safe_timer = int(6)
-var factor =  0.005
+#var factor =  0.005
+var factor =  5.0
 var InsideBiomassInitHeight
 
 
@@ -90,10 +91,10 @@ func interact(player):
 		collecting = false
 		print("BRAVO")
 		#var c = 0
-		spaceship.get_node("Collector_ship").go_down()
+		#spaceship.get_node("Collector_ship").go_down()
 		update_insideBiomass()
 		#.go_down.rpc_id(1)
-		start_escape_phase(player)
+		#start_escape_phase(player)
 		#for i in player.get_parent().player_array:
 			#i.escape_fast_or_die.rpc_id(int(i.name))
 			#i.go_back_to_ship.rpc_id(int(i.name),c)
@@ -172,8 +173,8 @@ func update_label():
 func update_insideBiomass():
 	var fill_percentage = clamp(Biomass_collected/max_biomass, 0.0, 1.0)
 	$InsideMesh.scale.y = fill_percentage
-	var natural_offset = -3.6 #natural offset
-	$InsideMesh.position.y = (natural_offset + InsideBiomassInitHeight*fill_percentage)/2
+	var natural_offset = -3.6  + InsideBiomassInitHeight*fill_percentage#natural offset
+	$InsideMesh.position.y = (natural_offset + (InsideBiomassInitHeight*fill_percentage))/2
 
 #@rpc("any_peer","call_local")
 func credit_player(player):
