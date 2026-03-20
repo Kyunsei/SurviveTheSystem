@@ -1,8 +1,8 @@
-[gd_scene format=3 uid="uid://x5133e6ia1a8"]
+[gd_scene format=3 uid="uid://cxh1aq1dvagk2"]
 
 [ext_resource type="Texture2D" uid="uid://iq5bl3muij21" path="res://assets/assets kyun/strawB1.png" id="1_imyub"]
 [ext_resource type="Script" uid="uid://cgucr21etv36j" path="res://objects/cat_ration/object_strawberry.gd" id="2_k38y5"]
-[ext_resource type="Resource" uid="uid://cjkf0rm4ojw4m" path="res://objects/cat_ration/object_strawberry.tres" id="3_2jns5"]
+[ext_resource type="Resource" path="res://objects/cat_ration/object_strawberry.tres" id="3_2jns5"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
 transparency = 1

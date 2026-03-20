@@ -1,8 +1,8 @@
-[gd_scene format=3 uid="uid://dbanod5ff41km"]
+[gd_scene format=3 uid="uid://b1rfxli8e83o2"]
 
 [ext_resource type="Script" uid="uid://depph5ro6vf6g" path="res://objects/cat_ration/object_mango.gd" id="2_ek6vj"]
 [ext_resource type="Texture2D" uid="uid://cdkvnt6yjclcs" path="res://assets/assets kyun/mango1.png" id="3_dx4fj"]
-[ext_resource type="Resource" uid="uid://c1scwqh4dvuuw" path="res://objects/cat_ration/object_mango.tres" id="3_ra2b7"]
+[ext_resource type="Resource" path="res://objects/cat_ration/object_mango.tres" id="3_ra2b7"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
 transparency = 1

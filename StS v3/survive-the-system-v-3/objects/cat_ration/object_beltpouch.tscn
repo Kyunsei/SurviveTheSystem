@@ -1,8 +1,8 @@
-[gd_scene format=3 uid="uid://d0sojihfxo727"]
+[gd_scene format=3 uid="uid://c88tc34hx6uu8"]
 
 [ext_resource type="Texture2D" uid="uid://4rs6dmpbu18s" path="res://assets/assets kyun/belt_pouch1.png" id="1_6rxxq"]
 [ext_resource type="Script" uid="uid://bmeb6euy4rg1j" path="res://objects/cat_ration/object_beltpouch.gd" id="2_ug4by"]
-[ext_resource type="Resource" uid="uid://b2plhjlatrwnl" path="res://objects/cat_ration/object_beltpouch.tres" id="3_p2flt"]
+[ext_resource type="Resource" path="res://objects/cat_ration/object_beltpouch.tres" id="3_p2flt"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
 transparency = 1
