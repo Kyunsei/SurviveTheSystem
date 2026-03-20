@@ -15,6 +15,8 @@ var itemData = {
 	"Init_durability" :100
 }
 
+
+
 @rpc("any_peer","call_local")
 func Add():
 	if multiplayer.is_server():
@@ -34,6 +36,7 @@ func delete_item():
 #@rpc("any_peer","call_local")
 func add_to_player(body,peer_id):
 		var inventory = body.get_node("Player_HUD").get_node("Inventory")
+		itemData["Init_durability"] = item_ressources.Init_durability
 		if inventory.add_item(inventory.prep_item(self),peer_id):
 			#print("Cat ration picked up")
 			Remove()

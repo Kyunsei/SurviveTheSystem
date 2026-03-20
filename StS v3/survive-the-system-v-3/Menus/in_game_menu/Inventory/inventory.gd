@@ -44,6 +44,7 @@ func prep_item(new_item):
 	#item["Init_durability"] = new_item.item_ressources.Durability
 	new_item.itemData["inventory_path"] = new_item.item_ressources.item_path
 	item["Data"] = [new_item.itemData]
+	print(new_item.itemData)
 
 	#print(item)
 	return item
