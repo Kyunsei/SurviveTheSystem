@@ -9,10 +9,7 @@ var current_stock: Array = []
 #var player
 var needupdgrade = false
 
-func _ready():
-	if multiplayer.is_server():
-		generate_shop()
-		#populate_grid()
+
 
 func _process(delta: float) -> void:
 	if multiplayer.is_server():
@@ -50,6 +47,8 @@ func generate_shop():
 			"item": legendary_choice[0],
 			"quantity": 1
 		})
+	
+	populate_grid()
 	'else:
 		if randi_range(1, 3) == 1 and not legendary_item_pool.is_empty():
 			var legendary_choice = legendary_item_pool.duplicate()
@@ -59,16 +58,24 @@ func generate_shop():
 				"quantity": 1
 			})'
 
-@rpc("any_peer","call_local")
-func populate_grid(peer_id):
+#@rpc("any_peer","call_local")
+func populate_grid():
 	for child in grid.get_children():
 		child.queue_free()
 	#get_server_Stock_for.rpc_id(1,multiplayer.get_unique_id())
-	var c = 0
+	#var c = 0
 	for entry in current_stock:
 		var item_instance = shop_item_scene.instantiate()
 		grid.add_child(item_instance,true)
-		item_instance.call_deferred("setup",peer_id, entry["item"], entry["quantity"],c)
+		#item_instance.call_deferred("setup",peer_id, entry["item"], entry["quantity"],c)
+		#c+= 1
+
+@rpc("any_peer","call_local")
+func update_grid(peer_id):
+	get_server_Stock_for.rpc_id(1,multiplayer.get_unique_id())
+	var c = 0
+	for entry in grid.get_children():
+		entry.call_deferred("setup",peer_id, current_stock[c]["item"], current_stock[c]["quantity"],c)
 		c+= 1
 
 
@@ -116,6 +123,3 @@ func block(peer_id, state:bool):
 	else:
 		print("ID OF PLAYER LOST / IN shop.gd")
 	
-@rpc("authority", "call_local", "reliable")
-func sync_shop(player_id):
-	print("shop synced?")

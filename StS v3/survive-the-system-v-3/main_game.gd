@@ -23,6 +23,6 @@ func on_server_started():
 		#for i in range(40000):
 		#$"Alife manager".Spawn_life.rpc_id(1,Vector3(-15,0,-15),"grass")
 		#$"Alife manager".Spawn_life_without_pool.rpc_id(1,Vector3(20,0,15), "tree")
-
+		$SPACESHIP/Shop_area.init_shop()
 		GlobalSimulationParameter.SimulationStarted = true
 		#GlobalSimulationParameter.simulation_speed = 0.5

@@ -26,6 +26,7 @@ func setup(peer_id, item: ItemResource, qty: int, id):
 	id_in_stock = id
 
 	#if item.inventory_icon:
+	
 	image.texture = item.inventory_icon
 	prizez = item.Price
 	itemz_path = item.item_path
@@ -39,6 +40,7 @@ func setup(peer_id, item: ItemResource, qty: int, id):
 
 @rpc("any_peer","call_local")
 func setup_client(item_path, qty: int,id):
+	#print(item_path)
 	var item = load(item_path)
 	itemz= item
 	image = $TextureRect
@@ -59,14 +61,10 @@ func setup_client(item_path, qty: int,id):
 
 @rpc("any_peer","call_local")
 func _on_pressed() -> void:
-	if quantity > 0 :
-		Shop_area = get_parent().get_parent().get_parent().get_parent().get_parent()
-		#Alife_manager =  get_parent().get_parent().get_parent().get_parent().get_parent().get_parent().get_parent().get_node("Alife manager")
-		#if check_money.rpc_id(1, Shop_area.local_p_id, itemz.price) == true:
+
 		
-		buy_item.rpc_id(1, multiplayer.get_unique_id(), prizez, itemz_path)
-			#quantity -= 1
-			#quantity_label.text = str(quantity)
+	buy_item.rpc_id(1, multiplayer.get_unique_id(), prizez, itemz_path)
+
 
 @rpc("any_peer","call_remote")
 func buy_item(id, price, path):
@@ -75,17 +73,19 @@ func buy_item(id, price, path):
 	var shop =  get_parent().get_parent().get_parent()
 	Alife_manager =  get_parent().get_parent().get_parent().get_parent().get_parent().get_parent().get_parent().get_node("Alife manager")
 	item_spawn_position= Shop_area.global_position
-	for p in Alife_manager.player_array :
-			#print(p.name)
-			#print(str(id))
-		if p.name == str(id) :
-			if p.catnation_credits >= price:
+	if shop.current_stock[id_in_stock]["quantity"]  > 0 :
 
-				Alife_manager.get_node("Item_Manager").spawn_new_item(path,item_spawn_position)
-				p.catnation_credits -= price
-				shop.current_stock[id_in_stock]["quantity"] -=1
-				#quantity -= 1
-				change_quantity.rpc_id(id)
+		for p in Alife_manager.player_array :
+				#print(p.name)
+				#print(str(id))
+			if p.name == str(id) :
+				if p.catnation_credits >= price:
+
+					Alife_manager.get_node("Item_Manager").spawn_new_item(path,item_spawn_position)
+					p.catnation_credits -= price
+					shop.current_stock[id_in_stock]["quantity"] -=1
+					#quantity -= 1
+					change_quantity.rpc()
 
 @rpc("any_peer","call_remote")
 func change_quantity():

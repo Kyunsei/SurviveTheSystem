@@ -7,6 +7,8 @@ func _ready() -> void:
 	pass
 
 
+func init_shop():
+	$shopCanvas/Node.generate_shop()
 
 func interact(player):
 	
@@ -19,7 +21,7 @@ func interact(player):
 @rpc("any_peer", "call_remote")
 func rpc_show_shop():
 	$shopCanvas.show()
-	$shopCanvas/Node.populate_grid.rpc_id(1,multiplayer.get_unique_id())
+	$shopCanvas/Node.update_grid.rpc_id(1,multiplayer.get_unique_id())
 	#if multiplayer.get_unique_id() == local_p_id:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
