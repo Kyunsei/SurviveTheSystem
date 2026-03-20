@@ -19,6 +19,7 @@ func spawn_new_item(path,pos):
 	#if multiplayer.is_server():
 	var scene = load(path)
 	var newitem = scene.instantiate()
+	newitem.Init()
 	newitem.position = pos
 	add_child(newitem,true)
 	#add_child(newitem)
