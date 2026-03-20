@@ -174,10 +174,11 @@ func change_index(peer_id,idx):
 		item = items[idx][0].item
 	player.equip_item(item)
 	player.equip_item.rpc_id(peer_id,item)
-	if item.has("Data"):
-		if item["Data"][0] is Dictionary:
-			if item["Data"][0].has("durability"):
-				items[current_index][0].show_durability.rpc_id(peer_id,item["Data"][0]["durability"], item["Data"][0]["Init_durability"])
+	if item:
+		if item.has("Data"):
+			if item["Data"][0] is Dictionary:
+				if item["Data"][0].has("durability"):
+					items[current_index][0].show_durability.rpc_id(peer_id,item["Data"][0]["durability"], item["Data"][0]["Init_durability"])
 
 
 
