@@ -15,7 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://gfl2a22r2q8k" path="res://assets/asset dabols/tent.fbx" id="13_se27s"]
 [ext_resource type="PackedScene" uid="uid://qfu1yg6tgwwa" path="res://assets/asset dabols/axe 1.fbx" id="14_nk3pt"]
 [ext_resource type="PackedScene" uid="uid://chjic71ilko3" path="res://World/spaceship/merchant.tscn" id="15_nk3pt"]
-[ext_resource type="PackedScene" uid="uid://xdftdnqf5rqk" path="res://Upgrades/shop_area.tscn" id="16_0qcqw"]
+[ext_resource type="PackedScene" path="res://Upgrades/shop_area.tscn" id="16_0qcqw"]
+[ext_resource type="Texture2D" uid="uid://buygphmgtqybj" path="res://World/spaceship/sunflower.png" id="17_w0aba"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_2jlj7"]
 size = Vector3(13, 0.5, 9)
@@ -230,5 +231,9 @@ text = "Sell me your biomass!"
 
 [node name="Shop_area" parent="." unique_id=537030959 instance=ExtResource("16_0qcqw")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.9999995, 0.6, -5.7999997)
+
+[node name="EASTEREGG" type="Sprite3D" parent="." unique_id=784885955]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.08099604, 10.810995, 0)
+texture = ExtResource("17_w0aba")
 
 [connection signal="area_entered" from="go_button/Area3D_go_button" to="go_button" method="_on_area_3d_area_entered"]

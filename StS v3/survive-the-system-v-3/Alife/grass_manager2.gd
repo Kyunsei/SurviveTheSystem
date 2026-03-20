@@ -56,7 +56,10 @@ var SPECIES = {
 	AlifeRegistry.SPECIES_ID.SHEEP:preload("res://Alife/animal/Herbivor/Sheep/SHEEP.tres"),
 	AlifeRegistry.SPECIES_ID.CAT:preload("res://Alife/animal/PLAYER/CAT_DNA.tres"),
 	AlifeRegistry.SPECIES_ID.SPIDERCRAB:preload("res://Alife/animal/Spider/SPIDERCRAB_DNA.tres"),
-	AlifeRegistry.SPECIES_ID.SPIKYFLOWER: preload("res://Alife/Plant/spikyflower/SPIKY.tres")
+	AlifeRegistry.SPECIES_ID.SPIKYFLOWER: preload("res://Alife/Plant/spikyflower/SPIKY.tres"),
+	AlifeRegistry.SPECIES_ID.JELLYBEE: preload("res://Alife/animal/Herbivor/jellybee/JELLYBEE.tres"),
+	AlifeRegistry.SPECIES_ID.SNAILCAT: preload("res://Alife/animal/Herbivor/Snailbat/SNAILBAT.tres")
+
 }
 
 @onready var SPECIES_RENDERERS = { 
@@ -67,7 +70,9 @@ var SPECIES = {
 	 AlifeRegistry.SPECIES_ID.BERRY: $berry,
 	AlifeRegistry.SPECIES_ID.SPIDERCRAB : $spidercrab,	
 	AlifeRegistry.SPECIES_ID.CAT : null,
-	AlifeRegistry.SPECIES_ID.SPIKYFLOWER : $spiky
+	AlifeRegistry.SPECIES_ID.SPIKYFLOWER : $spiky,
+	AlifeRegistry.SPECIES_ID.SNAILCAT : $snailbat,
+	AlifeRegistry.SPECIES_ID.JELLYBEE: $jellybee
 	 }
 #@export var species_list : Array[DNA]
 #var species_id_array : Array =[]

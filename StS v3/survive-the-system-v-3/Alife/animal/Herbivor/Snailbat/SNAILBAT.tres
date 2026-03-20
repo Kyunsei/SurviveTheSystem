@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="SNAILBAT" format=3 uid="uid://vwbw1av44sht"]
+
+[ext_resource type="Script" uid="uid://dp3uir4bwf3nd" path="res://Alife/animal/Herbivor/Snailbat/snailbat_dna.gd" id="1_nqa52"]
+[ext_resource type="Script" uid="uid://btfv6wp0e0836" path="res://Alife/AIv2/STATE.gd" id="2_v5mio"]
+
+[resource]
+script = ExtResource("1_nqa52")
+metadata/_custom_type_script = "uid://dp3uir4bwf3nd"

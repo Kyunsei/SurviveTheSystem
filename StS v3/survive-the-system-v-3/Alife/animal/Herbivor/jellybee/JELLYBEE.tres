@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="JELLYBEE" format=3 uid="uid://c4q6rq4bqs1bd"]
+
+[ext_resource type="Script" uid="uid://cy2bwmfix1qdg" path="res://Alife/animal/Herbivor/jellybee/jellybee_dna.gd" id="1_f5qvq"]
+[ext_resource type="Script" uid="uid://btfv6wp0e0836" path="res://Alife/AIv2/STATE.gd" id="2_i8i3l"]
+
+[resource]
+script = ExtResource("1_f5qvq")
+metadata/_custom_type_script = "uid://cy2bwmfix1qdg"
