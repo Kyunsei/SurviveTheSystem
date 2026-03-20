@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://chtr6unxbbpef" path="res://Collector/collector_model.tscn" id="1_mrs3r"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0s0nn"]
-size = Vector3(3.5, 6, 3.5)
+size = Vector3(4, 7, 4)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0s0nn"]
 properties/0/path = NodePath("collected_amount_Label3D:text")
@@ -25,20 +25,18 @@ albedo_color = Color(0.33333334, 0.73333335, 0.4745098, 0.53333336)
 
 [sub_resource type="BoxMesh" id="BoxMesh_84hyi"]
 material = SubResource("StandardMaterial3D_dwx45")
-size = Vector3(2.8, 7.6, 2.8)
+size = Vector3(2.8, 7.8, 2.8)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_dwx45"]
-size = Vector3(3, 8, 3)
-
-[node name="Collector" type="StaticBody3D" unique_id=1577881975 groups=["Collector"]]
+[node name="Collector" type="Node3D" unique_id=1725736807 groups=["Collector"]]
 script = ExtResource("1_0s0nn")
 
 [node name="Collector_model" parent="." unique_id=812750137 instance=ExtResource("1_mrs3r")]
 
 [node name="Collecting_Area3D" type="Area3D" parent="." unique_id=601176491]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.29999995, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Collecting_Area3D" unique_id=127582711]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9000001, 0)
 shape = SubResource("BoxShape3D_0s0nn")
 
 [node name="collected_amount_Label3D" type="Label3D" parent="." unique_id=590932852]
@@ -52,7 +50,3 @@ replication_config = SubResource("SceneReplicationConfig_0s0nn")
 [node name="InsideMesh" type="MeshInstance3D" parent="." unique_id=417898275]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0000002, 0)
 mesh = SubResource("BoxMesh_84hyi")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1682799541]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
-shape = SubResource("BoxShape3D_dwx45")

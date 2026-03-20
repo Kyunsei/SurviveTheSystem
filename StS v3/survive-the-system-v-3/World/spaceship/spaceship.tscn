@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://gfl2a22r2q8k" path="res://assets/asset dabols/tent.fbx" id="13_se27s"]
 [ext_resource type="PackedScene" uid="uid://qfu1yg6tgwwa" path="res://assets/asset dabols/axe 1.fbx" id="14_nk3pt"]
 [ext_resource type="PackedScene" uid="uid://chjic71ilko3" path="res://World/spaceship/merchant.tscn" id="15_nk3pt"]
-[ext_resource type="PackedScene" path="res://Upgrades/shop_area.tscn" id="16_0qcqw"]
+[ext_resource type="PackedScene" uid="uid://xdftdnqf5rqk" path="res://Upgrades/shop_area.tscn" id="16_0qcqw"]
 [ext_resource type="Texture2D" uid="uid://buygphmgtqybj" path="res://World/spaceship/sunflower.png" id="17_w0aba"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_2jlj7"]
@@ -56,6 +56,18 @@ size = Vector2(10, 12)
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_2jlj7"]
 data = PackedVector3Array(5, 0, 6, -5, 0, 6, 5, 0, -6, -5, 0, 6, -5, 0, -6, 5, 0, -6)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w0aba"]
+albedo_texture = ExtResource("3_qscrw")
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_metb3"]
+material = SubResource("StandardMaterial3D_w0aba")
+size = Vector3(0.7, 0.4, 0.7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4exu8"]
+size = Vector3(0.7, 0.4, 0.7)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_8txik"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8txik"]
@@ -91,7 +103,7 @@ mesh = SubResource("BoxMesh_2jlj7")
 shape = SubResource("BoxShape3D_qscrw")
 
 [node name="moving_ground1" type="StaticBody3D" parent="ship" unique_id=1158021671]
-transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, 0, 4.5)
+transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, -0.02, 4.5)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/moving_ground1" unique_id=1992877223]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -102,7 +114,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 shape = SubResource("ConcavePolygonShape3D_w7yga")
 
 [node name="moving_ground2" type="StaticBody3D" parent="ship" unique_id=1839156586]
-transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, 0, -3)
+transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, -0.02, -3)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/moving_ground2" unique_id=1037102978]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -113,7 +125,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
 shape = SubResource("ConcavePolygonShape3D_w7yga")
 
 [node name="moving_ground3" type="StaticBody3D" parent="ship" unique_id=1691597140]
-transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, 0, -7)
+transform = Transform3D(1, -1.5893251e-08, -4.371138e-08, 1.5893256e-08, 1, 1.3113416e-07, 4.371138e-08, -1.3113416e-07, 1, 0, -0.02, -7)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="ship/moving_ground3" unique_id=200447330]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
@@ -136,7 +148,16 @@ transform = Transform3D(-4.3711367e-08, 1, 3.0597968e-07, -1, -4.371132e-08, -2.
 shape = SubResource("ConcavePolygonShape3D_2jlj7")
 
 [node name="NPC" parent="." unique_id=2146363901 instance=ExtResource("1_1wtdp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.4, 1, -6)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="NPC" unique_id=1985242147]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.7, 0)
+mesh = SubResource("BoxMesh_metb3")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="NPC/MeshInstance3D2" unique_id=1637662740]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC/MeshInstance3D2/StaticBody3D" unique_id=1723088664]
+shape = SubResource("BoxShape3D_4exu8")
 
 [node name="Upgrade" parent="." unique_id=323732360 instance=ExtResource("4_ef02v")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.3, 23.7, -6.4)
@@ -155,6 +176,8 @@ shape = SubResource("BoxShape3D_8txik")
 [node name="Label3D" type="Label3D" parent="go_button" unique_id=1398346734]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5999999, 0)
 text = "Press R!"
+font_size = 48
+outline_size = 16
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=865904901]
 replication_config = SubResource("SceneReplicationConfig_8txik")
@@ -164,7 +187,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 30.900002, 5.3)
 visible = false
 
 [node name="Skin_Area3D" parent="." unique_id=1912766374 instance=ExtResource("9_usqpj")]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5, 0.5, -3.4999995)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5, 0.5, -2.2999997)
 
 [node name="SPACE SHIP Kyunsei" parent="." unique_id=997132027 instance=ExtResource("11_2jlj7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, -0.1, -9.700001)
@@ -223,11 +246,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8000007, 1.3000001, -1.8)
 transform = Transform3D(0.9659258, -0.75, -0.20096189, 0.25881907, 2.7990384, 0.75000006, 0, -0.77645725, 2.8977778, -6, 0.39999998, -3.3999996)
 
 [node name="Merchant" parent="." unique_id=306915305 instance=ExtResource("15_nk3pt")]
-transform = Transform3D(0.49999997, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999997, -5.4, 0.6, -11.7)
+transform = Transform3D(0.49999988, 0, 0.86602545, 0, 1, 0, -0.86602545, 0, 0.49999988, -5.0000005, 0.6, -10.3)
 
 [node name="Label3D" type="Label3D" parent="Merchant" unique_id=43562134]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 text = "Sell me your biomass!"
+font_size = 48
+outline_size = 16
 
 [node name="Shop_area" parent="." unique_id=537030959 instance=ExtResource("16_0qcqw")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -4.9999995, 0.6, -5.7999997)

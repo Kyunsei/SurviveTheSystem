@@ -36,14 +36,42 @@ texture_filter = 0
 material = SubResource("StandardMaterial3D_r5pjn")
 size = Vector3(3, 8, 3)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_v7jog"]
+size = Vector3(3, 8, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v7jog"]
+albedo_texture = ExtResource("1_ahxx7")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_hiybh"]
+material = SubResource("StandardMaterial3D_v7jog")
+size = Vector3(8, 0.5, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gnk75"]
+size = Vector3(8, 0.5, 8)
+
 [node name="Collector_model" type="Node3D" unique_id=812750137]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.3, 0)
 
 [node name="grid_exterior" type="MeshInstance3D" parent="." unique_id=1637673977]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0000002, 0)
 visible = false
 mesh = SubResource("BoxMesh_gnk75")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1659619356]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+[node name="Collectormesh" type="MeshInstance3D" parent="." unique_id=1659619356]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.27, 0)
 layers = 2
 mesh = SubResource("BoxMesh_c8m64")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Collectormesh" unique_id=732908151]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collectormesh/StaticBody3D" unique_id=1553037108]
+shape = SubResource("BoxShape3D_v7jog")
+
+[node name="Platform" type="MeshInstance3D" parent="." unique_id=1792239796]
+mesh = SubResource("BoxMesh_hiybh")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Platform" unique_id=1959732737]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform/StaticBody3D" unique_id=1240625413]
+shape = SubResource("BoxShape3D_gnk75")

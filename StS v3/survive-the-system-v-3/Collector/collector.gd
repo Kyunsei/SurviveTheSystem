@@ -173,7 +173,7 @@ func update_label():
 func update_insideBiomass():
 	var fill_percentage = clamp(Biomass_collected/max_biomass, 0.0, 1.0)
 	$InsideMesh.scale.y = fill_percentage
-	var natural_offset = -3.6  + InsideBiomassInitHeight*fill_percentage#natural offset
+	var natural_offset = -3.7  + InsideBiomassInitHeight*fill_percentage#natural offset
 	$InsideMesh.position.y = (natural_offset + (InsideBiomassInitHeight*fill_percentage))/2
 
 #@rpc("any_peer","call_local")

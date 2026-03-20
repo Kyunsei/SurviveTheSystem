@@ -229,7 +229,8 @@ func go_back_to_ship(pos):
 	var ship_pos = get_parent().get_parent().get_node("SPACESHIP").position
 	ship_pos.x += pos
 	position = ship_pos
-
+	$MeshInstance3D.rotation.y = deg_to_rad(180)
+	$camera_anchor.rotation.y = deg_to_rad(180)
 @rpc("any_peer","call_remote")
 func move_player_position(pos):
 	#print(multiplayer.get_unique_id())
