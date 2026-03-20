@@ -4,7 +4,7 @@ class_name GOTO_STATE
 @export var speed = 10
 @export var positive_species_id : PackedInt32Array
 
-@export var target_species : int = 0
+#@export var target_species : int = 0
 @export var final_distance_to_target : float = 0.0
 @export var bin_vision_range : int = 1
 
@@ -30,7 +30,7 @@ func evaluate(_manager,_i, _DNA):
 			if dir.length() < final_distance_to_target:
 				dscore = 0.0#1# _manager.sum_species_world_array[0][bin]/25.  #25 is the max life in a place...
 			
-		if dist_score > dscore:
+		if dist_score < dscore:
 			dist_score =dscore
 		
 			
@@ -49,10 +49,18 @@ func exit(_manager,_i, _DNA):
 
 func update(_manager,_i, _DNA, _delta):
 	var bin = _manager.binID_array[_i]
-	var bin_flow = _manager.calculate_flow_at_bin(target_species,bin)
 	var dir := Vector3(0,0,0)
-	var field = _manager.field_world_array[target_species][bin]
+	var target_species : int
+	var field_score = 0
+	for s in positive_species_id:
+		var subfield_score = _manager.field_world_array[s][bin]
+		if subfield_score > field_score:
+			field_score = subfield_score
+			target_species = s
+			
+	var bin_flow = _manager.calculate_flow_at_bin(target_species,bin)
 	var step =  bin_flow.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
+	
 	var count = _manager.sum_species_world_array[target_species][bin]
 	#print(field)
 	if count > 0 :

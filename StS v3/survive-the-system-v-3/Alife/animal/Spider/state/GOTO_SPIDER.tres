@@ -4,8 +4,7 @@
 
 [resource]
 script = ExtResource("1_idw27")
-positive_species_id = PackedInt32Array(4)
-target_species = 4
+positive_species_id = PackedInt32Array(4, 6)
 final_distance_to_target = 1000.0
 bin_vision_range = 3
 metadata/_custom_type_script = "uid://bodkfy05sdh6y"

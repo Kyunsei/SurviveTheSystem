@@ -4,5 +4,5 @@
 
 [resource]
 script = ExtResource("1_uyb8t")
-positive_species_id = PackedInt32Array(0)
+positive_species_id = PackedInt32Array(0, 1)
 metadata/_custom_type_script = "uid://bodkfy05sdh6y"
