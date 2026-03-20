@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://xdftdnqf5rqk"]
+[gd_scene format=3 uid="uid://25rdqxkav8k1"]
 
 [ext_resource type="Script" uid="uid://c0t1s37muto71" path="res://Upgrades/shop_area.gd" id="1_lp88c"]
-[ext_resource type="PackedScene" uid="uid://eouwi0lhmuet" path="res://Upgrades/shop_computer_model.tscn" id="1_rmw4a"]
+[ext_resource type="PackedScene" path="res://Upgrades/shop_computer_model.tscn" id="1_rmw4a"]
 [ext_resource type="PackedScene" uid="uid://c2kx216er8a22" path="res://Upgrades/shop.tscn" id="3_07nx3"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_lp88c"]

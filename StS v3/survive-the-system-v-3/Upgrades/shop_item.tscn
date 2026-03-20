@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dan6hhrhduxb7" path="res://Upgrades/shop_item.gd" id="1_wuyhm"]
 [ext_resource type="Texture2D" uid="uid://ba3ghrf00sjvg" path="res://Alife/animal/Herbivor/sheep1.png" id="2_h1g10"]
-[ext_resource type="LabelSettings" uid="uid://dj3ciqlktrbfq" path="res://Upgrades/label_for_shop.tres" id="3_y6yvb"]
+[ext_resource type="LabelSettings" path="res://Upgrades/label_for_shop.tres" id="3_y6yvb"]
 
 [node name="ShopItem" type="Button" unique_id=264215938]
 custom_minimum_size = Vector2(100, 100)

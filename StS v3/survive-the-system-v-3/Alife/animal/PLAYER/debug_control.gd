@@ -62,6 +62,8 @@ func _physics_process(_delta: float) -> void:
 func grant_player_money(id):
 	player.catnation_credits += 100
 	player.update_status_of_player.rpc_id(id)
+	
+	
 func _process(_delta: float) -> void:
 	if DEBUG_ACTIVE == false:
 		return
@@ -73,13 +75,8 @@ func _process(_delta: float) -> void:
 				isWorldAccelerated = false 
 				var spaceship = player.get_parent().get_parent().get_node("SPACESHIP")
 				spaceship.open_entrance.rpc_id(1)
-				var shop = player.get_node("Player_HUD").get_node("Shop")
-				#shop.generate_shop()
-				#var new_stock = shop.current_stock
 				for p in player.get_parent().player_array:
 					var p_id = int(p.name)
-					var p_shop = p.get_node("Player_HUD/Shop") 
-					p_shop.sync_shop.rpc_id(1, p_id)
 					player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 5.0,"Shop got new items for sale")
 					player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer(int(p.name))
 
