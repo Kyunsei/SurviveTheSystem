@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://c00ter02fskti"]
 
 [ext_resource type="Texture2D" uid="uid://cbxwl3qin1sgr" path="res://assets/assets kyun/timewarp1.png" id="1_7upj6"]
-[ext_resource type="Script" path="res://objects/cat_ration/object_timewarp.gd" id="2_pr5ln"]
-[ext_resource type="Resource" path="res://objects/cat_ration/object_timewarp.tres" id="3_pr5ln"]
+[ext_resource type="Script" uid="uid://boqedwlwtjg5q" path="res://objects/cat_ration/object_timewarp.gd" id="2_pr5ln"]
+[ext_resource type="Resource" uid="uid://bvtkidrur2gao" path="res://objects/cat_ration/object_timewarp.tres" id="3_pr5ln"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
 transparency = 1
