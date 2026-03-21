@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://br0id6ya8hqd2" path="res://assets/asset dabols/Hoover.fbx" id="3_1vr6m"]
 [ext_resource type="Script" uid="uid://b0jwhtwhk47rk" path="res://Alife/animal/PLAYER/camera_3d.gd" id="3_kppvm"]
 [ext_resource type="PackedScene" uid="uid://bbpte0ycxxfvu" path="res://assets/asset dabols/spear.fbx" id="4_5e6c6"]
+[ext_resource type="PackedScene" uid="uid://jg85y2m87sv5" path="res://objects/cat_ration/gold_hoover.tscn" id="4_kcrxs"]
 [ext_resource type="Script" uid="uid://cwrvvywn7edre" path="res://Alife/animal/PLAYER/debug_control.gd" id="5_2y45n"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6t5sv"]
@@ -213,6 +214,42 @@ tracks/5/keys = {
 "update": 0,
 "values": [Vector3(2, 5, 2), Vector3(2, 5, 2)]
 }
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("MeshInstance3D/Gold_Hoover:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.68, -0.41, -0.56)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("MeshInstance3D/Gold_Hoover:rotation")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("MeshInstance3D/Gold_Hoover:scale")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.6, 0.6, 0.6)]
+}
 
 [sub_resource type="Animation" id="Animation_by0wc"]
 resource_name = "base_spear_position"
@@ -253,6 +290,86 @@ tracks/2/keys = {
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector3(2, 5, 2), Vector3(2, 5, 2)]
+}
+
+[sub_resource type="Animation" id="Animation_nue5j"]
+resource_name = "gold_vac_2_on"
+length = 0.2
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D/Gold_Hoover:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.68, -0.41, -0.56), Vector3(0.69, -0.42, -0.57), Vector3(0.68, -0.41, -0.557), Vector3(0.67, -0.425, -0.548), Vector3(0.68, -0.41, -0.56)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D/Gold_Hoover:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0), Vector3(-0.017453292, 3.159046, 0.017453292), Vector3(0.017453292, 3.1241393, -0.017453292), Vector3(0.017453292, 3.159046, -0.017453292), Vector3(0, 3.1415927, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MeshInstance3D/Gold_Hoover:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.15, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6), Vector3(0.6, 0.6, 0.6)]
+}
+
+[sub_resource type="Animation" id="Animation_j2vbh"]
+resource_name = "init_pos_gold_vac"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D/Gold_Hoover:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.68, -0.41, -0.56)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D/Gold_Hoover:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MeshInstance3D/Gold_Hoover:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.6, 0.6, 0.6)]
 }
 
 [sub_resource type="Animation" id="Animation_vk34y"]
@@ -584,6 +701,8 @@ tracks/2/keys = {
 _data = {
 &"RESET": SubResource("Animation_5e6c6"),
 &"base_spear_position": SubResource("Animation_by0wc"),
+&"gold_vac_2_on": SubResource("Animation_nue5j"),
+&"init_pos_gold_vac": SubResource("Animation_j2vbh"),
 &"init_pos_vacuum": SubResource("Animation_vk34y"),
 &"new_animation": SubResource("Animation_x6f2s"),
 &"spear_attack_1": SubResource("Animation_kcrxs"),
@@ -2232,6 +2351,10 @@ shape = SubResource("BoxShape3D_2y45n")
 
 [node name="Hoover" parent="MeshInstance3D" unique_id=1633460261 instance=ExtResource("3_1vr6m")]
 transform = Transform3D(-0.6, 0, 9.059749e-08, 0, 0.6, 0, -9.059749e-08, 0, -0.6, 0.68, -0.41, -0.56)
+visible = false
+
+[node name="Gold_Hoover" parent="MeshInstance3D" unique_id=1022249740 instance=ExtResource("4_kcrxs")]
+transform = Transform3D(-0.6, 0, -5.2453668e-08, 0, 0.6, 0, 5.2453668e-08, 0, -0.6, 0.68, -0.41, -0.56)
 visible = false
 
 [node name="spear" parent="MeshInstance3D" unique_id=922266187 instance=ExtResource("4_5e6c6")]

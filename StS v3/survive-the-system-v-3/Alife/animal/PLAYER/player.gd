@@ -167,6 +167,7 @@ func equip_item(item):
 func show_selected(item, peer_id):
 		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
 		var vacuum_path = "res://objects/cat_ration/Object_Vacuum.tscn"
+		var gold_vacuum_path = "res://objects/cat_ration/Object_gold_vacuum.tscn"
 		var slot = item["Data"][0]	
 		var holding
 		if slot is Dictionary: 
@@ -175,6 +176,7 @@ func show_selected(item, peer_id):
 					update_item_hold_texture.rpc(null)
 					get_node("MeshInstance3D").get_node("spear").show()
 					get_node("MeshInstance3D").get_node("Hoover").hide()
+					get_node("MeshInstance3D").get_node("Gold_Hoover").hide()
 					if $PlayerAnimater.current_animation not in spear_animations:
 						$PlayerAnimater.play("base_to_hold_spear")
 						await $PlayerAnimater.animation_finished
@@ -186,6 +188,17 @@ func show_selected(item, peer_id):
 					update_item_hold_texture.rpc(null)
 					get_node("MeshInstance3D").get_node("Hoover").show()
 					get_node("MeshInstance3D").get_node("spear").hide()
+					get_node("MeshInstance3D").get_node("Gold_Hoover").hide()
+					reset_arm_position()
+					spear_back_to_origin()
+					vacuum_turned_on = false
+					set_vacuum_state.rpc_id(1, false) 
+				elif slot["inventory_path"] == gold_vacuum_path:
+					update_item_hold_texture.rpc(null)
+					get_node("MeshInstance3D").get_node("Hoover").hide()
+					get_node("MeshInstance3D").get_node("spear").hide()
+					get_node("MeshInstance3D").get_node("Gold_Hoover").show()
+					$AnimationPlayer.play("init_pos_vacuum")
 					reset_arm_position()
 					spear_back_to_origin()
 					vacuum_turned_on = false
@@ -209,6 +222,7 @@ func hide_bound_objects():
 	reset_arm_position()
 	get_node("MeshInstance3D").get_node("spear").hide()
 	get_node("MeshInstance3D").get_node("Hoover").hide()
+	get_node("MeshInstance3D").get_node("Gold_Hoover").hide()
 	$AnimationPlayer.play("init_pos_vacuum")
 	vacuum_turned_on = false
 	set_vacuum_state.rpc_id(1, false) 
@@ -593,6 +607,10 @@ func speardefending():
 func vacuum_activation():
 	vacuum_animation.rpc_id(int(name))
 
+@rpc("any_peer","call_local")
+func vacuum_activation2():
+	vacuum_animation2.rpc_id(int(name))
+
 @rpc("any_peer","call_remote")
 func vacuum_animation():
 	if vacuum_turned_on == false:
@@ -601,6 +619,17 @@ func vacuum_animation():
 		vacuum_turned_on = true
 	else:
 		$AnimationPlayer.play("init_pos_vacuum")
+		set_vacuum_state.rpc_id(1, false) # tell server
+		vacuum_turned_on = false
+
+@rpc("any_peer","call_remote")
+func vacuum_animation2():
+	if vacuum_turned_on == false:
+		$AnimationPlayer.play("gold_vac_2_on")
+		set_vacuum_state.rpc_id(1, true) # tell server
+		vacuum_turned_on = true
+	else:
+		$AnimationPlayer.play("init_pos_gold_vac")
 		set_vacuum_state.rpc_id(1, false) # tell server
 		vacuum_turned_on = false
 

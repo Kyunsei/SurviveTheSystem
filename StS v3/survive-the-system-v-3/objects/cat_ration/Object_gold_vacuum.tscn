@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://d4dki2on88pj4"]
+
+[ext_resource type="Texture2D" uid="uid://cqq0vyu1a00hn" path="res://assets/assets kyun/invisible1.png" id="1_j7yxx"]
+[ext_resource type="Script" uid="uid://51k7vyask3fq" path="res://objects/cat_ration/object_gold_vacuum.gd" id="2_t58k2"]
+[ext_resource type="Resource" uid="uid://devw6df18bnty" path="res://objects/cat_ration/object_gold_vacuum.tres" id="3_j7yxx"]
+[ext_resource type="PackedScene" uid="uid://jg85y2m87sv5" path="res://objects/cat_ration/gold_hoover.tscn" id="3_t58k2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
+transparency = 1
+shading_mode = 0
+albedo_texture = ExtResource("1_j7yxx")
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_5kluo"]
+material = SubResource("StandardMaterial3D_wqbnr")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_5kluo"]
+radius = 1.0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8f30t"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Pivot:position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qkpm6"]
+size = Vector3(2, 2, 2)
+
+[node name="Object_gold_vacuum" type="MeshInstance3D" unique_id=1352666552]
+mesh = SubResource("QuadMesh_5kluo")
+script = ExtResource("2_t58k2")
+item_ressources = ExtResource("3_j7yxx")
+
+[node name="Timer" type="Timer" parent="." unique_id=1629208419]
+wait_time = 0.1
+one_shot = true
+autostart = true
+
+[node name="Area3D" type="Area3D" parent="." unique_id=1816790346]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1489730669]
+shape = SubResource("SphereShape3D_5kluo")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=979584649]
+replication_config = SubResource("SceneReplicationConfig_8f30t")
+
+[node name="Action_area" type="Area3D" parent="." unique_id=1827982514]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Action_area" unique_id=438161156]
+shape = SubResource("BoxShape3D_qkpm6")
+
+[node name="Pivot" type="Node3D" parent="." unique_id=1198149916]
+
+[node name="Gold_Hoover" parent="Pivot" unique_id=1633460261 instance=ExtResource("3_t58k2")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, -0.5, -0.35000002, 0.6)
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]

@@ -19,7 +19,7 @@ func interact(p):
 	step = 3 #to make it directly skip all steps before going into the world
 	if not player.dialogue_box.button_pressed.is_connected(_on_next):
 		player.dialogue_box.button_pressed.connect(_on_next)
-	display_text(p.dialogue_box, "Welcome Catraunaute! \n We need you to collect bioressources for the magnificient catempire! \n Are you READY ?!!?!")
+	display_text(p.dialogue_box, "Welcome Catraunaute! \nWe need you to collect bioressources for the magnificient catempire! \nAre you READY ?!!?!")
 	player.dialogue_box.show_button()
 
 
