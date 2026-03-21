@@ -317,7 +317,7 @@ func _process(delta: float) -> void:
 					lifedata["current_health"] -= 1.5*delta
 				else: 
 					lifedata["current_health"] -= 1*delta
-			if lifedata["current_health"] <= 0:
+			if lifedata["current_health"] <= 0 or get_parent().get_node("Grass_Manager2").current_health_array[alifemanager_id]<= 0:
 				#Die()
 				Die.rpc_id(1, int(name))
 

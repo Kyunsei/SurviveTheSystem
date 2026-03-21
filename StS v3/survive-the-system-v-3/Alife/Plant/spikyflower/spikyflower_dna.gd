@@ -56,11 +56,21 @@ func Update(manager, i, delta):
 			Homeostasis(manager,i,s,t,delta)
 			Growth(manager,i,delta)
 			Reproduction(manager,i,s,t,delta)
+			hurt(manager,i,s,t)
 	else:
 		Decompose(manager,i,s,t, delta)
 
 
 
+func hurt(manager,i,s,t):
+	var target = manager.get_index_in_bin_around(manager.World.bin_array,i,1)
+	for ti in target:
+		var dist = (manager.position_array[i] -manager.position_array[ti] ).length()
+		if manager.Species_array[ti] == AlifeRegistry.SPECIES_ID.CAT:
+			if dist < 1.0:
+				manager.SPECIES[manager.Species_array[ti]].Damage(self,manager,i,ti,10)
+			
+		
 
 func Homeostasis(manager,i,s,t,delta):
 	t = min(t,manager.species_photosynthesis_range[s].size()-1)

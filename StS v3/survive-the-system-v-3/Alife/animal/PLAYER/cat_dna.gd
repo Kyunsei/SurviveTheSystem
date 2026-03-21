@@ -6,6 +6,8 @@ class_name CAT
 @export var state_array : Array[STATE]
 var current_state : STATE
 
+#var player_node : Node3D
+
 func Init():
 		
 	species_id = 5 #NEED TO FIX THIS
@@ -59,3 +61,12 @@ func change_bin(_manager,_i):
 	else:		
 		_manager.remove_from_world_bin(_i)
 		_manager.put_in_world_bin(_i)			
+
+
+func Damage(_action,manager,i,_ii,value):
+	var dir = (manager.position_array[i] - manager.position_array[_ii]).normalized()
+	manager.current_health_array[_ii] -= value
+	manager.position_array[_ii] += dir * 10
+	#player_node.position = manager.position_array[i]
+	change_bin(manager,_ii)
+		

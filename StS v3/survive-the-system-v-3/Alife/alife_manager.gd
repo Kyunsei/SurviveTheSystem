@@ -117,7 +117,7 @@ func get_random_worldpos():
 
 
 func update_life_count():
-	for sp in Alifedata.enum_speciesID.size() :
+	for sp in AlifeRegistry.SPECIES_ID.size() :
 		if GlobalSimulationParameter.life_numbers.has(sp) == false:
 			if current_life_count_by_species.has(sp):
 				GlobalSimulationParameter.life_numbers[sp] = [current_life_count_by_species[sp]]
