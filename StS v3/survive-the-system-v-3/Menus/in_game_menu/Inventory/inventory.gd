@@ -58,7 +58,8 @@ func prep_alife(alife):
 
 	item["Data"] = [alife]
 	#item["inventory_path"] = null
-	item["stack_amount"] = floori(player.inventory_capacity_upgrade*1000.0/alife["Max_energy"]) #update here
+	if alife.has("Max_energy"):
+		item["stack_amount"] = floori(player.inventory_capacity_upgrade*1000.0/alife["Max_energy"]) #update here
 	return item
 
 
