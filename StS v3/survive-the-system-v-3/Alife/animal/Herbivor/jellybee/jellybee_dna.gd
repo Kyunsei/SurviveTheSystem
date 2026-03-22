@@ -31,7 +31,7 @@ func Init():
 	Reproduction_cost  =[100,100]
 	Reproduction_spread  =[5,5]
 	Reproduction_number =[1,1]
-	Biomass =[5000,5000] #MAYBE NO LONGER IN USE
+	Biomass =[20,20] #MAYBE NO LONGER IN USE
 
 #--- BEHAVIOUR ----
 	food_species_id  = [AlifeRegistry.SPECIES_ID.SPIKYFLOWER]
