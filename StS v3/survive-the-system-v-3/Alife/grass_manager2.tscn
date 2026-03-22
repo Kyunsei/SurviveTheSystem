@@ -4,7 +4,8 @@
 [ext_resource type="QuadMesh" uid="uid://cbrth6g86efar" path="res://Alife/Plant/spikyflower/SPIKY_MESH.tres" id="4_2rnjc"]
 [ext_resource type="QuadMesh" uid="uid://ossnpdi2f01p" path="res://Alife/Plant/Grass/grass_mesh.tres" id="4_lxqh2"]
 [ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/animal/Spider/Spidercrab.png" id="5_2xdm7"]
-[ext_resource type="Script" path="res://Alife/mulitmesh2.gd" id="5_hbvxf"]
+[ext_resource type="Script" uid="uid://dqvbcbtdwfsju" path="res://Alife/mulitmesh2.gd" id="5_hbvxf"]
+[ext_resource type="Shader" uid="uid://btx2plkf15pio" path="res://Z_NOTMOREINUSE/ALIFE.gdshader" id="5_qhbnm"]
 [ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="6_hbvxf"]
 [ext_resource type="QuadMesh" uid="uid://c4w8e4xg2k0qh" path="res://Alife/animal/Herbivor/jellybee/JELLYBEE_MESH.tres" id="7_qpu6g"]
 [ext_resource type="QuadMesh" uid="uid://cemxkaiaso15s" path="res://Alife/Plant/Moss/moss_ground.tres" id="8_5nq35"]
@@ -24,20 +25,19 @@ transform_format = 1
 use_colors = true
 mesh = ExtResource("4_2rnjc")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_batcg"]
-transparency = 2
-alpha_scissor_threshold = 0.5
-alpha_antialiasing_mode = 0
-vertex_color_use_as_albedo = true
-albedo_texture = ExtResource("9_8rc0f")
-backlight_enabled = true
-backlight = Color(1, 1, 1, 1)
-texture_filter = 0
-billboard_mode = 2
-billboard_keep_scale = true
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g02bw"]
+render_priority = 0
+shader = ExtResource("5_qhbnm")
+shader_parameter/albedo = Color(0, 0, 0, 1)
+shader_parameter/albedo_texture = ExtResource("9_8rc0f")
+shader_parameter/alpha_scissor_threshold = 0.5
+shader_parameter/tile_count = Vector2i(1, 1)
+shader_parameter/tile_index = Vector2i(0, 0)
+shader_parameter/nframe = 0
+shader_parameter/player_position = Vector3(0, 0, 0)
 
 [sub_resource type="QuadMesh" id="QuadMesh_r6o52"]
-material = SubResource("StandardMaterial3D_batcg")
+material = SubResource("ShaderMaterial_g02bw")
 size = Vector2(4, 4)
 center_offset = Vector3(0, 2, 0)
 
@@ -158,6 +158,7 @@ script = ExtResource("5_hbvxf")
 [node name="berry" type="MultiMeshInstance3D" parent="." unique_id=1289057152]
 multimesh = SubResource("MultiMesh_5wgv5")
 script = ExtResource("5_hbvxf")
+test = true
 
 [node name="sheep" type="MultiMeshInstance3D" parent="." unique_id=805820802]
 multimesh = SubResource("MultiMesh_8rc0f")

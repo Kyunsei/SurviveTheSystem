@@ -5,16 +5,6 @@ var shadow
 
 var id_to_slot := {}
 var slot_to_id := {}
-var player
-@export var test = false
-
-func _process(_delta: float):	
-	if test:
-		if player:
-			var mat := multimesh.mesh.surface_get_material(0) as ShaderMaterial
-			if mat:
-				mat.set_shader_parameter("player_position", player.global_position)
-
 
 func init():
 	instance_number = 0

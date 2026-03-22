@@ -10,8 +10,7 @@ extends CharacterBody3D
 @export var low_jump_gravity := 240
 @export var long_jump = 120
 @export var fly = false
-@export var max_health = 100
-@export var max_hunger = 100
+
 var speed = max_speed
 var crouched = false
 var gonna_jump = false
@@ -23,8 +22,8 @@ var direction = Vector3(0,0,0)
 var isdebuging = true
 var World : Node3D
 var grass_in_inventory = 0
-var current_health = max_health
-var current_hunger = max_hunger
+
+
 @onready var health_bar = $MeshInstance3D/Status_bar/SubViewport/ProgressBarHealth
 @onready var energy_bar = $MeshInstance3D/Status_bar/SubViewport2/ProgressBarEnergy
 var immune_to_death = false
@@ -32,8 +31,11 @@ var is_alive = true
 var skin_index:int = 0 : set = set_skin
 var input_blocked = false
 
-var alifemanager_id : int
 
+var manager
+var alifemanager_id : int
+var max_health = 100
+var max_energy = 200
 
 #MONEY MONEY MONEY MONEY MONEY
 var catnation_credits :int = 1: 
@@ -252,6 +254,7 @@ func move_player_position(pos):
 
 
 func _ready() -> void:
+	manager = get_parent().get_node("Grass_Manager2")
 	vacuum_action_range = $MeshInstance3D/vacuum_Area3D/CollisionShape3D
 	if is_multiplayer_authority():
 		apply_skin()
@@ -263,6 +266,8 @@ func _ready() -> void:
 		go_back_to_ship(0)
 		dialogue_box = $Player_HUD/Dialogue
 		inventory_HUD = $Player_HUD/Inventory
+		manager.init_multimesh(self)
+
 	if multiplayer.is_server():
 		health_bar.max_value = lifedata["Max_health"]
 		energy_bar.max_value = lifedata["Max_energy"]
@@ -312,33 +317,33 @@ func giving_position_to_others(pos: Vector3) -> void:
 
 
 func _process(delta: float) -> void:
-	if multiplayer.is_server():
+	if multiplayer.is_server():# and GlobalSimulationParameter.ClientStarted:
 		if input_blocked:
 			return  
 		if int(name) == null:
 			pass
 		else:
-			if lifedata["current_energy"] > 0:
-				if speed > 9:
-					lifedata["current_energy"] -= 1*delta
-				else:
-					lifedata["current_energy"] -= 0.5*delta
-			if lifedata["current_energy"] > 49 and lifedata["current_health"]<lifedata["Max_health"]:
-				lifedata["current_health"] += 1*delta
-				lifedata["current_energy"] -= 1*delta
-			if lifedata["current_energy"] <= 0:
-				if speed > 9:
+			if speed > 9:
+				if lifedata["current_energy"] <=0 or manager.current_energy_array[alifemanager_id] <=0:
 					lifedata["current_health"] -= 1.5*delta
+					manager.current_health_array[alifemanager_id]-= 1.5*delta
 				else: 
-					lifedata["current_health"] -= 1*delta
+					lifedata["current_energy"] -= 1*delta
+					manager.current_energy_array[alifemanager_id]-= 1*delta
+			'else:
+					lifedata["current_energy"] -= 0.5*delta
+					#manager.current_energy_array[alifemanager_id]-= 0.5*delta
+			Regen_Health(delta)'
+			
+			
 			if lifedata["current_health"] <= 0 or get_parent().get_node("Grass_Manager2").current_health_array[alifemanager_id]<= 0:
-				#Die()
 				Die.rpc_id(1, int(name))
 
-
-			update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
-			update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
+			#update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
+			#update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
 			sync_lifedata.rpc_id(int(name), lifedata)
+			update_bar.rpc_id(int(name),1, manager.current_health_array[alifemanager_id], max_health)
+			update_bar.rpc_id(int(name),2, manager.current_energy_array[alifemanager_id], max_energy)			
 			if vacuum_turned_on:
 				vacuum_tick -= delta
 
@@ -359,14 +364,27 @@ func _process(delta: float) -> void:
 				escape_timer_running = false
 
 
+func Regen_Health(delta):
+	#On cat DNA now
+	#var manager = get_parent().get_node("Grass_Manager2")
+	if lifedata["current_energy"] > 0:
+			if lifedata["current_energy"] > 49 and lifedata["current_health"]<lifedata["Max_health"]:
+				lifedata["current_health"] += 1*delta
+				lifedata["current_energy"] -= 1*delta
+			if lifedata["current_energy"] <= 0:
+				
+					lifedata["current_health"] -= 1*delta
+
 @rpc("any_peer","call_local")
 func sync_lifedata(data: Dictionary):
 	lifedata = data
-	
+	#var manager = get_parent().get_node("Grass_Manager2")
+	#health = manager.current_health_array[alifemanager_id]
+	#energy = manager.current_energy_array[alifemanager_id]
 @rpc("any_peer","call_local")
 func change_bin():
 	if lifedata.size()>0:
-		lifedata["position"] = global_position
+		#lifedata["position"] = global_position
 		get_parent().get_node("Grass_Manager2").position_array[alifemanager_id] = global_position
 		#alifemanager_id
 
@@ -381,13 +399,20 @@ func change_bin():
 
 @rpc("any_peer","call_local")
 func Die(id):
-	if lifedata["Alive"] == 1:
+	'if lifedata["Alive"] == 1:
 		lifedata["Alive"] = 0
 		death.rpc_id(id,id)
 	elif lifedata["current_health"] <= 0:
 		lifedata["Alive"] = 0
+		death.rpc_id(id,id)'
+	#NEW
+	var manager = get_parent().get_node("Grass_Manager2")
+	if manager.Alive_array[alifemanager_id] == 1:
+		manager.Alive_array[alifemanager_id] = 0
 		death.rpc_id(id,id)
-	
+	elif manager.current_health_array[alifemanager_id] <= 0:
+		manager.Alive_array[alifemanager_id] = 0
+		death.rpc_id(id,id)	
 
 
 
@@ -438,9 +463,16 @@ func respawn():
 @rpc("any_peer","call_local")
 func respawn_server():
 	#is_alive = true
-	lifedata["current_health"] = 50
+
+	#NEW
+	get_parent().get_node("Grass_Manager2").current_health_array[alifemanager_id] =50
+	get_parent().get_node("Grass_Manager2").Alive_array[alifemanager_id] =1
+	get_parent().get_node("Grass_Manager2").current_energy_array[alifemanager_id] =100
+
+	#OLD - will be deleted when all migrated
+	'lifedata["current_health"] = 50
 	lifedata["current_energy"] = 100
-	lifedata["Alive"] = 1
+	lifedata["Alive"] = 1'
 
 @rpc("any_peer","call_remote")
 func update_status_of_player():

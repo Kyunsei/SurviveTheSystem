@@ -32,3 +32,6 @@ static func eat(_player):
 		_player.show_label_above_player.rpc_id(int(_player.name),value, Color(1.0, 0.4, 0.7, 1.0), 3.0,"", " maximum health")
 		print("You eat the Strawberry")
 		pass
+		
+		_player.manager.current_health_array[_player.alifemanager_id] +=50
+		_player.max_health += 50

@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://214pm1q1i4uf" path="res://Alife/Plant/Grass/grass.png" id="1_lvbe7"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cx5lr"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lvbe7"]
 transparency = 2
 alpha_scissor_threshold = 0.5
 alpha_antialiasing_mode = 0
@@ -15,6 +15,6 @@ billboard_mode = 2
 billboard_keep_scale = true
 
 [resource]
-material = SubResource("StandardMaterial3D_cx5lr")
+material = SubResource("StandardMaterial3D_lvbe7")
 size = Vector2(2, 2)
 center_offset = Vector3(0, 1, 0)

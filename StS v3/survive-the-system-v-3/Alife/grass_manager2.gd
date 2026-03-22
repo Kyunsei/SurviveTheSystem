@@ -969,8 +969,9 @@ func put_in_world_bin(i):
 		sum_species_world_array[Species_array[i]][new_bin_ID] += 1
 
 	#binID_array[i] = new_bin_ID
-	
-	
+
+
+		
 func remove_from_world_bin(i):
 
 	if binID_array[i] >= 0:
@@ -992,6 +993,12 @@ func remove_from_world_bin(i):
 ### having after
 #### grass draw id_array[0] , pos_array[0]
 #### tree draw id_array[0] , pos_array[0]
+
+func init_multimesh(player):
+	for mm in SPECIES_RENDERERS.values():
+		if mm:
+			mm.player = player
+			
 
 @rpc("authority", "call_remote", "reliable") 
 func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):	
