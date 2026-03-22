@@ -266,6 +266,8 @@ func _ready() -> void:
 		go_back_to_ship(0)
 		dialogue_box = $Player_HUD/Dialogue
 		inventory_HUD = $Player_HUD/Inventory
+		manager.init_multimesh(self)
+
 	if multiplayer.is_server():
 		health_bar.max_value = lifedata["Max_health"]
 		energy_bar.max_value = lifedata["Max_energy"]

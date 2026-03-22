@@ -227,7 +227,6 @@ func spawn_player(id,pos):
 	new_player.alifemanager_id = newid
 	player_array.append(new_player)
 
-
 	
 	
 func interact(grass,player):
