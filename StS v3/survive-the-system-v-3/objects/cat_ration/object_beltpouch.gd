@@ -18,10 +18,10 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 				pass
 
 
-static func on_use(player): 
+static func on_use(_player): 
 	pass
 
-static func on_use_secondary(player, state):
+static func on_use_secondary(_player, _state):
 	pass
 	
 static func eat(_player):

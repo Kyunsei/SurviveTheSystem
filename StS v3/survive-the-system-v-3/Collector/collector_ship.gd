@@ -12,17 +12,17 @@ var collector_moving = false
 var collector_target_position
 var moving := false
 
-func _ready():
+'func _ready():
 	return
 	if multiplayer.is_server():
 		collector = get_parent().get_parent().get_node("Collector")
 		collector_init_position = collector.global_position
 		start_position = global_position
 		target_position = start_position 
-		collector_target_position = start_position -Vector3(1,2,0)
+		collector_target_position = start_position -Vector3(1,2,0)'
 
 
-func _physics_process(delta):
+'func _physics_process(_delta):
 	return
 	if multiplayer.is_server():
 		if collector_moving:
@@ -42,7 +42,7 @@ func _physics_process(delta):
 			if collector_grabbed:	
 				collector_grabbed =false		
 				await get_tree().create_timer(8.0).timeout
-				collector_moving = true
+				collector_moving = true'
 
 
 

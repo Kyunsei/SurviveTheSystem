@@ -32,7 +32,7 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 				pass
 
 
-static func on_use(player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BEFORE
+static func on_use(_player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BEFORE
 	print("USED CAT RATIO")
 	
 	
