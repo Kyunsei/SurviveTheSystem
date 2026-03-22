@@ -1,7 +1,7 @@
 extends Node3D
 
 #WORLD SETUP
-var World_Size = Vector3(200,1,200)
+var World_Size = Vector3(250,1,250)
 #var World_Size = Vector3(100,1,100)
 
 #var World_Size = Vector3(50,1,50)
