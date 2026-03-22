@@ -23,10 +23,11 @@ func add_item(new_item, peer_id):
 		item = new_item
 		item_count += 1
 		Update_info_multiplayer.rpc_id(peer_id, new_item)
-		if new_item["inventory_icon"] is String:
-			item_icon.texture = load(new_item["inventory_icon"])
-		else:
-			print("not yet implemnted or TRUN IT into alifedata...")
+		if new_item.has("inventory_icon"):
+			if new_item["inventory_icon"] is String:
+				item_icon.texture = load(new_item["inventory_icon"])
+			else:
+				print("not yet implemnted or TRUN IT into alifedata...")
 		#print(item_icon.texture)
 		#refresh_label( )
 		return true
