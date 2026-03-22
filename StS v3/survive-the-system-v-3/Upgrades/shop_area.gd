@@ -10,8 +10,7 @@ func _ready() -> void:
 func init_shop():
 	$shopCanvas/Node.generate_shop()
 
-func interact(player):
-	
+func interact(player): 
 	#set_player_currently_interacting.rpc_id(int(player.name), int(player.name))
 	#rpc_id(int(player.name), "rpc_show_shop")
 	rpc_show_shop.rpc_id(int(player.name))

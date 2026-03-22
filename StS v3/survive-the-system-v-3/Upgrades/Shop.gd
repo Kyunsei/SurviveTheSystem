@@ -15,6 +15,9 @@ var needupdgrade = false
 
 
 func _process(delta: float) -> void:
+	if is_multiplayer_authority():
+		if Input.is_action_just_pressed("ui_cancel"):
+			_on_quit_pressed()
 	if multiplayer.is_server():
 		if GlobalSimulationParameter.simulation_speed > 1:
 			needupdgrade =  true
@@ -124,6 +127,9 @@ func _on_quit_pressed() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	get_parent().hide()
 	
+@rpc("any_peer", "call_local")
+func hide_shop():
+	get_parent().hide()
 '@rpc("any_peer", "call_local")
 func know_who_is_player(player_id):
 	var player_list = get_parent().get_parent().get_parent().get_parent().get_node("Alife manager").player_array
