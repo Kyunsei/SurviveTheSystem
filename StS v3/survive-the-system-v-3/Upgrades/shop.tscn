@@ -13,6 +13,11 @@
 [ext_resource type="Resource" uid="uid://b2plhjlatrwnl" path="res://objects/cat_ration/object_beltpouch.tres" id="8_82ajy"]
 [ext_resource type="Texture2D" uid="uid://dxqhew3ty2rmx" path="res://assets/assets kyun/quit1.png" id="12_7x8xu"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_7x8xu"]
+font_size = 32
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
 [node name="Node" type="Control" unique_id=1310314475]
 layout_mode = 3
 anchors_preset = 0
@@ -45,5 +50,22 @@ icon = ExtResource("12_7x8xu")
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1015440379]
 _spawnable_scenes = PackedStringArray("uid://chj8kgpm5nn4l")
 spawn_path = NodePath("../Panel/GridContainer")
+
+[node name="TextureRect" type="ColorRect" parent="." unique_id=1182550049]
+layout_mode = 0
+offset_left = 634.0
+offset_top = 189.0
+offset_right = 1151.0
+offset_bottom = 240.0
+color = Color(0, 0, 0, 1)
+
+[node name="Label" type="Label" parent="TextureRect" unique_id=768499090]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 1.0
+offset_right = 512.0
+offset_bottom = 46.0
+text = "Timewarp refresh merchandises."
+label_settings = SubResource("LabelSettings_7x8xu")
 
 [connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]
