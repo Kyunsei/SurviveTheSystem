@@ -21,6 +21,8 @@ var isWorldAccelerated = false
 func _ready() -> void:
 	InsideBiomassInitHeight = 3.8
 	update_label()
+	var sign = $sign/signlabel
+	sign.text = str("Next reward at " +str(first_biomass_threshold)+ " Biomass")
 	
 
 
@@ -61,36 +63,39 @@ func interact(player):
 			#player.remove_from_inventory(o,1)'
 		#player.inventory = {}
 		#player.inventory_count = 0
-		
+	var sign = $sign/signlabel
+	sign.text = str("Next reward at " +str(first_biomass_threshold)+ " Biomass")
 	if Biomass_collected >= first_biomass_threshold and collecting == true:
-		first_biomass_threshold +=100000
-		credit_gain += 10
-		print("First threshold reached")
+		first_biomass_threshold +=10000000
+		credit_gain += 20
+		sign.text = str("Next reward at " +str(second_biomass_threshold)+ " Biomass")
 		for p in player.get_parent().player_array:
 			credit_player(p)
 	if Biomass_collected >= second_biomass_threshold and collecting == true:
-		second_biomass_threshold +=100000
-		credit_gain += 10
-		print("First threshold reached")
+		second_biomass_threshold +=10000000
+		credit_gain += 30
+		sign.text = str("Next reward at " +str(third_biomass_threshold)+ " Biomass")
 		for p in player.get_parent().player_array:
 			credit_player(p)
 	if Biomass_collected >= third_biomass_threshold and collecting == true:
-		third_biomass_threshold +=100000
-		credit_gain += 10
-		print("First threshold reached")
+		third_biomass_threshold +=10000000
+		credit_gain += 40
+		sign.text = str("Next reward at " +str(fourth_biomass_threshold)+ " Biomass")
 		for p in player.get_parent().player_array:
 			credit_player(p)
 	if Biomass_collected >= fourth_biomass_threshold and collecting == true:
-		fourth_biomass_threshold +=100000
+		fourth_biomass_threshold +=10000000
 		update_insideBiomass()
-		credit_gain += 10
-		print("First threshold reached")
+		credit_gain += 50
+		sign.text = str("Next reward at " +str(max_biomass)+ " Biomass")
 		for p in player.get_parent().player_array:
 			credit_player(p)
 	if Biomass_collected >= max_biomass and collecting == true:
 		collecting = false
-		print("BRAVO")
-		#var c = 0
+		credit_gain += 60
+		sign.text = str("You completed your mission!")
+		for p in player.get_parent().player_array:
+			credit_player(p)
 		#spaceship.get_node("Collector_ship").go_down()
 		update_insideBiomass()
 		#.go_down.rpc_id(1)
@@ -167,7 +172,10 @@ func set_world_readiness(yesorno):
 
 
 func update_label():
-	$collected_amount_Label3D.text = "Biomass collected " + str(int(round(Biomass_collected))) + " /" + str(int(round(max_biomass)))
+	if Biomass_collected >= max_biomass:
+		$collected_amount_Label3D.text = str(max_biomass)+" biomass reached, congratulations!!!"
+	else:
+		$collected_amount_Label3D.text = "Biomass collected " + str(int(round(Biomass_collected))) + " /" + str(int(round(max_biomass)))
 	update_insideBiomass()
 
 func update_insideBiomass():
