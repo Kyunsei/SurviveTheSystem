@@ -248,6 +248,8 @@ func action_on_server():
 			area.interact(player)
 		if area.name == "Shop_area":
 			area.interact(player)
+		if area.name == "area_end_cinematic":
+			area.interact(player, player.finished_their_mission)
 
 	
 	

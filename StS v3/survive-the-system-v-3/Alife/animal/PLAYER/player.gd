@@ -22,6 +22,7 @@ var direction = Vector3(0,0,0)
 var isdebuging = true
 var World : Node3D
 var grass_in_inventory = 0
+var finished_their_mission = false
 
 
 @onready var health_bar = $MeshInstance3D/Status_bar/SubViewport/ProgressBarHealth
@@ -247,6 +248,11 @@ func go_back_to_ship(pos):
 	position = ship_pos
 	$MeshInstance3D.rotation.y = deg_to_rad(180)
 	$camera_anchor.rotation.y = deg_to_rad(180)
+	
+@rpc("any_peer","call_remote")
+func go_to_position(pos):
+	position = pos
+
 @rpc("any_peer","call_remote")
 func move_player_position(pos):
 	#print(multiplayer.get_unique_id())

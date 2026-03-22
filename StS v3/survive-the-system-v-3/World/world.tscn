@@ -16,6 +16,10 @@ sky_material = SubResource("ProceduralSkyMaterial_j8job")
 background_mode = 2
 sky = SubResource("Sky_f52ns")
 glow_enabled = true
+fog_mode = 1
+fog_depth_begin = 40.0
+fog_depth_end = 120.0
+volumetric_fog_detail_spread = 6.0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_62w18"]
 
