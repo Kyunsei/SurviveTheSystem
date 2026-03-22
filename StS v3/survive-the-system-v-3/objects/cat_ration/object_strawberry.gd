@@ -33,5 +33,5 @@ static func eat(_player):
 		print("You eat the Strawberry")
 		pass
 		
-		_player.manager.current_health_array[_player.alifemanager_id] +=50
-		_player.max_health += 50
+		_player.manager.current_health_array[_player.alifemanager_id] +=value
+		_player.max_health += value

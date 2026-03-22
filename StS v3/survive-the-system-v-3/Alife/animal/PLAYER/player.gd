@@ -480,7 +480,7 @@ func update_status_of_player():
 		#lifedata["Money"] = catnation_credits
 		#lifedata["Inventory_capacity"] = inventory_capacity_upgrade
 		#print(lifedata["Money"])
-		get_node("Player_HUD").get_node("StatsPanel").update_status()
+		get_node("Player_HUD").get_node("StatsPanel").update_status.rpc_id(1,int(name))
 
 
 @rpc("any_peer","call_local")

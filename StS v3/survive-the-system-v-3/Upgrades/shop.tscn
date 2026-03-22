@@ -17,7 +17,7 @@ layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_to8av")
 basic_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("3_rukt4"), ExtResource("5_563av"), ExtResource("4_4jbah"), ExtResource("6_8vtdw")])
-rare_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("8_82ajy"), ExtResource("6_563av"), ExtResource("7_f4khi")])
+rare_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("8_82ajy"), ExtResource("6_563av"), ExtResource("7_f4khi"), ExtResource("7_4in6e")])
 legendary_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("8_82ajy"), ExtResource("6_563av"), ExtResource("7_f4khi"), ExtResource("7_4in6e")])
 shop_item_scene = ExtResource("3_g1vqg")
 
