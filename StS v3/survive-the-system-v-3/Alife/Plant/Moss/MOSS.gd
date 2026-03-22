@@ -8,23 +8,23 @@ func Init():
 	display_name = "MOSS"
 
 	# --- Core metabolism ---
-	Max_energy =[1100,1100]
-	Max_health  =[4,4]
-	Max_age  = [100,100]
-	Homeostasis_cost  =[0.3,0.3]
-	Decomposition_speed =[2.,2.]
+	Max_energy =[600]
+	Max_health  =[4]
+	Max_age  = [100]
+	Homeostasis_cost  =[0.5]
+	Decomposition_speed =[2.]
 
 	# --- Plant Related ----
-	Photosynthesis_absorption =[0.,0.]
-	Photosynthesis_range =[0,0]
+	Photosynthesis_absorption =[0.]
+	Photosynthesis_range =[0]
 	Shadow_tolerance = 1.0
 	#Shadow_generation = 1.0
 
 	# --- Life Cycle ---
-	Reproduction_cost  =[400,400]
-	Reproduction_spread  =[5,5]
-	Reproduction_number =[1,1]
-	Biomass =[5,10] #MAYBE NO LONGER IN USE
+	Reproduction_cost  =[400]
+	Reproduction_spread  =[5]
+	Reproduction_number =[1]
+	Biomass =[4] #MAYBE NO LONGER IN USE
 
 #--- RENDERING ----
 
@@ -33,17 +33,15 @@ func Init():
 
 #INVENTORY
 
-	Sprite_path = "res://Alife/Plant/Grass/grass.png"  #TO DEFINE HERE BEST WAY
-	Stack_amount = 100
+	Sprite_path = "res://Alife/Plant/Moss/moss.png"  #TO DEFINE HERE BEST WAY
+	Stack_amount = 600
 
 func Update(manager, i, delta):	
 	var s = manager.Species_array[i]
 	var t = manager.current_life_state_array[i]
-	if manager.current_life_state_array[i] == 0:
-			Germination(manager,i,s,t)
 	if manager.Alive_array[i] == 1:			
 			Homeostasis(manager,i,s,t,delta)
-			Growth(manager,i,delta)
+			#Growth(manager,i,delta)
 			Reproduction(manager,i,s,t,delta)
 	else:
 		Decompose(manager,i,s,t, delta)
@@ -51,13 +49,13 @@ func Update(manager, i, delta):
 
 
 
-func Growth(manager, i, _delta):
+'func Growth(manager, i, _delta):
 	if manager.current_life_state_array[i] < 6:
 		if manager.current_energy_array[i] > 500:
 			manager.current_life_state_array[i] += 1
 			manager.current_energy_array[i] -=  500
 			manager.current_biomass_array[i] += 5
-			return true
+			return true'
 			
 			
 
@@ -79,8 +77,6 @@ func Homeostasis(manager,i,s,t,delta):
 
 	if manager.current_energy_array[i] <= 0:
 		manager.current_health_array[i] -= manager.species_homeostasis_cost[s][t]  * GlobalSimulationParameter.simulation_speed * delta
-
-
 
 
 	
@@ -114,37 +110,17 @@ func check_if_tile_free(manager,pos):
 		for gi in manager.World.light_bin[light_index]:
 			if manager.Species_array[gi] == AlifeRegistry.SPECIES_ID.MOSS:
 				result = false
-	
+	if manager.World.light_array[light_index] > 0:
+		result = false
 	
 	return result
 	
 
-func Germination(manager,i,s,t):
-	manager.current_life_state_array[i] = 1
-	't = min(t,manager.species_photosynthesis_range[s].size()-1)
-	var area = max(1,(manager.species_photosynthesis_range[s][t] * 2) * (manager.species_photosynthesis_range[s][t] * 2 ))
-	var light_available = 0
-	for l_i in manager.light_index_array[i]:	
-		if l_i <  manager.World.light_array.size():
-			if manager.World.light_array[l_i] > 0:
-				light_available += 1
-	if light_available == area:
-		manager.current_life_state_array[i] = 1
-		manager._pending_update.append(i)
-		
-	if manager.current_life_state_array[i] == 0:
-			manager.Alive_array[i] = 0	'
 			
 func Decompose(manager,i,s,t,delta):
 	t = min(t,manager.species_decomposition_speed[s].size()-1)
 	manager.current_biomass_array[i] -= manager.species_decomposition_speed[s][t]  * GlobalSimulationParameter.simulation_speed   *delta
-	'var current_step = int(Biomass_array[i] / 10)
-	if  grass.has("last_step"):
-		if current_step != grass["last_step"]:
-			grass["last_step"] = current_step
-			_pending_update.append(grass)
-	else:
-		grass["last_step"] = current_step'
+
 	if manager.current_biomass_array[i] < 0:
 		if manager._pending_kills.has(i):
 			return

@@ -20,6 +20,7 @@ class_name DNA
 
 	# --- Movement Related ----
 @export var Max_speed : PackedFloat32Array =[0.]
+@export var size : PackedVector3Array = [Vector3(1,1,1)]
 
 # --- Life Cycle ---
 @export var Reproduction_cost : PackedFloat32Array =[5]

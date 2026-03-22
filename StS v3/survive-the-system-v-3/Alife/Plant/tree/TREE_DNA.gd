@@ -16,7 +16,7 @@ func Init():
 
 	# --- Plant Related ----
 	Photosynthesis_absorption =[0,1.]
-	Photosynthesis_range =[4]
+	Photosynthesis_range =[5]
 	Shadow_generation = 1.0
 
 

@@ -3,11 +3,13 @@
 [ext_resource type="Texture2D" uid="uid://cm12kwn72cfdj" path="res://Alife/Plant/Moss/moss_ground.png" id="1_6jt3y"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ildrc"]
+transparency = 1
 vertex_color_use_as_albedo = true
 albedo_texture = ExtResource("1_6jt3y")
 texture_filter = 0
 
 [resource]
 material = SubResource("StandardMaterial3D_ildrc")
+size = Vector2(2, 2)
 center_offset = Vector3(0, 0.001, 0)
 orientation = 1

@@ -15,7 +15,7 @@ func Init():
 	Decomposition_speed =[2.,2.]
 
 	# --- Plant Related ----
-	Photosynthesis_absorption =[1.,1.]
+	Photosynthesis_absorption =[0.,1.]
 	Photosynthesis_range =[0,0]
 
 
@@ -51,9 +51,9 @@ func Update(manager, i, delta):
 	if manager.Alive_array[i] == 1:
 		if manager.current_life_state_array[i] == 0:
 			Germination(manager,i,s,t)
+
 		else:
-			
-			Homeostasis(manager,i,s,t,delta)
+			#Homeostasis(manager,i,s,t,delta)
 			Growth(manager,i,delta)
 			Reproduction(manager,i,s,t,delta)
 	else:

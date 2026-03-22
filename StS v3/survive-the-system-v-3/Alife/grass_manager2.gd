@@ -36,6 +36,8 @@ var current_life_state_array : PackedInt32Array
 var current_age_array : PackedInt32Array
 var Alive_array : PackedInt32Array
 var current_biomass_array : PackedFloat32Array
+var current_size_array : PackedVector3Array
+
 var Species_array : PackedInt32Array
 
 var current_velocity_array : PackedVector3Array
@@ -431,7 +433,6 @@ func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 	
 		#var share = light_value/World.light_bin[bi].size()
 		for gi in grass:
-			var s = Species_array[gi]
 
 			if Active[gi]==0:
 				
@@ -441,7 +442,7 @@ func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 				continue
 			'if current_life_state_array[gi]==0:
 				continue'
-			#var s = Species_array[gi]
+			var s = Species_array[gi]
 			var t = min(current_life_state_array[gi],species_photosynthesis_absorption[s].size()-1)		
 			var photo_factor = species_photosynthesis_absorption[s][t] * GlobalSimulationParameter.simulation_speed * delta
 			var shadow_value = World.shadow_array[bi]
@@ -640,6 +641,8 @@ func Spawn_and_Kill():
 		var pos_array := PackedVector3Array()
 		var state_array := PackedInt32Array()
 		var alive_array := PackedInt32Array()
+		var size_array := PackedVector3Array()
+
 		var actives := PackedInt32Array()
 		var update_species := PackedInt32Array()  # NEW
 		
@@ -649,8 +652,9 @@ func Spawn_and_Kill():
 			alive_array.append(Alive_array[id])
 			actives.append(Active[id])
 			update_species.append(Species_array[id])  
+			size_array.append(current_size_array[id])
 
-		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives,update_species)
+		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives,update_species,size_array)
 
 	_pending_spawns_positions.clear()
 	_pending_spawns_species.clear()
@@ -674,6 +678,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		Active.append(1)
 		current_biomass_array.append(species_biomass[sp][0])
 		position_array.append(pos)
+		current_size_array.append(SPECIES[sp].size[0])
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
 		#print(get_worldbin_index(pos))
 		if get_worldbin_index(pos) :
@@ -698,6 +703,8 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 		current_biomass_array[i] = species_biomass[sp][0]
 		position_array[i] = pos
 		current_velocity_array[i] = Vector3.ZERO
+		current_size_array[i]= SPECIES[sp].size[0]
+
 		#size_array[i]  = Vector3(1,1,1)  #HERE NOT IN USE? 
 		if get_worldbin_index(pos):
 			binID_array[i] =  get_worldbin_index(pos)
@@ -1045,12 +1052,12 @@ func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):
 
 
 @rpc("authority", "call_remote", "reliable") 			
-func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array):
+func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array,size_array):
 	for c in range(id_array.size()):
 		var s = species_array[c]
 		var renderer = SPECIES_RENDERERS[s]
 		if renderer:
-			renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c])
+			renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c],size_array[c])
 
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(id_array,species_array):
@@ -1062,7 +1069,7 @@ func erase_grass(id_array,species_array):
 				
 
 @rpc("any_peer","call_remote")
-func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_array,species_array):
+func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_array,species_array,size_array):
 
 	for r in SPECIES_RENDERERS.values():
 		if r:
@@ -1072,7 +1079,7 @@ func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_a
 		var s = species_array[c]
 		var renderer = SPECIES_RENDERERS[s]
 		if renderer:
-			renderer.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c])
+			renderer.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c],size_array[c])
 	
 	for r in SPECIES_RENDERERS.values():
 		if r:
@@ -1100,6 +1107,7 @@ func send_full_state_to_peer(peer_id):
 	var alive := PackedInt32Array()
 	var active := PackedInt32Array()
 	var species := PackedInt32Array()
+	var size_array := PackedVector3Array()
 
 	for i in range(entity_count):
 		#if Active[i] == 1:
@@ -1109,5 +1117,6 @@ func send_full_state_to_peer(peer_id):
 			alive.append(Alive_array[i])
 			active.append(Active[i])
 			species.append(Species_array[i])
+			size_array.append(current_size_array[i])
 
-	send_and_draw_array.rpc_id(peer_id, ids, positions, states, alive,active,species)			
+	send_and_draw_array.rpc_id(peer_id, ids, positions, states, alive,active,species,size_array)			

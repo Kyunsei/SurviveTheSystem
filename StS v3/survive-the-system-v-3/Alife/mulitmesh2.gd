@@ -28,12 +28,12 @@ func _ready() -> void:
 		shadow = $shadow
 		shadow.multimesh.instance_count = 1000000
 
-func draw_all_grass(id, pos, state, alive, active):
+func draw_all_grass(id, pos, state, alive, active,size):
 	var slot= instance_number
 	id_to_slot[id] = instance_number
 	slot_to_id[instance_number] = id	
 	
-	var i_scale = Vector3.ONE * clamp(float(state) / 5, 0.2, 1)
+	var i_scale = size # Vector3.ONE * clamp(float(state) / 5, 0.2, 1)
 	var draw_pos = pos
 	if active == 0:
 		draw_pos.y = -100
@@ -56,7 +56,7 @@ func draw_all_grass(id, pos, state, alive, active):
 		shadow.multimesh.visible_instance_count = instance_number
 		shadow.multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 
-func update_drawn_grass(id_array, pos_array, state_array, alive_array, active_array):
+func update_drawn_grass(id_array, pos_array, state_array, alive_array, active_array,size_array):
 	
 	if !id_to_slot.has(id_array):
 		#print("strange: grass need update but not instantiated (yet?)")
@@ -68,7 +68,7 @@ func update_drawn_grass(id_array, pos_array, state_array, alive_array, active_ar
 	var pos = Vector3.ZERO
 	#for i in range(id_array.size()):
 	pos = pos_array#[i]
-	i_scale = Vector3.ONE * clamp(float(state_array)/5,0.2,1)  # I guess it should be somthing else.. like a size variable
+	i_scale = size_array# Vector3.ONE * clamp(float(state_array)/5,0.2,1)  # I guess it should be somthing else.. like a size variable
 	if active_array == 0:#[i] == 0:
 		pos.y = -100 #MAYBE THIS NEED TO CHANGE TOO
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(i_scale), pos))

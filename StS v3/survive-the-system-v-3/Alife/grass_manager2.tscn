@@ -12,7 +12,6 @@
 [ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/animal/Herbivor/SHEEP.png" id="8_dysbp"]
 [ext_resource type="QuadMesh" uid="uid://bm1k4t0khab06" path="res://Alife/Plant/Moss/moss.tres" id="8_ixbrm"]
 [ext_resource type="QuadMesh" uid="uid://bjvwq20d0k7hn" path="res://Alife/animal/Herbivor/Snailbat/SNAILBAT_MESH.tres" id="8_qhbnm"]
-[ext_resource type="SphereMesh" uid="uid://c0f8vwlqbesnh" path="res://Alife/Plant/tree/shadow_mesh.tres" id="8_vuq5v"]
 
 [sub_resource type="MultiMesh" id="MultiMesh_nt0jf"]
 transform_format = 1
@@ -44,8 +43,8 @@ billboard_keep_scale = true
 
 [sub_resource type="QuadMesh" id="QuadMesh_ixbrm"]
 material = SubResource("StandardMaterial3D_5nq35")
-size = Vector2(16, 16)
-center_offset = Vector3(0, 8, 0)
+size = Vector2(4, 4)
+center_offset = Vector3(0, 2, 0)
 
 [sub_resource type="MultiMesh" id="MultiMesh_8rc0f"]
 transform_format = 1
@@ -76,8 +75,8 @@ billboard_keep_scale = true
 
 [sub_resource type="QuadMesh" id="QuadMesh_axxor"]
 material = SubResource("StandardMaterial3D_dysbp")
-size = Vector2(24, 24)
-center_offset = Vector3(0, 8, 0)
+size = Vector2(12, 12)
+center_offset = Vector3(0, 6, 0)
 
 [sub_resource type="MultiMesh" id="MultiMesh_5nq35"]
 transform_format = 1
@@ -115,10 +114,13 @@ transform_format = 1
 use_colors = true
 mesh = SubResource("QuadMesh_nt0jf")
 
+[sub_resource type="BoxMesh" id="BoxMesh_ft7v7"]
+size = Vector3(13, 1, 13)
+
 [sub_resource type="MultiMesh" id="MultiMesh_2xdm7"]
 transform_format = 1
 use_colors = true
-mesh = ExtResource("8_vuq5v")
+mesh = SubResource("BoxMesh_ft7v7")
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_lxqh2"]
 properties/0/path = NodePath("CanvasLayer:visible")

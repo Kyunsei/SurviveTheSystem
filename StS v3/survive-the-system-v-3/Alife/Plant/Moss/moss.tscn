@@ -6,6 +6,7 @@
 [node name="moss" type="Node3D" unique_id=265190410]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=521765770]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0965426)
 mesh = ExtResource("1_1wwsn")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=850642349]
