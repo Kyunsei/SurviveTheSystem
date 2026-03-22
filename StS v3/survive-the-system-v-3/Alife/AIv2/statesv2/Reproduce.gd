@@ -2,7 +2,7 @@ extends STATE
 class_name REPRODUCE_STATE
 
 @export var child_number : int = 3
-var max = 100
+@export var max = 100
 var c = 0
 
 func evaluate(_manager,_i, _DNA):
@@ -11,7 +11,8 @@ func evaluate(_manager,_i, _DNA):
 	#print(_manager.current_energy_array[_i])
 	if _manager.current_energy_array[_i] >= _DNA.Reproduction_cost[0]*1.5:
 		score = 1.5
-	
+	if c > max:
+		score = 0
 	return score
 
 func enter(_manager,_i, _DNA):

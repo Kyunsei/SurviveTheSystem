@@ -50,7 +50,6 @@ func Update(_manager, _i, _delta):
 	if _manager.Alive_array[_i] == 1:
 		change_bin(_manager,_i)
 		Homeostasis(_manager, _i, _delta)
-
 	 
 func change_bin(_manager,_i):
 	var old_bin = _manager.binID_array[_i]
@@ -75,9 +74,9 @@ func Homeostasis(_manager, _i, delta):
 	#print(_manager.current_health_array[_i])
 	_manager.current_energy_array[_i] -= 0.5 * delta
 	if _manager.current_energy_array[_i] > 0:
-			if  _manager.current_energy_array[_i] > 49 and _manager.current_health_array[_i]<Max_health[0]:
+			if  _manager.current_energy_array[_i] > 49 and _manager.current_health_array[_i]<100:
 				_manager.current_health_array[_i] += 1*delta
-				_manager.current_health_array[_i] -= 1*delta
+				_manager.current_energy_array[_i] -= 1*delta
 			if  _manager.current_energy_array[_i] <= 0:
 				'if speed > 9:
 					_manager.current_health_array[_i] -= 1.5*delta
