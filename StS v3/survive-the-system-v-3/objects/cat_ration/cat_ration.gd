@@ -44,3 +44,4 @@ static func eat(player):
 	if item_eaten:
 		player.lifedata["current_energy"] =clamp(player.lifedata["current_energy"]+value,0,player.lifedata["Max_energy"])
 		#print(value)
+		player.manager.current_energy_array[player.alifemanager_id] = clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)

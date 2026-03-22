@@ -14,8 +14,8 @@ func Init():
 	display_name = "CAT"
 
 	# --- Core metabolism ---
-	Max_energy =[1000,1000]
-	Max_health  =[4,4]
+	Max_energy =[200,200]
+	Max_health  =[100]
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.10]
 	Decomposition_speed =[1]
@@ -49,6 +49,7 @@ func Init():
 func Update(_manager, _i, _delta):
 	if _manager.Alive_array[_i] == 1:
 		change_bin(_manager,_i)
+		Homeostasis(_manager, _i, _delta)
 
 	 
 func change_bin(_manager,_i):
@@ -66,7 +67,19 @@ func change_bin(_manager,_i):
 func Damage(_action,manager,i,_ii,value):
 	var dir = (manager.position_array[i] - manager.position_array[_ii]).normalized()
 	manager.current_health_array[_ii] -= value
-	manager.position_array[_ii] += dir * 10
+	#manager.position_array[_ii] += dir * 10
 	#player_node.position = manager.position_array[i]
-	change_bin(manager,_ii)
+	#change_bin(manager,_ii)
 		
+func Homeostasis(_manager, _i, delta):
+	#print(_manager.current_health_array[_i])
+	_manager.current_energy_array[_i] -= 0.5 * delta
+	if _manager.current_energy_array[_i] > 0:
+			if  _manager.current_energy_array[_i] > 49 and _manager.current_health_array[_i]<Max_health[0]:
+				_manager.current_health_array[_i] += 1*delta
+				_manager.current_health_array[_i] -= 1*delta
+			if  _manager.current_energy_array[_i] <= 0:
+				'if speed > 9:
+					_manager.current_health_array[_i] -= 1.5*delta
+				else: '
+				_manager.current_health_array[_i] -= 1*delta

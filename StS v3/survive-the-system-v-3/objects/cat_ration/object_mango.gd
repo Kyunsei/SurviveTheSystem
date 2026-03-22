@@ -31,4 +31,6 @@ static func eat(_player):
 		_player.show_label_above_player.rpc_id(int(_player.name),50, Color(0.0, 1.0, 0.0, 1.0), 3.0,"", " maximum energy")
 		print(_player.lifedata["Max_energy"])
 		print("You eat the Mango")
-		pass
+		
+		_player.manager.current_energy_array[_player.alifemanager_id] +=50
+		_player.max_energy += 50
