@@ -11,13 +11,14 @@
 [ext_resource type="Resource" uid="uid://devw6df18bnty" path="res://objects/cat_ration/object_gold_vacuum.tres" id="7_4in6e"]
 [ext_resource type="Resource" uid="uid://cjkf0rm4ojw4m" path="res://objects/cat_ration/object_strawberry.tres" id="7_f4khi"]
 [ext_resource type="Resource" uid="uid://b2plhjlatrwnl" path="res://objects/cat_ration/object_beltpouch.tres" id="8_82ajy"]
+[ext_resource type="Texture2D" uid="uid://dxqhew3ty2rmx" path="res://assets/assets kyun/quit1.png" id="12_7x8xu"]
 
 [node name="Node" type="Control" unique_id=1310314475]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_to8av")
 basic_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("3_rukt4"), ExtResource("5_563av"), ExtResource("4_4jbah"), ExtResource("6_8vtdw")])
-rare_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("8_82ajy"), ExtResource("6_563av"), ExtResource("7_f4khi"), ExtResource("7_4in6e")])
+rare_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("8_82ajy"), ExtResource("6_563av"), ExtResource("7_f4khi")])
 legendary_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("8_82ajy"), ExtResource("6_563av"), ExtResource("7_f4khi"), ExtResource("7_4in6e")])
 shop_item_scene = ExtResource("3_g1vqg")
 
@@ -30,15 +31,16 @@ offset_bottom = 648.0
 layout_mode = 0
 offset_right = 1152.0
 offset_bottom = 648.0
+columns = 4
 
 [node name="Quit" type="Button" parent="." unique_id=980240485]
-custom_minimum_size = Vector2(50, 50)
+custom_minimum_size = Vector2(20, 50)
 layout_mode = 0
-offset_left = 278.0
-offset_top = 146.0
-offset_right = 328.0
-offset_bottom = 196.0
-text = "Quit"
+offset_left = 793.0
+offset_top = 74.0
+offset_right = 929.0
+offset_bottom = 146.0
+icon = ExtResource("12_7x8xu")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1015440379]
 _spawnable_scenes = PackedStringArray("uid://chj8kgpm5nn4l")

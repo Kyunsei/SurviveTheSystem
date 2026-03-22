@@ -49,10 +49,12 @@ func interact(player):
 
 						Biomass_collected += o["Biomass"]*factor
 						update_label()
+						threshold(player)
 						inventory.remove_selected(int(player.name))
 					else:
 						Biomass_collected += grassmanager.current_biomass_array[o]*factor
 						update_label()
+						threshold(player)
 						inventory.remove_selected(int(player.name))
 
 			
@@ -63,8 +65,27 @@ func interact(player):
 			#player.remove_from_inventory(o,1)'
 		#player.inventory = {}
 		#player.inventory_count = 0
+		#spaceship.get_node("Collector_ship").go_down()
+		update_insideBiomass()
+		#.go_down.rpc_id(1)
+		#start_escape_phase(player)
+		#for i in player.get_parent().player_array:
+			#i.escape_fast_or_die.rpc_id(int(i.name))
+			#i.go_back_to_ship.rpc_id(int(i.name),c)
+			#set_world_readiness.rpc(false)
+			#c +=1
+			#GlobalSimulationParameter.simulation_speed = 0.5
+			#credit_player(i)
+
+
+
+		#end_of_quest.rpc_id(int(player.name),player)
+	#p.grass_in_inventory = 0
+	#print ("item collected")
+	#print (Biomass_collected)'
+
+func threshold(player):
 	var sign = $sign/signlabel
-	sign.text = str("Next reward at " +str(first_biomass_threshold)+ " Biomass")
 	if Biomass_collected >= first_biomass_threshold and collecting == true:
 		first_biomass_threshold +=10000000
 		credit_gain += 20
@@ -97,24 +118,6 @@ func interact(player):
 		for p in player.get_parent().player_array:
 			p.finished_their_mission = true
 			credit_player(p)
-		#spaceship.get_node("Collector_ship").go_down()
-		update_insideBiomass()
-		#.go_down.rpc_id(1)
-		#start_escape_phase(player)
-		#for i in player.get_parent().player_array:
-			#i.escape_fast_or_die.rpc_id(int(i.name))
-			#i.go_back_to_ship.rpc_id(int(i.name),c)
-			#set_world_readiness.rpc(false)
-			#c +=1
-			#GlobalSimulationParameter.simulation_speed = 0.5
-			#credit_player(i)
-
-
-
-		#end_of_quest.rpc_id(int(player.name),player)
-	#p.grass_in_inventory = 0
-	#print ("item collected")
-	#print (Biomass_collected)'
 
 func start_escape_phase(player):
 	var collector_ship = spaceship.get_node("Collector_ship")
