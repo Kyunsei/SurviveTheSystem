@@ -1,7 +1,7 @@
 [gd_resource type="QuadMesh" format=3 uid="uid://dcrx4rno0mb02"]
 
-[ext_resource type="Shader" uid="uid://btx2plkf15pio" path="res://Z_NOTMOREINUSE/ALIFE.gdshader" id="1_acqjd"]
-[ext_resource type="Texture2D" uid="uid://c3mhy3ho6ovbu" path="res://Alife/Plant/Bush/berry_5.png" id="2_w3emv"]
+[ext_resource type="Shader" path="res://Z_NOTMOREINUSE/ALIFE.gdshader" id="1_acqjd"]
+[ext_resource type="Texture2D" uid="uid://chg5decq7g77f" path="res://Alife/Plant/Bush/berry-Sheet.png" id="2_w3emv"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w3emv"]
 render_priority = 0
@@ -9,9 +9,9 @@ shader = ExtResource("1_acqjd")
 shader_parameter/albedo = Color(0, 0, 0, 1)
 shader_parameter/albedo_texture = ExtResource("2_w3emv")
 shader_parameter/alpha_scissor_threshold = 0.5
-shader_parameter/tile_count = Vector2i(1, 1)
+shader_parameter/tile_count = Vector2i(5, 2)
 shader_parameter/tile_index = Vector2i(0, 0)
-shader_parameter/nframe = 0
+shader_parameter/nframe = 5
 shader_parameter/player_position = Vector3(0, 0, 0)
 
 [resource]

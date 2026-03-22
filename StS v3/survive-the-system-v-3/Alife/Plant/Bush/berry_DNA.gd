@@ -37,7 +37,7 @@ func Init():
 
 
 func Growth(manager, i, _delta):
-	if manager.current_life_state_array[i] < 6:
+	if manager.current_life_state_array[i] < 5:
 		if manager.current_energy_array[i] > 1000:
 			manager.current_life_state_array[i] += 1
 			manager.current_energy_array[i] -=  1000

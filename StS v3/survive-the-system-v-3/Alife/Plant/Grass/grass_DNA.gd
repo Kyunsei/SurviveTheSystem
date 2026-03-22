@@ -82,9 +82,6 @@ func Homeostasis(manager,i,s,t,delta):
 
 
 
-
-
-
 	
 func Reproduction(manager,i,s,t,_delta):	
 		t = min(t,manager.species_reproduction_cost[s].size()-1)

@@ -5,7 +5,7 @@
 [ext_resource type="QuadMesh" uid="uid://ossnpdi2f01p" path="res://Alife/Plant/Grass/grass_mesh.tres" id="4_lxqh2"]
 [ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/animal/Spider/Spidercrab.png" id="5_2xdm7"]
 [ext_resource type="Script" uid="uid://dqvbcbtdwfsju" path="res://Alife/mulitmesh2.gd" id="5_hbvxf"]
-[ext_resource type="Shader" uid="uid://btx2plkf15pio" path="res://Z_NOTMOREINUSE/ALIFE.gdshader" id="5_qhbnm"]
+[ext_resource type="QuadMesh" uid="uid://dcrx4rno0mb02" path="res://Alife/Plant/Bush/bush_mesh.tres" id="5_qpu6g"]
 [ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="6_hbvxf"]
 [ext_resource type="QuadMesh" uid="uid://c4w8e4xg2k0qh" path="res://Alife/animal/Herbivor/jellybee/JELLYBEE_MESH.tres" id="7_qpu6g"]
 [ext_resource type="QuadMesh" uid="uid://cemxkaiaso15s" path="res://Alife/Plant/Moss/moss_ground.tres" id="8_5nq35"]
@@ -13,7 +13,6 @@
 [ext_resource type="QuadMesh" uid="uid://bm1k4t0khab06" path="res://Alife/Plant/Moss/moss.tres" id="8_ixbrm"]
 [ext_resource type="QuadMesh" uid="uid://bjvwq20d0k7hn" path="res://Alife/animal/Herbivor/Snailbat/SNAILBAT_MESH.tres" id="8_qhbnm"]
 [ext_resource type="SphereMesh" uid="uid://c0f8vwlqbesnh" path="res://Alife/Plant/tree/shadow_mesh.tres" id="8_vuq5v"]
-[ext_resource type="Texture2D" uid="uid://c3mhy3ho6ovbu" path="res://Alife/Plant/Bush/berry_5.png" id="9_8rc0f"]
 
 [sub_resource type="MultiMesh" id="MultiMesh_nt0jf"]
 transform_format = 1
@@ -25,26 +24,11 @@ transform_format = 1
 use_colors = true
 mesh = ExtResource("4_2rnjc")
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_g02bw"]
-render_priority = 0
-shader = ExtResource("5_qhbnm")
-shader_parameter/albedo = Color(0, 0, 0, 1)
-shader_parameter/albedo_texture = ExtResource("9_8rc0f")
-shader_parameter/alpha_scissor_threshold = 0.5
-shader_parameter/tile_count = Vector2i(1, 1)
-shader_parameter/tile_index = Vector2i(0, 0)
-shader_parameter/nframe = 0
-shader_parameter/player_position = Vector3(0, 0, 0)
-
-[sub_resource type="QuadMesh" id="QuadMesh_r6o52"]
-material = SubResource("ShaderMaterial_g02bw")
-size = Vector2(4, 4)
-center_offset = Vector3(0, 2, 0)
-
 [sub_resource type="MultiMesh" id="MultiMesh_5wgv5"]
 transform_format = 1
 use_colors = true
-mesh = SubResource("QuadMesh_r6o52")
+use_custom_data = true
+mesh = ExtResource("5_qpu6g")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5nq35"]
 transparency = 2

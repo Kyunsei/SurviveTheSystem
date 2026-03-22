@@ -14,6 +14,9 @@ uniform int nframe = 3;
 
 //instance uniform vec4 tint_color = vec4(0., 0.00, 0.00, 1.0);
 varying flat int id;
+varying flat vec4 data;
+varying flat vec3 col;
+
 
 ///
 uniform vec3 player_position;
@@ -22,6 +25,10 @@ uniform vec3 player_position;
 
 void vertex() {
     id = INSTANCE_ID;
+	data = INSTANCE_CUSTOM;
+	col = COLOR.rgb;
+
+	
 
     // Object world-space position (translation part of MODEL_MATRIX)
     vec3 obj_pos = vec3(MODEL_MATRIX[3].xyz);
@@ -72,13 +79,16 @@ void vertex() {
 
 void fragment() {
 	// Called for every pixel the material is visible on.
-	//ANIMATION
-	vec2 current_tile = vec2(tile_index);
+	//ANIMATION LEFTOVER CAN BE USED ONE DAY?
     // Control speed of switching
-    float speed = 5.0; // 1 change per second
+    //float speed = 5.0; // 1 change per second
     // Step index increasing with time
-    int idx = int(floor(TIME * speed + float(id))) % 3;
-	current_tile.x += float(idx);
+   // int idx = int(floor(TIME * speed + float(id))) % 3;
+	//current_tile.x += float(idx);
+	
+	vec2 current_tile = vec2(0,0);
+	current_tile.x = data.r;
+	current_tile.y = data.g;
 
 	vec2 uv = UV;
 	vec2 tile_size = 1.0 / vec2(tile_count);
@@ -86,7 +96,7 @@ void fragment() {
 
 	vec2 tex_size = vec2(textureSize(albedo_texture, 0));
 	vec4 albedo_tex = texture(albedo_texture, uv);
-	ALBEDO = albedo.rgb + albedo_tex.rgb;// - tint_color.rgb;
+	ALBEDO = albedo_tex.rgb* col.rgb;
 	ALPHA *= albedo_tex.a;
 	ALPHA_SCISSOR_THRESHOLD = alpha_scissor_threshold;
 

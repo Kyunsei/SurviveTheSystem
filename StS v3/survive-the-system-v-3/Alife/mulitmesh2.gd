@@ -44,6 +44,13 @@ func draw_all_grass(id, pos, state, alive, active):
 		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 	instance_number += 1
 	#multimesh.visible_instance_count = instance_number
+	
+	if test:
+		var r = state
+		var g = 1-alive
+		var b = 0
+		var a = 0
+		multimesh.set_instance_custom_data(slot, Color(r, g, b, a))
 	if shadow:
 		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * i_scale), draw_pos))
 		shadow.multimesh.visible_instance_count = instance_number
@@ -70,6 +77,12 @@ func update_drawn_grass(id_array, pos_array, state_array, alive_array, active_ar
 		multimesh.set_instance_color(slot, Color(0.249, 0.082, 0.08, 1.0))
 	else:
 		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
+	if test:
+		var r = state_array
+		var g = 1-alive_array
+		var b = 0
+		var a = 0
+		multimesh.set_instance_custom_data(slot, Color(r, g, b, a))
 	if shadow:
 		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * i_scale), pos))
 		shadow.multimesh.visible_instance_count = instance_number
