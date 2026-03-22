@@ -60,29 +60,29 @@ func init():
 
 			$beast_manager.World = World
 			var forest_pos = Vector3(30,0,30)
-			for i in range(0):
+			for i in range(50):
 				var pos = get_random_worldpos()
 				#var pos = forest_pos + Vector3(randf_range(-20,20),0, randf_range(-20,20))
 				#$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.TREE)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.TREE)	
-			for i in range(200):
+			for i in range(0):
 	
 				var pos = get_random_worldpos()
 				#$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.TREE)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.BERRY)
 
-			for i in range(10):
+			for i in range(0):
 				var pos = get_random_worldpos()
 				if GlobalSimulationParameter.DEBUG_grass_sim == 0:
 					$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.GRASS)
 				else:
 					$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.GRASS)
-			for i in range(0):
+			for i in range(2000):
 				var pos = get_random_worldpos()
 				if GlobalSimulationParameter.DEBUG_grass_sim == 0:
 					return
 				else:
-					$Grass_Manager2.Spawn_New_Grass(pos,2)					
+					$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.MOSS)					
 
 			for i in range(0):
 				var pos = get_random_worldpos()

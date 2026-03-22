@@ -418,6 +418,7 @@ func calculate_flow_at_bin(s: int, bin: int):
 
 
 
+
 func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 	for bi in range(World.light_bin.size()):
 		var light_value = World.light_array[bi]
@@ -427,22 +428,37 @@ func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 		var grass = World.light_bin[bi]
 		if !grass:
 			continue
-
+	
 		#var share = light_value/World.light_bin[bi].size()
 		for gi in grass:
+			var s = Species_array[gi]
+
 			if Active[gi]==0:
+				
 				continue
 			if Alive_array[gi]==0:
+			
 				continue
-			if current_life_state_array[gi]==0:
-				continue
-			var s = Species_array[gi]
+			'if current_life_state_array[gi]==0:
+				continue'
+			#var s = Species_array[gi]
 			var t = min(current_life_state_array[gi],species_photosynthesis_absorption[s].size()-1)		
 			var photo_factor = species_photosynthesis_absorption[s][t] * GlobalSimulationParameter.simulation_speed * delta
-			current_energy_array[gi] +=  light_value * photo_factor
+			var shadow_value = World.shadow_array[bi]
+			if shadow_value == null:
+				shadow_value = 0.0
+			var shadow_factor = SPECIES[s].Shadow_tolerance * GlobalSimulationParameter.simulation_speed * delta
+			
+		
+
+				#print(binID_array[gi])
+				#print(gi)
+			current_energy_array[gi] +=  light_value * photo_factor + shadow_factor * shadow_value
 			current_energy_array[gi] = clamp(current_energy_array[gi],0 ,species_max_energy[s][t]* GlobalSimulationParameter.simulation_speed)
-			World.light_array[bi] = 0
-			break
+			World.light_array[bi] = clamp( World.light_array[bi] - species_photosynthesis_absorption[s][t] ,0,1)
+			#World.shadow_array[bi] = clamp( World.light_array[bi] - SPECIES[s].Shadow_tolerance ,0,1)
+
+			#break
 
 		
 func entity_update(i,delta):
@@ -879,11 +895,17 @@ func put_in_light_bin(idx):
 		if pos.z <= -World.World_Size.z/2 or pos.z >= World.World_Size.z/2:
 				return
 		var bi = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
-		if bi >= 0 or bi < World.light_bin.size():			
+		if bi >= 0 or bi < World.light_bin.size():	
 			if World.light_bin[bi]:
 				World.light_bin[bi].append(idx)
+
 			else:
 				World.light_bin[bi]= [idx]
+			
+			World.shadow_array[bi] += SPECIES[Species_array[idx]].Shadow_generation
+
+			#World.shadow_array[bi] = SPECIES[Species_array[idx]].Shadow_generation
+
 		#light_index.append(World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size))
 
 	else:
@@ -899,8 +921,11 @@ func put_in_light_bin(idx):
 				var idx_bin =  World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.light_tile_size)
 				if World.light_bin[idx_bin]:
 					World.light_bin[idx_bin].append(idx)
+
 				else:
 					World.light_bin[idx_bin]= [idx]
+					
+				World.shadow_array[idx_bin] += SPECIES[Species_array[idx]].Shadow_generation
 
 
 func remove_from_world(i):
@@ -936,6 +961,10 @@ func remove_from_light_bin(idx):
 	for li in light_index_array[idx]:
 		if World.light_bin[li].has(idx):
 			World.light_bin[li].erase(idx)
+		
+		World.shadow_array[li] -= SPECIES[Species_array[idx]].Shadow_generation
+		
+
 	light_index_array[idx].clear()
 
 

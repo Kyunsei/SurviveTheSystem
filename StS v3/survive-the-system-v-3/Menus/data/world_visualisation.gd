@@ -28,7 +28,7 @@ var isfieldshow : bool = false
 var isflowshow : bool = false
 var isbinshow : bool = false
 var islightshow : bool = false
-
+var isshadowshow : bool = false
 
 # ...
 
@@ -103,6 +103,8 @@ func update():
 		i = show_bin(i,World.bin_array, World.bin_size)	
 	elif islightshow:
 		i = show_bin(i,World.light_array, World.light_tile_size)
+	elif isshadowshow:
+		i = show_bin(i,World.shadow_array, World.light_tile_size)
 	elif isfieldshow:
 		i = show_field(i)
 	
@@ -341,4 +343,5 @@ func _on_button_bin_toggled(toggled_on: bool) -> void:
 
 
 func _on_button_light_toggled(toggled_on: bool) -> void:
-	islightshow = toggled_on
+	#islightshow = toggled_on
+	isshadowshow = toggled_on
