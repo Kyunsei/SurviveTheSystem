@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="GOTO_STATE" format=3 uid="uid://bg18td4a0hvsa"]
+
+[ext_resource type="Script" uid="uid://bodkfy05sdh6y" path="res://Alife/AIv2/statesv2/GoTo.gd" id="1_robjn"]
+
+[resource]
+script = ExtResource("1_robjn")
+speed = 20
+final_distance_to_target = 0.5
+metadata/_custom_type_script = "uid://bodkfy05sdh6y"

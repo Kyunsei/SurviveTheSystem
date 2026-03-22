@@ -1,8 +1,10 @@
 extends STATE
-class_name EAT_STATE
+class_name POLLEN_STATE
 
 var target_species : int = 0
 @export var distance_to_eat : float = 0.2
+
+
 
 func evaluate(_manager,_i, _DNA):
 	var score: float = 0
@@ -59,17 +61,12 @@ func update(manager,i, _DNA, _delta):
 	for f in _DNA.food_species_id:
 		var ti = find_closest(manager,manager.position_array[i], targets,  f)
 		if ti != null:
+			manager.current_energy_array[i] += manager.current_biomass_array[ti]
+			manager.current_energy_array[ti] = 0
+			#manager.Active[ti] = 0
 
-
-			#manager.current_health_array[ti] = -100
-			if manager._pending_kills.has(ti) == false:
-				manager._pending_kills.append(ti)
-				manager.current_health_array[ti] = 0
-				manager.Alive_array[ti] = 0
-
-				manager.current_energy_array[i] += manager.current_biomass_array[ti]
-				manager.current_energy_array[i] = min(manager.current_energy_array[i],_DNA.Max_energy[0] )
-				
+			manager.current_energy_array[i] = min(manager.current_energy_array[i],_DNA.Max_energy[0] )
+			
 		#manager.Active[ti] = 0
 
 		#manager.current_energy_array[i] += manager.current_biomass_array[ti]

@@ -60,7 +60,7 @@ func init():
 
 			$beast_manager.World = World
 			var forest_pos = Vector3(30,0,30)
-			for i in range(50):
+			for i in range(40):
 				var pos = get_random_worldpos()
 				#var pos = forest_pos + Vector3(randf_range(-20,20),0, randf_range(-20,20))
 				#$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.TREE)
@@ -91,7 +91,7 @@ func init():
 				else:
 					$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.SPIKYFLOWER)	
 
-			GlobalSimulationParameter.simulation_speed = 2000000
+			GlobalSimulationParameter.simulation_speed = 20000
 			await get_tree().create_timer(2).timeout
 			GlobalSimulationParameter.simulation_speed = 1
 			for i in range(4):

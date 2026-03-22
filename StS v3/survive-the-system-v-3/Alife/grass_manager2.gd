@@ -936,9 +936,11 @@ func put_in_light_bin(idx):
 
 
 func remove_from_world(i):
-	if Species_array[i] == 5: #CAT
+	if Species_array[i] == 5 or Species_array[i] == AlifeRegistry.SPECIES_ID.JELLYBEE  : #CAT
 		return
-		print("THIS IS CAT to remove")
+		#print("THIS IS CAT to remove")
+		'if Species_array[i] == AlifeRegistry.SPECIES_ID.TREE and Alive_array[i] == 1:
+		return'
 	else:
 		remove_from_light_bin(i)
 		remove_from_world_bin(i)

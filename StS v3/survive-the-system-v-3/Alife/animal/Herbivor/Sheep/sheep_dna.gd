@@ -8,7 +8,7 @@ var current_state : STATE
 
 func Init():
 		
-
+	species_id = AlifeRegistry.SPECIES_ID.SHEEP
 
 	# --- Core metabolism ---
 	Max_energy =[1000,1000]

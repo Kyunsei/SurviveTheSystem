@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="POLLEN_STATE" format=3 uid="uid://bk7bqskrfcnel"]
+
+[ext_resource type="Script" uid="uid://7ix2v5t0oscm" path="res://Alife/AIv2/statesv2/pollen_collect.gd" id="1_25v3l"]
+
+[resource]
+script = ExtResource("1_25v3l")
+metadata/_custom_type_script = "uid://7ix2v5t0oscm"

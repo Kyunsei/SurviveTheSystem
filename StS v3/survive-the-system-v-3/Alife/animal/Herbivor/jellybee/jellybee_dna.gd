@@ -8,6 +8,7 @@ var current_state : STATE
 
 func Init():
 		
+	species_id = AlifeRegistry.SPECIES_ID.JELLYBEE
 
 
 	# --- Core metabolism ---
@@ -27,13 +28,13 @@ func Init():
 
 
 	# --- Life Cycle ---
-	Reproduction_cost  =[500,500]
+	Reproduction_cost  =[100,100]
 	Reproduction_spread  =[5,5]
 	Reproduction_number =[1,1]
 	Biomass =[5000,5000] #MAYBE NO LONGER IN USE
 
 #--- BEHAVIOUR ----
-	food_species_id  = [AlifeRegistry.SPECIES_ID.GRASS]
+	food_species_id  = [AlifeRegistry.SPECIES_ID.SPIKYFLOWER]
 	danger_species_id = [AlifeRegistry.SPECIES_ID.CAT]
 	friend_species_id = [AlifeRegistry.SPECIES_ID.SHEEP]
 #????
@@ -42,7 +43,7 @@ func Init():
 
 #INVENTORY
 
-	Sprite_path = "res://Alife/animal/Herbivor/sheep2.png"
+	Sprite_path = "res://Alife/animal/Herbivor/jellybee/jellybee.png"
 	Stack_amount = 100
 	
 	
