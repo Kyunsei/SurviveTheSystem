@@ -312,7 +312,7 @@ func Drop():
 					alife_manager.add(item_dropped,player.position)	
 
 func show_stats_menu():
-	player.get_node("Player_HUD").get_node("StatsPanel").update_status()
+	player.get_node("Player_HUD").get_node("StatsPanel").update_status.rpc_id(1,int(player.name))
 	if player.get_node("Player_HUD").get_node("StatsPanel").visible :
 		player.get_node("Player_HUD").get_node("StatsPanel").hide()
 	else :

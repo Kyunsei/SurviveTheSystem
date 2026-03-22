@@ -16,6 +16,9 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath("InsideMesh:scale")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath("sign/signlabel:text")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dwx45"]
 transparency = 2
@@ -26,6 +29,14 @@ albedo_color = Color(0.33333334, 0.73333335, 0.4745098, 0.53333336)
 [sub_resource type="BoxMesh" id="BoxMesh_84hyi"]
 material = SubResource("StandardMaterial3D_dwx45")
 size = Vector3(2.8, 7.8, 2.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_84hyi"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.30800003)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wjvjk"]
+material = SubResource("StandardMaterial3D_84hyi")
+size = Vector3(3.6, 0.6, 0.1)
 
 [node name="Collector" type="Node3D" unique_id=1725736807 groups=["Collector"]]
 script = ExtResource("1_0s0nn")
@@ -50,3 +61,12 @@ replication_config = SubResource("SceneReplicationConfig_0s0nn")
 [node name="InsideMesh" type="MeshInstance3D" parent="." unique_id=417898275]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0000002, 0)
 mesh = SubResource("BoxMesh_84hyi")
+
+[node name="sign" type="MeshInstance3D" parent="." unique_id=117810308]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.1999998, 4.5)
+mesh = SubResource("BoxMesh_wjvjk")
+
+[node name="signlabel" type="Label3D" parent="sign" unique_id=687120005]
+text = "Next Reward at 1000 Biomass"
+font_size = 48
+outline_size = 16
