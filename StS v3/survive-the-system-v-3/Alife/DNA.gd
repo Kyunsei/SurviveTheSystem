@@ -14,6 +14,9 @@ class_name DNA
 # --- Plant Related ----
 @export var Photosynthesis_absorption : PackedFloat32Array =[1.]
 @export var Photosynthesis_range : PackedInt32Array=[0]
+@export var Shadow_generation : float = 0
+@export var Shadow_tolerance : float = 0.0
+@export var Light_tolerance : float = 1.0
 
 	# --- Movement Related ----
 @export var Max_speed : PackedFloat32Array =[0.]
@@ -23,7 +26,6 @@ class_name DNA
 @export var Reproduction_spread : PackedFloat32Array =[3]
 @export var Reproduction_number : PackedInt32Array =[1]
 @export var Biomass : PackedFloat32Array =[5]
-
 
 
 

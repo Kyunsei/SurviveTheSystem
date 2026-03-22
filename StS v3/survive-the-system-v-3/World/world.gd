@@ -2,7 +2,7 @@ extends Node3D
 
 #WORLD SETUP
 var World_Size = Vector3(250,1,250)
-#var World_Size = Vector3(10,1,10)
+#var World_Size = Vector3(100,1,100)
 
 #var World_Size = Vector3(50,1,50)
 
@@ -16,6 +16,8 @@ var Center_y = World_Size.y
 ##### LIGHT MATRIX
 var light_tile_size = Vector3(1,World_Size.y,1) #in m?
 var light_array = []
+var shadow_array = []
+
 var light_bin = [] #PLANT GO THERE
 
 var light_flux_in = 1.0
@@ -47,10 +49,14 @@ func generate_world():
 	#$Ground/ground.mesh.size = Vector2(World_Size.x,World_Size.z) #THIS IS NOT SYNCH with client
 	var calc_size = World_Size/light_tile_size
 	light_array.resize(calc_size.x * calc_size.y * calc_size.z)
+	shadow_array.resize(calc_size.x * calc_size.y * calc_size.z)
+
 	light_bin.resize(calc_size.x * calc_size.y * calc_size.z)
 	#light_bin.fill([])
 
 	fill_value_in_each_tile(light_array,light_flux_in )
+	fill_value_in_each_tile(shadow_array,0.0 )
+
 	################
 	var calc_size2 = World_Size/bin_size
 	bin_array.resize(calc_size2.x * calc_size2.y * calc_size2.z)

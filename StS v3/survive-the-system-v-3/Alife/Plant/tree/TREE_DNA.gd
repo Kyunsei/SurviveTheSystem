@@ -8,15 +8,16 @@ func Init():
 	display_name = "TREE"
 
 	# --- Core metabolism ---
-	Max_energy =[220000]
+	Max_energy =[220000,220000]
 	Max_health  =[5,10,20,30,40]
 	Max_age  = [100]
 	Homeostasis_cost  =[0.]
 	Decomposition_speed =[1.]
 
 	# --- Plant Related ----
-	Photosynthesis_absorption =[1.]
+	Photosynthesis_absorption =[0,1.]
 	Photosynthesis_range =[4]
+	Shadow_generation = 1.0
 
 
 	# --- Life Cycle ---
