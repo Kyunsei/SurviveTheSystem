@@ -65,8 +65,8 @@ func grant_player_money(id):
 	
 	
 func _process(_delta: float) -> void:
-	if DEBUG_ACTIVE == false:
-		return
+	#if DEBUG_ACTIVE == false:
+		#return
 	if multiplayer.is_server():
 		if isWorldAccelerated:
 			if get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time <0 :

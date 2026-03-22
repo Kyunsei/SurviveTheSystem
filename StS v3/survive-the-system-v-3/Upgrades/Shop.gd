@@ -1,6 +1,9 @@
 extends Control
 @export var basic_item_pool: Array[ItemResource]  # Contains the 3 specific basic items
-@export var rare_item_pool: Array[ItemResource] # Contains the 3 rare choices
+@export var basic_item_pool2: Array[ItemResource]  # Contains the 3 specific basic items
+@export var mango_item_pool: Array[ItemResource] # Contains the 3 rare choices
+@export var beltpouch_item_pool: Array[ItemResource] # Contains the 3 rare choices
+@export var strawberry_item_pool: Array[ItemResource] # Contains the 3 rare choices
 @export var legendary_item_pool: Array[ItemResource] # Contains the 5 super rare choices
 @export var shop_size: int = 5
 @export var shop_item_scene: PackedScene 
@@ -30,16 +33,28 @@ func generate_shop():
 			"item": item,
 			"quantity": randi_range(3, 7)
 		})
+	for item in basic_item_pool2:
+		current_stock.append({
+			"item": item,
+			"quantity": 1
+		})
 	# 2. Rare Items: Choose 1 from the pool
-	if not rare_item_pool.is_empty():
-		var rare_choice = rare_item_pool.duplicate()
+	if not mango_item_pool.is_empty():
+		var mango_choice = mango_item_pool.duplicate()
+		mango_choice.shuffle()
+		current_stock.append({
+			"item": mango_choice[0],
+			"quantity": randi_range(1, 3)
+		})
+	if not strawberry_item_pool.is_empty():
+		var rare_choice = strawberry_item_pool.duplicate()
 		rare_choice.shuffle()
 		current_stock.append({
 			"item": rare_choice[0],
 			"quantity": randi_range(1, 3)
 		})
-	if not rare_item_pool.is_empty():
-		var rare_choice = rare_item_pool.duplicate()
+	if not beltpouch_item_pool.is_empty():
+		var rare_choice = beltpouch_item_pool.duplicate()
 		rare_choice.shuffle()
 		current_stock.append({
 			"item": rare_choice[0],
@@ -47,30 +62,14 @@ func generate_shop():
 		})
 
 	# 3. Super Rare Items: 1/3 chance to spawn 1 from the pool
-	if randi_range(1, 3) == 1 and not legendary_item_pool.is_empty():
+	if randi_range(1, 1) == 1 and not legendary_item_pool.is_empty():
 		var legendary_choice = legendary_item_pool.duplicate()
 		legendary_choice.shuffle()
 		current_stock.append({
 			"item": legendary_choice[0],
 			"quantity": 1
 		})
-	# 3. Super Rare Items: 1/3 chance to spawn 1 from the pool
-	if randi_range(1, 3) == 1 and not legendary_item_pool.is_empty():
-		var legendary_choice = legendary_item_pool.duplicate()
-		legendary_choice.shuffle()
-		current_stock.append({
-			"item": legendary_choice[0],
-			"quantity": 1
-		})
-	# 3. Super Rare Items: 1/3 chance to spawn 1 from the pool
-	if randi_range(1, 3) == 1 and not legendary_item_pool.is_empty():
-		var legendary_choice = legendary_item_pool.duplicate()
-		legendary_choice.shuffle()
-		current_stock.append({
-			"item": legendary_choice[0],
-			"quantity": 1
-		})
-	
+
 	populate_grid()
 	'else:
 		if randi_range(1, 3) == 1 and not legendary_item_pool.is_empty():

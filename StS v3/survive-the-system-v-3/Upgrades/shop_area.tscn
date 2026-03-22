@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://eouwi0lhmuet" path="res://Upgrades/shop_computer_model.tscn" id="1_rmw4a"]
 [ext_resource type="PackedScene" uid="uid://c2kx216er8a22" path="res://Upgrades/shop.tscn" id="3_07nx3"]
 [ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="4_j18sk"]
-[ext_resource type="Resource" uid="uid://devw6df18bnty" path="res://objects/cat_ration/object_gold_vacuum.tres" id="5_1brnx"]
 [ext_resource type="Resource" uid="uid://c1scwqh4dvuuw" path="res://objects/cat_ration/object_mango.tres" id="5_gyl3w"]
 [ext_resource type="Resource" uid="uid://b2plhjlatrwnl" path="res://objects/cat_ration/object_beltpouch.tres" id="6_gyl3w"]
 [ext_resource type="Resource" uid="uid://cjkf0rm4ojw4m" path="res://objects/cat_ration/object_strawberry.tres" id="6_sgdmp"]
@@ -23,5 +22,6 @@ shape = SubResource("BoxShape3D_lp88c")
 visible = false
 
 [node name="Node" parent="shopCanvas" unique_id=1310314475 instance=ExtResource("3_07nx3")]
-rare_item_pool = Array[ExtResource("4_j18sk")]([ExtResource("5_gyl3w"), ExtResource("6_sgdmp")])
-legendary_item_pool = Array[ExtResource("4_j18sk")]([ExtResource("5_1brnx"), ExtResource("6_gyl3w")])
+mango_item_pool = Array[ExtResource("4_j18sk")]([ExtResource("5_gyl3w")])
+beltpouch_item_pool = Array[ExtResource("4_j18sk")]([ExtResource("6_gyl3w")])
+strawberry_item_pool = Array[ExtResource("4_j18sk")]([ExtResource("6_sgdmp")])
