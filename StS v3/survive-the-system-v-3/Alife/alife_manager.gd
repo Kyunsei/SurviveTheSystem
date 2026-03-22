@@ -91,7 +91,7 @@ func init():
 				else:
 					$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.SPIKYFLOWER)	
 
-			GlobalSimulationParameter.simulation_speed = 20000
+			GlobalSimulationParameter.simulation_speed = 60000
 			await get_tree().create_timer(2).timeout
 			GlobalSimulationParameter.simulation_speed = 1
 			for i in range(4):
