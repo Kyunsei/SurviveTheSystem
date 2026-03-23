@@ -12,7 +12,7 @@ func Init():
 
 
 	# --- Core metabolism ---
-	Max_energy =[1000,1000]
+	Max_energy =[2000,2000]
 	Max_health  =[4,4]
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.10]
@@ -28,7 +28,7 @@ func Init():
 
 
 	# --- Life Cycle ---
-	Reproduction_cost  =[100,100]
+	Reproduction_cost  =[800,800]
 	Reproduction_spread  =[5,5]
 	Reproduction_number =[1,1]
 	Biomass =[200,200] #MAYBE NO LONGER IN USE
@@ -52,7 +52,7 @@ func Update(_manager, _i, _delta):
 	if _manager.Alive_array[_i] == 1:
 		choose_action(_manager, _i)	
 		update_action(_manager, _i, _delta)
-		Homeostasis(_manager,_i,_delta)
+		#Homeostasis(_manager,_i,_delta)
 			
 
 func Growth(manager, i, _delta):

@@ -64,7 +64,7 @@ func update(manager,i, _DNA, _delta):
 			#manager.current_health_array[ti] = -100
 			if manager._pending_kills.has(ti) == false:
 				manager._pending_kills.append(ti)
-				manager.current_health_array[ti] = 0
+				manager.current_health_array[ti] = -10
 				manager.Alive_array[ti] = 0
 
 				manager.current_energy_array[i] += manager.current_biomass_array[ti]

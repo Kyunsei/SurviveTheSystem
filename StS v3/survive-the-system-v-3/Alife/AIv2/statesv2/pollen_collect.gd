@@ -63,6 +63,8 @@ func update(manager,i, _DNA, _delta):
 		if ti != null:
 			manager.current_energy_array[i] += manager.current_biomass_array[ti]
 			manager.current_energy_array[ti] = 0
+			manager.current_life_state_array[ti] += 1
+			manager._pending_update.append(ti)
 			#manager.Active[ti] = 0
 
 			manager.current_energy_array[i] = min(manager.current_energy_array[i],_DNA.Max_energy[0] )
@@ -104,9 +106,11 @@ func find_closest(_manager, from_position: Vector3, array: Array,sp):
 		else:
 			if _manager.Species_array[element] != sp:
 				continue
+			if _manager.current_life_state_array[element] != 3:
+				continue
 			var t_pos = _manager.position_array[element]
 			var distance = from_position.distance_to(t_pos)
 			if distance < closest_distance:
 					closest_distance = distance
 					closest = element
-	return closest		
+	return closest			

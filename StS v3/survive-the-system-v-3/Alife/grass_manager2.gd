@@ -20,7 +20,7 @@ var field_world_array : Array[PackedFloat64Array]
 var species_world_array : Array[PackedInt32Array]
 var sum_species_world_array : Array[PackedInt32Array]
 
-
+var flower_field : PackedFloat64Array
 
 
 
@@ -325,6 +325,9 @@ func update_field() -> void:
 		for i in range(field_world_array[s].size()):
 			field_world_array[s][i] *= 0.85  # evaporate over time
 	
+	for i in range(flower_field.size()):
+		flower_field[i] *= 0.85
+	
 	for i in range(entity_count):
 		if Active[i] == 0:
 			continue
@@ -332,12 +335,17 @@ func update_field() -> void:
 		var bin = binID_array[i]
 		var s = Species_array[i]
 		field_world_array[s][bin] += 1
+		
+		if Species_array[i] == AlifeRegistry.SPECIES_ID.SPIKYFLOWER:
+			if current_life_state_array[i] == 3:
+				flower_field[bin]+= 1
 		#field_world_array[s][bin] = min(field_world_array[s][bin],10.0)
 
 		
 	for s in range(field_world_array.size()):
 		field_world_array[s] = diffuse(field_world_array[s])
-		
+	
+	diffuse(flower_field)
 	#for s in range(species_list.size()):
 	#	flow_world_array[s] = get_flow(field_world_array[s],flow_world_array[s] )
 
@@ -352,7 +360,6 @@ func diffuse(field: PackedFloat64Array) :
 		var col = cell % GRID_WIDTH
 		var sum  := 0.0
 		var count := 0
-		
 		if row > 0:                
 			sum += field[cell - GRID_WIDTH]; count += 1  # up
 		if row < GRID_HEIGHT - 1:  
@@ -767,6 +774,7 @@ func build_world_bin_tables():
 	var count = SPECIES.size()
 
 	field_world_array.resize(count)
+	flower_field.resize(World.bin_array.size())
 	#flow_world_array.resize(count)
 	#species_world_array.resize(count)
 	sum_species_world_array.resize(count)
@@ -777,6 +785,10 @@ func build_world_bin_tables():
 			#flow_world_array[s].append(Vector3(0,0,0))
 			sum_species_world_array[s].append(0)
 			#species_world_array[s].append([])
+	
+	for i in range(flower_field.size()):
+		flower_field[i] = 0.0
+	
 
 
 func build_species_tables():

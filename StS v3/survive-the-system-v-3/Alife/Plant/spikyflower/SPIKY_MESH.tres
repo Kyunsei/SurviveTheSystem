@@ -1,19 +1,20 @@
 [gd_resource type="QuadMesh" format=3 uid="uid://cbrth6g86efar"]
 
-[ext_resource type="Texture2D" uid="uid://b0osm5tjwhl3e" path="res://Alife/Plant/spikyflower/spiky_grass_2.png" id="1_0q6kl"]
+[ext_resource type="Shader" uid="uid://btx2plkf15pio" path="res://Alife/ALIFE.gdshader" id="1_kx2rj"]
+[ext_resource type="Texture2D" uid="uid://datdfbetqxxvt" path="res://Alife/Plant/spikyflower/spiky_grass-Sheet.png" id="2_fgw56"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kx2rj"]
-transparency = 2
-alpha_scissor_threshold = 0.5
-alpha_antialiasing_mode = 0
-vertex_color_use_as_albedo = true
-albedo_texture = ExtResource("1_0q6kl")
-backlight_enabled = true
-backlight = Color(1, 1, 1, 1)
-texture_filter = 0
-billboard_mode = 2
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xx00p"]
+render_priority = 0
+shader = ExtResource("1_kx2rj")
+shader_parameter/albedo = Color(0, 0, 0, 1)
+shader_parameter/albedo_texture = ExtResource("2_fgw56")
+shader_parameter/alpha_scissor_threshold = 0.5
+shader_parameter/tile_count = Vector2i(6, 1)
+shader_parameter/tile_index = Vector2i(0, 0)
+shader_parameter/nframe = 3
+shader_parameter/player_position = Vector3(0, 0, 0)
 
 [resource]
-material = SubResource("StandardMaterial3D_kx2rj")
-size = Vector2(1, 2)
+material = SubResource("ShaderMaterial_xx00p")
+size = Vector2(2, 2)
 center_offset = Vector3(0, 1, 0)

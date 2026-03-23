@@ -16,5 +16,5 @@ billboard_keep_scale = true
 
 [resource]
 material = SubResource("StandardMaterial3D_lvbe7")
-size = Vector2(2, 2)
-center_offset = Vector3(0, 1, 0)
+size = Vector2(1.5, 1.5)
+center_offset = Vector3(0, 0.75, 0)
