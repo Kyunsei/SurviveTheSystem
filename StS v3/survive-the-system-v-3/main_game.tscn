@@ -11,6 +11,20 @@
 [ext_resource type="Texture2D" uid="uid://csn75l145oimu" path="res://assets/assets kyun/tapis2.png" id="9_4srsv"]
 [ext_resource type="PackedScene" uid="uid://bwgf88d4srhjd" path="res://World/spaceship/prison.tscn" id="10_mf81u"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_mf81u"]
+line_spacing = 0.0
+paragraph_spacing = 15.0
+font_size = 24
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_02kkc"]
+line_spacing = 15.0
+paragraph_spacing = 15.0
+font_size = 48
+outline_size = 12
+outline_color = Color(0, 0, 0, 1)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l5ukw"]
 albedo_texture = ExtResource("7_f52ns")
 uv1_scale = Vector3(1.35, 1, 1)
@@ -4789,20 +4803,6 @@ _data = {
 &"stairs_retracting": SubResource("Animation_aomqu")
 }
 
-[sub_resource type="LabelSettings" id="LabelSettings_mf81u"]
-line_spacing = 0.0
-paragraph_spacing = 15.0
-font_size = 24
-outline_size = 6
-outline_color = Color(0, 0, 0, 1)
-
-[sub_resource type="LabelSettings" id="LabelSettings_02kkc"]
-line_spacing = 15.0
-paragraph_spacing = 15.0
-font_size = 48
-outline_size = 12
-outline_color = Color(0, 0, 0, 1)
-
 [node name="main_game" type="Node3D" unique_id=753049365]
 script = ExtResource("1_dugkq")
 
@@ -4813,6 +4813,90 @@ World = NodePath("../World")
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=2004899452]
 _spawnable_scenes = PackedStringArray("uid://cpxqisxofmb36", "uid://bpl70g08sxw37", "uid://bbug4errj8rkt")
 spawn_path = NodePath("../Alife manager")
+
+[node name="end_canvas" type="CanvasLayer" parent="." unique_id=628736353]
+visible = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="end_canvas" unique_id=2030552478]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -41.5
+offset_top = -52.0
+offset_right = 41.5
+offset_bottom = 52.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+metadata/_edit_use_anchors_ = true
+
+[node name="TitleLabel1" type="Label" parent="end_canvas/VBoxContainer" unique_id=842689943]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 1
+text = "3D models:"
+label_settings = SubResource("LabelSettings_mf81u")
+
+[node name="Label1" type="Label" parent="end_canvas/VBoxContainer" unique_id=339410844]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Dabols"
+label_settings = SubResource("LabelSettings_02kkc")
+
+[node name="TitleLabel2" type="Label" parent="end_canvas/VBoxContainer" unique_id=175440226]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 1
+text = "World Simulation:"
+label_settings = SubResource("LabelSettings_mf81u")
+
+[node name="Label2" type="Label" parent="end_canvas/VBoxContainer" unique_id=1594861563]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Izva"
+label_settings = SubResource("LabelSettings_02kkc")
+
+[node name="TitleLabel3" type="Label" parent="end_canvas/VBoxContainer" unique_id=1971627512]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 1
+text = "Programmation:"
+label_settings = SubResource("LabelSettings_mf81u")
+
+[node name="Label3" type="Label" parent="end_canvas/VBoxContainer" unique_id=1394233871]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Izva & Scylla/Kyunsei"
+label_settings = SubResource("LabelSettings_02kkc")
+
+[node name="TitleLabel4" type="Label" parent="end_canvas/VBoxContainer" unique_id=1746144805]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 1
+text = "Arts:"
+label_settings = SubResource("LabelSettings_mf81u")
+
+[node name="Label4" type="Label" parent="end_canvas/VBoxContainer" unique_id=141016043]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Izva & Scylla/Kyunsei"
+label_settings = SubResource("LabelSettings_02kkc")
+
+[node name="TitleLabel5" type="Label" parent="end_canvas/VBoxContainer" unique_id=1371285732]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 1
+text = "Special thanks:"
+label_settings = SubResource("LabelSettings_mf81u")
+
+[node name="Label5" type="Label" parent="end_canvas/VBoxContainer" unique_id=1507401186]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Dabols, Nox, Aste"
+label_settings = SubResource("LabelSettings_02kkc")
 
 [node name="Network" parent="." unique_id=1782053974 instance=ExtResource("5_2pltu")]
 
@@ -5280,87 +5364,3 @@ libraries/ = SubResource("AnimationLibrary_krmtw")
 
 [node name="Prison" parent="." unique_id=333201907 instance=ExtResource("10_mf81u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10000, 9995, -10000)
-
-[node name="end_canvas" type="CanvasLayer" parent="." unique_id=628736353]
-visible = false
-
-[node name="VBoxContainer" type="VBoxContainer" parent="end_canvas" unique_id=2030552478]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -41.5
-offset_top = -52.0
-offset_right = 41.5
-offset_bottom = 52.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-size_flags_vertical = 4
-metadata/_edit_use_anchors_ = true
-
-[node name="TitleLabel1" type="Label" parent="end_canvas/VBoxContainer" unique_id=842689943]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 1
-text = "3D models:"
-label_settings = SubResource("LabelSettings_mf81u")
-
-[node name="Label1" type="Label" parent="end_canvas/VBoxContainer" unique_id=339410844]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Dabols"
-label_settings = SubResource("LabelSettings_02kkc")
-
-[node name="TitleLabel2" type="Label" parent="end_canvas/VBoxContainer" unique_id=175440226]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 1
-text = "World Simulation:"
-label_settings = SubResource("LabelSettings_mf81u")
-
-[node name="Label2" type="Label" parent="end_canvas/VBoxContainer" unique_id=1594861563]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Izva"
-label_settings = SubResource("LabelSettings_02kkc")
-
-[node name="TitleLabel3" type="Label" parent="end_canvas/VBoxContainer" unique_id=1971627512]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 1
-text = "Programmation:"
-label_settings = SubResource("LabelSettings_mf81u")
-
-[node name="Label3" type="Label" parent="end_canvas/VBoxContainer" unique_id=1394233871]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Izva & Scylla/Kyunsei"
-label_settings = SubResource("LabelSettings_02kkc")
-
-[node name="TitleLabel4" type="Label" parent="end_canvas/VBoxContainer" unique_id=1746144805]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 1
-text = "Arts:"
-label_settings = SubResource("LabelSettings_mf81u")
-
-[node name="Label4" type="Label" parent="end_canvas/VBoxContainer" unique_id=141016043]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Izva & Scylla/Kyunsei"
-label_settings = SubResource("LabelSettings_02kkc")
-
-[node name="TitleLabel5" type="Label" parent="end_canvas/VBoxContainer" unique_id=1371285732]
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 1
-text = "Special thanks:"
-label_settings = SubResource("LabelSettings_mf81u")
-
-[node name="Label5" type="Label" parent="end_canvas/VBoxContainer" unique_id=1507401186]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Dabols, Nox, Aste"
-label_settings = SubResource("LabelSettings_02kkc")
