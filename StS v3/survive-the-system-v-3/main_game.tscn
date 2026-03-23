@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="7_f52ns"]
 [ext_resource type="Texture2D" uid="uid://fxf6w5dtyiu5" path="res://assets/assets kyun/tapis1.png" id="8_l5ukw"]
 [ext_resource type="Texture2D" uid="uid://csn75l145oimu" path="res://assets/assets kyun/tapis2.png" id="9_4srsv"]
-[ext_resource type="PackedScene" path="res://World/spaceship/prison.tscn" id="10_mf81u"]
+[ext_resource type="PackedScene" uid="uid://bwgf88d4srhjd" path="res://World/spaceship/prison.tscn" id="10_mf81u"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_mf81u"]
 line_spacing = 0.0

@@ -87,7 +87,7 @@ func choose_action(manager, i):
 		#get_parent().get_node("debugLabel").text =best_action.name
 
 		if state_array[manager.current_finite_state_array[i]]:
-			state_array[manager.current_finite_state_arwray[i]].exit(manager, i,self)
+			state_array[manager.current_finite_state_array[i]].exit(manager, i,self)
 			
 		state_array[best_action].enter(manager, i,self)
 		manager.current_finite_state_array[i] = best_action

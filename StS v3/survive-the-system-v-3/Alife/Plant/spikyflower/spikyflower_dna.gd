@@ -30,7 +30,7 @@ func Init():
 #????
 
 #INVENTORY
-	Sprite_path = "res://Alife/Plant/spikyflower/spiky_grass_2.png"#"res://Alife/Plant/Grass/grass.png"  #TO DEFINE HERE BEST WAY
+	Sprite_path ="res://Alife/Plant/spikyflower/spiky_grass_3.png"# "res://Alife/Plant/spikyflower/spiky_grass_2.png"#"res://Alife/Plant/Grass/grass.png"  #TO DEFINE HERE BEST WAY
 	Stack_amount = 300
 
 
