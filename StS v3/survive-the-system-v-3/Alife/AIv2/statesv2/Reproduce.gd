@@ -11,13 +11,13 @@ func evaluate(_manager,_i, _DNA):
 	#print(_manager.current_energy_array[_i])
 	if _manager.current_energy_array[_i] >= _DNA.Reproduction_cost[0]*1.5:
 		score = 1.5
-	'if c > max:
-		score = 0'
+	if c > max and max>0:
+		score = 0
 	return score
 
 func enter(_manager,_i, _DNA):
-	'if c > max:
-		return'
+	if c > max and max>0:
+		return
 	if _manager.current_energy_array[_i] >=  _DNA.Reproduction_cost[0]*1.5:
 		
 		var newpos_ori = _manager.position_array[_i]
