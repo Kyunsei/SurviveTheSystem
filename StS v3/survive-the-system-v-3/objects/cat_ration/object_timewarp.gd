@@ -27,6 +27,9 @@ static func on_use(player):
 		if p.global_position.y < spaceship_height:
 			all_above = false
 			break
+		if p.finished_their_mission == true:
+			all_above = false
+			break
 	if all_above:
 		var inventory = player.get_node_or_null("Player_HUD/Inventory")
 		if inventory:
