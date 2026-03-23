@@ -23,12 +23,14 @@ static func on_use(player):
 	var spaceship = player.get_parent().get_parent().get_node("SPACESHIP")
 	var spaceship_height = spaceship.global_position.y
 	var all_above = true
+	var mission_finished = false
 	for p in player_list:
 		if p.global_position.y < spaceship_height:
 			all_above = false
 			break
 		if p.finished_their_mission == true:
 			all_above = false
+			mission_finished = true
 			break
 	if all_above:
 		var inventory = player.get_node_or_null("Player_HUD/Inventory")
@@ -41,6 +43,9 @@ static func on_use(player):
 				p.show_label_above_player.rpc_id(int(p.name),1, Color(1.0, 1.0, 1.0, 1.0), 10.0,"Special" ,"Timewarp activated. Please wait")
 			#print("Timewarp activated: All players are above threshold.")
 	else:
+		if mission_finished:
+			player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","Timewarp unusable, you finished your mission!")
+		else:
 			player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","Timewarp failed: All players must be in the ship.")
 
 
