@@ -15,6 +15,12 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_7x8xu"]
 font_size = 32
+font_color = Color(1, 1, 0, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_uuvft"]
+font_size = 32
 outline_size = 6
 outline_color = Color(0, 0, 0, 1)
 
@@ -43,11 +49,16 @@ columns = 4
 
 [node name="Quit" type="Button" parent="." unique_id=980240485]
 custom_minimum_size = Vector2(20, 50)
-layout_mode = 0
-offset_left = 793.0
-offset_top = 74.0
-offset_right = 929.0
-offset_bottom = 146.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 509.0
+offset_top = 421.0
+offset_right = 645.0
+offset_bottom = 493.0
+grow_horizontal = 2
+grow_vertical = 2
 icon = ExtResource("12_7x8xu")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1015440379]
@@ -55,6 +66,7 @@ _spawnable_scenes = PackedStringArray("uid://chj8kgpm5nn4l")
 spawn_path = NodePath("../Panel/GridContainer")
 
 [node name="TextureRect" type="ColorRect" parent="." unique_id=1182550049]
+visible = false
 layout_mode = 0
 offset_left = 634.0
 offset_top = 189.0
@@ -62,13 +74,30 @@ offset_right = 1151.0
 offset_bottom = 240.0
 color = Color(0, 0, 0, 1)
 
-[node name="Label" type="Label" parent="TextureRect" unique_id=768499090]
+[node name="TextureRect2" type="ColorRect" parent="." unique_id=1658116367]
 layout_mode = 0
-offset_left = 5.0
-offset_top = 1.0
-offset_right = 512.0
-offset_bottom = 46.0
-text = "Timewarp refresh merchandises."
+offset_left = 634.0
+offset_top = 18.0
+offset_right = 1151.0
+offset_bottom = 69.0
+color = Color(0, 0, 0, 1)
+
+[node name="MoneyLabel" type="Label" parent="TextureRect2" unique_id=249877542]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 2.0
+offset_right = 524.0
+offset_bottom = 47.0
+text = "Current credits: 1"
 label_settings = SubResource("LabelSettings_7x8xu")
+
+[node name="Timewarplabel" type="Label" parent="." unique_id=768499090]
+layout_mode = 0
+offset_left = 636.0
+offset_top = 85.0
+offset_right = 1143.0
+offset_bottom = 130.0
+text = "Timewarp refresh merchandises."
+label_settings = SubResource("LabelSettings_uuvft")
 
 [connection signal="pressed" from="Quit" to="." method="_on_quit_pressed"]

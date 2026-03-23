@@ -13,12 +13,13 @@ func _process(delta: float) -> void:
 
 
 func interact(player, state:bool):
-	if state == false:
-		player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","You did not finish your mission!")
-		return
-	else:
+	#if state == false:
+		#player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","You did not finish your mission!")
+		#return
+	#else:
 		var player_list = player.get_parent().player_array
 		var spaceship = player.get_parent().get_parent().get_node("SPACESHIP")
+		var end_canvas = spaceship.get_parent().get_node("end_canvas")
 		#var main_game = spaceship.get_parent()
 		var spaceship_height = spaceship.global_position.y
 		var all_above = true
@@ -28,7 +29,8 @@ func interact(player, state:bool):
 				break
 		if all_above:
 			spaceship.block_entrance()
-			player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 4.0,"Special","The Cat Empire thank you for your effort")
+			for p in player_list:
+				p.show_label_above_player.rpc_id(int(p.name),1, Color(1.0, 1.0, 1.0, 1.0), 5.0,"Special","The Cat Empire thank you for your effort")
 			print("Are you sure you want to end the game?")
 			print("Make a confirmation here")
 			sync_button_pressed.rpc()
@@ -39,13 +41,16 @@ func interact(player, state:bool):
 			var end_animater2 = main_game.get_node("endgameanimation2")
 			end_animater.play("collector_retrieval1")
 			end_animater2.play("stairs_retracting")
-			await get_tree().create_timer(4.0).timeout
-			player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 6.0,"Special","Time to go back to your root")
+			await get_tree().create_timer(5.0).timeout
+			for p in player_list:
+				p.show_label_above_player.rpc_id(int(p.name),1, Color(1.0, 1.0, 1.0, 1.0), 7.0,"Special","Time to go back to your root")
 			await end_animater2.animation_finished
 			end_animater2.play("retracted")
 			await end_animater.animation_finished
 			end_animater.play("collector_retrieved")
 			await get_tree().create_timer(3.0).timeout
+			for p in player_list:
+				p.hide_inventory.rpc_id(int(p.name))
 			var alife_manager = get_parent().get_parent().get_parent().get_node("Alife manager")
 			#spaceship.get_node("Stairs").hide()
 			var player_list2 = alife_manager.player_array
@@ -56,6 +61,9 @@ func interact(player, state:bool):
 			for p in player_list2:
 				await get_tree().create_timer(5.0).timeout
 				p.go_to_position.rpc_id(int(p.name), Vector3(10000,10000,-10000))
+				end_canvas.show()
+			#await get_tree().create_timer(130.0).timeout
+			#end_animater.pause()
 		else:
 			player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","All players must be in the ship to end the game.")
 	

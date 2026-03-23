@@ -46,6 +46,7 @@ var catnation_credits :int = 1:
 			catnation_credits = current_money
 			lifedata["Money"] = current_money
 			set_current_money(previous_money)
+			get_parent().get_parent().get_node("SPACESHIP").get_node("Shop_area").update_credits_in_shop.rpc_id(1, int(name), catnation_credits)
 
 func set_current_money(prev_money: int) -> int:
 	var difference := prev_money - catnation_credits
@@ -517,6 +518,9 @@ func stop_escape_ui():
 	escape_timer_running = false
 	timer_label.hide()
 
+@rpc("any_peer","call_remote")
+func hide_inventory():
+	get_node("Player_HUD").get_node("Inventory").hide()
 
 @rpc("any_peer","call_local")
 func show_escape_timer(time):

@@ -15,9 +15,12 @@ var needupdgrade = false
 
 
 func _process(delta: float) -> void:
-	if is_multiplayer_authority():
-		if Input.is_action_just_pressed("ui_cancel"):
-			_on_quit_pressed()
+	if Input.is_action_just_pressed("ui_cancel"): #almost working!
+		if get_parent().is_visible():
+			_on_quit_pressed2()
+	##if is_multiplayer_authority():
+		#if Input.is_action_just_pressed("ui_cancel"):
+			#_on_quit_pressed2()
 	if multiplayer.is_server():
 		if GlobalSimulationParameter.simulation_speed > 1:
 			needupdgrade =  true
@@ -119,6 +122,15 @@ func set_client_Stock(c_stock)	:
 var playerz_id
 @rpc("any_peer", "call_local")
 func _on_quit_pressed() -> void:
+	#var local_id = multiplayer.get_unique_id()
+	var peer_id = multiplayer.get_unique_id()
+	#print(str(player)+str("called on quit"))
+	block.rpc_id(1, peer_id, false)
+	#player.set_input_blocked.rpc_id(playerz_id,false)
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	get_parent().hide()
+
+func _on_quit_pressed2() -> void:
 	#var local_id = multiplayer.get_unique_id()
 	var peer_id = multiplayer.get_unique_id()
 	#print(str(player)+str("called on quit"))
