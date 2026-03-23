@@ -18,10 +18,12 @@ func interact(player):
 	#rpc_id(int(player.name), "rpc_show_shop")
 	rpc_show_shop.rpc_id(int(player.name))
 	player.set_input_blocked.rpc_id(int(player.name),true)
+	player.get_node("Player_HUD").get_node("Inventory").select_item2.rpc_id(int(player.name),null,int(player.name))
 	
 
 @rpc("any_peer", "call_remote")
 func rpc_show_shop():
+	#player.get_node("Player_HUD").get_node("Inventory").select_item(null,int(player.name))
 	$shopCanvas.show()
 	#var alife_manager = get_parent().get_parent().get_node("Alife manager")
 	#var player_list = alife_manager.player_array

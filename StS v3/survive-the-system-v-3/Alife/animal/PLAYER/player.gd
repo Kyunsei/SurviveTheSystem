@@ -168,6 +168,7 @@ func equip_item(item):
 	else:
 		update_item_hold_texture.rpc(null)
 		hide_bound_objects()
+
 func show_selected(item, peer_id):
 		var spear_path = "res://objects/cat_ration/Object_spear.tscn"
 		var vacuum_path = "res://objects/cat_ration/Object_Vacuum.tscn"
