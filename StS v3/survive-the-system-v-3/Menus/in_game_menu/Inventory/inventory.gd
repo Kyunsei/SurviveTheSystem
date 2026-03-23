@@ -165,6 +165,22 @@ func select_item(idx, peer_id):
 	current_index = idx
 	change_index.rpc_id(1,peer_id,idx)
 
+@rpc("any_peer","call_remote")
+func select_item2(idx, peer_id):
+	if idx != null:   #mean unselected	
+		var slot = items[idx][0]
+		if  slot:
+			slot.is_selected()
+			#show_selected(idx,peer_id)
+			
+	if current_index  != null:
+		if current_index != idx:
+			items[current_index][0].is_deselected()	
+			#hide_selected(idx, peer_id)
+	
+	current_index = idx
+	change_index.rpc_id(1,peer_id,idx)
+
 
 
 @rpc("authority","call_remote")
