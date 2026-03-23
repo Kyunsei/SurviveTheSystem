@@ -339,13 +339,14 @@ func update_field() -> void:
 		if Species_array[i] == AlifeRegistry.SPECIES_ID.SPIKYFLOWER:
 			if current_life_state_array[i] == 3:
 				flower_field[bin]+= 1
+				#print(flower_field[bin])
 		#field_world_array[s][bin] = min(field_world_array[s][bin],10.0)
 
 		
 	for s in range(field_world_array.size()):
 		field_world_array[s] = diffuse(field_world_array[s])
 	
-	diffuse(flower_field)
+	flower_field = diffuse(flower_field)
 	#for s in range(species_list.size()):
 	#	flow_world_array[s] = get_flow(field_world_array[s],flow_world_array[s] )
 
@@ -394,6 +395,38 @@ func get_flow(field: PackedFloat64Array, flow:PackedVector3Array):
 		field[i + GRID_WIDTH] - field[i - GRID_WIDTH]  # z gradient
 		)
 	return flow2
+
+
+func calculate_anyflow_at_bin(flow, bin: int):
+	#var flow = flower_field
+	var GRID_WIDTH: int =  int(World.World_Size.x/ World.bin_size.x)
+	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
+	var row := bin / GRID_WIDTH
+	var col := bin % GRID_WIDTH
+	var dx := 0.0
+	var dz := 0.0
+	#var flow  = manager.flower_field
+	# X gradient
+	if col > 0 and col < GRID_WIDTH - 1:
+		dx = flow[bin + 1] - flow[bin - 1]  # central
+	elif col == 0:
+		dx = flow[bin + 1] - flow[bin]      # forward
+	else:
+		dx = flow[bin] - flow[bin - 1]      # backward
+
+
+	# Z gradient
+	if row > 0 and row < GRID_HEIGHT - 1:
+		dz = flow[bin + GRID_WIDTH] - flow[bin - GRID_WIDTH]
+	elif row == 0:
+		dz =flow[bin + GRID_WIDTH] - flow[bin]
+	else:
+		dz = flow[bin] - flow[bin - GRID_WIDTH]
+
+
+	var flow_final = Vector3(dx, 0, dz)
+	#print(flower_field)
+	return flow_final
 
 
 func calculate_flow_at_bin(s: int, bin: int):

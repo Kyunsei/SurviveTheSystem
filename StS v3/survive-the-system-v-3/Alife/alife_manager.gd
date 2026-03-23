@@ -94,19 +94,19 @@ func init():
 			GlobalSimulationParameter.simulation_speed = 60000
 			await get_tree().create_timer(2).timeout
 			GlobalSimulationParameter.simulation_speed = 1
-			for i in range(4):
+			for i in range(0):
 				var pos = get_random_worldpos()
 				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.SHEEP)
-			for i in range(1):
+			for i in range(0):
 				var pos = get_random_worldpos()
 				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.SPIDERCRAB)
-			for i in range(10):
+			for i in range(0):
 				var pos = get_random_worldpos()
 				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.SNAILCAT)
-			for i in range(1):
+			for i in range(5):
 				var pos = get_random_worldpos()
 				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.JELLYBEE)

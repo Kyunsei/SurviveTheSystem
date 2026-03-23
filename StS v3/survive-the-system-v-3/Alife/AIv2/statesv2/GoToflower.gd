@@ -20,7 +20,7 @@ func evaluate(_manager,_i, _DNA):
 		var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,bin_vision_range)
 		var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,p)
 
-		if close_target_id:
+		if close_target_id !=null:
 			var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
 			#var dir2 = Vector2(dir.x,dir.z)
 
@@ -30,14 +30,12 @@ func evaluate(_manager,_i, _DNA):
 		if dist_score > dscore:
 			dist_score =dscore
 		
-			
 	score*= dist_score
 	return score
 
 func enter(_manager,_i, _DNA):
-	#print("goto")
 	pass
-
+	#print("flowr")
 
 func exit(_manager,_i, _DNA):
 	pass
@@ -47,32 +45,34 @@ func update(_manager,_i, _DNA, _delta):
 	var dir := Vector3(0,0,0)
 	var target_species : int
 	var field_score = 0
-	for s in _DNA.food_species_id :
+	#print("fef")
+	'for s in _DNA.food_species_id :
 		var subfield_score = _manager.field_world_array[s][bin]
 		if subfield_score > field_score:
 			field_score = subfield_score
-			target_species = s
+			target_species = s'
 			
-	var bin_flow = _manager.calculate_flow_at_bin(target_species,bin)
+	var bin_flow = _manager.calculate_anyflow_at_bin(_manager.flower_field,bin)
+	#print(bin_flow.normalized())
 	var step =  bin_flow.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
 	
-	var count = _manager.sum_species_world_array[target_species][bin]
+	#var count = _manager.sum_species_world_array[target_species][bin]
 	#print(field)
-	if count > 0 :
-		var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,bin_vision_range)
-		var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,target_species)
-		if close_target_id:
-			dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
-			step =  dir.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
-			if step.length() > dir.length():
-				_manager.position_array[_i] = _manager.position_array[close_target_id]
-			else:
-				_manager.position_array[_i] += step	
+	#if count > 0 :
+	var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,bin_vision_range)
+	var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,AlifeRegistry.SPECIES_ID.SPIKYFLOWER)
+	if close_target_id != null:
+		dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
+		step =  dir.normalized()  * speed * _delta #* log(GlobalSimulationParameter.simulation_speed)
+		if step.length() > dir.length():
+			_manager.position_array[_i] = _manager.position_array[close_target_id]
+		else:
+			_manager.position_array[_i] += step	
 	else:
 		_manager.position_array[_i] += step	
 		
-	_manager.position_array[_i].x = clamp(_manager.position_array[_i].x , -_manager.World.World_Size.x/2, _manager.World.World_Size.x/2)
-	_manager.position_array[_i].z = clamp(_manager.position_array[_i].z , -_manager.World.World_Size.z/2 , _manager.World.World_Size.z/2)
+	_manager.position_array[_i].x = clamp(_manager.position_array[_i].x , -_manager.World.World_Size.x/2-1, _manager.World.World_Size.x/2-1)
+	_manager.position_array[_i].z = clamp(_manager.position_array[_i].z , -_manager.World.World_Size.z/2-1 , _manager.World.World_Size.z/2-1)
 
 	_manager._pending_update.append(_i)
 
@@ -92,9 +92,41 @@ func find_closest(_manager, from_position: Vector3, array: Array,sp):
 				continue
 			if _manager.current_life_state_array[element] != 3:
 				continue
+
 			var t_pos = _manager.position_array[element]
 			var distance = from_position.distance_to(t_pos)
 			if distance < closest_distance:
 					closest_distance = distance
 					closest = element
 	return closest			
+
+
+
+func calculate_flow_at_bin(manager, bin: int):
+	var GRID_WIDTH: int =  int(manager.World.World_Size.x/ manager.World.bin_size.x)
+	var GRID_HEIGHT: int =  int(manager.World.World_Size.z/ manager.World.bin_size.z)
+	var row := bin / GRID_WIDTH
+	var col := bin % GRID_WIDTH
+	var dx := 0.0
+	var dz := 0.0
+	var flow  = manager.flower_field
+	# X gradient
+	if col > 0 and col < GRID_WIDTH - 1:
+		dx = flow[bin + 1] - flow[bin - 1]  # central
+	elif col == 0:
+		dx = flow[bin + 1] - flow[bin]      # forward
+	else:
+		dx = flow[bin] - flow[bin - 1]      # backward
+
+
+	# Z gradient
+	if row > 0 and row < GRID_HEIGHT - 1:
+		dz = flow[bin + GRID_WIDTH] - flow[bin - GRID_WIDTH]
+	elif row == 0:
+		dz =flow[bin + GRID_WIDTH] - flow[bin]
+	else:
+		dz = flow[bin] - flow[bin - GRID_WIDTH]
+
+
+	var flow_final = Vector3(dx, 0, dz)
+	return flow_final

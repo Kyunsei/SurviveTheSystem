@@ -26,7 +26,7 @@ func evaluate(_manager,_i, _DNA):
 		if _manager.sum_species_world_array[f][bin] > 0:
 			var targets = _manager.World.bin_array[bin]
 			var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,f)
-			if close_target_id:
+			if close_target_id != null:
 				var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
 				if dir.length() > distance_to_eat or targets.size() == 0:
 					fscore = 0  #25 is the max life in a place...
@@ -37,8 +37,8 @@ func evaluate(_manager,_i, _DNA):
 	score*= food_score
 	'for f in food_type:
 		score =  _manager.sum_species_world_array[f][bin]'
-	if _manager.Species_array[_i] == 6:
-		pass#print( "Eat score is " + str(score))
+	'if _manager.Species_array[_i] == AlifeRegistry.SPECIES_ID.JELLYBEE:
+		print( "Eat score is " + str(score))'
 	return  score
 
 

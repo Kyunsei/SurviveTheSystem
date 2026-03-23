@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="WANDER_STATE" format=3 uid="uid://b1e4xqxm2cvpx"]
+
+[ext_resource type="Script" uid="uid://c2b20p32s71l4" path="res://Alife/AIv2/statesv2/Wander.gd" id="1_16chl"]
+
+[resource]
+script = ExtResource("1_16chl")
+isFlower = true
+metadata/_custom_type_script = "uid://c2b20p32s71l4"

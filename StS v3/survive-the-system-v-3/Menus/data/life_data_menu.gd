@@ -37,16 +37,16 @@ func draw_population():
 	var width = graph_size.x
 	var height = graph_size.y
 	var count = 0
-	for n in GlobalSimulationParameter.life_numbers.values():
+	for n in GlobalSimulationParameter.life_numbers: #.values():
 		points = []
-		var max_value = n.max()
-		for i in range(n.size()):
-				var x = (i / float(n.size() - 1)) * width
-				var y = height - (float(n[i]) / max_value) * height
+		var max_value = GlobalSimulationParameter.life_numbers[n].max()
+		for i in range(GlobalSimulationParameter.life_numbers[n].size()):
+				var x = (i / float(GlobalSimulationParameter.life_numbers[n].size() - 1)) * width
+				var y = height - (float(GlobalSimulationParameter.life_numbers[n][i]) / max_value) * height
 				points.append(Vector2(x, y))
 			# Draw lines between points
 		for i in range(points.size() - 1):
-			draw_line(points[i], points[i + 1],color_list[count], 2.0)
+			draw_line(points[i], points[i + 1],color_list[n], 2.0)
 		count += 1
 				
 	'var max_value = GlobalSimulationParameter.sheep_number_data.max()

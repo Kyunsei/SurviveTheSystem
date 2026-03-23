@@ -5,8 +5,9 @@
 [ext_resource type="Resource" uid="uid://bg18td4a0hvsa" path="res://Alife/animal/Herbivor/jellybee/STATE/GOTO_JELLY.tres" id="4_bma45"]
 [ext_resource type="Resource" uid="uid://dw635darnq15q" path="res://Alife/animal/Herbivor/jellybee/STATE/REPRODUCE_JELLY.tres" id="5_qiirp"]
 [ext_resource type="Resource" uid="uid://bk7bqskrfcnel" path="res://Alife/animal/Herbivor/jellybee/STATE/POLLEN_JELLY.tres" id="5_sb0va"]
+[ext_resource type="Resource" uid="uid://b1e4xqxm2cvpx" path="res://Alife/animal/Herbivor/jellybee/STATE/WANDER_JELLYBEE.tres" id="6_qiirp"]
 
 [resource]
 script = ExtResource("1_f5qvq")
-state_array = Array[ExtResource("2_i8i3l")]([ExtResource("4_bma45"), ExtResource("5_qiirp"), ExtResource("5_sb0va")])
+state_array = Array[ExtResource("2_i8i3l")]([ExtResource("4_bma45"), ExtResource("5_qiirp"), ExtResource("5_sb0va"), ExtResource("6_qiirp")])
 metadata/_custom_type_script = "uid://cy2bwmfix1qdg"

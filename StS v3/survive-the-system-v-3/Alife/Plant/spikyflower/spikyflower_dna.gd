@@ -42,13 +42,14 @@ func Growth(manager, i, _delta):
 			manager.current_life_state_array[i] += 1
 			manager.current_energy_array[i] -=  2000
 			if manager.current_life_state_array[i] < 2:
-				print(manager.current_biomass_array[i])
 				manager.current_biomass_array[i] += 20
 			#return true
 			manager._pending_update.append(i)
-			
 	if manager.current_life_state_array[i] == 5:
+		#manager.current_age_array[i] += 1
 		if manager.current_energy_array[i] > 2000:
+			#manager.Alive_array[i]= 0
+			#manager.current_life_state_array[i] = 5
 			manager.current_life_state_array[i] = 2
 			manager.current_energy_array[i] -=  2000
 			manager._pending_update.append(i)
@@ -61,19 +62,19 @@ func Update(manager, i, delta):
 			#Homeostasis(manager,i,s,t,delta)
 			Growth(manager,i,delta)
 			Reproduction(manager,i,s,t,delta)
-			Hurt(manager,i,s,t)
+			Hurt(manager,i,s,t,delta)
 	else:
 		Decompose(manager,i,s,t, delta)
 
 
 
-func Hurt(manager,i,s,t):
+func Hurt(manager,i,s,t,delta):
 	var target = manager.get_index_in_bin_around(manager.World.bin_array,i,1)
 	for ti in target:
 		var dist = (manager.position_array[i] -manager.position_array[ti] ).length()
 		if manager.Species_array[ti] == AlifeRegistry.SPECIES_ID.CAT:
 			if dist < 2.0:
-				manager.SPECIES[manager.Species_array[ti]].Damage(self,manager,i,ti,10)
+				manager.SPECIES[manager.Species_array[ti]].Damage(self,manager,i,ti,10*delta)
 			
 		
 
@@ -106,19 +107,20 @@ func Reproduction(manager,i,s,t,_delta):
 		t = min(t,manager.species_reproduction_cost[s].size()-1)
 		if manager.current_life_state_array[i] == 4:
 			if manager.current_energy_array[i] >=  manager.species_reproduction_cost[s][t]*2:
-				var newpos = manager.position_array[i] + Vector3(
-					randf_range(-manager.species_reproduction_spread[s][t], manager.species_reproduction_spread[s][t]),
-					0,
-					randf_range(-manager.species_reproduction_spread[s][t], manager.species_reproduction_spread[s][t])
-				)
-				newpos.x = clamp(newpos.x, -manager.World.World_Size.x / 2 + 1, manager.World.World_Size.x / 2 - 1)
-				newpos.z = clamp(newpos.z, -manager.World.World_Size.z / 2 + 1, manager.World.World_Size.z / 2 - 1)
-				manager.current_energy_array[i] -= manager.species_reproduction_cost[s][t]	
+				for ii in range(2):
+					var newpos = manager.position_array[i] + Vector3(
+						randf_range(-manager.species_reproduction_spread[s][t], manager.species_reproduction_spread[s][t]),
+						0,
+						randf_range(-manager.species_reproduction_spread[s][t], manager.species_reproduction_spread[s][t])
+					)
+					newpos.x = clamp(newpos.x, -manager.World.World_Size.x / 2 + 1, manager.World.World_Size.x / 2 - 1)
+					newpos.z = clamp(newpos.z, -manager.World.World_Size.z / 2 + 1, manager.World.World_Size.z / 2 - 1)
+					manager.current_energy_array[i] -= manager.species_reproduction_cost[s][t]	
 
-				if manager.check_if_lighttile_free(newpos):
-					manager._pending_spawns_positions.append(newpos)
-					manager._pending_spawns_species.append(s)
-					
+					if manager.check_if_lighttile_free(newpos):
+						manager._pending_spawns_positions.append(newpos)
+						manager._pending_spawns_species.append(s)
+						
 				manager.current_life_state_array[i] +=1
 				manager._pending_update.append(i)
 
