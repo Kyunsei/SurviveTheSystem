@@ -216,6 +216,8 @@ func action():
 				#return
 		if area.name == "NPC":
 			area.interact(player)
+		if area.name == "name_attributor_area":
+			area.interact(player)
 	action_on_server.rpc_id(1)	
 		
 
@@ -250,6 +252,7 @@ func action_on_server():
 			area.interact(player)
 		if area.name == "area_end_cinematic":
 			area.interact(player, player.finished_their_mission)
+
 
 	
 	

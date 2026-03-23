@@ -34,11 +34,12 @@ static func on_use(player):
 		var debug_ctrl = player.get_node_or_null("DEBUG_CONTROL")
 		if debug_ctrl:
 			debug_ctrl.change_server_simulation_speed2.rpc_id(1, 600)
-			player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 10.0,"Special" ,"Timewarp activated. Please wait")
-			print("Timewarp activated: All players are above threshold.")
+			for p in player_list:
+				p.show_label_above_player.rpc_id(int(p.name),1, Color(1.0, 1.0, 1.0, 1.0), 10.0,"Special" ,"Timewarp activated. Please wait")
+			#print("Timewarp activated: All players are above threshold.")
 	else:
-		player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","Timewarp failed: All players must be in the ship.")
-		print("Timewarp failed: Not all players are high enough.")
+			player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","Timewarp failed: All players must be in the ship.")
+
 
 static func on_use_secondary(player, state):
 	pass

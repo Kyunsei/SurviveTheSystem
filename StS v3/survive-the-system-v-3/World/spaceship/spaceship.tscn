@@ -19,6 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://buygphmgtqybj" path="res://World/spaceship/sunflower.png" id="17_w0aba"]
 [ext_resource type="PackedScene" uid="uid://b1d610mk5os0u" path="res://World/spaceship/start_ship_model.tscn" id="18_metb3"]
 [ext_resource type="Script" uid="uid://7lg7temat11n" path="res://World/spaceship/area_end_cinematic.gd" id="19_4exu8"]
+[ext_resource type="PackedScene" uid="uid://ci03d8rrrq2fc" path="res://Upgrades/name_attributor.tscn" id="20_wqc3p"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_2jlj7"]
 size = Vector3(13, 0.5, 9)
@@ -275,5 +276,8 @@ script = ExtResource("19_4exu8")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="endgame_console/area_end_cinematic" unique_id=2034094698]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0.20000076)
 shape = SubResource("BoxShape3D_metb3")
+
+[node name="MeshInstance3D" parent="." unique_id=66801583 instance=ExtResource("20_wqc3p")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 4.8999996, 0.6, 0.90000004)
 
 [connection signal="area_entered" from="go_button/Area3D_go_button" to="go_button" method="_on_area_3d_area_entered"]

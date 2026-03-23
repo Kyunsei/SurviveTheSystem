@@ -139,6 +139,12 @@ properties/12/replication_mode = 1
 properties/13/path = NodePath("MeshInstance3D/Gold_Hoover:visible")
 properties/13/spawn = true
 properties/13/replication_mode = 1
+properties/14/path = NodePath("MeshInstance3D/LabelName:visible")
+properties/14/spawn = true
+properties/14/replication_mode = 1
+properties/15/path = NodePath("MeshInstance3D/LabelName:text")
+properties/15/spawn = true
+properties/15/replication_mode = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5e6c6"]
 size = Vector3(0.5, 1, 0.5)
@@ -2399,6 +2405,12 @@ mesh = SubResource("CylinderMesh_kcrxs")
 [node name="rightleg2" type="MeshInstance3D" parent="MeshInstance3D" unique_id=584785238]
 transform = Transform3D(0.9999999, 0, 0, 0, 0.9659255, 0.258819, 0, -0.25881898, 0.96592563, 0.099999994, -0.79999995, -3.7252903e-09)
 mesh = SubResource("CylinderMesh_kcrxs")
+
+[node name="LabelName" type="Label3D" parent="MeshInstance3D" unique_id=432083697]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+visible = false
+billboard = 2
+text = "P"
 
 [node name="Player_control" type="Node" parent="." unique_id=1336833191]
 script = ExtResource("1_31v8x")

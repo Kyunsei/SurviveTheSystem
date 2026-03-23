@@ -77,7 +77,7 @@ func _process(_delta: float) -> void:
 				spaceship.open_entrance.rpc_id(1)
 				for p in player.get_parent().player_array:
 					var p_id = int(p.name)
-					player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 5.0,"Special","Shop got new items for sale")
+					p.show_label_above_player.rpc_id(int(p.name),1, Color(1.0, 1.0, 1.0, 1.0), 5.0,"Special","Shop got new items for sale")
 					player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer(int(p.name))
 
 

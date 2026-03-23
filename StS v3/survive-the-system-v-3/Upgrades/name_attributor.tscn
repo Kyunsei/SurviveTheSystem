@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://ci03d8rrrq2fc"]
+
+[ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="1_q1ubp"]
+[ext_resource type="Script" uid="uid://cvfkg5mqllrfx" path="res://Upgrades/name_attributor_area.gd" id="2_6rxmx"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6rxmx"]
+albedo_texture = ExtResource("1_q1ubp")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_6v37k"]
+material = SubResource("StandardMaterial3D_6rxmx")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_q1ubp"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_6rxmx"]
+properties/0/path = NodePath("LineEdit:visible")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+
+[node name="skin_attributor" type="MeshInstance3D" unique_id=66801583]
+mesh = SubResource("BoxMesh_6v37k")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=2109050645]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+text = "Name attributor"
+font_size = 48
+outline_size = 16
+
+[node name="name_attributor_area" type="Area3D" parent="." unique_id=429766896]
+script = ExtResource("2_6rxmx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="name_attributor_area" unique_id=852969777]
+shape = SubResource("BoxShape3D_q1ubp")
+
+[node name="LineEdit" type="LineEdit" parent="." unique_id=280129247]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -34.25
+offset_top = -15.5
+offset_right = 165.75
+offset_bottom = 84.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="LineEdit" unique_id=1458145990]
+layout_mode = 0
+offset_left = 129.25
+offset_top = 67.5
+offset_right = 200.25
+offset_bottom = 98.5
+text = "Confirm"
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=905718746]
+replication_config = SubResource("SceneReplicationConfig_6rxmx")
+
+[connection signal="text_submitted" from="LineEdit" to="name_attributor_area" method="_on_line_edit_text_submitted"]
