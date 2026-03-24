@@ -585,9 +585,11 @@ func spear_attack():
 		for t in targets:
 			if t is Dictionary:
 				if t != lifedata and t["Species"] != Alifedata.enum_speciesID.CAT:
-					get_parent().Attack(t,25)
+					t.get_parent().manager.current_health_array[alifemanager_id] -= 25
+					#get_parent().Attack(t,25)
 			else :
-				get_parent().Attack(t,25)
+				t.get_parent().manager.current_health_array[alifemanager_id] -= 25
+				#get_parent().Attack(t,25)
 	check_player_hit.rpc_id(1, 25, area)
 	await get_tree().create_timer(time_before_attack).timeout
 	spear_animation_in_course = false
