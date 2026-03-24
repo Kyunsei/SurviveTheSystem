@@ -344,8 +344,8 @@ func _process(delta: float) -> void:
 					#lifedata["current_energy"] -= 1*delta
 					manager.current_energy_array[alifemanager_id]-= 0.5*delta
 			if manager.current_energy_array[alifemanager_id] >=50 and manager.current_health_array[alifemanager_id] < max_health:
-				manager.current_health_array[alifemanager_id] += 1
-				manager.current_energy_array[alifemanager_id] -= 1
+				manager.current_health_array[alifemanager_id] += 1*delta
+				manager.current_energy_array[alifemanager_id] -= 1*delta
 
 			'else:
 					lifedata["current_energy"] -= 0.5*delta
@@ -585,11 +585,9 @@ func spear_attack():
 		for t in targets:
 			if t is Dictionary:
 				if t != lifedata and t["Species"] != Alifedata.enum_speciesID.CAT:
-					t.get_parent().manager.current_health_array[alifemanager_id] -= 25
-					#get_parent().Attack(t,25)
+					get_parent().Attack(t,25)
 			else :
-				t.get_parent().manager.current_health_array[alifemanager_id] -= 25
-				#get_parent().Attack(t,25)
+				get_parent().Attack(t,25)
 	check_player_hit.rpc_id(1, 25, area)
 	await get_tree().create_timer(time_before_attack).timeout
 	spear_animation_in_course = false
@@ -611,24 +609,34 @@ func check_player_hit(dmg, areaofaction):
 	for t in interacted_areas:
 		if t.is_in_group("spear_hit") and t.get_parent()!= self :
 			if t.get_parent().speardefense == false:
-				get_parent().Attack(t.get_parent().lifedata, dmg)
+				#get_parent().Attack(t.get_parent().lifedata, dmg)
 				#if t.get_parent().lifedata["current_health"] > 0:
-				if t.get_parent().manager.current_health_array[alifemanager_id] >0:
+				if t.get_parent().manager.current_health_array[t.get_parent().alifemanager_id] >0:
+					remove_health_to_target.rpc_id(1,int(t.get_parent().name),25.0)
 					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),-dmg, Color(1.0, 0.1, 0.0, 1.0), 1.0, ""," Health")
 					remove_durability(3)
 			else :
 				#if t.get_parent().lifedata["current_health"] > 0:
-				if t.get_parent().manager.current_health_array[alifemanager_id] >0:
+				if t.get_parent().manager.current_health_array[t.get_parent().alifemanager_id] >0:
 					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),dmg, Color(0.5, 0.5, 0.5, 1.0), 1.0, ""," Damage Blocked")
 					remove_durability(10)
 					if t.get_parent().item_hold :
 						t.get_parent().remove_durability(1)
 					#if t.get_parent().lifedata["current_energy"]> 0:
 						#t.get_parent().lifedata["current_energy"] -=5
-					if t.get_parent().manager.current_energy_array[alifemanager_id] >0:
-						t.get_parent().manager.current_energy_array[alifemanager_id] -=5
+					if t.get_parent().manager.current_energy_array[t.get_parent().alifemanager_id] >0:
+						t.get_parent().manager.current_energy_array[t.get_parent().alifemanager_id] -=5
 					else:
-						t.get_parent().manager.current_health_array[alifemanager_id] -=1
+						t.get_parent().manager.current_health_array[t.get_parent().alifemanager_id] -=1
+
+@rpc("any_peer","call_local")
+func remove_health_to_target(p_id,value):
+	var alife_manager = get_parent()
+	var player_list = alife_manager.player_array
+	for p in player_list:
+		if int(p.name) == p_id:
+			manager.current_health_array[p.alifemanager_id] -= value
+
 
 @rpc("any_peer","call_local")
 func spear_defense(number):
