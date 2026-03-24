@@ -747,17 +747,16 @@ func remove_durability(amount):
 
 
 func add_to_inventory(alife):
-		#print(alife["Species"])
-		#var inventory = get_node("Player_HUD").get_node("Inventory")
+		var inventoryy = get_node("Player_HUD").get_node("Inventory")
 		if alife is Dictionary:
 
-			if inventory.add_item(inventory.prep_alife(alife),int(name)):
+			if inventoryy.add_item(inventoryy.prep_alife(alife),int(name)):
 				return true
 			else:
 				return false
 				#queue_free()
 		else:
-			if inventory.add_item(inventory.prep_newgrass(alife),int(name)):
+			if inventoryy.add_item(inventoryy.prep_newgrass(alife),int(name)):
 				return true
 			else:
 				return false
