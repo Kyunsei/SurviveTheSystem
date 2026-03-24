@@ -59,7 +59,7 @@ func Update(manager, i, delta):
 	var s = manager.Species_array[i]
 	var t = manager.current_life_state_array[i]
 	if manager.Alive_array[i] == 1:	
-			#Homeostasis(manager,i,s,t,delta)
+			Homeostasis(manager,i,s,t,delta)
 			Growth(manager,i,delta)
 			Reproduction(manager,i,s,t,delta)
 			Hurt(manager,i,s,t,delta)

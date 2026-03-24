@@ -55,7 +55,7 @@ func Update(_manager, _i, _delta):
 	if _manager.Alive_array[_i] == 1:
 		choose_action(_manager, _i)	
 		update_action(_manager, _i, _delta)
-		#Homeostasis(_manager,_i,_delta)
+		Homeostasis(_manager,_i,_delta)
 			
 
 func Growth(manager, i, _delta):

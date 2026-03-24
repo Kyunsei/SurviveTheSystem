@@ -140,9 +140,11 @@ func UseITEM():
 			for t in targets:
 				if t is Dictionary:
 					if t != player.lifedata:
-						alife_manager.Attack(t,1)
+						return
+						#alife_manager.Attack(t,1)
 				else:
-					alife_manager.Attack(t,1)
+					return
+					#alife_manager.Attack(t,1)
 
 @rpc("any_peer","call_local")
 func UseITEM_secondary(state):	

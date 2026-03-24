@@ -173,7 +173,7 @@ func show_selected(item, peer_id):
 		var vacuum_path = "res://objects/cat_ration/Object_Vacuum.tscn"
 		var gold_vacuum_path = "res://objects/cat_ration/Object_gold_vacuum.tscn"
 		var slot = item["Data"][0]	
-		var holding
+		#var holding
 		if slot is Dictionary: 
 			if slot.has("inventory_path"):
 				if slot["inventory_path"] == spear_path:
@@ -584,10 +584,15 @@ func spear_attack():
 		remove_durability(3)
 		for t in targets:
 			if t is Dictionary:
-				if t != lifedata and t["Species"] != Alifedata.enum_speciesID.CAT:
+				#if t != lifedata and t["Species"] != Alifedata.enum_speciesID.CAT:
+				if t.alifemanager_id != alifemanager_id:
 					get_parent().Attack(t,25)
 			else :
-				get_parent().Attack(t,25)
+				if t == alifemanager_id:
+					pass
+				else:
+					get_parent().Attack(t,25)
+					print(manager.Species_array[t])
 	check_player_hit.rpc_id(1, 25, area)
 	await get_tree().create_timer(time_before_attack).timeout
 	spear_animation_in_course = false
@@ -636,6 +641,8 @@ func remove_health_to_target(p_id,value):
 	for p in player_list:
 		if int(p.name) == p_id:
 			manager.current_health_array[p.alifemanager_id] -= value
+
+
 
 
 @rpc("any_peer","call_local")
@@ -741,7 +748,7 @@ func remove_durability(amount):
 
 func add_to_inventory(alife):
 		#print(alife["Species"])
-		var inventory = get_node("Player_HUD").get_node("Inventory")
+		#var inventory = get_node("Player_HUD").get_node("Inventory")
 		if alife is Dictionary:
 
 			if inventory.add_item(inventory.prep_alife(alife),int(name)):

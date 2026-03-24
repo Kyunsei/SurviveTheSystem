@@ -53,7 +53,7 @@ func Update(manager, i, delta):
 			Germination(manager,i,s,t)
 
 		else:
-			#Homeostasis(manager,i,s,t,delta)
+			Homeostasis(manager,i,s,t,delta)
 			Growth(manager,i,delta)
 			Reproduction(manager,i,s,t,delta)
 	else:
