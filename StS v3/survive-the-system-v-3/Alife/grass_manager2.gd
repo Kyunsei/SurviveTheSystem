@@ -118,7 +118,7 @@ var thread_delta : float = 0.0
 var mutex := Mutex.new()
 var thread_result_ready = false
 
-var World_Thread : Thread
+var World_Thread #: Thread
 var world_semaphore :=Semaphore.new()
 var world_done : bool = false
 var world_done_semaphore :=Semaphore.new() 
@@ -245,10 +245,10 @@ func update_world(delta):
 			if World:
 				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
 			#var ss = Time.get_ticks_msec() 
-			update_field()
+				update_field()
 			#print( Time.get_ticks_msec() - ss)
 			#ss =  Time.get_ticks_msec() 
-			LightSystem_to_plant(delta)
+				LightSystem_to_plant(delta)
 			#print( Time.get_ticks_msec() - ss)
 			#print("/////////////////")
 			FPS_World = Time.get_ticks_msec() - ss
@@ -697,7 +697,7 @@ func Spawn_and_Kill():
 		var pos_array := PackedVector3Array()
 		var state_array := PackedInt32Array()
 		var alive_array := PackedInt32Array()
-		var size_array := PackedVector3Array()
+		var size_arrayy := PackedVector3Array()
 
 		var actives := PackedInt32Array()
 		var update_species := PackedInt32Array()  # NEW
@@ -708,9 +708,9 @@ func Spawn_and_Kill():
 			alive_array.append(Alive_array[id])
 			actives.append(Active[id])
 			update_species.append(Species_array[id])  
-			size_array.append(current_size_array[id])
+			size_arrayy.append(current_size_array[id])
 
-		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives,update_species,size_array)
+		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives,update_species,size_arrayy)
 
 	_pending_spawns_positions.clear()
 	_pending_spawns_species.clear()
