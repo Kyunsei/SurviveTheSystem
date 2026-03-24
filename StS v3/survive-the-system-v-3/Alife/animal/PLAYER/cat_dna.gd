@@ -71,14 +71,18 @@ func Damage(_action,manager,i,_ii,value):
 	#change_bin(manager,_ii)
 		
 func Homeostasis(_manager, _i, delta):
+	pass
 	#print(_manager.current_health_array[_i])
-	_manager.current_energy_array[_i] -= 0.5 * delta
-	if _manager.current_energy_array[_i] > 0:
-			if  _manager.current_energy_array[_i] > 49 and _manager.current_health_array[_i]<100:
-				_manager.current_health_array[_i] += 1*delta
-				_manager.current_energy_array[_i] -= 1*delta
-			if  _manager.current_energy_array[_i] <= 0:
-				'if speed > 9:
-					_manager.current_health_array[_i] -= 1.5*delta
-				else: '
-				_manager.current_health_array[_i] -= 1*delta
+	#_manager.current_energy_array[_i] -= 0.5 * delta
+	#if _manager.current_energy_array[_i] > 0:
+		#pass
+			#if  _manager.current_energy_array[_i] > 49 and _manager.current_health_array[_i]<100:
+				#_manager.current_health_array[_i] += 1*delta
+				#_manager.current_energy_array[_i] -= 1*delta
+			#if  _manager.current_energy_array[_i] <= 0:
+				#'if speed > 9:
+					#_manager.current_health_array[_i] -= 1.5*delta
+				#else: '
+				#_manager.current_health_array[_i] -= 1*delta
+				
+				
