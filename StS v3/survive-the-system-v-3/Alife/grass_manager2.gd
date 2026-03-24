@@ -118,7 +118,7 @@ var thread_delta : float = 0.0
 var mutex := Mutex.new()
 var thread_result_ready = false
 
-var World_Thread #: Thread
+var World_Thread : Thread
 var world_semaphore :=Semaphore.new()
 var world_done : bool = false
 var world_done_semaphore :=Semaphore.new() 
@@ -234,7 +234,7 @@ func stop_simulation_thread():
 	thread_should_stop = true
 	simulation_thread.wait_to_finish()
 	thread_running = false
-	#World_Thread.wait_to_finish()
+	World_Thread.wait_to_finish()
 
 
 		
