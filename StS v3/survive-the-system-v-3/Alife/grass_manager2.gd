@@ -183,6 +183,7 @@ func _multithread_worker_loop(id):
 #
 
 func set_multithread_worker():	
+	print("set mutlithread")
 	for i in range(worker_count):
 		var t = Thread.new()
 		worker_threads.append(t)
@@ -202,12 +203,21 @@ func multithread_update(start, end, delta):
 						entity_update(i,delta)
 			FPS = Time.get_ticks_msec() - ss
 
-
+func Start_World_simulation():
+	print("start wold thread")
+	World_Thread = Thread.new()
+	World_Thread.start(_world_thread.bind(0.016))
+func _world_thread(delta):
+	while true:
+		world_semaphore.wait()
+		update_world(delta)
+		world_done_semaphore.post()
 
 		
 #############SINGLE THREAD#######################
 
 func start_simulation_thread():
+	print("start singlethread")
 	if thread_running:
 		return
 	thread_should_stop = false
@@ -216,9 +226,6 @@ func start_simulation_thread():
 	thread_running = true	
 
 
-func Start_World_simulation():
-	World_Thread = Thread.new()
-	World_Thread.start(_world_thread.bind(0.016))
 
 func stop_simulation_thread():
 	if not thread_running:
@@ -227,13 +234,9 @@ func stop_simulation_thread():
 	thread_should_stop = true
 	simulation_thread.wait_to_finish()
 	thread_running = false
-	World_Thread.wait_to_finish()
+	#World_Thread.wait_to_finish()
 
-func _world_thread(delta):
-	while true:
-		world_semaphore.wait()
-		update_world(delta)
-		world_done_semaphore.post()
+
 		
 
 func update_world(delta):
@@ -262,10 +265,13 @@ func _thread_loop():
 		Grass_simulator_time -= 1
 		call_deferred("update_grass_time")
 		mutex.unlock()
-		OS.delay_msec(1)  # prevent CPU burning
+		OS.delay_msec(10)  # prevent CPU burning
 
 
 func update(delta):
+	#print("how many thread????")
+	#print(c)
+	#c+=1
 	if !isInit:
 		print("grass manger not initialised")
 		return
@@ -289,6 +295,7 @@ func _exit_tree():
 		t.wait_to_finish()
 
 func _process(_delta):
+	c= 0
 	if GlobalSimulationParameter.DEBUG_grass_sim == 0:
 		return
 	if !multiplayer.is_server():
@@ -649,9 +656,10 @@ func Decompose(i,s,t,delta):
 			return
 		_pending_kills.append(i)
 
-
+var c = 0
 		
 func Spawn_and_Kill():
+
 	if !multiplayer.is_server():
 		return
 		
@@ -711,12 +719,10 @@ func Spawn_and_Kill():
 
 		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives,update_species,size_arrayy)
 
-	mutex.lock()
 	_pending_spawns_positions.clear()
 	_pending_spawns_species.clear()
 	_pending_kills.clear()
 	_pending_update.clear()
-	mutex.unlock()
 
 
 	
