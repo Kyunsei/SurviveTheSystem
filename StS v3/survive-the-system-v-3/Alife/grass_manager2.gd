@@ -148,7 +148,6 @@ func start_multithreads():
 
 
 func dispatch_thread_workers(delta):
-	
 	if workers.size() <= 0:
 		return
 	@warning_ignore("integer_division")
@@ -238,9 +237,9 @@ func _world_thread(delta):
 		
 
 func update_world(delta):
-	if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
+	#if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
 		#var oldv = 0
-		if GlobalSimulationParameter.simulation_speed > 0:
+		#if GlobalSimulationParameter.simulation_speed > 0:
 			var ss = Time.get_ticks_msec() 
 			if World:
 				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
@@ -271,16 +270,16 @@ func update(delta):
 		print("grass manger not initialised")
 		return
 	
-	update_world(delta)
 	
 	if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
 		#var oldv = 0
-		var ss = Time.get_ticks_msec() 
 		if GlobalSimulationParameter.simulation_speed > 0:
+			update_world(delta)
+			var ss = Time.get_ticks_msec() 
 			for i in range(entity_count):
 				if Active[i] == 1:
 					entity_update(i,delta)	
-		FPS = Time.get_ticks_msec() - ss
+			FPS = Time.get_ticks_msec() - ss
 	
 #########################################
 
@@ -712,10 +711,12 @@ func Spawn_and_Kill():
 
 		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives,update_species,size_arrayy)
 
+	mutex.lock()
 	_pending_spawns_positions.clear()
 	_pending_spawns_species.clear()
 	_pending_kills.clear()
 	_pending_update.clear()
+	mutex.unlock()
 
 
 	
