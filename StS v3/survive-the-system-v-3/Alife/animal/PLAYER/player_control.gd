@@ -196,6 +196,8 @@ func eat_holding_item() :
 			var inventory = player.get_node("Player_HUD").get_node("Inventory")
 			var item_eaten = inventory.remove_selected(int(player.name))
 			if item_eaten:
+				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.SPIKYFLOWER:
+					print("SPIKY FLOWER EATEN")
 				player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
 
 			
