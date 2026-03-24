@@ -59,11 +59,9 @@ func update(manager,i, _DNA, _delta):
 	for f in _DNA.food_species_id:
 		var ti = find_closest(manager,manager.position_array[i], targets,  f)
 		if ti != null:
-
-
 			#manager.current_health_array[ti] = -100
 			if manager._pending_kills.has(ti) == false:
-				manager._pending_kills.append(ti)
+				#manager._pending_kills.append(ti)
 				manager.current_health_array[ti] = -10
 				manager.Alive_array[ti] = 0
 
