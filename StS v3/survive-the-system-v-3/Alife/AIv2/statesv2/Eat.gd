@@ -11,7 +11,6 @@ func evaluate(_manager,_i, _DNA):
 	if bin == null:
 		return score 
 		
-
 	#ENERGY SCORE
 	var t = _manager.current_life_state_array[_i] 
 	score += 1 -  _manager.current_energy_array[_i] / _DNA.Max_energy[t]
@@ -21,22 +20,23 @@ func evaluate(_manager,_i, _DNA):
 	var food_score = 0
 	for f in _DNA.food_species_id :
 		var fscore = 0
-		if _manager.sum_species_world_array[f][bin] > 0:
-			var targets = _manager.World.bin_array[bin]
-			var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,f)
-			if close_target_id:
-				var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
-				if dir.length() > distance_to_eat or targets.size() == 0:
-					fscore = 0  #25 is the max life in a place...
-				else:
+		#if _manager.sum_species_world_array[f][bin] > 0:
+		var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,1)
+		var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,f)
+
+		if close_target_id:
+			var dir = (_manager.position_array[close_target_id] - _manager.position_array[_i])
+			if dir.length() > distance_to_eat or targets.size() == 0:
+				fscore = 0  #25 is the max life in a place...
+		
+			else:
 					fscore = 2
 		if fscore > food_score:
 			food_score = fscore
 	score*= food_score
 	'for f in food_type:
 		score =  _manager.sum_species_world_array[f][bin]'
-	if _manager.Species_array[_i] == 6:
-		pass#print( "Eat score is " + str(score))
+
 	return  score
 
 

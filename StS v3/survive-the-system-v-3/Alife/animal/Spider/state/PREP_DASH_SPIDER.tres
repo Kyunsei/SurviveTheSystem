@@ -5,6 +5,6 @@
 
 [resource]
 script = ExtResource("1_5vwnp")
+timer_prep = 0.5
 next_state = ExtResource("1_wfql6")
-target_species = PackedInt32Array(4, 5)
 metadata/_custom_type_script = "uid://dafy7wxhvwmuc"
