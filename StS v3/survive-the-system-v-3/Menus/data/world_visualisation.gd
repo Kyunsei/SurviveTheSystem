@@ -7,12 +7,12 @@ var mm2
 var panel_size : Vector2
 var color_list = [Color(0.0, 0.345, 0.0, 1.0),
 Color(0.507, 0.207, 0.164, 1.0),
-Color(0.0, 0.117, 1.0, 1.0),
-Color(0.635, 0.635, 0.635, 1.0),
-Color(0.638, 0.398, 0.895, 1.0),
+Color(0.067, 0.173, 0.096, 1.0),
+Color(0.053, 0.407, 0.629, 1.0),
+Color(0.948, 0.937, 0.778, 1.0),
 Color(0.976, 0.11, 0.0, 1.0),
-Color(0.826, 0.826, 0.826, 1.0),
-Color(0.578, 0.193, 0.246, 1.0),
+Color(0.392, 0.392, 0.392, 1.0),
+Color(0.492, 0.21, 0.524, 1.0),
 Color(0.0, 0.722, 0.867, 1.0),
 Color(0.566, 0.554, 0.022, 1.0)
 ]
@@ -265,10 +265,16 @@ func show_alife(i, sp):
 			
 
 			
-		if manager.Species_array[c] == 0:
+		if manager.Species_array[c] == 0 or manager.Species_array[c] == AlifeRegistry.SPECIES_ID.MOSS or manager.Species_array[c] == AlifeRegistry.SPECIES_ID.SPIKYFLOWER :
 			t = Transform2D(
 					Vector2(0.5, 0),
 					Vector2(0, 0.5),
+					pos
+				)
+		elif manager.Species_array[c] == AlifeRegistry.SPECIES_ID.SPIDERCRAB:
+				t = Transform2D(
+					Vector2(1.5, 0),
+					Vector2(0, 1.5),
 					pos
 				)
 		else:

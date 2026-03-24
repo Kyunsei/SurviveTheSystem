@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dsmwbanbdkdn2"]
 
-[ext_resource type="Shader" uid="uid://btx2plkf15pio" path="res://Z_NOTMOREINUSE/ALIFE.gdshader" id="1_x7vsv"]
+[ext_resource type="Shader" path="res://Alife/ALIFE.gdshader" id="1_x7vsv"]
 [ext_resource type="Texture2D" uid="uid://8txr6u41egge" path="res://Z_NOTMOREINUSE/jorg_idle.png" id="2_85tik"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_85tik"]

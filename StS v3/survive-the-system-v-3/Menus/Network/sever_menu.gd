@@ -28,13 +28,15 @@ func _process(_delta: float) -> void:
 	if peer:
 		if multiplayer.is_server():
 			var beastfps = alifemanager.get_node("beast_manager").FPS
-			var grassfps = alifemanager.get_node("Grass_Manager").FPS
+			#var grassfps = alifemanager.get_node("Grass_Manager").FPS
 			var grassfps2 = alifemanager.get_node("Grass_Manager2").FPS
+			var grassworld2 = alifemanager.get_node("Grass_Manager2").FPS_World
+
 
 			$FPS.text ="Peer ID: " + str(multiplayer.get_unique_id())
 			$FPS.text = $FPS.text +  "\nfps: " + str(Engine.get_frames_per_second()) 
 			$FPS.text = $FPS.text +  " \t Beats_Time: " + str(beastfps) 
-			$FPS.text = $FPS.text +  " \t Grass_Time: " + str(grassfps) 
+			$FPS.text = $FPS.text +  " \t World_Time: " + str(grassworld2) 
 			$FPS.text = $FPS.text +  " \t Grass2_Time: " + str(grassfps2) 
 
 

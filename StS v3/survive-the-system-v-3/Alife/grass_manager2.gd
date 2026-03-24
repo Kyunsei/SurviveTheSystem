@@ -11,6 +11,9 @@ extends Node3D
 
 
 var FPS : float
+var FPS_beast : float
+var FPS_bythread : float
+var FPS_World : float
 var Grass_simulator_time = 0
 #var id : PackedInt32Array
 
@@ -115,43 +118,39 @@ var thread_delta : float = 0.0
 var mutex := Mutex.new()
 var thread_result_ready = false
 
+var World_Thread : Thread
+var world_semaphore :=Semaphore.new()
+var world_done : bool = false
+var world_done_semaphore :=Semaphore.new() 
+
+#MULTITHREAD
 class WorkerData:
 	var start : int
 	var end : int
 	var delta : float
 
-var workers : Array = []
-var worker_threads : Array = []
-var worker_count := 8
+var workers : Array = []  #Store infor for each thread
+var worker_threads : Array = [] #Store the thread
+var worker_count := 1
 var threads_done := 0
 var semaphore := Semaphore.new()
+var done_semaphore :=Semaphore.new() 
+
 
 ##########MULTITHREADS HERE
 
-func start_threads():
+func start_multithreads():
+	Start_World_simulation()
+	set_multithread_worker()
+	#dispatch_thread_workers()
 	for i in range(worker_count):
-		var t = Thread.new()
-		worker_threads.append(t)
-		var worker = WorkerData.new()
-		workers.append(worker)
-		t.start(worker_loop.bind(i))
+		worker_threads[i].start(_multithread_worker_loop.bind(i))
 
 
-func worker_loop(id):
-	while true:
-		semaphore.wait() # wait until work assigned
-		var w = workers[id]
-		update_in_range(w.start, w.end, w.delta)
-		mutex.lock()
-		threads_done += 1
-		#Grass_simulator_time -= 1
-		#call_deferred("update_grass_time")
-		mutex.unlock()
-
-#
-
-func update_smth(delta):
-
+func dispatch_thread_workers(delta):
+	
+	if workers.size() <= 0:
+		return
 	@warning_ignore("integer_division")
 	var chunk = int(entity_count / worker_count)
 	threads_done = 0
@@ -162,38 +161,52 @@ func update_smth(delta):
 			end = entity_count
 		workers[i].start = start
 		workers[i].end = end
-		workers[i].delta = delta
+		workers[i].delta = 0.016  		#HERE NOT GOOD
+
+	# start world
+	world_semaphore.post()
+	# wait world
+	world_done_semaphore.wait()
+	# wake workers
+	for i in range(worker_count):
 		semaphore.post()
-	# wait for all threads
-	while threads_done < worker_count:
-		OS.delay_usec(50)
+	# wait workers
+	for i in range(worker_count):
+		done_semaphore.wait()
+
+func _multithread_worker_loop(id):
+	var w = workers[id]
+	while true:
+		semaphore.wait() # wait until work assigned
+		multithread_update(w.start, w.end, w.delta)
+		done_semaphore.post()
+
+#
+
+func set_multithread_worker():	
+	for i in range(worker_count):
+		var t = Thread.new()
+		worker_threads.append(t)
+		var worker = WorkerData.new()
+		workers.append(worker)
 		
 		
-		
-func update_in_range(start, end, delta):
-	for i in range(start,end):
-			if i > entity_count-1:
-				continue
-			if Active[i]:
-				var s = Species_array[i]
-				var t = current_life_state_array[i]
-				if Alive_array[i] == 1:
-					if current_life_state_array[i] == 0:
-						Germination(i,s,t)
-					else:
-						
-						Homeostasis(i,s,t,delta)
-						Growth(i,s,t,delta)
-						Reproduction(i,s,t,delta)
-				else:
-					Decompose(i,s,t, delta)
+func multithread_update(start, end, delta):
+		if !isInit:
+			print("grass manger not initialised")
+			return
+		if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
+			var ss = Time.get_ticks_msec() 
+			if GlobalSimulationParameter.simulation_speed > 0:
+				for i in range(start,end):
+					if Active[i] == 1:
+						entity_update(i,delta)
+			FPS = Time.get_ticks_msec() - ss
 
 
-func start_simulation_multithread():
-	start_threads()
 
 		
-####################################
+#############SINGLE THREAD#######################
 
 func start_simulation_thread():
 	if thread_running:
@@ -204,6 +217,10 @@ func start_simulation_thread():
 	thread_running = true	
 
 
+func Start_World_simulation():
+	World_Thread = Thread.new()
+	World_Thread.start(_world_thread.bind(0.016))
+
 func stop_simulation_thread():
 	if not thread_running:
 		return
@@ -211,33 +228,77 @@ func stop_simulation_thread():
 	thread_should_stop = true
 	simulation_thread.wait_to_finish()
 	thread_running = false
+	World_Thread.wait_to_finish()
+
+func _world_thread(delta):
+	while true:
+		world_semaphore.wait()
+		update_world(delta)
+		world_done_semaphore.post()
+		
+
+func update_world(delta):
+	if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
+		#var oldv = 0
+		if GlobalSimulationParameter.simulation_speed > 0:
+			var ss = Time.get_ticks_msec() 
+			if World:
+				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
+			#var ss = Time.get_ticks_msec() 
+			update_field()
+			#print( Time.get_ticks_msec() - ss)
+			#ss =  Time.get_ticks_msec() 
+			LightSystem_to_plant(delta)
+			#print( Time.get_ticks_msec() - ss)
+			#print("/////////////////")
+			FPS_World = Time.get_ticks_msec() - ss
+
+
+func _thread_loop():
+	while not thread_should_stop:		
+		var delta := 0.016  		
+		update(delta)
+		mutex.lock()
+		thread_result_ready = true
+		Grass_simulator_time -= 1
+		call_deferred("update_grass_time")
+		mutex.unlock()
+		OS.delay_msec(1)  # prevent CPU burning
+
+
+func update(delta):
+	if !isInit:
+		print("grass manger not initialised")
+		return
+	
+	update_world(delta)
+	
+	if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
+		#var oldv = 0
+		var ss = Time.get_ticks_msec() 
+		if GlobalSimulationParameter.simulation_speed > 0:
+			for i in range(entity_count):
+				if Active[i] == 1:
+					entity_update(i,delta)	
+		FPS = Time.get_ticks_msec() - ss
+	
+#########################################
 
 func _exit_tree():
 	stop_simulation_thread()
 	for t in worker_threads:
 		t.wait_to_finish()
 
-func _thread_loop():
-	
-	while not thread_should_stop:
-		
-		var delta := 0.016  
-		mutex.lock()
-		update(delta)
-		thread_result_ready = true
-		Grass_simulator_time -= 1
-		call_deferred("update_grass_time")
-		mutex.unlock()
-
-		OS.delay_msec(1)  # prevent CPU burning
-
 func _process(_delta):
 	if GlobalSimulationParameter.DEBUG_grass_sim == 0:
 		return
 	if !multiplayer.is_server():
 		return
+	if GlobalSimulationParameter.SimulationStarted == false:
+		return
 	
-
+	
+	dispatch_thread_workers(0.016)
 	# Check if any species has pending work
 	var has_pending = false
 	if _pending_spawns_positions.size() > 0 \
@@ -250,8 +311,6 @@ func _process(_delta):
 
 	mutex.lock()
 	Spawn_and_Kill()
-	'for w in workers:
-		print(w.start)'
 	mutex.unlock()	
 
 
@@ -271,52 +330,13 @@ func Init():
 		#for i in range(1):
 		#	Spawn_New_Grass(Vector3(0+0*i,0,0),0)
 		isInit = true
-		start_simulation_thread()
-		#start_simulation_multithread()
-
-
-
-'func batch_work():
-	var worker_count = 5
-	var start : int
-	var end : int
-	var delta : float
-	var chunk = int(entity_count / worker_count)'
-
-func update(delta):
-	if !isInit:
-		print("grass manger not initialised")
-		return
-	if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
-		#var oldv = 0
-		var ss = Time.get_ticks_msec() 
-		if GlobalSimulationParameter.simulation_speed > 0:
-			if World:
-				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
-			update_field()
-			LightSystem_to_plant(delta)
-			#print(flow_world_array[0])
-			for i in range(entity_count):
-				if Active[i] == 1:
-					#continue
-					entity_update(i,delta)
-					
-					'var s = Species_array[i]
-					var t = current_life_state_array[i]
-					if Alive_array[i] == 1:
-						if current_life_state_array[i] == 0:
-							Germination(i,s,t)
-						else:
-							
-							Homeostasis(i,s,t,delta)
-							Growth(i,s,t,delta)
-							Reproduction(i,s,t,delta)
-							Move(i,delta)
-					else:
-						Decompose(i,s,t, delta)'
 		
-		FPS = Time.get_ticks_msec() - ss
-	
+		
+		start_simulation_thread()
+		#start_multithreads()
+
+
+
 	
 # World system — runs once per tick
 func update_field() -> void:
@@ -465,20 +485,15 @@ func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 	for bi in range(World.light_bin.size()):
 		var light_value = World.light_array[bi]
 		if light_value <= 0:
-			continue
-		
+			continue		
 		var grass = World.light_bin[bi]
 		if !grass:
 			continue
-	
 		#var share = light_value/World.light_bin[bi].size()
 		for gi in grass:
-
 			if Active[gi]==0:
-				
 				continue
-			if Alive_array[gi]==0:
-			
+			if Alive_array[gi]==0:			
 				continue
 			'if current_life_state_array[gi]==0:
 				continue'
@@ -1099,12 +1114,12 @@ func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):
 
 
 @rpc("authority", "call_remote", "reliable") 			
-func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array,size_array):
+func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array,size_arrayy):
 	for c in range(id_array.size()):
 		var s = species_array[c]
 		var renderer = SPECIES_RENDERERS[s]
 		if renderer:
-			renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c],size_array[c])
+			renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c],size_arrayy[c])
 
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(id_array,species_array):
