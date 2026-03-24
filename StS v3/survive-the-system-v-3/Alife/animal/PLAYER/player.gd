@@ -416,7 +416,6 @@ func Die(id):
 		lifedata["Alive"] = 0
 		death.rpc_id(id,id)'
 	#NEW
-	var manager = get_parent().get_node("Grass_Manager2")
 	if manager.Alive_array[alifemanager_id] == 1:
 		manager.Alive_array[alifemanager_id] = 0
 		death.rpc_id(id,id)
@@ -465,11 +464,11 @@ func respawn():
 	max_speed = 9
 	sprint_speed = 18
 	base_jump = 25
-	inventory_capacity_upgrade = 1
 	$CollisionShape3D.disabled = false
 	$MeshInstance3D.show()
 	await get_tree().create_timer(1).timeout
-	immune_to_death = false
+	if immune_to_death == true:
+		immune_to_death = false
 @rpc("any_peer","call_local")
 func respawn_server():
 	#is_alive = true
@@ -479,6 +478,9 @@ func respawn_server():
 	manager.Alive_array[alifemanager_id] =1
 	print("here respawn server?")
 	manager.current_energy_array[alifemanager_id] =100
+	await get_tree().create_timer(2.0).timeout
+	if immune_to_death == true:
+		immune_to_death = false
 
 	#OLD - will be deleted when all migrated
 	'lifedata["current_health"] = 50
