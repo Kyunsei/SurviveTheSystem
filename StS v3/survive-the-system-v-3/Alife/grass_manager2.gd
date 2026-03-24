@@ -298,7 +298,8 @@ func _process(_delta):
 		return
 	
 	
-	dispatch_thread_workers(0.016)
+	#dispatch_thread_workers(0.016)
+	
 	# Check if any species has pending work
 	var has_pending = false
 	if _pending_spawns_positions.size() > 0 \
