@@ -258,9 +258,9 @@ func update_world(delta):
 
 func _thread_loop():
 	while not thread_should_stop:		
-		var delta := 0.016  		
-		update(delta)
+		var delta := 0.016 
 		mutex.lock()
+		update(delta)
 		thread_result_ready = true
 		Grass_simulator_time -= 1
 		call_deferred("update_grass_time")

@@ -16,5 +16,5 @@ shader_parameter/player_position = Vector3(0, 0, 0)
 
 [resource]
 material = SubResource("ShaderMaterial_xx00p")
-size = Vector2(2, 2)
-center_offset = Vector3(0, 1, 0)
+size = Vector2(2.5, 2.5)
+center_offset = Vector3(0, 1.25, 0)
