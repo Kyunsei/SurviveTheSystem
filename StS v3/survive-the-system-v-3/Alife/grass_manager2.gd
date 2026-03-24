@@ -30,7 +30,7 @@ var flower_field : PackedFloat64Array
 
 #STATS
 var position_array : PackedVector3Array
-var size_array: PackedVector3Array  #NOT IN USE? 
+#var size_array: PackedVector3Array  #NOT IN USE? 
 var binID_array: PackedInt32Array
 
 var current_energy_array : PackedFloat64Array
@@ -81,6 +81,8 @@ var SPECIES = {
 	 }
 #@export var species_list : Array[DNA]
 #var species_id_array : Array =[]
+
+#OLD OLD 
 var species_max_energy : Array[PackedFloat32Array]
 var species_max_health : Array[PackedFloat32Array]
 var species_max_age :Array[PackedInt32Array]

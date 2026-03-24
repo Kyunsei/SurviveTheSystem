@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bpbjidthyhh7b"]
 
-[ext_resource type="Script" uid="uid://dndkftgkcc1je" path="res://Alife/animal/Spider/spider.gd" id="1_2eadm"]
+[ext_resource type="Script" uid="uid://dndkftgkcc1je" path="res://Alife/animal/Spider/DEPRECTED_spider.gd" id="1_2eadm"]
 [ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/animal/Spider/Spidercrab.png" id="2_2eadm"]
 [ext_resource type="Script" uid="uid://dovwjxpu3l7pm" path="res://Z_NOTMOREINUSE/AI/StateManager.gd" id="2_3oiml"]
 [ext_resource type="Script" uid="uid://b3yvys18hn26m" path="res://Z_NOTMOREINUSE/AI/states/dying_spider.gd" id="4_ef62s"]

@@ -7,8 +7,7 @@ class_name SPIDERCRAB
 var current_state : STATE
 
 func Init():
-		
-
+	species_id = AlifeRegistry.SPECIES_ID.SPIDERCRAB
 	# --- Core metabolism ---
 	Max_energy =[1000000,1000000]
 	Max_health  =[4,4]
@@ -29,7 +28,8 @@ func Init():
 	Reproduction_cost  =[500,500]
 	Reproduction_spread  =[5,5]
 	Reproduction_number =[1,1]
-	Biomass =[5000,5000] #MAYBE NO LONGER IN USE
+	
+	Biomass =[5000,5000] #MAYBE NO LONGER IN USE #ICI
 
 #--- BEHAVIOUR ----
 	food_species_id  = [AlifeRegistry.SPECIES_ID.SHEEP,AlifeRegistry.SPECIES_ID.CAT]

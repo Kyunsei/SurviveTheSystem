@@ -10,9 +10,7 @@ class_name DASH_STATE
 func evaluate(_manager,_i, _DNA):
 	var score = 0
 	if _manager.current_finite_state_array[_i] == 	state_internal_id:
-		score = 100
-		
-
+		score = 100		
 	return score
 
 func enter(_manager,_i, _DNA):

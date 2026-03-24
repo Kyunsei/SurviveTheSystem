@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="HIDE_STATE" format=3 uid="uid://cmn7uxficpgl4"]
+
+[ext_resource type="Script" uid="uid://46i6sb6glqi0" path="res://Alife/AIv2/statesv2/Hide.gd" id="1_j2o58"]
+
+[resource]
+script = ExtResource("1_j2o58")
+value = 1
+metadata/_custom_type_script = "uid://46i6sb6glqi0"

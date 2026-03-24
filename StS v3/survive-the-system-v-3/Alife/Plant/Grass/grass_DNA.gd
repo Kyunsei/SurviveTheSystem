@@ -44,7 +44,8 @@ func Growth(manager, i, _delta):
 			manager.current_biomass_array[i] += 5
 			#return true
 			manager._pending_update.append(i)
-			
+
+		
 func Update(manager, i, delta):	
 	var s = manager.Species_array[i]
 	var t = manager.current_life_state_array[i]
