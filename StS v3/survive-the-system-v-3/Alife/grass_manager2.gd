@@ -517,8 +517,9 @@ func LightSystem_to_plant(delta): #THIS SCRIPT IS NOT USED
 				#print(binID_array[gi])
 				#print(gi)
 			current_energy_array[gi] +=  light_value * photo_factor + shadow_factor * shadow_value
-			current_energy_array[gi] = clamp(current_energy_array[gi],0 ,species_max_energy[s][t]* GlobalSimulationParameter.simulation_speed)
-			World.light_array[bi] = clamp( World.light_array[bi] - species_photosynthesis_absorption[s][t] ,0,1)
+			if photo_factor + shadow_factor > 0:
+				current_energy_array[gi] = clamp(current_energy_array[gi],0 ,species_max_energy[s][t]* GlobalSimulationParameter.simulation_speed)
+				World.light_array[bi] = clamp( World.light_array[bi] - species_photosynthesis_absorption[s][t] ,0,1)
 			#World.shadow_array[bi] = clamp( World.light_array[bi] - SPECIES[s].Shadow_tolerance ,0,1)
 
 			#break
@@ -725,7 +726,7 @@ func Spawn_and_Kill():
 	_pending_update.clear()
 
 
-	
+
 
 
 func Build_New_Grass(i:int,pos: Vector3, sp:int):

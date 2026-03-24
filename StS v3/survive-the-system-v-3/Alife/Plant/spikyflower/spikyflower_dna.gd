@@ -74,7 +74,7 @@ func Hurt(manager,i,s,t,delta):
 		var dist = (manager.position_array[i] -manager.position_array[ti] ).length()
 		if manager.Species_array[ti] == AlifeRegistry.SPECIES_ID.CAT:
 			if dist < 2.0:
-				manager.SPECIES[manager.Species_array[ti]].Damage(self,manager,i,ti,10*delta)
+				manager.SPECIES[manager.Species_array[ti]].Damage(self,manager,i,ti,200*delta)
 			
 		
 

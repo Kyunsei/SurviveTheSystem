@@ -29,7 +29,6 @@ func _physics_process(delta: float) -> void:
 				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED if is_fullscreen else DisplayServer.WINDOW_MODE_FULLSCREEN)
 			#if player.is_alive == false:
 				#return
-		#print(player.lifedata)
 		#if player.lifedata["Alive"] == 1:
 		#if not player.is_on_floor():
 				#player.velocity.y -= player.gravity*delta
@@ -187,7 +186,7 @@ func eat_holding_item() :
 				var inventory = player.get_node("Player_HUD").get_node("Inventory")
 				var item_eaten = inventory.remove_selected(int(player.name))
 				if item_eaten:
-					player.lifedata["current_energy"] =clamp(player.lifedata["current_energy"]+value,0,player.lifedata["Max_energy"])
+					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
 					#print(value)
 		else:
 			var id = player.item_hold["Data"][0]
@@ -195,8 +194,8 @@ func eat_holding_item() :
 			var inventory = player.get_node("Player_HUD").get_node("Inventory")
 			var item_eaten = inventory.remove_selected(int(player.name))
 			if item_eaten:
-					player.lifedata["current_energy"] =clamp(player.lifedata["current_energy"]+value,0,player.lifedata["Max_energy"])
-					#print(value)
+				player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
+
 			
 	else:
 		pass
@@ -264,10 +263,8 @@ func action_on_server():
 		for t in targets:
 			if t is Dictionary:
 				if t != player.lifedata:
-					#print(t)
 					#alife_manager.interact(t,player)
 					if add_to_inventory(t):
-						#print("added")
 						alife_manager.remove(t)	
 			else:
 				if alife_manager.get_node("Grass_Manager2").Species_array[t]==5:
@@ -278,7 +275,6 @@ func action_on_server():
 						
 						
 func add_to_inventory(alife):
-		#print(alife["Species"])
 		var inventory = player.get_node("Player_HUD").get_node("Inventory")
 		if alife is Dictionary:
 

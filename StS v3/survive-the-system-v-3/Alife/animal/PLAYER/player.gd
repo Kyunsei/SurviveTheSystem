@@ -161,7 +161,6 @@ func apply_skin():
 func equip_item(item):
 	item_hold = item
 	if item_hold:
-		#print("12121")
 		update_item_hold_texture.rpc(item["inventory_icon"])
 		show_selected(item_hold, int(name))
 		#$MeshInstance3D/Sprite3D_holdItem.texture = load(item["inventory_icon"])
@@ -257,7 +256,6 @@ func go_to_position(pos):
 
 @rpc("any_peer","call_remote")
 func move_player_position(pos):
-	#print(multiplayer.get_unique_id())
 	position = pos
 
 
@@ -270,15 +268,14 @@ func _ready() -> void:
 		$MeshInstance3D/Status_bar.show()
 		%Camera3D.current = true
 		World = get_parent().get_parent().get_node("World") #NEED TO BE CHANGED TO ASK SERVER INFO
-		#print(World)
 		go_back_to_ship(0)
 		dialogue_box = $Player_HUD/Dialogue
 		inventory_HUD = $Player_HUD/Inventory
 		manager.init_multimesh(self)
 
 	if multiplayer.is_server():
-		health_bar.max_value = lifedata["Max_health"]
-		energy_bar.max_value = lifedata["Max_energy"]
+		health_bar.max_value = max_health
+		energy_bar.max_value = max_energy
 		#update_status_of_player(inventory_capacity_upgrade, catnation_credits)
 	
 			
@@ -286,7 +283,6 @@ func _physics_process(_delta: float) -> void:
 	if is_multiplayer_authority() :
 		if input_blocked:
 			return  
-		#print("Player pos:", global_position, " lifedata pos:", lifedata["position"])
 		velocity.x = direction.x *speed 
 		velocity.z = direction.z *speed 
 		#data_movement_to_server.rpc_id(1, global_position)
@@ -325,33 +321,47 @@ func giving_position_to_others(pos: Vector3) -> void:
 
 
 func _process(delta: float) -> void:
+
 	if multiplayer.is_server():# and GlobalSimulationParameter.ClientStarted:
 		if input_blocked:
 			return  
 		if int(name) == null:
 			pass
 		else:
-			if speed > 9:
-				if lifedata["current_energy"] <=0 or manager.current_energy_array[alifemanager_id] <=0:
-					lifedata["current_health"] -= 1.5*delta
+			if manager.current_energy_array[alifemanager_id] <=0:
+				#if lifedata["current_energy"] <=0 or manager.current_energy_array[alifemanager_id] <=0:
+					#lifedata["current_health"] -= 1.5*delta
+				if speed > 9:
 					manager.current_health_array[alifemanager_id]-= 1.5*delta
 				else: 
-					lifedata["current_energy"] -= 1*delta
-					manager.current_energy_array[alifemanager_id]-= 1*delta
+					#lifedata["current_energy"] -= 1*delta
+					manager.current_health_array[alifemanager_id]-= 1*delta
+
+			else :
+				if speed > 9:
+					manager.current_energy_array[alifemanager_id]-= 1.0*delta
+				else: 
+					#lifedata["current_energy"] -= 1*delta
+					manager.current_energy_array[alifemanager_id]-= 0.5*delta
+			if manager.current_energy_array[alifemanager_id] >=50 and manager.current_health_array[alifemanager_id] < max_health:
+				manager.current_health_array[alifemanager_id] += 1
+				manager.current_energy_array[alifemanager_id] -= 1
+
 			'else:
 					lifedata["current_energy"] -= 0.5*delta
 					#manager.current_energy_array[alifemanager_id]-= 0.5*delta
 			Regen_Health(delta)'
 			
 			
-			if lifedata["current_health"] <= 0 or get_parent().get_node("Grass_Manager2").current_health_array[alifemanager_id]<= 0:
+			#if lifedata["current_health"] <= 0 or get_parent().get_node("Grass_Manager2").current_health_array[alifemanager_id]<= 0:
+			if get_parent().get_node("Grass_Manager2").current_health_array[alifemanager_id]<= 0:
 				Die.rpc_id(1, int(name))
 
 			#update_bar.rpc_id(int(name),1, lifedata["current_health"], lifedata["Max_health"])
 			#update_bar.rpc_id(int(name),2, lifedata["current_energy"], lifedata["Max_energy"])
 			sync_lifedata.rpc_id(int(name), lifedata)
 			update_bar.rpc_id(int(name),1, manager.current_health_array[alifemanager_id], max_health)
-			update_bar.rpc_id(int(name),2, manager.current_energy_array[alifemanager_id], max_energy)			
+			update_bar.rpc_id(int(name),2, manager.current_energy_array[alifemanager_id], max_energy)
 			if vacuum_turned_on:
 				vacuum_tick -= delta
 
@@ -372,19 +382,11 @@ func _process(delta: float) -> void:
 				escape_timer_running = false
 
 
-func Regen_Health(delta):
-	#On cat DNA now
-	#var manager = get_parent().get_node("Grass_Manager2")
-	if lifedata["current_energy"] > 0:
-			if lifedata["current_energy"] > 49 and lifedata["current_health"]<lifedata["Max_health"]:
-				lifedata["current_health"] += 1*delta
-				lifedata["current_energy"] -= 1*delta
-			if lifedata["current_energy"] <= 0:
-				
-					lifedata["current_health"] -= 1*delta
+
 
 @rpc("any_peer","call_local")
 func sync_lifedata(data: Dictionary):
+	pass
 	lifedata = data
 	#var manager = get_parent().get_node("Grass_Manager2")
 	#health = manager.current_health_array[alifemanager_id]
@@ -473,9 +475,10 @@ func respawn_server():
 	#is_alive = true
 
 	#NEW
-	get_parent().get_node("Grass_Manager2").current_health_array[alifemanager_id] =50
-	get_parent().get_node("Grass_Manager2").Alive_array[alifemanager_id] =1
-	get_parent().get_node("Grass_Manager2").current_energy_array[alifemanager_id] =100
+	manager.current_health_array[alifemanager_id] =50
+	manager.Alive_array[alifemanager_id] =1
+	print("here respawn server?")
+	manager.current_energy_array[alifemanager_id] =100
 
 	#OLD - will be deleted when all migrated
 	'lifedata["current_health"] = 50
@@ -496,9 +499,11 @@ func update_bar(bartype,value, MaxValue):
 	if bartype ==1 :
 		health_bar.value = value
 		health_bar.max_value = MaxValue
+		#print(str(MaxValue)+ str("debug"))
 	if bartype ==2 :
 		energy_bar.value = value
 		energy_bar.max_value = MaxValue
+		#print(str(MaxValue)+ str("debug"))
 
 @rpc("any_peer","call_local")
 func force_escape_time(new_time):
@@ -551,8 +556,12 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 
 @rpc("any_peer","call_local")
 func spear_attack():
-	if lifedata["current_energy"]> 0 :
-		lifedata["current_energy"] -= 1
+	#if lifedata["current_energy"]> 0 : 
+		#lifedata["current_energy"] -= 1
+	if manager.current_energy_array[alifemanager_id] >0:
+		manager.current_energy_array[alifemanager_id] -= 1 
+	else:
+		manager.current_health_array[alifemanager_id] -= 1 
 	if spear_animation_in_course == false and speardefense == false:
 		time_before_attack = 0.4
 		spear_animation_in_course = true
@@ -599,17 +608,23 @@ func check_player_hit(dmg, areaofaction):
 		if t.is_in_group("spear_hit") and t.get_parent()!= self :
 			if t.get_parent().speardefense == false:
 				get_parent().Attack(t.get_parent().lifedata, dmg)
-				if t.get_parent().lifedata["current_health"] > 0:
+				#if t.get_parent().lifedata["current_health"] > 0:
+				if t.get_parent().manager.current_health_array[alifemanager_id] >0:
 					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),-dmg, Color(1.0, 0.1, 0.0, 1.0), 1.0, ""," Health")
 					remove_durability(3)
 			else :
-				if t.get_parent().lifedata["current_health"] > 0:
+				#if t.get_parent().lifedata["current_health"] > 0:
+				if t.get_parent().manager.current_health_array[alifemanager_id] >0:
 					t.get_parent().show_label_above_player.rpc_id(int(t.get_parent().name),dmg, Color(0.5, 0.5, 0.5, 1.0), 1.0, ""," Damage Blocked")
 					remove_durability(10)
 					if t.get_parent().item_hold :
 						t.get_parent().remove_durability(1)
-					if t.get_parent().lifedata["current_energy"]> 0:
-						t.get_parent().lifedata["current_energy"] -=5
+					#if t.get_parent().lifedata["current_energy"]> 0:
+						#t.get_parent().lifedata["current_energy"] -=5
+					if t.get_parent().manager.current_energy_array[alifemanager_id] >0:
+						t.get_parent().manager.current_energy_array[alifemanager_id] -=5
+					else:
+						t.get_parent().manager.current_health_array[alifemanager_id] -=1
 
 @rpc("any_peer","call_local")
 func spear_defense(number):
