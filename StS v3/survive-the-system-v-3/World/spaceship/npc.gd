@@ -11,7 +11,10 @@ func display_text(dialogue_box, text):
 	dialogue_box.show_text(text)
 
 
-
+func _process(_delta: float) -> void:
+	if Input.is_action_pressed("ui_cancel"):
+		if player and player.dialogue_box and player.dialogue_box.visible:
+			player.dialogue_box.hide()
 
 			
 func interact(p):
