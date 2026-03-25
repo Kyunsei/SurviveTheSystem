@@ -41,7 +41,7 @@ func _process(delta: float) -> void:
 			player.get_node("Controler_canvas").show()
 			player.get_node("Mouse_canvas").hide()
 			var mouse_motion = InputEventMouseMotion.new()
-			mouse_motion.relative = Vector2(joy_x, joy_y) * sensitivity * 1000 * delta
+			mouse_motion.relative = Vector2(joy_x, joy_y/2) * sensitivity * 1000 * delta
 
 			Input.parse_input_event(mouse_motion)
 			
