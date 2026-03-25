@@ -8,7 +8,7 @@ func Init():
 	display_name = "BERRY"
 
 	# --- Core metabolism ---
-	Max_energy =[2100,2100]
+	Max_energy =[21000,21000]
 	Max_health  =[15,15]
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.9,0.9]
@@ -23,15 +23,17 @@ func Init():
 	Reproduction_cost  =[500,500]
 	Reproduction_spread  =[15,15]
 	Reproduction_number =[1,1]
-	Biomass =[5,10] #MAYBE NO LONGER IN USE
+	Biomass =[200,15,25,35,45,55,65,75,85] #MAYBE NO LONGER IN USE
 
 #--- RENDERING ----
 
 #????
 
 #INVENTORY
-	Sprite_path ="res://Alife/Plant/Bush/berry_5.png" 
+	Sprite_path ="res://assets/Art from STS2/berry_1.png"#"res://Alife/Plant/Bush/berry_5.png" 
 	Stack_amount = 50
+
+
 
 
 func isPickable(manager, i):
@@ -39,24 +41,36 @@ func isPickable(manager, i):
 		manager.current_life_state_array[i] -= 1
 		manager.current_energy_array[i] -=  1000
 		manager._pending_update.append(i)
-		return true 
-	
+		var new_pos = manager.position_array[i] + Vector3(randf_range(-0.2,0.2),0,randf_range(-0.2,0.2))
+		manager._pending_spawns_positions.append(new_pos)
+		manager._pending_spawns_species.append(manager.Species_array[i])
+		return false 
+		
+	elif manager.current_life_state_array[i] == 1:
+		return true
 	else:
 		return 1-manager.Alive_array[i]
 
-func isPickablebutstaying(_manager, _i):
+func isPickablebutstaying(_manager, _i): #WILL DISAPPEAR
 	#TRUE MEAN NOT SATYING < CLASSIC WAY
-	return false
+	#_manager.Spawn_New_Grass(newpos:Vector3,s:int)
+	return true
 
 func Growth(manager, i, _delta):
-	if manager.current_life_state_array[i] < 4:
+	if manager.current_life_state_array[i] < 3:
 		if manager.current_energy_array[i] > 1000:
 			manager.current_life_state_array[i] += 1
 			manager.current_energy_array[i] -=  1000
-			manager.current_biomass_array[i] += 10
+			manager.current_biomass_array[i] = Biomass[manager.current_life_state_array[i]]
 			#return true
 			manager._pending_update.append(i)
-			
+		if manager.current_life_state_array[i] == 3:
+			if manager.current_energy_array[i] > 20000:
+				manager.current_life_state_array[i] += 1
+				manager.current_energy_array[i] -= 20000
+				manager.current_biomass_array[i] = Biomass[manager.current_life_state_array[i]]
+				#return true
+				manager._pending_update.append(i)		
 func Update(manager, i, delta):
 	
 	var s = manager.Species_array[i]
@@ -68,7 +82,7 @@ func Update(manager, i, delta):
 			
 			Homeostasis(manager,i,s,t,delta)
 			Growth(manager,i,delta)
-			Reproduction(manager,i,s,t,delta)
+			#Reproduction(manager,i,s,t,delta)
 	else:
 		Decompose(manager,i,s,t, delta)
 
@@ -97,6 +111,8 @@ func Homeostasis(manager,i,s,t,delta):
 
 
 
+func Take_fruit(manager,i,s,t,_delta):
+	pass
 
 	
 func Reproduction(manager,i,s,t,_delta):	
