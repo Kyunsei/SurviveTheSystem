@@ -100,17 +100,25 @@ func _physics_process(delta: float) -> void:
 		#if not player.is_on_floor():
 				#player.velocity.y -= player.gravity*delta
 			direction = Vector3(0,0,0)
-			if Input.is_action_pressed("up2"):
-				player.get_node("Mouse_canvas").show()
-				player.get_node("Controler_canvas").hide()
 			if Input.is_action_pressed("down"):
 				direction.z = 1
 			if Input.is_action_pressed("up"):
 				direction.z = -1
+				player.get_node("Mouse_canvas").show()
+				player.get_node("Controler_canvas").hide()
 			if Input.is_action_pressed("right"):
 				direction.x = 1
 			if Input.is_action_pressed("left"):
 				direction.x = -1	
+			var joy_x = Input.get_joy_axis(0, JOY_AXIS_LEFT_X)
+			var joy_y = Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
+			var deadzone = 0.1
+			if abs(joy_x) < deadzone:
+				joy_x = 0
+			if abs(joy_y) < deadzone:
+				joy_y = 0
+			direction.x += joy_x
+			direction.z += joy_y
 			if direction != Vector3.ZERO:
 				direction = direction.normalized()
 			if camera_anchor:
