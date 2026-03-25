@@ -48,13 +48,14 @@ func Init():
 	
 func Update(_manager, _i, _delta):
 	if _manager.Alive_array[_i] == 1:
-		change_bin(_manager,_i)
+		pass
+		#change_bin(_manager,_i)
 		#Homeostasis(_manager, _i, _delta)
 	 
 func change_bin(_manager,_i):
 	var old_bin = _manager.binID_array[_i]
 	var current_bin = _manager.get_real_current_bin(_i)
-
+	#print(current_bin)
 
 	if old_bin == current_bin:
 		return

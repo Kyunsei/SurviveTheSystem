@@ -306,9 +306,9 @@ func _physics_process(_delta: float) -> void:
 			#$Action_Area3D.rotation.y = $camera_anchor.rotation.y 
 			pass
 			#var target_yaw := atan2(direction.x, -direction.z)
-		move_and_slide()
-		
+		move_and_slide()		
 		change_bin.rpc_id(1)
+		
 @rpc("any_peer","call_remote",)
 func data_movement_to_server(pos):
 	giving_position_to_others.rpc(pos)
@@ -393,19 +393,21 @@ func sync_lifedata(data: Dictionary):
 	#energy = manager.current_energy_array[alifemanager_id]
 @rpc("any_peer","call_local")
 func change_bin():
-	if lifedata.size()>0:
-		#lifedata["position"] = global_position
-		get_parent().get_node("Grass_Manager2").position_array[alifemanager_id] = global_position
-		#alifemanager_id
+	var _manager = 	get_parent().get_node("Grass_Manager2")
+	var _i = alifemanager_id
+	_manager.position_array[_i] = position
 
-		'var old_bin = lifedata["bin_ID"]
-		var current_bin = get_parent().get_worldbin_index(global_position)
+	var old_bin = _manager.binID_array[_i]
+	var current_bin = _manager.get_real_current_bin(_i)
+	if position.y > 2:
+		current_bin = -1
+	#print(current_bin)
 
-		if old_bin == current_bin:
-			return
-		else:		
-			get_parent().remove_from_world_bin(lifedata)
-			get_parent().put_in_world_bin(lifedata)'
+	if old_bin == current_bin:
+		return
+	else:		
+		_manager.remove_from_world_bin(_i)
+		_manager.put_in_world_bin(_i)	
 
 @rpc("any_peer","call_local")
 func Die(id):
@@ -457,6 +459,8 @@ func death(_id):
 #@rpc("any_peer","call_local")
 func respawn():
 	go_back_to_ship(0)
+	change_bin.rpc_id(1)
+
 	#is_alive = true
 	gravity = 60
 	fall_gravity = 90
@@ -476,7 +480,7 @@ func respawn_server():
 	#NEW
 	manager.current_health_array[alifemanager_id] =50
 	manager.Alive_array[alifemanager_id] =1
-	print("here respawn server?")
+	#manager.binID_array[alifemanager_id] = -1
 	manager.current_energy_array[alifemanager_id] =100
 	await get_tree().create_timer(2.0).timeout
 	if immune_to_death == true:
