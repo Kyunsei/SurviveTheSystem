@@ -13,6 +13,9 @@ shader_parameter/tile_count = Vector2i(5, 2)
 shader_parameter/tile_index = Vector2i(0, 0)
 shader_parameter/nframe = 5
 shader_parameter/player_position = Vector3(0, 0, 0)
+shader_parameter/wind_strength = 0.02
+shader_parameter/wind_speed = 1.0
+shader_parameter/height_influence = 1.0
 
 [resource]
 material = SubResource("ShaderMaterial_w3emv")

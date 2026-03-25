@@ -32,8 +32,14 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 				pass
 
 
-static func on_use(_player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BEFORE
-	print("USED CAT RATIO")
+static func on_use(player): #NOT IMPLEMENTED YET.  need to HAVE ITEM SLECTION BEFORE
+	#print ("eaten cat ratio")
+	var value = 100
+	var inventory = player.get_node("Player_HUD").get_node("Inventory")
+	var item_eaten = inventory.remove_selected(int(player.name))
+	if item_eaten:
+		#player.lifedata["current_energy"] =clamp(player.lifedata["current_energy"]+value,0,player.lifedata["Max_energy"])
+		player.manager.current_energy_array[player.alifemanager_id] =	clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
 	
 	
 static func eat(player):

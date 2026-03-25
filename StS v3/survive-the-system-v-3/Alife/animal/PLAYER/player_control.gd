@@ -22,7 +22,7 @@ func _ready() -> void:
 	
 
 var poison_tick := 0.0
-
+@export var sensitivity := 3.0
 func _process(delta: float) -> void:
 	if player.poisoned_by_flower > 0.0:
 		player.poisoned_by_flower -= delta
@@ -30,6 +30,62 @@ func _process(delta: float) -> void:
 		if poison_tick >= 1.0:
 			poison_tick = 0.0
 			player.manager.current_health_array[player.alifemanager_id] -= 5
+	
+
+
+	if player.is_multiplayer_authority(): 
+		var joy_x = Input.get_action_strength("look_right") - Input.get_action_strength("look_left")
+		var joy_y = Input.get_action_strength("look_down") - Input.get_action_strength("look_up")
+
+		if abs(joy_x) > 0.01 or abs(joy_y) > 0.01:
+			player.get_node("Controler_canvas").show()
+			player.get_node("Mouse_canvas").hide()
+			var mouse_motion = InputEventMouseMotion.new()
+			mouse_motion.relative = Vector2(joy_x, joy_y) * sensitivity * 1000 * delta
+
+			Input.parse_input_event(mouse_motion)
+			
+		if Input.get_mouse_mode() != Input.MOUSE_MODE_VISIBLE:
+			return
+		var mouse_pos = get_viewport().get_mouse_position()
+		if Input.is_action_just_pressed("b_controler"):
+			Input.action_press("ui_cancel")
+			Input.action_release("ui_cancel")
+		if Input.is_action_just_pressed("jump"):
+			print("Pressed")
+			var click = InputEventMouseButton.new()
+			click.button_index = MOUSE_BUTTON_LEFT
+			click.pressed = true
+			click.position = mouse_pos
+			Input.parse_input_event(click)
+
+		if Input.is_action_just_released("jump"):
+			print("Released")
+
+			var release = InputEventMouseButton.new()
+			release.button_index = MOUSE_BUTTON_LEFT
+			release.pressed = false
+			release.position = mouse_pos
+			Input.parse_input_event(release)
+		var Deadzone = 0.1
+		var cursor_speed = 800.0
+		if abs(joy_x) < Deadzone:
+			joy_x = 0
+		if abs(joy_y) < Deadzone:
+			joy_y = 0
+
+		if joy_x == 0 and joy_y == 0:
+			return
+
+		mouse_pos = get_viewport().get_mouse_position()
+		var new_pos = mouse_pos + Vector2(joy_x, joy_y) * cursor_speed * delta
+
+	# Clamp to screen
+		var viewport_size = get_viewport().get_visible_rect().size
+		new_pos.x = clamp(new_pos.x, 0, viewport_size.x)
+		new_pos.y = clamp(new_pos.y, 0, viewport_size.y)
+
+		Input.warp_mouse(new_pos)
 
 
 func _physics_process(delta: float) -> void:
@@ -44,6 +100,9 @@ func _physics_process(delta: float) -> void:
 		#if not player.is_on_floor():
 				#player.velocity.y -= player.gravity*delta
 			direction = Vector3(0,0,0)
+			if Input.is_action_pressed("up2"):
+				player.get_node("Mouse_canvas").show()
+				player.get_node("Controler_canvas").hide()
 			if Input.is_action_pressed("down"):
 				direction.z = 1
 			if Input.is_action_pressed("up"):

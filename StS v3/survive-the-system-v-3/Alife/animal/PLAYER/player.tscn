@@ -8,6 +8,14 @@
 [ext_resource type="PackedScene" uid="uid://bbpte0ycxxfvu" path="res://assets/asset dabols/spear.fbx" id="4_5e6c6"]
 [ext_resource type="PackedScene" uid="uid://jg85y2m87sv5" path="res://objects/cat_ration/gold_hoover.tscn" id="4_kcrxs"]
 [ext_resource type="Script" uid="uid://cwrvvywn7edre" path="res://Alife/animal/PLAYER/debug_control.gd" id="5_2y45n"]
+[ext_resource type="Texture2D" uid="uid://dpicrd87nu28n" path="res://assets/assets kyun/D_pad_up.png" id="9_sk3sm"]
+[ext_resource type="Texture2D" uid="uid://fltfk7jqhlxa" path="res://assets/assets kyun/D_pad_right.png" id="10_8poul"]
+[ext_resource type="Texture2D" uid="uid://d2qht53oio3kc" path="res://assets/assets kyun/D_pad_down.png" id="11_ukn7e"]
+[ext_resource type="Texture2D" uid="uid://cni10gy8ykvc3" path="res://assets/assets kyun/D_pad_left.png" id="12_psrcw"]
+[ext_resource type="Texture2D" uid="uid://b0hlkcmy8ilw7" path="res://assets/assets kyun/One.png" id="13_dpvp7"]
+[ext_resource type="Texture2D" uid="uid://cv6f382g5p4ll" path="res://assets/assets kyun/Two.png" id="14_gm5ve"]
+[ext_resource type="Texture2D" uid="uid://cvg3shiu2vcb5" path="res://assets/assets kyun/Three.png" id="15_lmbmf"]
+[ext_resource type="Texture2D" uid="uid://cuki8beg6hao6" path="res://assets/assets kyun/Four.png" id="16_44ocd"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6t5sv"]
 albedo_color = Color(0.093700476, 0.10681253, 0.21656331, 1)
@@ -2449,6 +2457,108 @@ libraries/ = SubResource("AnimationLibrary_dpvp7")
 
 [node name="PlayerAnimaterLeg" type="AnimationPlayer" parent="." unique_id=1528212547]
 libraries/ = SubResource("AnimationLibrary_dpvp7")
+
+[node name="Controler_canvas" type="CanvasLayer" parent="." unique_id=474737651]
+visible = false
+
+[node name="TextureRect2" type="TextureRect" parent="Controler_canvas" unique_id=2540461]
+modulate = Color(1, 1, 1, 0.651)
+self_modulate = Color(1, 1, 1, 0.675)
+y_sort_enabled = true
+texture_filter = 1
+offset_left = 634.0
+offset_top = 589.0
+offset_right = 698.0
+offset_bottom = 653.0
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("9_sk3sm")
+
+[node name="TextureRect4" type="TextureRect" parent="Controler_canvas" unique_id=759380435]
+modulate = Color(1, 1, 1, 0.651)
+self_modulate = Color(1, 1, 1, 0.675)
+y_sort_enabled = true
+texture_filter = 1
+offset_left = 784.0
+offset_top = 589.0
+offset_right = 848.0
+offset_bottom = 653.0
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("10_8poul")
+
+[node name="TextureRect" type="TextureRect" parent="Controler_canvas" unique_id=1366099861]
+modulate = Color(1, 1, 1, 0.651)
+self_modulate = Color(1, 1, 1, 0.675)
+y_sort_enabled = true
+texture_filter = 1
+offset_left = 935.0
+offset_top = 589.0
+offset_right = 999.0
+offset_bottom = 653.0
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("11_ukn7e")
+
+[node name="TextureRect3" type="TextureRect" parent="Controler_canvas" unique_id=209077492]
+modulate = Color(1, 1, 1, 0.651)
+self_modulate = Color(1, 1, 1, 0.675)
+y_sort_enabled = true
+texture_filter = 1
+offset_left = 1085.0
+offset_top = 589.0
+offset_right = 1149.0
+offset_bottom = 653.0
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("12_psrcw")
+
+[node name="Mouse_canvas" type="CanvasLayer" parent="." unique_id=545158186]
+visible = false
+
+[node name="TextureRect2" type="TextureRect" parent="Mouse_canvas" unique_id=1819718050]
+modulate = Color(1, 1, 1, 0.651)
+self_modulate = Color(1, 1, 1, 0.675)
+y_sort_enabled = true
+texture_filter = 1
+offset_left = 634.0
+offset_top = 589.0
+offset_right = 698.0
+offset_bottom = 653.0
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("13_dpvp7")
+
+[node name="TextureRect4" type="TextureRect" parent="Mouse_canvas" unique_id=1411846598]
+modulate = Color(1, 1, 1, 0.651)
+self_modulate = Color(1, 1, 1, 0.675)
+y_sort_enabled = true
+texture_filter = 1
+offset_left = 784.0
+offset_top = 589.0
+offset_right = 848.0
+offset_bottom = 653.0
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("14_gm5ve")
+
+[node name="TextureRect" type="TextureRect" parent="Mouse_canvas" unique_id=229056406]
+modulate = Color(1, 1, 1, 0.651)
+self_modulate = Color(1, 1, 1, 0.675)
+y_sort_enabled = true
+texture_filter = 1
+offset_left = 935.0
+offset_top = 589.0
+offset_right = 999.0
+offset_bottom = 653.0
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("15_lmbmf")
+
+[node name="TextureRect3" type="TextureRect" parent="Mouse_canvas" unique_id=1499688356]
+modulate = Color(1, 1, 1, 0.651)
+self_modulate = Color(1, 1, 1, 0.675)
+y_sort_enabled = true
+texture_filter = 1
+offset_left = 1085.0
+offset_top = 589.0
+offset_right = 1149.0
+offset_bottom = 653.0
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("16_44ocd")
 
 [connection signal="area_entered" from="MeshInstance3D/Pick_up_Area3D" to="." method="_on_pick_up_area_3d_area_entered"]
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="MultiplayerSynchronizer" method="_on_synchronized"]

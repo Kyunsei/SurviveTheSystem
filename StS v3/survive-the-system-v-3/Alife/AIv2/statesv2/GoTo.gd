@@ -71,8 +71,8 @@ func update(_manager,_i, _DNA, _delta):
 	else:
 		_manager.position_array[_i] += step	
 		
-	_manager.position_array[_i].x = clamp(_manager.position_array[_i].x , -_manager.World.World_Size.x/2, _manager.World.World_Size.x/2)
-	_manager.position_array[_i].z = clamp(_manager.position_array[_i].z , -_manager.World.World_Size.z/2 , _manager.World.World_Size.z/2)
+	_manager.position_array[_i].x = clamp(_manager.position_array[_i].x , -_manager.World.World_Size.x/2+5, _manager.World.World_Size.x/2-5)
+	_manager.position_array[_i].z = clamp(_manager.position_array[_i].z , -_manager.World.World_Size.z/2+5 , _manager.World.World_Size.z/2-5)
 
 	_manager._pending_update.append(_i)
 
