@@ -210,7 +210,7 @@ func eat_holding_item() :
 				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.SPIKYFLOWER:
 					player.poisoned_by_flower += 5
 					print("SPIKY FLOWER EATEN")
-				player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
+				player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value/10,0,player.max_energy)
 
 			
 	else:
