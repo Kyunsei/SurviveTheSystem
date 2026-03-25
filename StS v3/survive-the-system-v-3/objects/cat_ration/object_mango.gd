@@ -18,8 +18,14 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 				pass
 
 
-static func on_use(player): 
-	pass
+static func on_use(_player): 
+		_player.get_node("Player_HUD").get_node("Inventory").remove_selected(int(_player.name))
+		var value = 50
+		#_player.lifedata["Max_energy"] += value
+		#_player.lifedata["current_energy"] += value
+		_player.manager.current_energy_array[_player.alifemanager_id] +=value
+		_player.max_energy += value
+		_player.show_label_above_player.rpc_id(int(_player.name),value, Color(0.0, 1.0, 0.0, 1.0), 3.0,"", " maximum energy")
 
 static func on_use_secondary(player, state):
 	pass
