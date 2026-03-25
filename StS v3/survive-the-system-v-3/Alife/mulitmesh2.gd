@@ -7,6 +7,8 @@ var id_to_slot := {}
 var slot_to_id := {}
 var player
 @export var test = false
+@export var animated = false
+
 
 func _process(_delta: float):	
 	if test:
@@ -28,7 +30,7 @@ func _ready() -> void:
 		shadow = $shadow
 		shadow.multimesh.instance_count = 1000000
 
-func draw_all_grass(id, pos, state, alive, active,size):
+func draw_all_grass(id, pos, state, alive, active,size,finite_state):
 	var slot= instance_number
 	id_to_slot[id] = instance_number
 	slot_to_id[instance_number] = id	
@@ -47,7 +49,11 @@ func draw_all_grass(id, pos, state, alive, active,size):
 	
 	if test:
 		var r = state
-		var g = 1-alive
+		var g = 0
+		if alive:
+			g = finite_state
+		else:
+			g = 5
 		var b = 0
 		var a = 0
 		multimesh.set_instance_custom_data(slot, Color(r, g, b, a))
@@ -56,7 +62,7 @@ func draw_all_grass(id, pos, state, alive, active,size):
 		shadow.multimesh.visible_instance_count = instance_number
 		shadow.multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 
-func update_drawn_grass(id_array, pos_array, state_array, alive_array, active_array,size_array):
+func update_drawn_grass(id_array, pos_array, life_state_array, alive_array, active_array,size_array, finite_state ):
 	
 	if !id_to_slot.has(id_array):
 		#print("strange: grass need update but not instantiated (yet?)")
@@ -78,9 +84,13 @@ func update_drawn_grass(id_array, pos_array, state_array, alive_array, active_ar
 	else:
 		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 	if test:
-		var r = state_array
-		var g = 1-alive_array
-		var b = 0
+		var r = life_state_array
+		var g = 0
+		if alive_array:
+			g = finite_state
+		else:
+			g = 5
+		var b = finite_state
 		var a = 0
 		multimesh.set_instance_custom_data(slot, Color(r, g, b, a))
 	if shadow:

@@ -10,7 +10,6 @@ class_name PREP_DASH_STATE
 
 func evaluate(_manager,_i, _DNA):
 	var score = 0
-		
 	var t = _manager.current_life_state_array[_i] 
 	score += 1 -  _manager.current_energy_array[_i] / _DNA.Max_energy[t]
 	var bin = _manager.binID_array[_i]
@@ -29,6 +28,7 @@ func evaluate(_manager,_i, _DNA):
 	return score 
 
 func enter(_manager,_i, _DNA):
+	_manager._pending_update.append(_i)
 	_manager.timer_array[_i] = timer_prep
 	pass
 

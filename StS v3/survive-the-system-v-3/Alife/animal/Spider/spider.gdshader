@@ -21,10 +21,6 @@ varying flat vec3 col;
 ///
 uniform vec3 player_position;
 
-uniform float wind_strength = 0.02;
-uniform float wind_speed = 1.;
-uniform float height_influence = 1.0; // how much top moves more than bottom
-
 
 
 void vertex() {
@@ -77,35 +73,23 @@ void vertex() {
 
     MODELVIEW_MATRIX = VIEW_MATRIX * model_yaw;
     MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
-	
-	
-	///wind EFFECT
-	
-	float t = TIME * wind_speed;
-
-    // Use vertex height (Y) so bottom stays still, top moves
-    float factor = pow(VERTEX.y * height_influence, 2.0);
-
-   //float sway = sin(t + VERTEX.x * 2.0) * wind_strength;
-	float sway = sin(t + VERTEX.x * 2.0 + float(INSTANCE_ID)) * wind_strength;
-    VERTEX.x += sway * factor;
 }
 
 
 
-
 void fragment() {
-	// Called for every pixel the material is visible on.
-	//ANIMATION LEFTOVER CAN BE USED ONE DAY?
-    // Control speed of switching
-    //float speed = 5.0; // 1 change per second
-    // Step index increasing with time
-   // int idx = int(floor(TIME * speed + float(id))) % 3;
-	//current_tile.x += float(idx);
-	
 	vec2 current_tile = vec2(0,0);
 	current_tile.x = data.r;
 	current_tile.y = data.g;
+	// Called for every pixel the material is visible on.
+	//ANIMATION LEFTOVER CAN BE USED ONE DAY?
+    // Control speed of switching
+    float speed = 5.0; // 1 change per second
+    // Step index increasing with time
+    int idx = int(floor(TIME * speed + float(id))) % 3;
+	current_tile.x += float(idx);
+	
+
 
 	vec2 uv = UV;
 	vec2 tile_size = 1.0 / vec2(tile_count);

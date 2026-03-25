@@ -4,7 +4,7 @@ class_name DASH_STATE
 @export var dash_speed = 10000
 #var dash_speed = 10
 
-@export var Previous_State_ID : int = 3
+@export var Previous_State_ID : int = 1
 @export var bin_vision_range : int = 4
 
 func evaluate(_manager,_i, _DNA):
@@ -14,6 +14,7 @@ func evaluate(_manager,_i, _DNA):
 	return score
 
 func enter(_manager,_i, _DNA):
+	_manager._pending_update.append(_i)
 	_manager.timer_array[_i] =0.3
 	var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,bin_vision_range)
 	for s in _DNA.food_species_id : #HERE TAKE THE LAST OF LIST , CAN TRIGGER PRIORITY HERE

@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://rxenc0br8qof" path="res://Alife/grass_manager2.gd" id="1_0gklr"]
 [ext_resource type="QuadMesh" uid="uid://cbrth6g86efar" path="res://Alife/Plant/spikyflower/SPIKY_MESH.tres" id="4_2rnjc"]
 [ext_resource type="QuadMesh" uid="uid://ossnpdi2f01p" path="res://Alife/Plant/Grass/grass_mesh.tres" id="4_lxqh2"]
-[ext_resource type="Texture2D" uid="uid://b2cyk6idgpbe3" path="res://Alife/animal/Spider/Spidercrab.png" id="5_2xdm7"]
 [ext_resource type="Script" uid="uid://dqvbcbtdwfsju" path="res://Alife/mulitmesh2.gd" id="5_hbvxf"]
 [ext_resource type="QuadMesh" uid="uid://dcrx4rno0mb02" path="res://Alife/Plant/Bush/bush_mesh.tres" id="5_qpu6g"]
 [ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="6_hbvxf"]
@@ -12,6 +11,8 @@
 [ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/animal/Herbivor/SHEEP.png" id="8_dysbp"]
 [ext_resource type="QuadMesh" uid="uid://bm1k4t0khab06" path="res://Alife/Plant/Moss/moss.tres" id="8_ixbrm"]
 [ext_resource type="QuadMesh" uid="uid://bjvwq20d0k7hn" path="res://Alife/animal/Herbivor/Snailbat/SNAILBAT_MESH.tres" id="8_qhbnm"]
+[ext_resource type="Shader" uid="uid://cdgnd8sa73xqb" path="res://Alife/animal/Spider/spider.gdshader" id="9_qpu6g"]
+[ext_resource type="Texture2D" uid="uid://d2lswof5p6ych" path="res://Alife/animal/Spider/Spidercrab_sheet.png" id="10_qhbnm"]
 
 [sub_resource type="MultiMesh" id="MultiMesh_nt0jf"]
 transform_format = 1
@@ -62,26 +63,26 @@ transform_format = 1
 use_colors = true
 mesh = ExtResource("8_qhbnm")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dysbp"]
-transparency = 2
-alpha_scissor_threshold = 0.5
-alpha_antialiasing_mode = 0
-vertex_color_use_as_albedo = true
-albedo_texture = ExtResource("5_2xdm7")
-backlight_enabled = true
-backlight = Color(1, 1, 1, 1)
-texture_filter = 0
-billboard_mode = 2
-billboard_keep_scale = true
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g02bw"]
+render_priority = 0
+shader = ExtResource("9_qpu6g")
+shader_parameter/albedo = Color(0, 0, 0, 1)
+shader_parameter/albedo_texture = ExtResource("10_qhbnm")
+shader_parameter/alpha_scissor_threshold = 0.5
+shader_parameter/tile_count = Vector2i(3, 5)
+shader_parameter/tile_index = Vector2i(0, 0)
+shader_parameter/nframe = 3
+shader_parameter/player_position = Vector3(0, 0, 0)
 
 [sub_resource type="QuadMesh" id="QuadMesh_axxor"]
-material = SubResource("StandardMaterial3D_dysbp")
-size = Vector2(12, 12)
-center_offset = Vector3(0, 6, 0)
+material = SubResource("ShaderMaterial_g02bw")
+size = Vector2(15, 10)
+center_offset = Vector3(0, 5, 0)
 
 [sub_resource type="MultiMesh" id="MultiMesh_5nq35"]
 transform_format = 1
 use_colors = true
+use_custom_data = true
 mesh = SubResource("QuadMesh_axxor")
 
 [sub_resource type="MultiMesh" id="MultiMesh_dysbp"]
@@ -163,6 +164,8 @@ script = ExtResource("5_hbvxf")
 [node name="spidercrab" type="MultiMeshInstance3D" parent="." unique_id=1838867359]
 multimesh = SubResource("MultiMesh_5nq35")
 script = ExtResource("5_hbvxf")
+test = true
+animated = true
 
 [node name="moss" type="MultiMeshInstance3D" parent="." unique_id=1789365190]
 multimesh = SubResource("MultiMesh_dysbp")

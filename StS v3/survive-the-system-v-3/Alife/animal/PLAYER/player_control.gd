@@ -285,7 +285,8 @@ func action_on_server():
 				if alife_manager.get_node("Grass_Manager2").Species_array[t]==5:
 					return
 				if add_to_inventory(t):
-					alife_manager.remove(t)	
+					if alife_manager.get_node("Grass_Manager2").SPECIES[alife_manager.get_node("Grass_Manager2").Species_array[t]].isPickablebutstaying(alife_manager.get_node("Grass_Manager2"),t):
+						alife_manager.remove(t)	
 					
 						
 						

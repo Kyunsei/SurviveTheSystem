@@ -711,6 +711,7 @@ func Spawn_and_Kill():
 
 		var actives := PackedInt32Array()
 		var update_species := PackedInt32Array()  # NEW
+		var f_state : PackedInt32Array
 		
 		for id in updated_ids:
 			pos_array.append(position_array[id])
@@ -719,8 +720,9 @@ func Spawn_and_Kill():
 			actives.append(Active[id])
 			update_species.append(Species_array[id])  
 			size_arrayy.append(current_size_array[id])
+			f_state.append(current_finite_state_array[id])
 
-		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives,update_species,size_arrayy)
+		update_drawn_grass.rpc(updated_ids, pos_array, state_array, alive_array,actives,update_species,size_arrayy,f_state)
 
 	_pending_spawns_positions.clear()
 	_pending_spawns_species.clear()
@@ -1125,12 +1127,12 @@ func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):
 
 
 @rpc("authority", "call_remote", "reliable") 			
-func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array,size_arrayy):
+func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array,size_arrayy,fstate_array):
 	for c in range(id_array.size()):
 		var s = species_array[c]
 		var renderer = SPECIES_RENDERERS[s]
 		if renderer:
-			renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c],size_arrayy[c])
+			renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c],size_arrayy[c],fstate_array[c])
 
 @rpc("authority", "call_remote", "reliable") 
 func erase_grass(id_array,species_array):
@@ -1142,7 +1144,7 @@ func erase_grass(id_array,species_array):
 				
 
 @rpc("any_peer","call_remote")
-func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_array,species_array,size_array):
+func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_array,species_array,size_array,finite_state_array):
 
 	for r in SPECIES_RENDERERS.values():
 		if r:
@@ -1152,7 +1154,7 @@ func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_a
 		var s = species_array[c]
 		var renderer = SPECIES_RENDERERS[s]
 		if renderer:
-			renderer.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c],size_array[c])
+			renderer.draw_all_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active_array[c],size_array[c], finite_state_array[c])
 	
 	for r in SPECIES_RENDERERS.values():
 		if r:
@@ -1181,6 +1183,7 @@ func send_full_state_to_peer(peer_id):
 	var active := PackedInt32Array()
 	var species := PackedInt32Array()
 	var size_array := PackedVector3Array()
+	var fstate_array:= PackedInt32Array()
 
 	for i in range(entity_count):
 		#if Active[i] == 1:
@@ -1191,5 +1194,6 @@ func send_full_state_to_peer(peer_id):
 			active.append(Active[i])
 			species.append(Species_array[i])
 			size_array.append(current_size_array[i])
+			fstate_array.append(current_finite_state_array[i])
 
-	send_and_draw_array.rpc_id(peer_id, ids, positions, states, alive,active,species,size_array)			
+	send_and_draw_array.rpc_id(peer_id, ids, positions, states, alive,active,species,size_array,fstate_array)			

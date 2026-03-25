@@ -76,5 +76,9 @@ func Update(_manager, _i, _delta):
 func isPickable(_manager, _i):
 	return true
 
+func isPickablebutstaying(_manager, _i):
+	#TRUE MEAN NOT SATYING < CLASSIC WAY
+	return true
+
 func Damage(_action,manager,i,_ii,value):
 		manager.current_health_array[i] -= value

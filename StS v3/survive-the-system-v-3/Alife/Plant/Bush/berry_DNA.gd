@@ -34,10 +34,22 @@ func Init():
 	Stack_amount = 50
 
 
+func isPickable(manager, i):
+	if manager.current_life_state_array[i] == 4:
+		manager.current_life_state_array[i] -= 1
+		manager.current_energy_array[i] -=  1000
+		manager._pending_update.append(i)
+		return true 
+	
+	else:
+		return 1-manager.Alive_array[i]
 
+func isPickablebutstaying(_manager, _i):
+	#TRUE MEAN NOT SATYING < CLASSIC WAY
+	return false
 
 func Growth(manager, i, _delta):
-	if manager.current_life_state_array[i] < 5:
+	if manager.current_life_state_array[i] < 4:
 		if manager.current_energy_array[i] > 1000:
 			manager.current_life_state_array[i] += 1
 			manager.current_energy_array[i] -=  1000
