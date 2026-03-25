@@ -44,7 +44,6 @@ func update(_manager,_i, _DNA, _delta):
 		if close_target_id:
 			if (_manager.position_array[close_target_id] - _manager.position_array[_i]).length() < 2:
 				self.exit(_manager,_i, _DNA)
-				print("here")
 
 	
 	
@@ -54,7 +53,6 @@ func update(_manager,_i, _DNA, _delta):
 		
 	_manager.timer_array[_i] -=  _delta
 	if _manager.timer_array[_i] <= 0:
-		print("end of time")
 		self.exit(_manager,_i, _DNA)
 
 

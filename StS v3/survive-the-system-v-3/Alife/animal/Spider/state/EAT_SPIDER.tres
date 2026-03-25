@@ -4,5 +4,5 @@
 
 [resource]
 script = ExtResource("1_7egqm")
-distance_to_eat = 4.0
+distance_to_eat = 2.0
 metadata/_custom_type_script = "uid://bjxrr7mr4nwni"
