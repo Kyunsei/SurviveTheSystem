@@ -419,6 +419,7 @@ func Die(id):
 		lifedata["Alive"] = 0
 		death.rpc_id(id,id)'
 	#NEW
+	remove_durability(100)
 	if manager.Alive_array[alifemanager_id] == 1:
 		manager.Alive_array[alifemanager_id] = 0
 		death.rpc_id(id,id)
@@ -471,7 +472,7 @@ func respawn():
 	base_jump = 25
 	$CollisionShape3D.disabled = false
 	$MeshInstance3D.show()
-	await get_tree().create_timer(1).timeout
+	await get_tree().create_timer(5.0).timeout
 	if immune_to_death == true:
 		immune_to_death = false
 @rpc("any_peer","call_local")
@@ -483,7 +484,7 @@ func respawn_server():
 	manager.Alive_array[alifemanager_id] =1
 	#manager.binID_array[alifemanager_id] = -1
 	manager.current_energy_array[alifemanager_id] =100
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(5.0).timeout
 	if immune_to_death == true:
 		immune_to_death = false
 
@@ -563,44 +564,45 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 
 @rpc("any_peer","call_local")
 func spear_attack():
-	#if lifedata["current_energy"]> 0 : 
-		#lifedata["current_energy"] -= 1
-	if manager.current_energy_array[alifemanager_id] >0:
-		manager.current_energy_array[alifemanager_id] -= 1 
-	else:
-		manager.current_health_array[alifemanager_id] -= 1 
-	if spear_animation_in_course == false and speardefense == false:
-		time_before_attack = 0.4
-		spear_animation_in_course = true
-		spear_attack_animation.rpc_id(int(name))
-	var area = $MeshInstance3D/spear_Area3D
-	var collision = $MeshInstance3D/spear_Area3D/CollisionShape3D
-	var extents = collision.shape.size/2
-	var basiss = collision.global_transform.basis.orthonormalized()
-	var world_extents = Vector3(
-	abs(basiss.x.x) * extents.x + abs(basiss.y.x) * extents.y + abs(basiss.z.x) * extents.z,
-	abs(basiss.x.y) * extents.x + abs(basiss.y.y) * extents.y + abs(basiss.z.y) * extents.z,
-	abs(basiss.x.z) * extents.x + abs(basiss.y.z) * extents.y + abs(basiss.z.z) * extents.z
-)
-	var forward = -area.global_transform.basis.z
-	var pos_center = area.global_position + forward * extents.z
-	var targets = get_parent().get_alife_in_area(pos_center, world_extents)
-	if targets: 
-		remove_durability(3)
-		for t in targets:
-			if t is Dictionary:
-				#if t != lifedata and t["Species"] != Alifedata.enum_speciesID.CAT:
-				if t.alifemanager_id != alifemanager_id:
-					get_parent().Attack(t,25)
-			else :
-				if t == alifemanager_id:
-					pass
-				else:
-					get_parent().Attack(t,25)
-					print(manager.Species_array[t])
-	check_player_hit.rpc_id(1, 25, area)
-	await get_tree().create_timer(time_before_attack).timeout
-	spear_animation_in_course = false
+	if manager.Alive_array[alifemanager_id] == 1:
+		#if lifedata["current_energy"]> 0 : 
+			#lifedata["current_energy"] -= 1
+		if manager.current_energy_array[alifemanager_id] >0:
+			manager.current_energy_array[alifemanager_id] -= 1 
+		else:
+			manager.current_health_array[alifemanager_id] -= 1 
+		if spear_animation_in_course == false and speardefense == false:
+			time_before_attack = 0.4
+			spear_animation_in_course = true
+			spear_attack_animation.rpc_id(int(name))
+		var area = $MeshInstance3D/spear_Area3D
+		var collision = $MeshInstance3D/spear_Area3D/CollisionShape3D
+		var extents = collision.shape.size/2
+		var basiss = collision.global_transform.basis.orthonormalized()
+		var world_extents = Vector3(
+		abs(basiss.x.x) * extents.x + abs(basiss.y.x) * extents.y + abs(basiss.z.x) * extents.z,
+		abs(basiss.x.y) * extents.x + abs(basiss.y.y) * extents.y + abs(basiss.z.y) * extents.z,
+		abs(basiss.x.z) * extents.x + abs(basiss.y.z) * extents.y + abs(basiss.z.z) * extents.z
+	)
+		var forward = -area.global_transform.basis.z
+		var pos_center = area.global_position + forward * extents.z
+		var targets = get_parent().get_alife_in_area(pos_center, world_extents)
+		if targets: 
+			remove_durability(3)
+			for t in targets:
+				if t is Dictionary:
+					#if t != lifedata and t["Species"] != Alifedata.enum_speciesID.CAT:
+					if t.alifemanager_id != alifemanager_id:
+						get_parent().Attack(t,25)
+				else :
+					if t == alifemanager_id:
+						pass
+					else:
+						get_parent().Attack(t,25)
+						print(manager.Species_array[t])
+		check_player_hit.rpc_id(1, 25, area)
+		await get_tree().create_timer(time_before_attack).timeout
+		spear_animation_in_course = false
 
 @rpc("any_peer","call_remote")
 func spear_attack_animation():
@@ -760,9 +762,13 @@ func add_to_inventory(alife):
 			else:
 				return false
 				#queue_free()
+		#else:
+			#if inventoryy.add_item(inventoryy.prep_newgrass(alife),int(name)):
+				#return true
 		else:
-			if inventoryy.add_item(inventoryy.prep_newgrass(alife),int(name)):
-				return true
+			if manager.SPECIES[manager.Species_array[alife]].isPickable(manager,alife):
+				if inventoryy.add_item(inventoryy.prep_newgrass(alife),int(name)):
+					return true
 			else:
 				return false
 
