@@ -6,6 +6,7 @@ var MAX_CLIENTS = 5
 var alifemanager
 
 var peer: ENetMultiplayerPeer
+var is_screen_focus
 
 signal server_started
 
@@ -24,7 +25,9 @@ func _ready() -> void:
 	#call_deferred("_on_button_pressed")
 
 
+
 func _process(_delta: float) -> void:
+
 	if peer:
 		if multiplayer.is_server():
 			var beastfps = alifemanager.get_node("beast_manager").FPS

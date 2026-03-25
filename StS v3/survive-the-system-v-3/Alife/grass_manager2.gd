@@ -1008,6 +1008,7 @@ func put_in_light_bin(idx):
 				World.shadow_array[idx_bin] += SPECIES[Species_array[idx]].Shadow_generation
 
 
+
 func remove_from_world(i):
 	if Species_array[i] == 5:# or Species_array[i] == AlifeRegistry.SPECIES_ID.JELLYBEE  : #CAT
 		return

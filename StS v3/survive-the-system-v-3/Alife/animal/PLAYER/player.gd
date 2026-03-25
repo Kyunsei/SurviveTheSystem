@@ -802,10 +802,11 @@ func vacuum_loop():
 func remove_durability(amount):
 	#print(multiplayer.is_server())
 	if item_hold:
-		item_hold["Data"][0]["durability"] -= amount
-		get_node("Player_HUD").get_node("Inventory").update_durability(int(name))
-		if item_hold["Data"][0]["durability"] <= 0 :
-			get_node("Player_HUD").get_node("Inventory").remove_selected(int(name))
+		if item_hold["Data"][0].has("durability"):
+			item_hold["Data"][0]["durability"] -= amount
+			get_node("Player_HUD").get_node("Inventory").update_durability(int(name))
+			if item_hold["Data"][0]["durability"] <= 0 :
+				get_node("Player_HUD").get_node("Inventory").remove_selected(int(name))
 
 
 func add_to_inventory(alife):

@@ -11,7 +11,7 @@ func Init():
 	species_id = AlifeRegistry.SPECIES_ID.SHEEP
 
 	# --- Core metabolism ---
-	Max_energy =[1000,1000]
+	Max_energy =[1000,100000]
 	Max_health  =[40,40]
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.10]

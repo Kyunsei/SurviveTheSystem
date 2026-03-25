@@ -3,6 +3,7 @@ extends ColorRect
 func _ready() -> void:
 	var player = get_parent().get_parent()
 	if player.is_multiplayer_authority():
+		show()
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 
