@@ -273,7 +273,6 @@ func action_on_server():
 	
 	var targets = alife_manager.get_alife_in_area(player_action_area.get_node("CollisionShape3D").global_position,
 	 												player_action_area.get_node("CollisionShape3D").shape.size)
-
 	#print(targets)
 	if targets:
 		for t in targets:
@@ -300,8 +299,10 @@ func add_to_inventory(alife):
 				return false
 				#queue_free()
 		else:
-			if inventory.add_item(inventory.prep_newgrass(alife),int(player.name)):
-				return true
+			var manager =alife_manager.get_node("Grass_Manager2")
+			if manager.SPECIES[manager.Species_array[alife]].isPickable(manager,alife):
+				if inventory.add_item(inventory.prep_newgrass(alife),int(player.name)):
+					return true
 			else:
 				return false
 

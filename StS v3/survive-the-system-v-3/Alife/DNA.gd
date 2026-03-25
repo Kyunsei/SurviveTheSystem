@@ -73,6 +73,8 @@ func special_update(_manager, _i, _delta):
 func Update(_manager, _i, _delta):
 	pass
 
+func isPickable(_manager, _i):
+	return true
 
 func Damage(_action,manager,i,_ii,value):
 		manager.current_health_array[i] -= value

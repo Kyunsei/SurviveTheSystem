@@ -9,7 +9,7 @@ func Init():
 
 	# --- Core metabolism ---
 	Max_energy =[220000,220000]
-	Max_health  =[5,10,20,30,40]
+	Max_health  =[100]
 	Max_age  = [100]
 	Homeostasis_cost  =[0.3]
 	Decomposition_speed =[1.]
@@ -111,7 +111,8 @@ func Reproduction(manager,i,s,t,_delta):
 
 
 
-
+func isPickable(_manager, _i):
+	return 1-_manager.Alive_array[_i]
 
 func Germination(manager,i,s,t):
 	t = min(t,manager.species_photosynthesis_range[s].size()-1)
