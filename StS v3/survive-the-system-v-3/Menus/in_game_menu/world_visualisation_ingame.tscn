@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://u6it47kue8iq"]
+
+[ext_resource type="Script" uid="uid://dpr846qcuijy0" path="res://Menus/in_game_menu/world_visualisation_ingame.gd" id="1_lnoq0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0xxk1"]
+vertex_color_use_as_albedo = true
+
+[sub_resource type="QuadMesh" id="QuadMesh_m88ol"]
+material = SubResource("StandardMaterial3D_0xxk1")
+
+[sub_resource type="MultiMesh" id="MultiMesh_4a1by"]
+use_colors = true
+mesh = SubResource("QuadMesh_m88ol")
+
+[node name="WorldVisualisation" type="Control" unique_id=2031418219]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lnoq0")
+
+[node name="Panel" type="ColorRect" parent="." unique_id=1891624575]
+layout_mode = 0
+offset_right = 400.0
+offset_bottom = 400.0
+color = Color(0.103743516, 0.10374353, 0.103743516, 1)
+
+[node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="." unique_id=112460]
+multimesh = SubResource("MultiMesh_4a1by")

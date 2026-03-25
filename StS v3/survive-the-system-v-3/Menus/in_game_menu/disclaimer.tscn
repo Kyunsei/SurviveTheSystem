@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://u6b36vn01bvo"]
+
+[ext_resource type="Script" uid="uid://cahyd6w75jv5p" path="res://Menus/in_game_menu/disclaimer.gd" id="1_a6dpl"]
+
+[node name="Control" type="ColorRect" unique_id=1681767638]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 231.0
+offset_top = 101.0
+offset_right = -236.0
+offset_bottom = -178.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.23833507, 0.36402863, 0.21745473, 1)
+script = ExtResource("1_a6dpl")
+
+[node name="Label" type="Label" parent="." unique_id=591538461]
+layout_mode = 0
+offset_left = 263.0
+offset_top = 14.0
+offset_right = 427.0
+offset_bottom = 59.0
+theme_override_font_sizes/font_size = 32
+text = "DIsclaimer"
+
+[node name="Label2" type="Label" parent="." unique_id=186207012]
+layout_mode = 0
+offset_left = 93.0
+offset_top = 66.0
+offset_right = 584.0
+offset_bottom = 297.0
+text = "Welcome to Survive the System (StS), Prototype v 0.3
+
+This is a prototype, so expect some bugs.
+Game design and visual assets are still a work in progress.
+
+If you’re interested in the project, feel free to join the Discord =]
+
+Enjoy!
+
+ Izva & Scylla"
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="." unique_id=900419056]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.067
+offset_left = 316.0
+offset_top = 329.0
+offset_right = 316.105
+offset_bottom = 360.0
+text = "Start"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

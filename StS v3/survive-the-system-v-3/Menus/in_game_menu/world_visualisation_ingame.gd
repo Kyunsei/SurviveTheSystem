@@ -33,26 +33,21 @@ var isshadowshow : bool = false
 # ...
 
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	alifemanager = get_parent().get_parent().get_parent().get_node("Alife manager")
-	World = get_parent().get_parent().get_parent().get_node("World")
+	
+func init():
+	if multiplayer.is_server():
+		return
+	alifemanager = get_parent().get_parent().get_node("Alife manager")
+	print(alifemanager)
+	World = get_parent().get_parent().get_node("World")
 	panel_size = $Panel.size
 	mm = $MultiMeshInstance2D.multimesh# MultiMesh.new()
-	mm2 = $MultiMeshInstance_flow2D2.multimesh
 	#mm.transform_format = MultiMesh.TRANSFORM_2D
-	mm.instance_count = 1000000
-	mm2.instance_count = 1000000
+	#mm.instance_count = 1000000
+	#mm2.instance_count = 1000000
 
 	var quad = QuadMesh.new()
 	quad.size = Vector2(4, 4)
-	$Alife_select.get_popup().id_pressed.connect(_on_menu_button_pressed)
-	
-	init_alife_select_choice_button()
-	#var instance = MultiMeshInstance2D.new()
-	#instance.multimesh = mm
-	
-	update()
 
 
 func init_alife_select_choice_button():
@@ -86,43 +81,26 @@ func build_triangle_mesh():
 	
 	return mesh
 	
-
+var isInit = false
 
 func _process(delta: float) -> void:
-	update_time -= delta
-	if isOn:	
-		if update_time < 0:
+	if multiplayer.is_server():
+		return
+	if GlobalSimulationParameter.ClientStarted:
+		if isInit:	
 			update()
-			update_time = 1
+		else:
+			init()
+			isInit = true
+
 
 func update():
 
 	var i = 0
 	
-	if isbinshow:	
-		i = show_bin(i,World.bin_array, World.bin_size)	
-	elif islightshow:
-		i = show_bin(i,World.light_array, World.light_tile_size)
-	elif isshadowshow:
-		i = show_bin(i,World.shadow_array, World.light_tile_size)
-	elif isfieldshow:
-		i = show_field(i)
-	
-	if isalifeshow:
-		i = show_alife(i,alife_selected)
-	
-	show_flow()
+	i = show_alife(i,alife_selected)
 	mm.visible_instance_count = i
 	
-	'for g in alifemanager.get_node("beast_manager").beast_dict.values():
-		var t = Transform2D(0, position_conversion(g["position"]))
-
-		mm.set_instance_transform_2d(i, t)
-		mm.set_instance_color(i, color_list[g["Species"]]) 
-		i+= 1
-
-	mm.visible_instance_count = alifemanager.get_node("beast_manager").beast_dict.size() +  alifemanager.get_node("Grass_Manager").grass_dict.size() + alifemanager.get_node("Grass_Manager2").entity_count
-'
 func position_conversion(pos):
 	#var newpos
 	#var factor = Vector2(World.World_Size.x*World.bin_size.x,World.World_Size.z*World.bin_size.z) / panel_size
@@ -293,61 +271,3 @@ func show_alife(i, sp):
 
 	return i
 	
-'
-func add_energy_in_each_tile(value):
-	for i in World_size:
-		for j in World_size:
-			current_energy_array[i][j] += value
-			current_energy_array[i][j] = clamp(current_energy_array[i][j], 0, max_energy_by_tile)
-	queue_redraw()
-
-
-
-
-func _draw():
-	for i in World_size:
-		for j in World_size:
-			if show_energy_grid:
-				var tile_new_color = tile_color
-				if current_energy_array.size() > 0 :
-					tile_new_color.r = lerp(0.,1.,current_energy_array[i][j]/max_energy_by_tile)
-					tile_new_color.g = lerp(0.,1.,current_energy_array[i][j]/max_energy_by_tile)
-					tile_new_color.b = lerp(0.,1.,current_energy_array[i][j]/max_energy_by_tile)
-
-				draw_rect(Rect2(i*tile_size, j*tile_size, tile_size-1, tile_size-1), tile_new_color)
-			else:
-				draw_rect(Rect2(i*tile_size, j*tile_size, tile_size, tile_size), tile_color)
-'
-
-
-func _on_menu_button_pressed(id : int) -> void:
-	alife_selected = id
-
-
-func _on_line_edit_text_submitted(new_text: String) -> void:
-	update_time = float(new_text)
-
-
-func _on_button_toggled(toggled_on: bool) -> void:
-			isOn = 	toggled_on
-
-
-func _on_button_alife_toggled(toggled_on: bool) -> void:
-	isalifeshow = toggled_on
-
-
-func _on_button_field_toggled(toggled_on: bool) -> void:
-	isfieldshow = toggled_on
-
-
-func _on_button_flow_toggled(toggled_on: bool) -> void:
-	isflowshow= toggled_on
-
-
-func _on_button_bin_toggled(toggled_on: bool) -> void:
-	isbinshow= toggled_on
-
-
-func _on_button_light_toggled(toggled_on: bool) -> void:
-	#islightshow = toggled_on
-	isshadowshow = toggled_on

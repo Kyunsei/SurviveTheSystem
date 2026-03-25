@@ -39,7 +39,7 @@ func _ready() -> void:
 	player = get_parent().get_parent()
 	if player.is_multiplayer_authority():
 
-		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		#Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		mouse_captured = true
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
