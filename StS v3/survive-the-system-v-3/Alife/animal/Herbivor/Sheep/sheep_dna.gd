@@ -12,7 +12,7 @@ func Init():
 
 	# --- Core metabolism ---
 	Max_energy =[1000,1000]
-	Max_health  =[4,4]
+	Max_health  =[40,40]
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.10]
 	Decomposition_speed =[1]
@@ -30,7 +30,7 @@ func Init():
 	Reproduction_cost  =[500,500]
 	Reproduction_spread  =[5,5]
 	Reproduction_number =[1,1]
-	Biomass =[1000,1000] #MAYBE NO LONGER IN USE
+	Biomass =[3000,3000] #MAYBE NO LONGER IN USE
 
 #--- BEHAVIOUR ----
 	food_species_id  = [AlifeRegistry.SPECIES_ID.GRASS]
@@ -91,6 +91,9 @@ func choose_action(manager, i):
 		state_array[best_action].enter(manager, i,self)
 		manager.current_finite_state_array[i] = best_action
 
+
+func isPickable(_manager, _i):
+	return 1-_manager.Alive_array[_i]
 
 func Homeostasis(manager,i,delta):
 	var s = manager.Species_array[i]

@@ -419,6 +419,7 @@ func Die(id):
 		lifedata["Alive"] = 0
 		death.rpc_id(id,id)'
 	#NEW
+	remove_durability(100)
 	if manager.Alive_array[alifemanager_id] == 1:
 		manager.Alive_array[alifemanager_id] = 0
 		death.rpc_id(id,id)
@@ -761,9 +762,13 @@ func add_to_inventory(alife):
 			else:
 				return false
 				#queue_free()
+		#else:
+			#if inventoryy.add_item(inventoryy.prep_newgrass(alife),int(name)):
+				#return true
 		else:
-			if inventoryy.add_item(inventoryy.prep_newgrass(alife),int(name)):
-				return true
+			if manager.SPECIES[manager.Species_array[alife]].isPickable(manager,alife):
+				if inventoryy.add_item(inventoryy.prep_newgrass(alife),int(name)):
+					return true
 			else:
 				return false
 
