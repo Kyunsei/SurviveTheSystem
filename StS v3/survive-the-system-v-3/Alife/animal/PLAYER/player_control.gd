@@ -21,6 +21,17 @@ func _ready() -> void:
 		camera_anchor = player.get_node("camera_anchor")
 	
 
+var poison_tick := 0.0
+
+func _process(delta: float) -> void:
+	if player.poisoned_by_flower > 0.0:
+		player.poisoned_by_flower -= delta
+		poison_tick += delta
+		if poison_tick >= 1.0:
+			poison_tick = 0.0
+			player.manager.current_health_array[player.alifemanager_id] -= 5
+
+
 func _physics_process(delta: float) -> void:
 
 	if player.is_multiplayer_authority(): 
@@ -197,6 +208,7 @@ func eat_holding_item() :
 			var item_eaten = inventory.remove_selected(int(player.name))
 			if item_eaten:
 				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.SPIKYFLOWER:
+					player.poisoned_by_flower += 5
 					print("SPIKY FLOWER EATEN")
 				player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
 

@@ -23,6 +23,7 @@ var isdebuging = true
 var World : Node3D
 var grass_in_inventory = 0
 var finished_their_mission = false
+var poisoned_by_flower = 0.0
 
 
 @onready var health_bar = $MeshInstance3D/Status_bar/SubViewport/ProgressBarHealth
