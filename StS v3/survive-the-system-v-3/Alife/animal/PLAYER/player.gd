@@ -802,7 +802,7 @@ func vacuum_loop():
 func remove_durability(amount):
 	#print(multiplayer.is_server())
 	if item_hold:
-		if item_hold["Data"][0].has("durability"):
+		if item_hold["Data"][0] is Dictionary:
 			item_hold["Data"][0]["durability"] -= amount
 			get_node("Player_HUD").get_node("Inventory").update_durability(int(name))
 			if item_hold["Data"][0]["durability"] <= 0 :

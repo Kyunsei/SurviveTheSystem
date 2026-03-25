@@ -8,7 +8,7 @@ func Init():
 	display_name = "BERRY"
 
 	# --- Core metabolism ---
-	Max_energy =[1100,31000]
+	Max_energy =[1100,1100]
 	Max_health  =[15,15]
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.9,0.9]

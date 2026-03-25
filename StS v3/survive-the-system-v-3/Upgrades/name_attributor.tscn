@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="1_q1ubp"]
 [ext_resource type="Script" uid="uid://cvfkg5mqllrfx" path="res://Upgrades/name_attributor_area.gd" id="2_6rxmx"]
+[ext_resource type="Script" uid="uid://dw3mwhmtw20sw" path="res://Upgrades/line_edit.gd" id="3_6v37k"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6rxmx"]
 albedo_texture = ExtResource("1_q1ubp")
@@ -45,6 +46,7 @@ offset_right = 165.75
 offset_bottom = 84.5
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("3_6v37k")
 
 [node name="Button" type="Button" parent="LineEdit" unique_id=1458145990]
 layout_mode = 0

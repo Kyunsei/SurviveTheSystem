@@ -12,9 +12,6 @@ func _process(_delta: float) -> void:
 		print("tesssst")
 		$"../LineEdit".hide()
 		$"../LineEdit".release_focus()
-func _gui_input(event):
-	if event.is_action_pressed("ui_cancel"):
-		hide()
 
 var p_id
 var playerz

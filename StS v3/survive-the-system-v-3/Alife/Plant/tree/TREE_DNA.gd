@@ -112,7 +112,8 @@ func Reproduction(manager,i,s,t,_delta):
 
 
 func isPickable(_manager, _i):
-	return 1-_manager.Alive_array[_i]
+	return true
+	#return 1-_manager.Alive_array[_i]
 
 func Germination(manager,i,s,t):
 	t = min(t,manager.species_photosynthesis_range[s].size()-1)
