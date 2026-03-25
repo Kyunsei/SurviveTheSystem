@@ -24,6 +24,12 @@ var World : Node3D
 var grass_in_inventory = 0
 var finished_their_mission = false
 var poisoned_by_flower = 0.0
+var has_wings = false
+var flapping = false
+var has_halo = false
+var halo_effect = false
+
+
 
 
 @onready var health_bar = $MeshInstance3D/Status_bar/SubViewport/ProgressBarHealth
@@ -278,37 +284,69 @@ func _ready() -> void:
 		health_bar.max_value = max_health
 		energy_bar.max_value = max_energy
 		#update_status_of_player(inventory_capacity_upgrade, catnation_credits)
-	
-			
+
+@rpc("any_peer","call_remote")
+func show_halo(state:bool):
+	if state == true: 
+		get_node("MeshInstance3D").get_node("Halo").show()
+	else:
+		get_node("MeshInstance3D").get_node("Halo").hide()
+@rpc("any_peer","call_remote")
+func change_halo_effect(state:bool):
+	if state == true: 
+		halo_effect = true
+	else:
+		halo_effect = false
+
+var halo_time 
 func _physics_process(_delta: float) -> void:
 	if is_multiplayer_authority() :
-		if input_blocked:
-			return  
-		velocity.x = direction.x *speed 
-		velocity.z = direction.z *speed 
-		#data_movement_to_server.rpc_id(1, global_position)
-		if Input.is_action_just_pressed("secondary_use"):
-			secondary_hold = true
-		if Input.is_action_just_released("secondary_use"):
-			secondary_hold = false
-		if speed >= 10:
-			$PlayerAnimaterLeg.speed_scale = 2
-		else:
-			$PlayerAnimaterLeg.speed_scale = 1
-		if velocity.x != 0 or velocity.z != 0:
-			if not $PlayerAnimaterLeg.is_playing() or $PlayerAnimaterLeg.current_animation != "leg_movement":
-				$PlayerAnimaterLeg.play("leg_movement")
-		else:
-			if $PlayerAnimaterLeg.current_animation == "leg_movement":
-				$PlayerAnimaterLeg.stop()
+		
+		if has_halo:
+			if halo_effect == false:
+				print(halo_time)
+				halo_time += _delta
+				if halo_time >= 30:
+					change_halo_effect(true)
+					show_halo(true)
+			else:
+				halo_time = 0.0
+		if input_blocked == false:
+			velocity.x = direction.x *speed 
+			velocity.z = direction.z *speed 
+			#data_movement_to_server.rpc_id(1, global_position)
+			if Input.is_action_just_pressed("jump"):
+				if is_on_floor() == false and has_wings:
+					if flapping == false:
+						flapping= true
+						$WingsAnimater.speed_scale = 2.0
+						$WingsAnimater.play("flapping_wings")
+						velocity.y += 40
+						await $WingsAnimater.animation_finished
+						await get_tree().create_timer(0.2).timeout
+						flapping= false
+			if Input.is_action_just_pressed("secondary_use"):
+				secondary_hold = true
+			if Input.is_action_just_released("secondary_use"):
+				secondary_hold = false
+			if speed >= 10:
+				$PlayerAnimaterLeg.speed_scale = 2
+			else:
+				$PlayerAnimaterLeg.speed_scale = 1
+			if velocity.x != 0 or velocity.z != 0:
+				if not $PlayerAnimaterLeg.is_playing() or $PlayerAnimaterLeg.current_animation != "leg_movement":
+					$PlayerAnimaterLeg.play("leg_movement")
+			else:
+				if $PlayerAnimaterLeg.current_animation == "leg_movement":
+					$PlayerAnimaterLeg.stop()
 
-		if direction != Vector3(0,0,0):
-			$MeshInstance3D.rotation.y = $camera_anchor.rotation.y 
-			#$Action_Area3D.rotation.y = $camera_anchor.rotation.y 
-			pass
-			#var target_yaw := atan2(direction.x, -direction.z)
-		move_and_slide()		
-		change_bin.rpc_id(1)
+			if direction != Vector3(0,0,0):
+				$MeshInstance3D.rotation.y = $camera_anchor.rotation.y 
+				#$Action_Area3D.rotation.y = $camera_anchor.rotation.y 
+				pass
+				#var target_yaw := atan2(direction.x, -direction.z)
+			move_and_slide()		
+			change_bin.rpc_id(1)
 		
 @rpc("any_peer","call_remote",)
 func data_movement_to_server(pos):
@@ -419,13 +457,22 @@ func Die(id):
 		lifedata["Alive"] = 0
 		death.rpc_id(id,id)'
 	#NEW
-	remove_durability(100)
-	if manager.Alive_array[alifemanager_id] == 1:
-		manager.Alive_array[alifemanager_id] = 0
-		death.rpc_id(id,id)
-	elif manager.current_health_array[alifemanager_id] <= 0:
-		manager.Alive_array[alifemanager_id] = 0
-		death.rpc_id(id,id)	
+	if immune_to_death == false:
+		if halo_effect == true and has_halo:
+			immune_to_death = true
+			show_halo.rpc_id(int(name),false)
+			manager.current_health_array[alifemanager_id] += 200
+			change_halo_effect.rpc_id(int(name),false)
+			await get_tree().create_timer(5.0).timeout
+			immune_to_death = false
+		else:
+			remove_durability(100)
+			if manager.Alive_array[alifemanager_id] == 1:
+				manager.Alive_array[alifemanager_id] = 0
+				death.rpc_id(id,id)
+			elif manager.current_health_array[alifemanager_id] <= 0:
+				manager.Alive_array[alifemanager_id] = 0
+				death.rpc_id(id,id)	
 
 
 
@@ -561,7 +608,15 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 	
 	
 #OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!
-
+@rpc("any_peer","call_remote")
+func first_ascension():
+		has_wings = true
+		get_node("MeshInstance3D").get_node("Wings").show()
+@rpc("any_peer","call_remote")
+func second_ascension():
+		has_halo = true
+		halo_effect = true
+		get_node("MeshInstance3D").get_node("Halo").show()
 @rpc("any_peer","call_local")
 func spear_attack():
 	if manager.Alive_array[alifemanager_id] == 1:

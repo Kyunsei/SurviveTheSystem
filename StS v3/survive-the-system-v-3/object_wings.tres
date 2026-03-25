@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://dtqwlkhn0easp"]
+
+[ext_resource type="Texture2D" uid="uid://bq23p7kjo05a5" path="res://assets/assets kyun/wings.png" id="1_i7v7s"]
+[ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="2_pph74"]
+
+[resource]
+script = ExtResource("2_pph74")
+name = "Angel_wings"
+type = "Food"
+inventory_icon = ExtResource("1_i7v7s")
+stack_amount = 1
+item_path = "res://objects/cat_ration/object_wings.tscn"
+Init_durability = 100000.0
+Max_quantity_in_shop = 1
+Price = 300.0
+metadata/_custom_type_script = "uid://udee2xxejlu"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="ItemResource" format=3 uid="uid://d3esplj6r3pn8"]
+
+[ext_resource type="Texture2D" uid="uid://dl1u6huhvam2s" path="res://assets/assets kyun/halo.png" id="1_cgers"]
+[ext_resource type="Script" uid="uid://udee2xxejlu" path="res://objects/item.gd" id="2_ubsil"]
+
+[resource]
+script = ExtResource("2_ubsil")
+name = "Halo"
+type = "Food"
+inventory_icon = ExtResource("1_cgers")
+stack_amount = 1
+item_path = "res://objects/cat_ration/object_halo.tscn"
+Init_durability = 100000.0
+Max_quantity_in_shop = 1
+Price = 300.0
+metadata/_custom_type_script = "uid://udee2xxejlu"

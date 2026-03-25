@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bbpte0ycxxfvu" path="res://assets/asset dabols/spear.fbx" id="4_5e6c6"]
 [ext_resource type="PackedScene" uid="uid://jg85y2m87sv5" path="res://objects/cat_ration/gold_hoover.tscn" id="4_kcrxs"]
 [ext_resource type="Script" uid="uid://cwrvvywn7edre" path="res://Alife/animal/PLAYER/debug_control.gd" id="5_2y45n"]
+[ext_resource type="Texture2D" uid="uid://buxl5ta2p3oy8" path="res://assets/assets kyun/feather_texture.png" id="6_gm5ve"]
 [ext_resource type="Texture2D" uid="uid://dpicrd87nu28n" path="res://assets/assets kyun/D_pad_up.png" id="9_sk3sm"]
 [ext_resource type="Texture2D" uid="uid://fltfk7jqhlxa" path="res://assets/assets kyun/D_pad_right.png" id="10_8poul"]
 [ext_resource type="Texture2D" uid="uid://d2qht53oio3kc" path="res://assets/assets kyun/D_pad_down.png" id="11_ukn7e"]
@@ -104,6 +105,36 @@ top_radius = 0.05
 bottom_radius = 0.05
 height = 0.2
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lmbmf"]
+albedo_texture = ExtResource("6_gm5ve")
+uv1_scale = Vector3(3, 2, 3)
+uv1_triplanar = true
+uv2_triplanar = true
+texture_filter = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_dpvp7"]
+material = SubResource("StandardMaterial3D_lmbmf")
+size = Vector3(0.15, 0.7, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44ocd"]
+albedo_texture = ExtResource("6_gm5ve")
+uv1_scale = Vector3(3, 2, 3)
+uv1_triplanar = true
+texture_filter = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_gm5ve"]
+material = SubResource("StandardMaterial3D_44ocd")
+size = Vector3(0.15, 0.4, 0.02)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gm5ve"]
+emission_enabled = true
+emission = Color(0.9304411, 1, 0, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="TorusMesh" id="TorusMesh_gm5ve"]
+material = SubResource("StandardMaterial3D_gm5ve")
+inner_radius = 1.2
+
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qrp1o"]
 properties/0/path = NodePath(".:position")
 properties/0/spawn = true
@@ -147,6 +178,27 @@ properties/12/replication_mode = 1
 properties/13/path = NodePath("MeshInstance3D/LabelName:text")
 properties/13/spawn = true
 properties/13/replication_mode = 1
+properties/14/path = NodePath("WingsAnimater:current_animation")
+properties/14/spawn = true
+properties/14/replication_mode = 1
+properties/15/path = NodePath("MeshInstance3D/Wings:visible")
+properties/15/spawn = true
+properties/15/replication_mode = 1
+properties/16/path = NodePath(".:has_wings")
+properties/16/spawn = true
+properties/16/replication_mode = 1
+properties/17/path = NodePath("MeshInstance3D/Halo:visible")
+properties/17/spawn = true
+properties/17/replication_mode = 1
+properties/18/path = NodePath(".:has_halo")
+properties/18/spawn = true
+properties/18/replication_mode = 1
+properties/19/path = NodePath(".:halo_effect")
+properties/19/spawn = true
+properties/19/replication_mode = 1
+properties/20/path = NodePath(".:halo_time")
+properties/20/spawn = true
+properties/20/replication_mode = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5e6c6"]
 size = Vector3(0.5, 1, 0.5)
@@ -2219,6 +2271,240 @@ _data = {
 &"leg_movement": SubResource("Animation_psrcw")
 }
 
+[sub_resource type="Animation" id="Animation_3eyay"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D/Wings/right:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D/Wings/left:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MeshInstance3D/Wings/right:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("MeshInstance3D/Wings/left:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("MeshInstance3D/Wings/right:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("MeshInstance3D/Wings/left:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, -1)]
+}
+
+[sub_resource type="Animation" id="Animation_nbmpe"]
+resource_name = "flapping_wings"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D/Wings/right:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.4, 0.5, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1), Vector3(1, 1, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D/Wings/left:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.3, 0.4, 0.5, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(1, 1, -1), Vector3(1, 1, -1), Vector3(1, 1, -1), Vector3(1, 1, -1), Vector3(1, 1, -1), Vector3(1, 1, -1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MeshInstance3D/Wings/right:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, -0.2617994, 0.2617994), Vector3(0, -0.5235988, 0.5235988), Vector3(0, 0, -0.5235988), Vector3(0, 0, -0.78539824), Vector3(0, 0, -1.0471976), Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("MeshInstance3D/Wings/left:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0), Vector3(0, 3.403392, 0.2617994), Vector3(0, 3.6651914, 0.5235988), Vector3(0, 3.1415927, -0.5235988), Vector3(0, 3.1415927, -0.7853982), Vector3(0, 3.1415927, -1.0471976), Vector3(0, 3.1415927, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("MeshInstance3D/Wings/right:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.1, 0, 0), Vector3(0.25, 0.1, 0), Vector3(0.1, 0, 0), Vector3(-0.05, -0.05, 0.05), Vector3(-0.05, -0.05, 0.05), Vector3(0, 0, 0)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("MeshInstance3D/Wings/left:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(-0.1, 0, 0), Vector3(-0.25, 0.1, 0), Vector3(-0.1, 0, 0), Vector3(0.05, -0.05, 0.05), Vector3(0.05, -0.05, 0.05), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_1eapq"]
+resource_name = "wings_not_moving"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D/Wings/right:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeshInstance3D/Wings/left:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MeshInstance3D/Wings/right:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("MeshInstance3D/Wings/left:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 3.1415927, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("MeshInstance3D/Wings/right:scale")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, 1)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("MeshInstance3D/Wings/left:scale")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, -1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_gv451"]
+_data = {
+&"RESET": SubResource("Animation_3eyay"),
+&"flapping_wings": SubResource("Animation_nbmpe"),
+&"wings_not_moving": SubResource("Animation_1eapq")
+}
+
 [node name="Player" type="CharacterBody3D" unique_id=1092654110 groups=["player"]]
 physics_interpolation_mode = 1
 script = ExtResource("1_qrp1o")
@@ -2414,6 +2700,74 @@ visible = false
 billboard = 2
 text = "P"
 
+[node name="Wings" type="Node3D" parent="MeshInstance3D" unique_id=1518143530]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)
+visible = false
+
+[node name="right" type="Node3D" parent="MeshInstance3D/Wings" unique_id=1537592878]
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D/Wings/right" unique_id=1394935445]
+transform = Transform3D(0.70710677, 0.7071068, 0, -0.6830127, 0.68301266, -0.25881904, -0.18301271, 0.1830127, 0.9659258, 0.26, 0.36000004, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="MeshInstance3D/Wings/right" unique_id=1905391906]
+transform = Transform3D(0.50623596, 0.8597894, -0.06698729, -0.84275234, 0.47672683, -0.25000003, -0.18301271, 0.1830127, 0.96592593, 0.26, 0.30000004, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="MeshInstance3D/Wings/right" unique_id=816668974]
+transform = Transform3D(0.2999574, 0.87982726, -0.36868626, -0.9528549, 0.25779498, -0.16002992, -0.045753207, 0.3993066, 0.91567534, 0.26, 0.24000004, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="MeshInstance3D/Wings/right" unique_id=1411777193]
+transform = Transform3D(0.04311961, 0.9165701, -0.3975424, -0.9980218, 0.021294782, -0.05915398, -0.0457532, 0.39930663, 0.91567534, 0.26, 0.20000005, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="MeshInstance3D/Wings/right" unique_id=535082540]
+transform = Transform3D(-0.2166567, 0.89085025, -0.39930663, -0.9751752, -0.21665663, 0.04575319, -0.0457532, 0.39930663, 0.91567534, 0.16999999, 0.16000006, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="MeshInstance3D/Wings/right" unique_id=1092627215]
+transform = Transform3D(-0.46166813, 0.8044203, -0.37385872, -0.885872, -0.43984318, 0.14754231, -0.04575319, 0.3993066, 0.91567534, 0.21, 0.07000006, 0.21000001)
+mesh = SubResource("BoxMesh_gm5ve")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="MeshInstance3D/Wings/right" unique_id=1948423601]
+transform = Transform3D(-0.46166813, 0.8044203, -0.37385872, -0.885872, -0.43984318, 0.14754231, -0.04575319, 0.3993066, 0.91567534, 0.21, 0.07000006, 0.21000001)
+mesh = SubResource("BoxMesh_gm5ve")
+
+[node name="left" type="Node3D" parent="MeshInstance3D/Wings" unique_id=823464584]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, 8.742278e-08, 0, 1, 0, 0, 0)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="MeshInstance3D/Wings/left" unique_id=1543680829]
+transform = Transform3D(0.70710677, 0.7071068, 0, -0.6830127, 0.68301266, -0.25881904, -0.18301271, 0.1830127, 0.9659258, 0.26, 0.36000004, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="MeshInstance3D/Wings/left" unique_id=1876456571]
+transform = Transform3D(0.50623596, 0.8597894, -0.06698729, -0.84275234, 0.47672683, -0.25000003, -0.18301271, 0.1830127, 0.96592593, 0.26, 0.30000004, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="MeshInstance3D/Wings/left" unique_id=1823179500]
+transform = Transform3D(0.2999574, 0.87982726, -0.36868626, -0.9528549, 0.25779498, -0.16002992, -0.045753207, 0.3993066, 0.91567534, 0.26, 0.24000004, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="MeshInstance3D/Wings/left" unique_id=1232092494]
+transform = Transform3D(0.04311961, 0.9165701, -0.3975424, -0.9980218, 0.021294782, -0.05915398, -0.0457532, 0.39930663, 0.91567534, 0.26, 0.20000005, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="MeshInstance3D/Wings/left" unique_id=3633604]
+transform = Transform3D(-0.2166567, 0.89085025, -0.39930663, -0.9751752, -0.21665663, 0.04575319, -0.0457532, 0.39930663, 0.91567534, 0.16999999, 0.16000006, 0.15)
+mesh = SubResource("BoxMesh_dpvp7")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="MeshInstance3D/Wings/left" unique_id=1846817679]
+transform = Transform3D(-0.46166813, 0.8044203, -0.37385872, -0.885872, -0.43984318, 0.14754231, -0.04575319, 0.3993066, 0.91567534, 0.21, 0.07000006, 0.21000001)
+mesh = SubResource("BoxMesh_gm5ve")
+
+[node name="Halo" type="Node3D" parent="MeshInstance3D" unique_id=288778673]
+visible = false
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D/Halo" unique_id=1804705320]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0.4, 0)
+mesh = SubResource("TorusMesh_gm5ve")
+
 [node name="Player_control" type="Node" parent="." unique_id=1336833191]
 script = ExtResource("1_31v8x")
 
@@ -2559,6 +2913,9 @@ offset_right = 1149.0
 offset_bottom = 653.0
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("16_44ocd")
+
+[node name="WingsAnimater" type="AnimationPlayer" parent="." unique_id=121087339]
+libraries/ = SubResource("AnimationLibrary_gv451")
 
 [connection signal="area_entered" from="MeshInstance3D/Pick_up_Area3D" to="." method="_on_pick_up_area_3d_area_entered"]
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="MultiplayerSynchronizer" method="_on_synchronized"]

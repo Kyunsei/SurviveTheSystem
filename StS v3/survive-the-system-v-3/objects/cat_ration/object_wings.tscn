@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://bw8edtmfgfbc7"]
+
+[ext_resource type="Texture2D" uid="uid://bq23p7kjo05a5" path="res://assets/assets kyun/wings.png" id="1_gtxkq"]
+[ext_resource type="Script" uid="uid://bl6mh7h5xg8fn" path="res://objects/cat_ration/object_wings.gd" id="2_vxs6w"]
+[ext_resource type="Resource" uid="uid://dtqwlkhn0easp" path="res://object_wings.tres" id="3_5df0e"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wqbnr"]
+transparency = 1
+shading_mode = 0
+albedo_texture = ExtResource("1_gtxkq")
+texture_filter = 2
+billboard_mode = 2
+
+[sub_resource type="QuadMesh" id="QuadMesh_5kluo"]
+material = SubResource("StandardMaterial3D_wqbnr")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_5kluo"]
+radius = 1.0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8f30t"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qkpm6"]
+size = Vector3(2, 2, 2)
+
+[node name="object_wings" type="MeshInstance3D" unique_id=1352666552]
+mesh = SubResource("QuadMesh_5kluo")
+script = ExtResource("2_vxs6w")
+item_ressources = ExtResource("3_5df0e")
+
+[node name="Timer" type="Timer" parent="." unique_id=1629208419]
+wait_time = 0.1
+one_shot = true
+autostart = true
+
+[node name="Area3D" type="Area3D" parent="." unique_id=1816790346]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1489730669]
+shape = SubResource("SphereShape3D_5kluo")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=979584649]
+replication_config = SubResource("SceneReplicationConfig_8f30t")
+
+[node name="attack_area" type="Area3D" parent="." unique_id=1827982514]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="attack_area" unique_id=438161156]
+shape = SubResource("BoxShape3D_qkpm6")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]

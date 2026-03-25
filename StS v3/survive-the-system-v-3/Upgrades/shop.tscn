@@ -11,7 +11,9 @@
 [ext_resource type="Resource" uid="uid://c1scwqh4dvuuw" path="res://objects/cat_ration/object_mango.tres" id="7_7x8xu"]
 [ext_resource type="Resource" uid="uid://b2plhjlatrwnl" path="res://objects/cat_ration/object_beltpouch.tres" id="8_uuvft"]
 [ext_resource type="Resource" uid="uid://cjkf0rm4ojw4m" path="res://objects/cat_ration/object_strawberry.tres" id="9_8dnfa"]
+[ext_resource type="Resource" uid="uid://dtqwlkhn0easp" path="res://object_wings.tres" id="11_uuvft"]
 [ext_resource type="Texture2D" uid="uid://dxqhew3ty2rmx" path="res://assets/assets kyun/quit1.png" id="12_7x8xu"]
+[ext_resource type="Resource" uid="uid://d3esplj6r3pn8" path="res://object_halo.tres" id="12_8dnfa"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_7x8xu"]
 font_size = 32
@@ -34,6 +36,8 @@ mango_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("7_7x8xu")])
 beltpouch_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("8_uuvft")])
 strawberry_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("9_8dnfa")])
 legendary_item_pool = Array[ExtResource("2_vet7c")]([ExtResource("7_4in6e")])
+legendary_item_pool2 = Array[ExtResource("2_vet7c")]([ExtResource("11_uuvft")])
+legendary_item_pool3 = Array[ExtResource("2_vet7c")]([ExtResource("12_8dnfa")])
 shop_item_scene = ExtResource("3_g1vqg")
 
 [node name="Panel" type="Panel" parent="." unique_id=708715316]

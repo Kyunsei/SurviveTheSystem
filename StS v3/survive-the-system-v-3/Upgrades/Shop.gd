@@ -5,6 +5,8 @@ extends Control
 @export var beltpouch_item_pool: Array[ItemResource] # Contains the 3 rare choices
 @export var strawberry_item_pool: Array[ItemResource] # Contains the 3 rare choices
 @export var legendary_item_pool: Array[ItemResource] # Contains the 5 super rare choices
+@export var legendary_item_pool2: Array[ItemResource] # Contains the 5 super rare choices
+@export var legendary_item_pool3: Array[ItemResource] # Contains the 5 super rare choices
 @export var shop_size: int = 5
 @export var shop_item_scene: PackedScene 
 var current_stock: Array = []
@@ -70,6 +72,20 @@ func generate_shop():
 	# 3. Super Rare Items: 1/3 chance to spawn 1 from the pool
 	if randi_range(1, 1) == 1 and not legendary_item_pool.is_empty():
 		var legendary_choice = legendary_item_pool.duplicate()
+		legendary_choice.shuffle()
+		current_stock.append({
+			"item": legendary_choice[0],
+			"quantity": 1
+		})
+	if randi_range(1, 1) == 1 and not legendary_item_pool2.is_empty():
+		var legendary_choice = legendary_item_pool2.duplicate()
+		legendary_choice.shuffle()
+		current_stock.append({
+			"item": legendary_choice[0],
+			"quantity": 1
+		})
+	if randi_range(1, 1) == 1 and not legendary_item_pool3.is_empty():
+		var legendary_choice = legendary_item_pool3.duplicate()
 		legendary_choice.shuffle()
 		current_stock.append({
 			"item": legendary_choice[0],
