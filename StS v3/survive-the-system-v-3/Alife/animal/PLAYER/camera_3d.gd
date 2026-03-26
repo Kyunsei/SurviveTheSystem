@@ -1,6 +1,7 @@
 extends Camera3D
 
 var player : Node3D
+var player_list
 var pitch : float = 0.0
 var mouse_captured = false
 @export var min_pitch :  float = deg_to_rad(-40)
@@ -16,6 +17,7 @@ var mouse_captured = false
 
 @export var pitch_anchor : Node3D
 @export var yaw_anchor : Node3D
+var is_blocked = false
 
 #@export var turn_speed = 8.0
 #@export var smooth := 10.0
@@ -41,19 +43,39 @@ func _ready() -> void:
 
 		#Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		mouse_captured = true
+	
+@rpc("any_peer","call_remote")
+func check_player_input_blocked(peer_id):
+		player_list = player.get_parent().player_array
+		#global_position.y = max(global_position.y, 2.0)
+		print(player_list)
+		for p in player_list:
+			if int(p.name) == peer_id:
+				#print("Happy")
+				#print(p.input_blocked)
+				#print("should be stopped")
+				is_blocked = p.input_blocked
+				send_camera_blocked_or_not.rpc_id(peer_id,p.input_blocked)
+
+@rpc("any_peer","call_remote")
+func send_camera_blocked_or_not(state:bool):
+	print(state)
+	is_blocked = state
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if player.is_multiplayer_authority():
-		#global_position.y = max(global_position.y, 2.0)
-		if Input.is_action_pressed("Camera_zoom_in"):
-			position.z = max(min_zoom, position.z - camera_zoom_speed * delta)
-		if Input.is_action_pressed("Camera_zoom_out"):
-			position.z = min(max_zoom, position.z + camera_zoom_speed * delta)
-		if Input.is_action_just_pressed("Mousewheel_in"):
-			position.z = max(min_zoom, position.z - camera_zoom_speed * delta)
-		if Input.is_action_just_pressed("Mousewheel_out"):
-			position.z = min(max_zoom, position.z + camera_zoom_speed * delta)
+		check_player_input_blocked.rpc_id(int(player.name),int(player.name))
+		if is_blocked ==false:
+			if Input.is_action_pressed("Camera_zoom_in"):
+				position.z = max(min_zoom, position.z - camera_zoom_speed * delta)
+			if Input.is_action_pressed("Camera_zoom_out"):
+				position.z = min(max_zoom, position.z + camera_zoom_speed * delta)
+			if Input.is_action_just_pressed("Mousewheel_in"):
+				position.z = max(min_zoom, position.z - camera_zoom_speed * delta)
+			if Input.is_action_just_pressed("Mousewheel_out"):
+				position.z = min(max_zoom, position.z + camera_zoom_speed * delta)
 		#if Input.is_action_pressed("offset_camera_down"):
 			#position.y -= camera_speed*delta
 		#if Input.is_action_pressed("offset_camera_up"):
@@ -69,7 +91,20 @@ func _process(delta: float) -> void:
 
 
 			
-func _unhandled_input(event):
+#func _unhandled_input(event):
+	#if player.is_multiplayer_authority():
+		#if mouse_captured:
+			#if event is InputEventMouseMotion:
+				#
+				## Yaw (left/right)
+				#yaw_anchor.rotate_y(-event.relative.x * mouse_sensitivity)
+				## Pitch (up/down)
+				#pitch -= event.relative.y * mouse_sensitivity
+				## Clamp pitch
+				#pitch = clamp(pitch, min_pitch, max_pitch)
+				#pitch_anchor.rotation.x = pitch
+			
+func _input(event):
 	if player.is_multiplayer_authority():
 		if mouse_captured:
 			if event is InputEventMouseMotion:
@@ -81,10 +116,6 @@ func _unhandled_input(event):
 				# Clamp pitch
 				pitch = clamp(pitch, min_pitch, max_pitch)
 				pitch_anchor.rotation.x = pitch
-			
-func _input(event):
-	if player.is_multiplayer_authority():
-
 		if event.is_action_pressed("ui_cancel"):
 			if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 				Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
