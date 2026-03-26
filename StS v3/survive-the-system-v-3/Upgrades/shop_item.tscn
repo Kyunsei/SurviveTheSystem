@@ -14,6 +14,7 @@ custom_minimum_size = Vector2(150, 150)
 offset_right = 150.0
 offset_bottom = 150.0
 size_flags_horizontal = 4
+focus_mode = 0
 theme = SubResource("Theme_2tmsq")
 script = ExtResource("1_wuyhm")
 
