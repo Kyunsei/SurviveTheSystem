@@ -29,7 +29,7 @@ func Init():
 	Reproduction_spread  =[5,5]
 	Reproduction_number =[1,1]
 	
-	Biomass =[30000,30000] #MAYBE NO LONGER IN USE #ICI
+	Biomass =[40000,40000] #MAYBE NO LONGER IN USE #ICI
 
 #--- BEHAVIOUR ----
 	food_species_id  = [AlifeRegistry.SPECIES_ID.SHEEP,AlifeRegistry.SPECIES_ID.CAT]
