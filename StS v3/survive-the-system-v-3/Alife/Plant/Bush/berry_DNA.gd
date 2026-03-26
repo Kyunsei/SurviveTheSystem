@@ -41,7 +41,7 @@ func isPickable(manager, i):
 		manager.current_life_state_array[i] -= 1
 		manager.current_energy_array[i] -=  1000
 		manager._pending_update.append(i)
-		var new_pos = manager.position_array[i] + Vector3(randf_range(-0.2,0.2),0,randf_range(-0.2,0.2))
+		var new_pos = manager.position_array[i] + Vector3(1,0,1)
 		manager._pending_spawns_positions.append(new_pos)
 		manager._pending_spawns_species.append(manager.Species_array[i])
 		return false 
