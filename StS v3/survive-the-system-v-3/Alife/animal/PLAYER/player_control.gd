@@ -19,8 +19,9 @@ func _ready() -> void:
 	player_action_area = %Area3D
 	if player.has_node("camera_anchor"):
 		camera_anchor = player.get_node("camera_anchor")
+		cursor_pos = Vector2(get_viewport().size.x,get_viewport().size.y)/2
 	
-
+var cursor_pos =Vector2.ZERO
 var poison_tick := 0.0
 @export var sensitivity := 3.0
 func _process(delta: float) -> void:
@@ -32,28 +33,36 @@ func _process(delta: float) -> void:
 			player.manager.current_health_array[player.alifemanager_id] -= 5
 	
 
-
 	if player.is_multiplayer_authority(): 
+		var viewport = get_viewport()
 		var joy_x = Input.get_action_strength("look_right") - Input.get_action_strength("look_left")
 		var joy_y = Input.get_action_strength("look_down") - Input.get_action_strength("look_up")
 		if abs(joy_x) > 0.01 or abs(joy_y) > 0.01:
 			player.get_node("Controler_canvas").show()
 			player.get_node("Mouse_canvas").hide()
 			var mouse_motion = InputEventMouseMotion.new()
-			mouse_motion.relative = Vector2(joy_x, joy_y/2) * sensitivity * 1000 * delta
+			mouse_motion.relative = Vector2(joy_x*viewport.size.x/1.5, joy_y/1.5*viewport.size.y) * sensitivity * delta
 
 			Input.parse_input_event(mouse_motion)
 			
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+			cursor_pos = Vector2(get_viewport().size.x,get_viewport().size.y)/2
+			Input.warp_mouse(cursor_pos)
 		if Input.get_mouse_mode() != Input.MOUSE_MODE_VISIBLE:
 			return
-
+		#var mouse_pos = get_viewport().get_mouse_position()
 		var mouse_pos = get_viewport().get_mouse_position()
+		var click = InputEventMouseButton.new()
+		click.button_index = MOUSE_BUTTON_LEFT
+		click.pressed = true
+		click.position = get_viewport().get_canvas_transform().affine_inverse() * mouse_pos
+		Input.parse_input_event(click)
 		if Input.is_action_just_pressed("b_controler"):
 			Input.action_press("ui_cancel")
 			Input.action_release("ui_cancel")
 		if Input.is_action_just_pressed("jump"):
 			print("Pressed")
-			var click = InputEventMouseButton.new()
+			#var click = InputEventMouseButton.new()
 			click.button_index = MOUSE_BUTTON_LEFT
 			click.pressed = true
 			click.position = mouse_pos
@@ -69,7 +78,7 @@ func _process(delta: float) -> void:
 			Input.parse_input_event(release)
 			
 		var Deadzone = 0.1
-		var cursor_speed = 800.0
+		#var cursor_speed = 800.0
 		if abs(joy_x) < Deadzone:
 			joy_x = 0
 		if abs(joy_y) < Deadzone:
@@ -77,16 +86,32 @@ func _process(delta: float) -> void:
 
 		if joy_x == 0 and joy_y == 0:
 			return
+		var joy_input = Vector2(joy_x, joy_y) # [-1,1]
 
-		mouse_pos = get_viewport().get_mouse_position()
-		var new_pos = mouse_pos + Vector2(joy_x, joy_y) * cursor_speed * delta
-	# Clamp to screen
-		var viewport_size =DisplayServer.window_get_size() #get_viewport().size# get_viewport().get_visible_rect().size
+		# Move cursor based on joystick input
+		var speed = 800
 
+		cursor_pos += joy_input * speed * delta
+
+		# Clamp to viewport
+		var viewport_size = get_viewport().size
+		cursor_pos.x = clamp(cursor_pos.x, 0, viewport_size.x)
+		cursor_pos.y = clamp(cursor_pos.y, 0, viewport_size.y)
+
+		# Update the system mouse position
+		#Input.set_mouse_position(cursor_pos)
+		#mouse_pos = get_viewport().get_mouse_position()
+		#viewport = get_viewport()
+		#mouse_pos.x = clamp(mouse_pos.x, 0, viewport.size.x)
+		#mouse_pos.y = clamp(mouse_pos.y, 0, viewport.size.y)
+		#var new_pos = mouse_pos + Vector2(joy_x*viewport.size.x, joy_y*viewport.size.y)  *delta
+#
+	## Clamp to screen
+		#var viewport_size = get_viewport().size
 		#new_pos.x = clamp(new_pos.x, 0, viewport_size.x)
 		#new_pos.y = clamp(new_pos.y, 0, viewport_size.y)
-		#var screen_pos = viewport_size * new_pos
-		Input.warp_mouse(new_pos)
+#
+		Input.warp_mouse(cursor_pos)
 
 
 func _physics_process(delta: float) -> void:
