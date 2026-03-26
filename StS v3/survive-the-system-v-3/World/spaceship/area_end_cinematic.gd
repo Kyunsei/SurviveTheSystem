@@ -30,11 +30,10 @@ func tween_that_shit(fade_time: float, color: Color):
 
 
 func interact(player, state:bool):
-	#if state == false:
-		#player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","You did not finish your mission!")
-		#return
-	#else:
-
+	if state == false:
+		player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","You did not finish your mission!")
+		return
+	else:
 		var player_list = player.get_parent().player_array
 		var spaceship = player.get_parent().get_parent().get_node("SPACESHIP")
 		var end_canvas = spaceship.get_parent().get_node("end_canvas")

@@ -376,8 +376,10 @@ func _process(delta: float) -> void:
 			if manager.current_energy_array[alifemanager_id] <=0:
 				if speed > 9:
 					manager.current_health_array[alifemanager_id]-= 1.5*delta
+					active_tint.rpc_id(int(name),1.0,Color(1.0,.0,.0,0.2))
 				else: 
 					manager.current_health_array[alifemanager_id]-= 1*delta
+					active_tint.rpc_id(int(name),1.0,Color(1.0,.0,.0,0.2))
 
 			else :
 				if speed > 9:
@@ -422,12 +424,14 @@ func _process(delta: float) -> void:
 			if escape_time_left <= 0:
 				escape_timer_running = false
 
-
+var tween
 @rpc("any_peer", "call_remote")
 func active_tint(fade_time: float, color: Color):
 	var rect = $TintColor
 	rect.color = color
-	var tween = create_tween()
+	if tween:
+		tween.kill()
+	tween = create_tween()
 	tween.tween_property(rect, "color:a", 0.0, fade_time)
 
 @rpc("any_peer","call_local")
