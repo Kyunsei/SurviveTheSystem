@@ -10,7 +10,7 @@ func Init():
 	species_id = AlifeRegistry.SPECIES_ID.SPIDERCRAB
 	# --- Core metabolism ---
 	Max_energy =[1000000,1000000]
-	Max_health  =[400,400]
+	Max_health  =[1,1] #400
 	Max_age  = [100,100]
 	Homeostasis_cost  =[0.10]
 	Decomposition_speed =[1]

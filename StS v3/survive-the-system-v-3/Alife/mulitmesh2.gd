@@ -40,10 +40,10 @@ func draw_all_grass(id, pos, state, alive, active,size,finite_state):
 	if active == 0:
 		draw_pos.y = -100
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(i_scale), draw_pos))
-	if alive == 0:
+	'if alive == 0:
 		multimesh.set_instance_color(slot, Color(0.27, 0.27, 0.27, 1.0))
-	else:
-		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
+	else:'
+	multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 	instance_number += 1
 	#multimesh.visible_instance_count = instance_number
 	
@@ -53,7 +53,8 @@ func draw_all_grass(id, pos, state, alive, active,size,finite_state):
 		if alive:
 			g = finite_state
 		else:
-			g = 5
+			g = 4
+			print("here")
 		var b = 0
 		var a = 0
 		multimesh.set_instance_custom_data(slot, Color(r, g, b, a))
@@ -79,20 +80,23 @@ func update_drawn_grass(id_array, pos_array, life_state_array, alive_array, acti
 		pos.y = -100 #MAYBE THIS NEED TO CHANGE TOO
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(i_scale), pos))
 	multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))	
-	if alive_array==0:
-		multimesh.set_instance_color(slot, Color(0.249, 0.082, 0.08, 1.0))
-	else:
-		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
+	if !test:
+		if alive_array==0:
+			multimesh.set_instance_color(slot, Color(0.249, 0.082, 0.08, 1.0))
+		else:
+			multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 	if test:
 		var r = life_state_array
 		var g = 0
 		if alive_array:
 			g = finite_state
 		else:
-			g = 5
+			g = -1
 		var b = finite_state
 		var a = 0
 		multimesh.set_instance_custom_data(slot, Color(r, g, b, a))
+		multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
+
 	if shadow:
 		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * i_scale), pos))
 		shadow.multimesh.visible_instance_count = instance_number
