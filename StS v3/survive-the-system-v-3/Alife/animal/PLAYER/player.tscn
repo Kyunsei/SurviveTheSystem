@@ -199,6 +199,12 @@ properties/19/replication_mode = 1
 properties/20/path = NodePath(".:halo_time")
 properties/20/spawn = true
 properties/20/replication_mode = 1
+properties/21/path = NodePath("Controler_canvas/Control:position")
+properties/21/spawn = true
+properties/21/replication_mode = 1
+properties/22/path = NodePath("Mouse_canvas/Control:position")
+properties/22/spawn = true
+properties/22/replication_mode = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5e6c6"]
 size = Vector3(0.5, 1, 0.5)
@@ -2510,6 +2516,8 @@ physics_interpolation_mode = 1
 script = ExtResource("1_qrp1o")
 
 [node name="Player_HUD" parent="." unique_id=1065555217 instance=ExtResource("2_2y45n")]
+layer = 100
+follow_viewport_enabled = true
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=175010637]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
@@ -2815,11 +2823,18 @@ libraries/ = SubResource("AnimationLibrary_dpvp7")
 [node name="Controler_canvas" type="CanvasLayer" parent="." unique_id=474737651]
 visible = false
 
-[node name="TextureRect2" type="TextureRect" parent="Controler_canvas" unique_id=2540461]
+[node name="Control" type="Control" parent="Controler_canvas" unique_id=1732775088]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect2" type="TextureRect" parent="Controler_canvas/Control" unique_id=2540461]
 modulate = Color(1, 1, 1, 0.651)
 self_modulate = Color(1, 1, 1, 0.675)
 y_sort_enabled = true
 texture_filter = 1
+layout_mode = 0
 offset_left = 634.0
 offset_top = 589.0
 offset_right = 698.0
@@ -2827,11 +2842,12 @@ offset_bottom = 653.0
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("9_sk3sm")
 
-[node name="TextureRect4" type="TextureRect" parent="Controler_canvas" unique_id=759380435]
+[node name="TextureRect4" type="TextureRect" parent="Controler_canvas/Control" unique_id=759380435]
 modulate = Color(1, 1, 1, 0.651)
 self_modulate = Color(1, 1, 1, 0.675)
 y_sort_enabled = true
 texture_filter = 1
+layout_mode = 0
 offset_left = 784.0
 offset_top = 589.0
 offset_right = 848.0
@@ -2839,11 +2855,12 @@ offset_bottom = 653.0
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("10_8poul")
 
-[node name="TextureRect" type="TextureRect" parent="Controler_canvas" unique_id=1366099861]
+[node name="TextureRect" type="TextureRect" parent="Controler_canvas/Control" unique_id=1366099861]
 modulate = Color(1, 1, 1, 0.651)
 self_modulate = Color(1, 1, 1, 0.675)
 y_sort_enabled = true
 texture_filter = 1
+layout_mode = 0
 offset_left = 935.0
 offset_top = 589.0
 offset_right = 999.0
@@ -2851,11 +2868,12 @@ offset_bottom = 653.0
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("11_ukn7e")
 
-[node name="TextureRect3" type="TextureRect" parent="Controler_canvas" unique_id=209077492]
+[node name="TextureRect3" type="TextureRect" parent="Controler_canvas/Control" unique_id=209077492]
 modulate = Color(1, 1, 1, 0.651)
 self_modulate = Color(1, 1, 1, 0.675)
 y_sort_enabled = true
 texture_filter = 1
+layout_mode = 0
 offset_left = 1085.0
 offset_top = 589.0
 offset_right = 1149.0
@@ -2866,11 +2884,18 @@ texture = ExtResource("12_psrcw")
 [node name="Mouse_canvas" type="CanvasLayer" parent="." unique_id=545158186]
 visible = false
 
-[node name="TextureRect2" type="TextureRect" parent="Mouse_canvas" unique_id=1819718050]
+[node name="Control" type="Control" parent="Mouse_canvas" unique_id=500042824]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect2" type="TextureRect" parent="Mouse_canvas/Control" unique_id=1819718050]
 modulate = Color(1, 1, 1, 0.651)
 self_modulate = Color(1, 1, 1, 0.675)
 y_sort_enabled = true
 texture_filter = 1
+layout_mode = 0
 offset_left = 634.0
 offset_top = 589.0
 offset_right = 698.0
@@ -2878,11 +2903,12 @@ offset_bottom = 653.0
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("13_dpvp7")
 
-[node name="TextureRect4" type="TextureRect" parent="Mouse_canvas" unique_id=1411846598]
+[node name="TextureRect4" type="TextureRect" parent="Mouse_canvas/Control" unique_id=1411846598]
 modulate = Color(1, 1, 1, 0.651)
 self_modulate = Color(1, 1, 1, 0.675)
 y_sort_enabled = true
 texture_filter = 1
+layout_mode = 0
 offset_left = 784.0
 offset_top = 589.0
 offset_right = 848.0
@@ -2890,11 +2916,12 @@ offset_bottom = 653.0
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("14_gm5ve")
 
-[node name="TextureRect" type="TextureRect" parent="Mouse_canvas" unique_id=229056406]
+[node name="TextureRect" type="TextureRect" parent="Mouse_canvas/Control" unique_id=229056406]
 modulate = Color(1, 1, 1, 0.651)
 self_modulate = Color(1, 1, 1, 0.675)
 y_sort_enabled = true
 texture_filter = 1
+layout_mode = 0
 offset_left = 935.0
 offset_top = 589.0
 offset_right = 999.0
@@ -2902,11 +2929,12 @@ offset_bottom = 653.0
 scale = Vector2(0.8, 0.8)
 texture = ExtResource("15_lmbmf")
 
-[node name="TextureRect3" type="TextureRect" parent="Mouse_canvas" unique_id=1499688356]
+[node name="TextureRect3" type="TextureRect" parent="Mouse_canvas/Control" unique_id=1499688356]
 modulate = Color(1, 1, 1, 0.651)
 self_modulate = Color(1, 1, 1, 0.675)
 y_sort_enabled = true
 texture_filter = 1
+layout_mode = 0
 offset_left = 1085.0
 offset_top = 589.0
 offset_right = 1149.0
@@ -2916,6 +2944,15 @@ texture = ExtResource("16_44ocd")
 
 [node name="WingsAnimater" type="AnimationPlayer" parent="." unique_id=121087339]
 libraries/ = SubResource("AnimationLibrary_gv451")
+
+[node name="TintColor" type="ColorRect" parent="." unique_id=646085712]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0)
 
 [connection signal="area_entered" from="MeshInstance3D/Pick_up_Area3D" to="." method="_on_pick_up_area_3d_area_entered"]
 [connection signal="synchronized" from="MultiplayerSynchronizer" to="MultiplayerSynchronizer" method="_on_synchronized"]

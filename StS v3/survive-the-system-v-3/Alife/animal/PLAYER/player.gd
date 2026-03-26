@@ -44,6 +44,7 @@ var manager
 var alifemanager_id : int
 var max_health = 100
 var max_energy = 200
+var previous_health := 0.0
 
 #MONEY MONEY MONEY MONEY MONEY
 var catnation_credits :int = 1: 
@@ -281,6 +282,7 @@ func _ready() -> void:
 		manager.init_multimesh(self)
 
 	if multiplayer.is_server():
+		previous_health= manager.current_health_array[alifemanager_id]
 		health_bar.max_value = max_health
 		energy_bar.max_value = max_energy
 		#update_status_of_player(inventory_capacity_upgrade, catnation_credits)
@@ -291,7 +293,12 @@ func show_halo(state:bool):
 		get_node("MeshInstance3D").get_node("Halo").show()
 	else:
 		get_node("MeshInstance3D").get_node("Halo").hide()
-		manager.current_health_array[alifemanager_id] = 100
+		change_player_health.rpc_id(1,100)
+
+@rpc("any_peer","call_local")
+func change_player_health(qty):
+	manager.current_health_array[alifemanager_id] = qty
+	previous_health =qty
 @rpc("any_peer","call_remote")
 func change_halo_effect(state:bool):
 	if state == true: 
@@ -367,20 +374,22 @@ func _process(delta: float) -> void:
 		if int(name) == null:
 			pass
 		else:
+			var current_health = manager.current_health_array[alifemanager_id]
+			if current_health < previous_health:
+				active_tint.rpc_id(int(name),1.0,Color(1.0,.0,.0,0.2))
+				previous_health = current_health
 			if manager.current_energy_array[alifemanager_id] <=0:
-				#if lifedata["current_energy"] <=0 or manager.current_energy_array[alifemanager_id] <=0:
-					#lifedata["current_health"] -= 1.5*delta
 				if speed > 9:
 					manager.current_health_array[alifemanager_id]-= 1.5*delta
+					active_tint.rpc_id(int(name),1.0,Color(1.0,.0,.0,0.2))
 				else: 
-					#lifedata["current_energy"] -= 1*delta
 					manager.current_health_array[alifemanager_id]-= 1*delta
+					active_tint.rpc_id(int(name),1.0,Color(1.0,.0,.0,0.2))
 
 			else :
 				if speed > 9:
 					manager.current_energy_array[alifemanager_id]-= 1.0*delta
 				else: 
-					#lifedata["current_energy"] -= 1*delta
 					manager.current_energy_array[alifemanager_id]-= 0.5*delta
 			if manager.current_energy_array[alifemanager_id] >=50 and manager.current_health_array[alifemanager_id] < max_health:
 				manager.current_health_array[alifemanager_id] += 1*delta
@@ -420,8 +429,15 @@ func _process(delta: float) -> void:
 			if escape_time_left <= 0:
 				escape_timer_running = false
 
-
-
+var tween
+@rpc("any_peer", "call_remote")
+func active_tint(fade_time: float, color: Color):
+	var rect = $TintColor
+	rect.color = color
+	if tween:
+		tween.kill()
+	tween = create_tween()
+	tween.tween_property(rect, "color:a", 0.0, fade_time)
 
 @rpc("any_peer","call_local")
 func sync_lifedata(data: Dictionary):
@@ -527,6 +543,7 @@ func respawn_server():
 
 	#NEW
 	manager.current_health_array[alifemanager_id] =50
+	previous_health = 50
 	manager.Alive_array[alifemanager_id] =1
 	#manager.binID_array[alifemanager_id] = -1
 	manager.current_energy_array[alifemanager_id] =100
@@ -581,6 +598,11 @@ func stop_escape_ui():
 @rpc("any_peer","call_remote")
 func hide_inventory():
 	get_node("Player_HUD").get_node("Inventory").hide()
+	for child in get_node("Controler_canvas").get_children():
+		child.position.y -=5000
+	for child in get_node("Mouse_canvas").get_children():
+		child.position.y -=5000
+
 
 @rpc("any_peer","call_local")
 func show_escape_timer(time):
