@@ -426,11 +426,7 @@ func _process(delta: float) -> void:
 @rpc("any_peer", "call_remote")
 func active_tint(fade_time: float, color: Color):
 	var rect = $TintColor
-	
-	# Instantly apply the flash color (fully visible)
 	rect.color = color
-	
-	# Tween ONLY the alpha back to 0
 	var tween = create_tween()
 	tween.tween_property(rect, "color:a", 0.0, fade_time)
 
