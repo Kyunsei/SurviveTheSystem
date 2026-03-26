@@ -36,7 +36,6 @@ func _process(delta: float) -> void:
 	if player.is_multiplayer_authority(): 
 		var joy_x = Input.get_action_strength("look_right") - Input.get_action_strength("look_left")
 		var joy_y = Input.get_action_strength("look_down") - Input.get_action_strength("look_up")
-
 		if abs(joy_x) > 0.01 or abs(joy_y) > 0.01:
 			player.get_node("Controler_canvas").show()
 			player.get_node("Mouse_canvas").hide()
@@ -47,6 +46,7 @@ func _process(delta: float) -> void:
 			
 		if Input.get_mouse_mode() != Input.MOUSE_MODE_VISIBLE:
 			return
+
 		var mouse_pos = get_viewport().get_mouse_position()
 		if Input.is_action_just_pressed("b_controler"):
 			Input.action_press("ui_cancel")
@@ -67,6 +67,7 @@ func _process(delta: float) -> void:
 			release.pressed = false
 			release.position = mouse_pos
 			Input.parse_input_event(release)
+			
 		var Deadzone = 0.1
 		var cursor_speed = 800.0
 		if abs(joy_x) < Deadzone:
@@ -79,12 +80,12 @@ func _process(delta: float) -> void:
 
 		mouse_pos = get_viewport().get_mouse_position()
 		var new_pos = mouse_pos + Vector2(joy_x, joy_y) * cursor_speed * delta
-
 	# Clamp to screen
-		var viewport_size = get_viewport().get_visible_rect().size
-		new_pos.x = clamp(new_pos.x, 0, viewport_size.x)
-		new_pos.y = clamp(new_pos.y, 0, viewport_size.y)
+		var viewport_size =DisplayServer.window_get_size() #get_viewport().size# get_viewport().get_visible_rect().size
 
+		#new_pos.x = clamp(new_pos.x, 0, viewport_size.x)
+		#new_pos.y = clamp(new_pos.y, 0, viewport_size.y)
+		#var screen_pos = viewport_size * new_pos
 		Input.warp_mouse(new_pos)
 
 

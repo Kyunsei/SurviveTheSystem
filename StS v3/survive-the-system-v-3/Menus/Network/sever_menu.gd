@@ -83,7 +83,7 @@ func on_disconnection(id):
 		if get_parent().get_parent().get_node("Alife manager").has_node(str(id)):
 			var p = get_parent().get_parent().get_node("Alife manager").get_node(str(id))
 			get_parent().get_parent().get_node("Alife manager").player_array.erase(p)
-
+			get_parent().get_parent().get_node("Alife manager").get_node("Grass_Manager2").Kill_Grass(p.alifemanager_id)
 			p.queue_free()
 
 	

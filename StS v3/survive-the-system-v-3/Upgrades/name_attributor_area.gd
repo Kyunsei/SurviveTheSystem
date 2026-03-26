@@ -8,8 +8,8 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed("ui_cancel"):
-		print("tesssst")
+	if Input.is_action_just_pressed("ui_cancel") or Input.is_action_just_pressed("b_controler"):
+		#print("tesssst")
 		$"../LineEdit".hide()
 		$"../LineEdit".release_focus()
 

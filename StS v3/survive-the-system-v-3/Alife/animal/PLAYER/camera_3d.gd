@@ -44,7 +44,7 @@ func _ready() -> void:
 		#Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 		mouse_captured = true
 	
-@rpc("any_peer","call_remote")
+'@rpc("any_peer","call_remote")
 func check_player_input_blocked(peer_id):
 		player_list = player.get_parent().player_array
 		#global_position.y = max(global_position.y, 2.0)
@@ -57,17 +57,17 @@ func check_player_input_blocked(peer_id):
 				is_blocked = p.input_blocked
 				send_camera_blocked_or_not.rpc_id(peer_id,p.input_blocked)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func send_camera_blocked_or_not(state:bool):
 	print(state)
-	is_blocked = state
+	is_blocked = state'
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if player.is_multiplayer_authority():
-		check_player_input_blocked.rpc_id(int(player.name),int(player.name))
-		if is_blocked ==false:
+
+		if player.input_blocked ==false:
 			if Input.is_action_pressed("Camera_zoom_in"):
 				position.z = max(min_zoom, position.z - camera_zoom_speed * delta)
 			if Input.is_action_pressed("Camera_zoom_out"):
@@ -106,6 +106,9 @@ func _process(delta: float) -> void:
 			
 func _input(event):
 	if player.is_multiplayer_authority():
+		#check_player_input_blocked.rpc_id(int(player.name),int(player.name))
+		if player.input_blocked:
+			return
 		if mouse_captured:
 			if event is InputEventMouseMotion:
 				
