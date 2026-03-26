@@ -56,6 +56,7 @@ mesh = SubResource("QuadMesh_ixbrm")
 [sub_resource type="MultiMesh" id="MultiMesh_g02bw"]
 transform_format = 1
 use_colors = true
+use_custom_data = true
 mesh = ExtResource("7_qpu6g")
 
 [sub_resource type="MultiMesh" id="MultiMesh_rmegg"]
@@ -156,6 +157,7 @@ script = ExtResource("5_hbvxf")
 [node name="jellybee" type="MultiMeshInstance3D" parent="." unique_id=559723129]
 multimesh = SubResource("MultiMesh_g02bw")
 script = ExtResource("5_hbvxf")
+test = true
 
 [node name="snailbat" type="MultiMeshInstance3D" parent="." unique_id=953685082]
 multimesh = SubResource("MultiMesh_rmegg")

@@ -51,7 +51,10 @@ func draw_all_grass(id, pos, state, alive, active,size,finite_state):
 		var r = state
 		var g = 0
 		if alive:
-			g = finite_state
+			if animated:
+				g = finite_state
+			else:
+				g = 0
 		else:
 			g = 4
 			print("here")
@@ -89,7 +92,10 @@ func update_drawn_grass(id_array, pos_array, life_state_array, alive_array, acti
 		var r = life_state_array
 		var g = 0
 		if alive_array:
-			g = finite_state
+			if animated:
+				g = finite_state
+			else:
+				g = 0
 		else:
 			g = -1
 		var b = finite_state
