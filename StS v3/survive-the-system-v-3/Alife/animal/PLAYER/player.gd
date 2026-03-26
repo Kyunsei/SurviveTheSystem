@@ -293,7 +293,12 @@ func show_halo(state:bool):
 		get_node("MeshInstance3D").get_node("Halo").show()
 	else:
 		get_node("MeshInstance3D").get_node("Halo").hide()
-		manager.current_health_array[alifemanager_id] = 100
+		change_player_health.rpc_id(1,100)
+
+@rpc("any_peer","call_local")
+func change_player_health(qty):
+	manager.current_health_array[alifemanager_id] = qty
+	previous_health =qty
 @rpc("any_peer","call_remote")
 func change_halo_effect(state:bool):
 	if state == true: 
@@ -371,8 +376,8 @@ func _process(delta: float) -> void:
 		else:
 			var current_health = manager.current_health_array[alifemanager_id]
 			if current_health < previous_health:
-				previous_health = current_health
 				active_tint.rpc_id(int(name),1.0,Color(1.0,.0,.0,0.2))
+				previous_health = current_health
 			if manager.current_energy_array[alifemanager_id] <=0:
 				if speed > 9:
 					manager.current_health_array[alifemanager_id]-= 1.5*delta
@@ -538,6 +543,7 @@ func respawn_server():
 
 	#NEW
 	manager.current_health_array[alifemanager_id] =50
+	previous_health = 50
 	manager.Alive_array[alifemanager_id] =1
 	#manager.binID_array[alifemanager_id] = -1
 	manager.current_energy_array[alifemanager_id] =100
