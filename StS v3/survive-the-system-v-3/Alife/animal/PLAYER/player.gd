@@ -291,6 +291,7 @@ func show_halo(state:bool):
 		get_node("MeshInstance3D").get_node("Halo").show()
 	else:
 		get_node("MeshInstance3D").get_node("Halo").hide()
+		manager.current_health_array[alifemanager_id] = 100
 @rpc("any_peer","call_remote")
 func change_halo_effect(state:bool):
 	if state == true: 
@@ -304,7 +305,6 @@ func _physics_process(_delta: float) -> void:
 		
 		if has_halo:
 			if halo_effect == false:
-				print(halo_time)
 				halo_time += _delta
 				if halo_time >= 30:
 					change_halo_effect(true)
@@ -461,7 +461,6 @@ func Die(id):
 		if halo_effect == true and has_halo:
 			immune_to_death = true
 			show_halo.rpc_id(int(name),false)
-			manager.current_health_array[alifemanager_id] += 200
 			change_halo_effect.rpc_id(int(name),false)
 			await get_tree().create_timer(5.0).timeout
 			immune_to_death = false

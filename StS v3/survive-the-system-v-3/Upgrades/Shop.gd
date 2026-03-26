@@ -1,4 +1,5 @@
 extends Control
+@export var cat_ration_pool: Array[ItemResource]  # Contains the 3 specific basic items
 @export var basic_item_pool: Array[ItemResource]  # Contains the 3 specific basic items
 @export var basic_item_pool2: Array[ItemResource]  # Contains the 3 specific basic items
 @export var mango_item_pool: Array[ItemResource] # Contains the 3 rare choices
@@ -36,6 +37,11 @@ func _process(delta: float) -> void:
 
 func generate_shop():
 	current_stock = []
+	for item in cat_ration_pool:
+		current_stock.append({
+			"item": item,
+			"quantity": randi_range(10, 20)
+		})
 	for item in basic_item_pool:
 		current_stock.append({
 			"item": item,

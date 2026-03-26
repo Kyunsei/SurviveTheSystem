@@ -225,6 +225,7 @@ func spawn_player(id,pos):
 		current_life_count_by_species[Alifedata.enum_speciesID.CAT] = 1
 	
 	var newid = $Grass_Manager2.Spawn_New_Grass(pos,5)
+	$Grass_Manager2.current_energy_array[newid] =200
 	new_player.alifemanager_id = newid
 	player_array.append(new_player)
 
