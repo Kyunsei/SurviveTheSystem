@@ -5,6 +5,8 @@ class_name PREP_DASH_STATE
 @export var next_state : STATE
 @export var next_state_id : int = 2
 @export var max_distance_to_target : float = 1000
+@export var max_distance_to_target2 : float = 1500
+
 @export var bin_vision_range : int = 4
 
 
@@ -20,7 +22,10 @@ func evaluate(_manager,_i, _DNA):
 		var targets = _manager.get_index_in_bin_around(_manager.World.bin_array,_i,bin_vision_range)
 		var close_target_id = find_closest(_manager, _manager.position_array[_i], targets,s)
 		if close_target_id:
-			if _manager.position_array[close_target_id].distance_to(_manager.position_array[_i]) > max_distance_to_target:	
+			if _manager.current_finite_state_array[_i]== 1:
+				if _manager.position_array[close_target_id].distance_to(_manager.position_array[_i]) > max_distance_to_target2:	
+					dscore *= 0.0
+			elif _manager.position_array[close_target_id].distance_to(_manager.position_array[_i]) > max_distance_to_target:	
 				dscore *= 0.0
 		if dist_score < dscore:
 			dist_score = dscore
