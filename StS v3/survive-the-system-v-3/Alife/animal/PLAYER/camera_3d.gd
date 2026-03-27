@@ -126,6 +126,7 @@ func _input(event):
 			else:
 				Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 				mouse_captured = true
+			print(mouse_captured)
 
 		if event.is_action_pressed("left_click"):
 			if 	mouse_captured == false:

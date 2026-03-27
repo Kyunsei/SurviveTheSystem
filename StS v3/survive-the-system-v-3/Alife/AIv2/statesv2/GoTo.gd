@@ -46,6 +46,9 @@ func exit(_manager,_i, _DNA):
 	pass
 
 func update(_manager,_i, _DNA, _delta):
+	if _manager.Species_array[_i] == AlifeRegistry.SPECIES_ID.SHEEP:
+		if _manager.current_life_state_array[_i] == 0:
+			return
 	var bin = _manager.binID_array[_i]
 	var dir := Vector3(0,0,0)
 	var target_species : int

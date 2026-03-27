@@ -24,6 +24,8 @@ func _ready() -> void:
 var cursor_pos =Vector2.ZERO
 var poison_tick := 0.0
 @export var sensitivity := 3.0
+
+
 func _process(delta: float) -> void:
 	if player.poisoned_by_flower > 0.0:
 		player.poisoned_by_flower -= delta
@@ -50,6 +52,7 @@ func _process(delta: float) -> void:
 			Input.warp_mouse(cursor_pos)
 		if Input.get_mouse_mode() != Input.MOUSE_MODE_VISIBLE:
 			return
+
 		#var mouse_pos = get_viewport().get_mouse_position()
 		var mouse_pos = get_viewport().get_mouse_position()
 		var click = InputEventMouseButton.new()
