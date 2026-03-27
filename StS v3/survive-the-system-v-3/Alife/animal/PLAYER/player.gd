@@ -372,6 +372,7 @@ func giving_position_to_others(pos: Vector3) -> void:
 func _process(delta: float) -> void:
 
 	if multiplayer.is_server():# and GlobalSimulationParameter.ClientStarted:
+		hide_inventory()
 		if input_blocked:
 			return  
 		if int(name) == null:
