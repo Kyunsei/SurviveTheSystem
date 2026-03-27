@@ -297,12 +297,13 @@ func eat_holding_item() :
 			if player.item_hold["Data"][0]["Species"] == Alifedata.enum_speciesID.ITEM:
 				player.item_hold["Data"][0]["Eat"].call(player)
 			else:
-				var value = player.item_hold["Data"][0]["Biomass"]/15
+				#var value = player.item_hold["Data"][0]["Biomass"]/15
 				var inventory = player.get_node("Player_HUD").get_node("Inventory")
 				var item_eaten = inventory.remove_selected(int(player.name))
 				if item_eaten:
-					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
+					#player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
 					#print(value)
+					pass
 		else:
 			var id = player.item_hold["Data"][0]
 			var value = alife_manager.get_node("Grass_Manager2").current_biomass_array[id]/15
@@ -312,9 +313,22 @@ func eat_holding_item() :
 				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.SPIKYFLOWER:
 					player.poisoned_by_flower += 5
 					print("SPIKY FLOWER EATEN")
-				player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value/10,0,player.max_energy)
-
-			
+				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.BERRY:
+					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
+				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.SHEEP:
+					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
+				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.SPIDERCRAB:
+					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
+				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.GRASS:
+					player.poisoned_by_flower += 1
+				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.TREE:
+					player.poisoned_by_flower += 1
+				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.MOSS:
+					player.poisoned_by_flower += 1
+				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.JELLYBEE:
+					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value/2,0,player.max_energy)
+				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.SNAILCAT:
+					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value/2,0,player.max_energy)
 	else:
 		pass
 

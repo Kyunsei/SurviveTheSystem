@@ -30,10 +30,10 @@ func tween_that_shit(fade_time: float, color: Color):
 
 
 func interact(player, state:bool):
-	if state == false:
-		player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","You did not finish your mission!")
-		return
-	else:
+	#if state == false:
+		#player.show_label_above_player.rpc_id(int(player.name),1, Color(1.0, 1.0, 1.0, 1.0), 2.0,"Special","You did not finish your mission!")
+		#return
+	#else:
 		var player_list = player.get_parent().player_array
 		var spaceship = player.get_parent().get_parent().get_node("SPACESHIP")
 		var end_canvas = spaceship.get_parent().get_node("end_canvas")
@@ -62,23 +62,25 @@ func interact(player, state:bool):
 			await get_tree().create_timer(5.0).timeout
 			for p in player_list:
 				p.show_label_above_player.rpc_id(int(p.name),1, Color(1.0, 1.0, 1.0, 1.0), 7.0,"Special","Time to go back to your root")
-			await end_animater2.animation_finished
-			end_animater2.play("retracted")
-			await end_animater.animation_finished
-			end_animater.play("collector_retrieved")
-			await get_tree().create_timer(3.0).timeout
+			#await end_animater2.animation_finished
+			#end_animater2.play("retracted")
+			#await end_animater.animation_finished
+			#end_animater.play("collector_retrieved")
+			await get_tree().create_timer(18.0).timeout
 			for p in player_list:
 				p.hide_inventory.rpc_id(int(p.name))
 			var alife_manager = get_parent().get_parent().get_parent().get_node("Alife manager")
 			#spaceship.get_node("Stairs").hide()
 			var player_list2 = alife_manager.player_array
+			spaceship.get_node("Stairs").hide()
 			for p in player_list2:
+				p.change_player_energy.rpc_id(1,1000000.0)
 				change_camera.rpc_id(int(p.name))
 			await get_tree().create_timer(3.0).timeout
 			end_animater.play("ship_going_away")
 			await get_tree().create_timer(5.0).timeout
-			end_canvas.show()
 			for p in player_list2:
+				end_canvas.show()
 				p.go_to_position.rpc_id(int(p.name), Vector3(10000,10000,-10000))
 				tween_that_shit.rpc_id(int(player.name),5.0, Color(1.0,1.0,1.0,1.0))
 

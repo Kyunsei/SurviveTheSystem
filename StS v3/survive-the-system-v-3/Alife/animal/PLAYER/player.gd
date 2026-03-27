@@ -299,6 +299,9 @@ func show_halo(state:bool):
 func change_player_health(qty):
 	manager.current_health_array[alifemanager_id] = qty
 	previous_health =qty
+@rpc("any_peer","call_local")
+func change_player_energy(qty):
+	manager.current_energy_array[alifemanager_id] = qty
 @rpc("any_peer","call_remote")
 func change_halo_effect(state:bool):
 	if state == true: 

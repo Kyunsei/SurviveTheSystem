@@ -79,6 +79,12 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath("end_canvas:visible")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath("SPACESHIP/Stairs:visible")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("end_canvas:transform")
+properties/4/spawn = true
+properties/4/replication_mode = 0
 
 [sub_resource type="Animation" id="Animation_4srsv"]
 length = 0.001
@@ -193,7 +199,7 @@ tracks/8/keys = {
 
 [sub_resource type="Animation" id="Animation_mf81u"]
 resource_name = "collector_retrieval1"
-length = 20.0
+length = 3350.0
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -3330,7 +3336,7 @@ tracks/121/keys = {
 
 [sub_resource type="Animation" id="Animation_aomqu"]
 resource_name = "stairs_retracting"
-length = 11.0
+length = 3330.0
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -5353,7 +5359,7 @@ shape = SubResource("BoxShape3D_02kkc")
 replication_config = SubResource("SceneReplicationConfig_f52ns")
 
 [node name="endgame_camera" type="Camera3D" parent="." unique_id=492419539]
-transform = Transform3D(0.50000006, -0.43301266, -0.75, 0, 0.8660254, -0.5, 0.8660254, 0.25, 0.43301278, -99, 0.3, 28)
+transform = Transform3D(0.4999999, -0.22414389, -0.8365164, 0, 0.9659258, -0.25881907, 0.86602545, 0.1294095, 0.48296282, -99, 2.3, 28)
 
 [node name="endgameanimation1" type="AnimationPlayer" parent="." unique_id=430939544]
 libraries/ = SubResource("AnimationLibrary_02kkc")
