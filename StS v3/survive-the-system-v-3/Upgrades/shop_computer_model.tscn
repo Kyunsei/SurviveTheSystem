@@ -1,8 +1,12 @@
 [gd_scene format=3 uid="uid://eouwi0lhmuet"]
 
+[ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="1_jfjiq"]
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cbwrd"]
 transparency = 1
-albedo_color = Color(1, 1, 1, 0.16862746)
+albedo_color = Color(1, 1, 1, 0.60800004)
+albedo_texture = ExtResource("1_jfjiq")
+uv1_scale = Vector3(6, 6, 6)
 
 [sub_resource type="BoxMesh" id="BoxMesh_jfjiq"]
 material = SubResource("StandardMaterial3D_cbwrd")
