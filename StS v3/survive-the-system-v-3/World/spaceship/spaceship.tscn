@@ -229,8 +229,17 @@ ESC: free mouse
 "
 horizontal_alignment = 0
 
+[node name="Label3D3" type="Label3D" parent="Tuto" unique_id=634164886]
+transform = Transform3D(-4.371139e-08, 0, -1, -0.4204975, 0.9072937, 1.8380529e-08, 0.9072937, 0.4204975, -3.9659067e-08, 5.408509, 3.9488478, 0.66393757)
+modulate = Color(0, 0, 0, 1)
+outline_modulate = Color(1, 1, 1, 1)
+text = "Bring Bioressource 
+ to the collector Downstair!"
+horizontal_alignment = 0
+
 [node name="Label3D2" type="Label3D" parent="Tuto" unique_id=617138371]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 5.408509, 3.6690211, 0.6035363)
+visible = false
 modulate = Color(0, 0, 0, 1)
 outline_modulate = Color(1, 1, 1, 1)
 text = "[CONTROL -For Debug only]
