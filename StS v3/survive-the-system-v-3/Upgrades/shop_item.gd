@@ -70,7 +70,6 @@ func setup_client(item_path, qty: int,id):
 @rpc("any_peer","call_local")
 func _on_pressed() -> void:
 
-
 	if quantity <= 0:
 		$NoStock1.show()
 	if quantity > 0:
@@ -80,13 +79,16 @@ func _on_pressed() -> void:
 
 @rpc("any_peer","call_remote")
 func buy_item(id, price, path):
+	if id_in_stock == null:
+		return
 	#var sender_id = multiplayer.get_remote_sender_id()
 	Shop_area = get_parent().get_parent().get_parent().get_parent().get_parent()
 	var shop =  get_parent().get_parent().get_parent()
 	Alife_manager =  get_parent().get_parent().get_parent().get_parent().get_parent().get_parent().get_parent().get_node("Alife manager")
 	item_spawn_position= Shop_area.global_position
-	if shop.current_stock[id_in_stock]["quantity"]  > 0 :
-
+	
+	if shop.current_stock[id_in_stock]["quantity"]> 0:
+		
 		for p in Alife_manager.player_array :
 				#print(p.name)
 				#print(str(id))

@@ -298,7 +298,7 @@ func show_halo(state:bool):
 @rpc("any_peer","call_local")
 func change_player_health(qty):
 	manager.current_health_array[alifemanager_id] = qty
-	previous_health =qty
+	#previous_health =qty
 @rpc("any_peer","call_local")
 func change_player_energy(qty):
 	manager.current_energy_array[alifemanager_id] = qty
@@ -382,6 +382,8 @@ func _process(delta: float) -> void:
 			if current_health < previous_health:
 				active_tint.rpc_id(int(name),1.0,Color(1.0,.0,.0,0.2))
 				previous_health = current_health
+			elif current_health >= previous_health:
+				previous_health = current_health
 			if manager.current_energy_array[alifemanager_id] <=0:
 				if speed > 9:
 					manager.current_health_array[alifemanager_id]-= 1.5*delta
@@ -397,6 +399,7 @@ func _process(delta: float) -> void:
 					manager.current_energy_array[alifemanager_id]-= 0.5*delta
 			if manager.current_energy_array[alifemanager_id] >=50 and manager.current_health_array[alifemanager_id] < max_health:
 				manager.current_health_array[alifemanager_id] += 1*delta
+				#previous_health = manager.current_health_array[alifemanager_id] 
 				manager.current_energy_array[alifemanager_id] -= 1*delta
 
 			'else:
@@ -551,7 +554,7 @@ func respawn_server():
 
 	#NEW
 	manager.current_health_array[alifemanager_id] =50
-	previous_health = 50
+	#previous_health = 50
 	manager.Alive_array[alifemanager_id] =1
 	#manager.binID_array[alifemanager_id] = -1
 	manager.current_energy_array[alifemanager_id] =100
@@ -656,6 +659,7 @@ func spear_attack():
 			manager.current_energy_array[alifemanager_id] -= 1 
 		else:
 			manager.current_health_array[alifemanager_id] -= 1 
+			#previous_health = manager.current_health_array[alifemanager_id] 
 		if spear_animation_in_course == false and speardefense == false:
 			time_before_attack = 0.4
 			spear_animation_in_course = true
