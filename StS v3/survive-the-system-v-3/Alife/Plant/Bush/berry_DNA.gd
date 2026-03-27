@@ -23,7 +23,7 @@ func Init():
 	Reproduction_cost  =[500,500]
 	Reproduction_spread  =[15,15]
 	Reproduction_number =[1,1]
-	Biomass =[2000,15,25,35,45,55,65,75,85] #MAYBE NO LONGER IN USE
+	Biomass =[1200,15,25,35,45,55,65,75,85] #MAYBE NO LONGER IN USE
 
 #--- RENDERING ----
 

@@ -486,6 +486,8 @@ func Die(id):
 			immune_to_death = false
 		else:
 			remove_durability(100)
+			#get_node("Player_control").Drop.rpc_id(int(name))
+			get_node("Player_HUD/Inventory").select_item2.rpc_id(int(name),null,int(name))
 			if manager.Alive_array[alifemanager_id] == 1:
 				manager.Alive_array[alifemanager_id] = 0
 				death.rpc_id(id,id)

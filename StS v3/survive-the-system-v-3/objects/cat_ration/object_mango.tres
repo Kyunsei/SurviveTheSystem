@@ -12,5 +12,5 @@ stack_amount = 3
 item_path = "res://objects/cat_ration/Object_mango.tscn"
 Init_durability = 100000.0
 Max_quantity_in_shop = 1
-Price = 100.0
+Price = 50.0
 metadata/_custom_type_script = "uid://udee2xxejlu"

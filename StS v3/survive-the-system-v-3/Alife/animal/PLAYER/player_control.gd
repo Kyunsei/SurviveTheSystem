@@ -326,7 +326,7 @@ func eat_holding_item() :
 				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.MOSS:
 					player.poisoned_by_flower += 1
 				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.JELLYBEE:
-					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value/2,0,player.max_energy)
+					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value,0,player.max_energy)
 				if player.manager.Species_array[id] == AlifeRegistry.SPECIES_ID.SNAILCAT:
 					player.manager.current_energy_array[player.alifemanager_id] =clamp(player.manager.current_energy_array[player.alifemanager_id]+value/2,0,player.max_energy)
 	else:

@@ -2821,6 +2821,7 @@ libraries/ = SubResource("AnimationLibrary_dpvp7")
 libraries/ = SubResource("AnimationLibrary_dpvp7")
 
 [node name="Controler_canvas" type="CanvasLayer" parent="." unique_id=474737651]
+layer = 500
 visible = false
 
 [node name="Control" type="Control" parent="Controler_canvas" unique_id=1732775088]
@@ -2882,6 +2883,7 @@ scale = Vector2(0.8, 0.8)
 texture = ExtResource("12_psrcw")
 
 [node name="Mouse_canvas" type="CanvasLayer" parent="." unique_id=545158186]
+layer = 500
 visible = false
 
 [node name="Control" type="Control" parent="Mouse_canvas" unique_id=500042824]
