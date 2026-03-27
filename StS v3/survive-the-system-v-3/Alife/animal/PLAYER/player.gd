@@ -293,7 +293,7 @@ func show_halo(state:bool):
 		get_node("MeshInstance3D").get_node("Halo").show()
 	else:
 		get_node("MeshInstance3D").get_node("Halo").hide()
-		change_player_health.rpc_id(1,100)
+		change_player_health.rpc_id(1,1000000)
 
 @rpc("any_peer","call_local")
 func change_player_health(qty):
@@ -479,6 +479,7 @@ func Die(id):
 			show_halo.rpc_id(int(name),false)
 			change_halo_effect.rpc_id(int(name),false)
 			await get_tree().create_timer(5.0).timeout
+			change_player_health.rpc_id(1,100)
 			immune_to_death = false
 		else:
 			remove_durability(100)
@@ -536,6 +537,7 @@ func respawn():
 	$MeshInstance3D.show()
 	await get_tree().create_timer(5.0).timeout
 	if immune_to_death == true:
+		change_player_health.rpc_id(1,55)
 		immune_to_death = false
 @rpc("any_peer","call_local")
 func respawn_server():
@@ -549,6 +551,7 @@ func respawn_server():
 	manager.current_energy_array[alifemanager_id] =100
 	await get_tree().create_timer(5.0).timeout
 	if immune_to_death == true:
+		change_player_health.rpc_id(1,55)
 		immune_to_death = false
 
 	#OLD - will be deleted when all migrated

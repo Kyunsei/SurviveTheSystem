@@ -52,24 +52,30 @@ func _process(delta: float) -> void:
 			Input.warp_mouse(cursor_pos)
 		if Input.get_mouse_mode() != Input.MOUSE_MODE_VISIBLE:
 			return
-
 		#var mouse_pos = get_viewport().get_mouse_position()
 		var mouse_pos = get_viewport().get_mouse_position()
 		var click = InputEventMouseButton.new()
 		click.button_index = MOUSE_BUTTON_LEFT
 		click.pressed = true
 		click.position = get_viewport().get_canvas_transform().affine_inverse() * mouse_pos
-		Input.parse_input_event(click)
+		var canvas_pos = get_viewport().get_canvas_transform().affine_inverse() * cursor_pos
+		#Input.parse_input_event(click)
 		if Input.is_action_just_pressed("b_controler"):
 			Input.action_press("ui_cancel")
 			Input.action_release("ui_cancel")
+		#if Input.is_action_just_pressed("jump"):
+			#print("Pressed")
+			##var click = InputEventMouseButton.new()
+			#click.button_index = MOUSE_BUTTON_LEFT
+			#click.pressed = true
+			#click.position = mouse_pos
+			#Input.parse_input_event(click)
 		if Input.is_action_just_pressed("jump"):
-			print("Pressed")
-			#var click = InputEventMouseButton.new()
-			click.button_index = MOUSE_BUTTON_LEFT
-			click.pressed = true
-			click.position = mouse_pos
-			Input.parse_input_event(click)
+			var click2 = InputEventMouseButton.new()
+			click2.button_index = MOUSE_BUTTON_LEFT
+			click2.pressed = true
+			click2.position = canvas_pos
+			Input.parse_input_event(click2)
 
 		if Input.is_action_just_released("jump"):
 			print("Released")
@@ -77,7 +83,7 @@ func _process(delta: float) -> void:
 			var release = InputEventMouseButton.new()
 			release.button_index = MOUSE_BUTTON_LEFT
 			release.pressed = false
-			release.position = mouse_pos
+			release.position = canvas_pos
 			Input.parse_input_event(release)
 			
 		var Deadzone = 0.1
