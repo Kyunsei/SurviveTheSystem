@@ -24,6 +24,8 @@ func _ready() -> void:
 
 	#connect_to_server(IP_ADDRESS, PORT)
 
+
+
 func check_connection():
 	if multiplayer.multiplayer_peer:
 		match multiplayer.multiplayer_peer.get_connection_status():
@@ -37,6 +39,13 @@ func check_connection():
 
 func _process(_delta: float) -> void:
 	pass
+	get_server_readiness.rpc_id(1)
+
+	if GlobalSimulationParameter.server_ready:
+		$VBoxContainer/Button_Play.disabled = false
+	else:
+			$VBoxContainer/Button_Play.disabled = true
+
 	#check_connection()
 
 func connect_to_server(IP_ADDRESSv, PORTv):
@@ -45,11 +54,23 @@ func connect_to_server(IP_ADDRESSv, PORTv):
 	multiplayer.multiplayer_peer = peer
 	$Label_server.text = "Connecting..."
 
+@rpc("any_peer","call_local")
+func get_server_readiness():
+	set_server_readiness.rpc(GlobalSimulationParameter.server_ready) 
+
+@rpc("any_peer","call_local")
+func set_server_readiness(v):
+	GlobalSimulationParameter.server_ready = v
+
+
 
 func on_client_connection():
 	pass
 	$Label_server.text = "Connected to server"
-	$VBoxContainer/Button_Play.disabled = false
+	get_server_readiness.rpc_id(1)
+	if GlobalSimulationParameter.server_ready:
+
+		$VBoxContainer/Button_Play.disabled = false
 
 func on_connection_failed():
 	'if tried_already == false:
@@ -65,6 +86,7 @@ func on_connection_failed():
 func on_server_disconnected():
 	$Label_server.text = "Server OFFLINE"
 	$VBoxContainer/Button_Play.disabled = true
+	GlobalSimulationParameter.server_ready = false
 	show()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	#print("here SERVER")

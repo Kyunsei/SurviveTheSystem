@@ -1,6 +1,6 @@
 [gd_resource type="QuadMesh" format=3 uid="uid://c4w8e4xg2k0qh"]
 
-[ext_resource type="Shader" uid="uid://cqndlwr1lp6ur" path="res://Alife/animal/Herbivor/jellybee/jellybee.gdshader" id="1_cs08x"]
+[ext_resource type="Shader" path="res://Alife/animal/Herbivor/jellybee/jellybee.gdshader" id="1_cs08x"]
 [ext_resource type="Texture2D" uid="uid://cnpb7vqhqwrrw" path="res://Alife/animal/Herbivor/jellybee/jellybee-Sheet.png" id="2_1vnrd"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_w0sjb"]
