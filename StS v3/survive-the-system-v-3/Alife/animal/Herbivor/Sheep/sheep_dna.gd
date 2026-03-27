@@ -11,11 +11,11 @@ func Init():
 	species_id = AlifeRegistry.SPECIES_ID.SHEEP
 
 	# --- Core metabolism ---
-	Max_energy =[1000,100000]
-	Max_health  =[40,40]
-	Max_age  = [100,100]
-	Homeostasis_cost  =[0.10]
-	Decomposition_speed =[1]
+	Max_energy =[7000,15000,30000]
+	Max_health  =[40,40,40]
+	Max_age  = [100,100,100]
+	Homeostasis_cost  =[0,.1,.1]
+	Decomposition_speed =[1,1,1]
 
 	# --- Plant Related ----
 	Photosynthesis_absorption =[0]
@@ -27,10 +27,10 @@ func Init():
 
 
 	# --- Life Cycle ---
-	Reproduction_cost  =[500,500]
-	Reproduction_spread  =[5,5]
-	Reproduction_number =[1,1]
-	Biomass =[3000,3000] #MAYBE NO LONGER IN USE
+	Reproduction_cost  =[6000,6000,6000]
+	Reproduction_spread  =[5,5,5]
+	Reproduction_number =[1,1,1]
+	Biomass =[2000,2000,3000] #MAYBE NO LONGER IN USE
 
 #--- BEHAVIOUR ----
 	food_species_id  = [AlifeRegistry.SPECIES_ID.GRASS]
@@ -52,14 +52,23 @@ func Update(_manager, _i, _delta):
 		choose_action(_manager, _i)	
 		update_action(_manager, _i, _delta)
 		Homeostasis(_manager,_i,_delta)
+		Growth(_manager, _i, _delta)
 			
 
 func Growth(manager, i, _delta):
-	if manager.current_life_state_array[i] < 6:
-		if manager.current_energy_array[i] > 500:
+	if manager.current_life_state_array[i] == 1:
+		if manager.current_energy_array[i] > 7000 :
 			manager.current_life_state_array[i] += 1
-			manager.current_energy_array[i] -=  500
-			manager.current_biomass_array[i] += 5
+			manager.current_energy_array[i] -=  5000
+			manager.current_biomass_array[i] += 1000
+			return true
+	if manager.current_life_state_array[i] == 0:
+		manager.timer_array[i] +=  _delta
+		if manager.timer_array[i] > 10 :
+			manager.current_life_state_array[i] += 1
+			manager.timer_array[i] = 0
+			#manager.current_energy_array[i] -=  100000
+			#manager.current_biomass_array[i] += 1000
 			return true
 
 
@@ -93,6 +102,8 @@ func choose_action(manager, i):
 
 
 func isPickable(_manager, _i):
+	if _manager.current_life_state_array[_i] < 2:
+		return true
 	return 1-_manager.Alive_array[_i]
 
 func Homeostasis(manager,i,delta):

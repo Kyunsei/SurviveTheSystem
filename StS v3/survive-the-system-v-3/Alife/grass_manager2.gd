@@ -1167,7 +1167,7 @@ func update_grass_time():
 		$CanvasLayer.show()
 	else:
 		$CanvasLayer.hide()
-	$CanvasLayer/ProgressBar.value = 2000 - Grass_simulator_time
+	$CanvasLayer/ProgressBar.value = 250 - Grass_simulator_time
 
 
 func _on_peer_connected(id):

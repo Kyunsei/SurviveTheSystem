@@ -1,6 +1,6 @@
 shader_type spatial;
 //render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_schlick_ggx;
-render_mode  cull_disabled, unshaded,  blend_mix;// world_vertex_coords;
+render_mode  cull_back, unshaded,  blend_mix, depth_draw_opaque;// world_vertex_coords;
 uniform vec4 albedo : source_color;
 uniform sampler2D albedo_texture : source_color, filter_nearest;//, filter_linear_mipmap, repeat_enable;
 uniform float alpha_scissor_threshold : hint_range(0.0, 1.0, 0.001) =0.5;
@@ -15,7 +15,7 @@ uniform int nframe = 3;
 //instance uniform vec4 tint_color = vec4(0., 0.00, 0.00, 1.0);
 varying flat int id;
 varying flat vec4 data;
-varying flat vec4 col;
+varying flat vec3 col;
 
 
 ///
@@ -26,7 +26,7 @@ uniform vec3 player_position;
 void vertex() {
     id = INSTANCE_ID;
 	data = INSTANCE_CUSTOM;
-	col = COLOR.rgba;
+	col = COLOR.rgb;
 
 	
 
@@ -84,10 +84,7 @@ void fragment() {
 	// Called for every pixel the material is visible on.
 	//ANIMATION LEFTOVER CAN BE USED ONE DAY?
     // Control speed of switching
-    float speed = 5.0; // 1 change per second
-    // Step index increasing with time
-   // int idx = int(floor(TIME * speed + float(id))) % nframe;
-	//current_tile.x += float(idx);
+
 	
 
 
@@ -98,10 +95,8 @@ void fragment() {
 	vec2 tex_size = vec2(textureSize(albedo_texture, 0));
 	vec4 albedo_tex = texture(albedo_texture, uv);
 	ALBEDO = albedo_tex.rgb* col.rgb;
-	//ALPHA *= albedo_tex.a * col.a;
-	ALPHA *= albedo.a * albedo_tex.a;
-
-	//ALPHA_SCISSOR_THRESHOLD = alpha_scissor_threshold;
+	ALPHA *= albedo_tex.a;
+	ALPHA_SCISSOR_THRESHOLD = alpha_scissor_threshold;
 
 
 

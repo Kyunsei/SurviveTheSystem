@@ -13,6 +13,10 @@ func evaluate(_manager,_i, _DNA):
 		score = 1.5
 	if c > max and max>0:
 		score = 0
+	if _manager.Species_array[_i] == AlifeRegistry.SPECIES_ID.SHEEP:
+		if _manager.current_life_state_array[_i] == 0:
+			score= 0
+
 	return score
 
 func enter(_manager,_i, _DNA):

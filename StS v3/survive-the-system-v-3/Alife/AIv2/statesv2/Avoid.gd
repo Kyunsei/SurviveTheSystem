@@ -12,7 +12,9 @@ func evaluate(_manager,_i, _DNA):
 
 	var score = field * 10
 	#print( "AVOID score is " + str(score))
-
+	if _manager.Species_array[_i] == AlifeRegistry.SPECIES_ID.SHEEP:
+		if _manager.current_life_state_array[_i] == 0:
+			score= 0
 	return score
 
 func enter(_manager,_i, _DNA):

@@ -39,7 +39,7 @@ func Init():
 func isPickable(manager, i):
 	if manager.current_life_state_array[i] == 4:
 		manager.current_life_state_array[i] -= 1
-		manager.current_energy_array[i] -=  1000
+		manager.current_energy_array[i] -=  500
 		manager._pending_update.append(i)
 		var new_pos = manager.position_array[i] + Vector3(1,0,1)
 		manager._pending_spawns_positions.append(new_pos)
@@ -61,14 +61,14 @@ func Growth(manager, i, _delta):
 	if manager.current_life_state_array[i] < 3:
 		if manager.current_energy_array[i] > 1000:
 			manager.current_life_state_array[i] += 1
-			manager.current_energy_array[i] -=  1000
+			manager.current_energy_array[i] -=  500
 			manager.current_biomass_array[i] = Biomass[manager.current_life_state_array[i]]
 			#return true
 			manager._pending_update.append(i)
 	if manager.current_life_state_array[i] == 3:
 			if manager.current_energy_array[i] > 1000:
 				manager.current_life_state_array[i] += 1
-				manager.current_energy_array[i] -=1000
+				manager.current_energy_array[i] -= 500
 				manager.current_biomass_array[i] = Biomass[manager.current_life_state_array[i]]
 				#return true
 				manager._pending_update.append(i)		

@@ -6,9 +6,10 @@
 [ext_resource type="Script" uid="uid://dqvbcbtdwfsju" path="res://Alife/mulitmesh2.gd" id="5_hbvxf"]
 [ext_resource type="QuadMesh" uid="uid://dcrx4rno0mb02" path="res://Alife/Plant/Bush/bush_mesh.tres" id="5_qpu6g"]
 [ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="6_hbvxf"]
+[ext_resource type="Shader" uid="uid://cqndlwr1lp6ur" path="res://Alife/animal/Herbivor/jellybee/jellybee.gdshader" id="6_qhbnm"]
+[ext_resource type="Texture2D" uid="uid://byuxyvhfp1k36" path="res://Alife/animal/Herbivor/Sheep/SHEEP-Sheet.png" id="7_g02bw"]
 [ext_resource type="QuadMesh" uid="uid://c4w8e4xg2k0qh" path="res://Alife/animal/Herbivor/jellybee/JELLYBEE_MESH.tres" id="7_qpu6g"]
 [ext_resource type="QuadMesh" uid="uid://cemxkaiaso15s" path="res://Alife/Plant/Moss/moss_ground.tres" id="8_5nq35"]
-[ext_resource type="Texture2D" uid="uid://dglpkd641galc" path="res://Alife/animal/Herbivor/SHEEP.png" id="8_dysbp"]
 [ext_resource type="QuadMesh" uid="uid://bm1k4t0khab06" path="res://Alife/Plant/Moss/moss.tres" id="8_ixbrm"]
 [ext_resource type="QuadMesh" uid="uid://bjvwq20d0k7hn" path="res://Alife/animal/Herbivor/Snailbat/SNAILBAT_MESH.tres" id="8_qhbnm"]
 [ext_resource type="Shader" uid="uid://cdgnd8sa73xqb" path="res://Alife/animal/Spider/spider.gdshader" id="9_qpu6g"]
@@ -31,26 +32,26 @@ use_colors = true
 use_custom_data = true
 mesh = ExtResource("5_qpu6g")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5nq35"]
-transparency = 2
-alpha_scissor_threshold = 0.5
-alpha_antialiasing_mode = 0
-vertex_color_use_as_albedo = true
-albedo_texture = ExtResource("8_dysbp")
-backlight_enabled = true
-backlight = Color(1, 1, 1, 1)
-texture_filter = 0
-billboard_mode = 2
-billboard_keep_scale = true
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rmegg"]
+render_priority = 0
+shader = ExtResource("6_qhbnm")
+shader_parameter/albedo = Color(0, 0, 0, 1)
+shader_parameter/albedo_texture = ExtResource("7_g02bw")
+shader_parameter/alpha_scissor_threshold = 0.800000038
+shader_parameter/tile_count = Vector2i(3, 2)
+shader_parameter/tile_index = Vector2i(0, 0)
+shader_parameter/nframe = 1
+shader_parameter/player_position = Vector3(0, 0, 0)
 
 [sub_resource type="QuadMesh" id="QuadMesh_ixbrm"]
-material = SubResource("StandardMaterial3D_5nq35")
+material = SubResource("ShaderMaterial_rmegg")
 size = Vector2(4, 4)
 center_offset = Vector3(0, 2, 0)
 
 [sub_resource type="MultiMesh" id="MultiMesh_8rc0f"]
 transform_format = 1
 use_colors = true
+use_custom_data = true
 mesh = SubResource("QuadMesh_ixbrm")
 
 [sub_resource type="MultiMesh" id="MultiMesh_g02bw"]
@@ -153,6 +154,7 @@ test = true
 [node name="sheep" type="MultiMeshInstance3D" parent="." unique_id=805820802]
 multimesh = SubResource("MultiMesh_8rc0f")
 script = ExtResource("5_hbvxf")
+test = true
 
 [node name="jellybee" type="MultiMeshInstance3D" parent="." unique_id=559723129]
 multimesh = SubResource("MultiMesh_g02bw")
@@ -199,7 +201,7 @@ offset_top = 40.0
 offset_right = 37.0
 offset_bottom = 67.0
 grow_horizontal = 2
-max_value = 2000.0
+max_value = 250.0
 value = 100.0
 metadata/_edit_use_anchors_ = true
 

@@ -36,7 +36,9 @@ func evaluate(_manager,_i, _DNA):
 	score*= food_score
 	'for f in food_type:
 		score =  _manager.sum_species_world_array[f][bin]'
-
+	if _manager.Species_array[_i] == AlifeRegistry.SPECIES_ID.SHEEP:
+		if _manager.current_life_state_array[_i] == 0:
+			score= 0
 	return  score
 
 
@@ -66,7 +68,7 @@ func update(manager,i, _DNA, _delta):
 				manager.current_health_array[ti] = -10
 				manager.Alive_array[ti] = 0
 				manager.current_energy_array[i] += manager.current_biomass_array[ti]
-				manager.current_energy_array[i] = min(manager.current_energy_array[i],_DNA.Max_energy[0] )
+				#manager.current_energy_array[i] = min(manager.current_energy_array[i],_DNA.Max_energy[0] )
 				#manager.current_biomass_array[ti] = 0
 		#manager.Active[ti] = 0
 
