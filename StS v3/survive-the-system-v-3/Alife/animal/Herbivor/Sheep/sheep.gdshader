@@ -1,6 +1,6 @@
 shader_type spatial;
 //render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_schlick_ggx;
-render_mode  cull_back, unshaded,  blend_mix, depth_draw_opaque;// world_vertex_coords;
+render_mode  cull_disabled, unshaded,  blend_mix, depth_draw_opaque;// world_vertex_coords;
 uniform vec4 albedo : source_color;
 uniform sampler2D albedo_texture : source_color, filter_nearest;//, filter_linear_mipmap, repeat_enable;
 uniform float alpha_scissor_threshold : hint_range(0.0, 1.0, 0.001) =0.5;

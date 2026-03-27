@@ -98,8 +98,8 @@ void fragment() {
 	vec2 tex_size = vec2(textureSize(albedo_texture, 0));
 	vec4 albedo_tex = texture(albedo_texture, uv);
 	ALBEDO = albedo_tex.rgb* col.rgb;
-	//ALPHA *= albedo_tex.a * col.a;
-	ALPHA *= albedo.a * albedo_tex.a;
+	ALPHA *= albedo_tex.a * col.a;
+	//ALPHA *= albedo.a * albedo_tex.a;
 
 	//ALPHA_SCISSOR_THRESHOLD = alpha_scissor_threshold;
 

@@ -64,7 +64,7 @@ func Growth(manager, i, _delta):
 			return true
 	if manager.current_life_state_array[i] == 0:
 		manager.timer_array[i] +=  _delta
-		if manager.timer_array[i] > 10 :
+		if manager.timer_array[i] > 5 :
 			manager.current_life_state_array[i] += 1
 			manager.timer_array[i] = 0
 			#manager.current_energy_array[i] -=  100000

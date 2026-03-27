@@ -52,6 +52,8 @@ func Update(manager, i, delta):
 	if manager.Alive_array[i] == 1:
 		if manager.current_life_state_array[i] == 0:
 			Germination(manager,i,s,t)
+			#Homeostasis(manager,i,s,t,delta)
+
 
 		else:
 			Homeostasis(manager,i,s,t,delta)

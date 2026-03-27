@@ -7,4 +7,7 @@
 script = ExtResource("1_5vwnp")
 timer_prep = 0.5
 next_state = ExtResource("1_wfql6")
+max_distance_to_target = 5.0
+max_distance_to_target2 = 40.0
+bin_vision_range = 6
 metadata/_custom_type_script = "uid://dafy7wxhvwmuc"

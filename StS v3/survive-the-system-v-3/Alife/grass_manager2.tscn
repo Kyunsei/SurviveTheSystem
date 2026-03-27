@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://dqvbcbtdwfsju" path="res://Alife/mulitmesh2.gd" id="5_hbvxf"]
 [ext_resource type="QuadMesh" uid="uid://dcrx4rno0mb02" path="res://Alife/Plant/Bush/bush_mesh.tres" id="5_qpu6g"]
 [ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="6_hbvxf"]
-[ext_resource type="Shader" uid="uid://cqndlwr1lp6ur" path="res://Alife/animal/Herbivor/jellybee/jellybee.gdshader" id="6_qhbnm"]
+[ext_resource type="Shader" uid="uid://bf0x8an5hqcyy" path="res://Alife/animal/Herbivor/Sheep/sheep.gdshader" id="6_qhbnm"]
 [ext_resource type="Texture2D" uid="uid://byuxyvhfp1k36" path="res://Alife/animal/Herbivor/Sheep/SHEEP-Sheet.png" id="7_g02bw"]
 [ext_resource type="QuadMesh" uid="uid://c4w8e4xg2k0qh" path="res://Alife/animal/Herbivor/jellybee/JELLYBEE_MESH.tres" id="7_qpu6g"]
 [ext_resource type="QuadMesh" uid="uid://cemxkaiaso15s" path="res://Alife/Plant/Moss/moss_ground.tres" id="8_5nq35"]
