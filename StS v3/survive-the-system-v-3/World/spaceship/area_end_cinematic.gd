@@ -9,18 +9,18 @@ func _process(_delta):
 	pass
 	pass
 	pass
+	
 @rpc("any_peer", "call_remote")
 func tween_that_shit(fade_time: float, color: Color):
-	print("worked")
 	var end_canvas = get_parent().get_parent().get_parent().get_node("end_canvas")
 	var text = end_canvas.get_node("VBoxContainer").get_children()
 	end_canvas.show()
 	for child in text :
-		print(child)
 		var start_color = color
 		start_color.a = 0.0
 		child.modulate = start_color
 	for child in text :
+		#child.show()
 		var tween = create_tween()
 		tween.tween_property(child, "modulate:a", 1.0, fade_time) # fade in
 		tween.tween_interval(1.0) # wait
@@ -45,12 +45,16 @@ func interact(player, state:bool):
 		#var main_game = spaceship.get_parent()
 		var spaceship_height = spaceship.global_position.y
 		var all_above = true
+		#end_canvas.show()
+
+		#tween_that_shit.rpc(5.0, Color(1.0,1.0,1.0,1.0))
+
 		for p in player_list:
 			#p.go_to_position.rpc_id(int(p.name), Vector3(10000,10000,-10000))
-			#tween_that_shit.rpc_id(int(player.name),5.0, Color(1.0,1.0,1.0,1.0))
 			if p.global_position.y < spaceship_height:
 				all_above = false
 				break
+		#return
 		if all_above:
 			spaceship.block_entrance()
 			for p in player_list:
@@ -87,8 +91,9 @@ func interact(player, state:bool):
 			await get_tree().create_timer(5.0).timeout
 			for p in player_list2:
 				p.go_to_position.rpc_id(int(p.name), Vector3(10000,10000,-10000))
-				tween_that_shit.rpc_id(int(player.name),5.0, Color(1.0,1.0,1.0,1.0))
-			end_canvas.show()
+			
+			tween_that_shit.rpc(5.0, Color(1.0,1.0,1.0,1.0))
+			#end_canvas.show()
 
 
 	

@@ -15,25 +15,22 @@
 line_spacing = 0.0
 paragraph_spacing = 15.0
 font_size = 24
-font_color = Color(1, 1, 1, 0.86100006)
 outline_size = 6
-outline_color = Color(0, 0, 0, 0.84900004)
+outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_02kkc"]
 line_spacing = 15.0
 paragraph_spacing = 15.0
 font_size = 48
-font_color = Color(1, 1, 1, 0.86100006)
 outline_size = 12
-outline_color = Color(0, 0, 0, 0.86100006)
+outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_aomqu"]
 line_spacing = 15.0
 paragraph_spacing = 15.0
 font_size = 72
-font_color = Color(1, 1, 1, 0.795)
 outline_size = 16
-outline_color = Color(0, 0, 0, 0.83100003)
+outline_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l5ukw"]
 albedo_texture = ExtResource("7_f52ns")
@@ -88,7 +85,7 @@ properties/1/spawn = true
 properties/1/replication_mode = 1
 properties/2/path = NodePath("end_canvas:visible")
 properties/2/spawn = true
-properties/2/replication_mode = 1
+properties/2/replication_mode = 0
 properties/3/path = NodePath("SPACESHIP/Stairs:visible")
 properties/3/spawn = true
 properties/3/replication_mode = 1

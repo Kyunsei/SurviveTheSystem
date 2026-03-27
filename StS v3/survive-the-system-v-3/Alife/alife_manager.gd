@@ -121,7 +121,7 @@ func init():
 				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.JELLYBEE)
 				
-			for i in range(10):
+			for i in range(15):
 				var pos = get_random_worldpos()
 				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.SHEEP)
