@@ -3,6 +3,8 @@ class_name REPRODUCE_STATE
 
 @export var child_number : int = 3
 @export var max = 100
+@export var die_after = false
+
 var c = 0
 
 func evaluate(_manager,_i, _DNA):
@@ -33,6 +35,9 @@ func enter(_manager,_i, _DNA):
 			_manager._pending_spawns_positions.append(newpos)
 			_manager._pending_spawns_species.append(_DNA.species_id)
 		_manager.current_energy_array[_i] =-  _DNA.Reproduction_cost[0]
+		if die_after:
+			_manager.Alive_array[_i]=0
+			_manager._pending_update.append(_i)
 		c+= 1
 		
 

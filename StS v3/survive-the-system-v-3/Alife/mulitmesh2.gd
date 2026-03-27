@@ -60,8 +60,7 @@ func draw_all_grass(id, pos, state, alive, active,size,finite_state):
 			else:
 				g = 0
 		else:
-			g = 4
-			print("here")
+			g = -1
 		var b = 0
 		var a = 0
 		multimesh.set_instance_custom_data(slot, Color(r, g, b, a))

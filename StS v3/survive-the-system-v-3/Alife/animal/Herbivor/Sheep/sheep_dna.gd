@@ -27,7 +27,7 @@ func Init():
 
 
 	# --- Life Cycle ---
-	Reproduction_cost  =[6000,6000,6000]
+	Reproduction_cost  =[5000,5000,5000]
 	Reproduction_spread  =[5,5,5]
 	Reproduction_number =[1,1,1]
 	Biomass =[2000,2000,3000] #MAYBE NO LONGER IN USE
@@ -51,15 +51,15 @@ func Update(_manager, _i, _delta):
 	if _manager.Alive_array[_i] == 1:
 		choose_action(_manager, _i)	
 		update_action(_manager, _i, _delta)
-		Homeostasis(_manager,_i,_delta)
+		#Homeostasis(_manager,_i,_delta)
 		Growth(_manager, _i, _delta)
 			
 
 func Growth(manager, i, _delta):
 	if manager.current_life_state_array[i] == 1:
-		if manager.current_energy_array[i] > 7000 :
+		if manager.current_energy_array[i] > 3000 :
 			manager.current_life_state_array[i] += 1
-			manager.current_energy_array[i] -=  5000
+			manager.current_energy_array[i] -=  2000
 			manager.current_biomass_array[i] += 1000
 			return true
 	if manager.current_life_state_array[i] == 0:
