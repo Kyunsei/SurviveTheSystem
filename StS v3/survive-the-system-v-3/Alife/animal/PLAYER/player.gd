@@ -457,7 +457,7 @@ func change_bin():
 
 	var old_bin = _manager.binID_array[_i]
 	var current_bin = _manager.get_real_current_bin(_i)
-	if position.y > 2:
+	if position.y > 10:
 		current_bin = -1
 	#print(current_bin)
 
