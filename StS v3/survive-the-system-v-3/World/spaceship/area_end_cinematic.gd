@@ -19,11 +19,16 @@ func tween_that_shit(fade_time: float, color: Color):
 		var start_color = color
 		start_color.a = 0.0
 		child.modulate = start_color
+	for child in text :
+
 		var tween = create_tween()
 		tween.tween_property(child, "modulate:a", 1.0, fade_time) # fade in
 		tween.tween_interval(1.0) # wait
+		if child == text.back():
+			fade_time*=1000000
 		tween.tween_property(child, "modulate:a", 0.0, fade_time) # fade out
 		#tween.tween_property(child, "modulate:a", 1.0, fade_time)
+		await get_tree().create_timer(fade_time*2).timeout
 
 
 
@@ -80,9 +85,9 @@ func interact(player, state:bool):
 			end_animater.play("ship_going_away")
 			await get_tree().create_timer(5.0).timeout
 			for p in player_list2:
-				end_canvas.show()
 				p.go_to_position.rpc_id(int(p.name), Vector3(10000,10000,-10000))
 				tween_that_shit.rpc_id(int(player.name),5.0, Color(1.0,1.0,1.0,1.0))
+				end_canvas.show()
 
 	
 	

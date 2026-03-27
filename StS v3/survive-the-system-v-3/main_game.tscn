@@ -15,15 +15,25 @@
 line_spacing = 0.0
 paragraph_spacing = 15.0
 font_size = 24
+font_color = Color(1, 1, 1, 0.86100006)
 outline_size = 6
-outline_color = Color(0, 0, 0, 1)
+outline_color = Color(0, 0, 0, 0.84900004)
 
 [sub_resource type="LabelSettings" id="LabelSettings_02kkc"]
 line_spacing = 15.0
 paragraph_spacing = 15.0
 font_size = 48
+font_color = Color(1, 1, 1, 0.86100006)
 outline_size = 12
-outline_color = Color(0, 0, 0, 1)
+outline_color = Color(0, 0, 0, 0.86100006)
+
+[sub_resource type="LabelSettings" id="LabelSettings_aomqu"]
+line_spacing = 15.0
+paragraph_spacing = 15.0
+font_size = 72
+font_color = Color(1, 1, 1, 0.795)
+outline_size = 16
+outline_color = Color(0, 0, 0, 0.83100003)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l5ukw"]
 albedo_texture = ExtResource("7_f52ns")
@@ -4846,8 +4856,12 @@ size_flags_vertical = 1
 text = "3D models:"
 label_settings = SubResource("LabelSettings_mf81u")
 
-[node name="Label1" type="Label" parent="end_canvas/VBoxContainer" unique_id=339410844]
-layout_mode = 2
+[node name="Label1" type="Label" parent="end_canvas/VBoxContainer/TitleLabel1" unique_id=339410844]
+layout_mode = 0
+offset_left = -15.0
+offset_top = 38.0
+offset_right = 144.0
+offset_bottom = 105.0
 size_flags_horizontal = 4
 text = "Dabols"
 label_settings = SubResource("LabelSettings_02kkc")
@@ -4859,8 +4873,12 @@ size_flags_vertical = 1
 text = "World Simulation:"
 label_settings = SubResource("LabelSettings_mf81u")
 
-[node name="Label2" type="Label" parent="end_canvas/VBoxContainer" unique_id=1594861563]
-layout_mode = 2
+[node name="Label2" type="Label" parent="end_canvas/VBoxContainer/TitleLabel2" unique_id=1594861563]
+layout_mode = 0
+offset_left = 58.0
+offset_top = 38.0
+offset_right = 149.0
+offset_bottom = 105.0
 size_flags_horizontal = 4
 text = "Izva"
 label_settings = SubResource("LabelSettings_02kkc")
@@ -4872,8 +4890,12 @@ size_flags_vertical = 1
 text = "Programmation:"
 label_settings = SubResource("LabelSettings_mf81u")
 
-[node name="Label3" type="Label" parent="end_canvas/VBoxContainer" unique_id=1394233871]
-layout_mode = 2
+[node name="Label3" type="Label" parent="end_canvas/VBoxContainer/TitleLabel3" unique_id=1394233871]
+layout_mode = 0
+offset_left = -146.0
+offset_top = 38.0
+offset_right = 337.0
+offset_bottom = 105.0
 size_flags_horizontal = 4
 text = "Izva & Scylla/Kyunsei"
 label_settings = SubResource("LabelSettings_02kkc")
@@ -4885,8 +4907,12 @@ size_flags_vertical = 1
 text = "Arts:"
 label_settings = SubResource("LabelSettings_mf81u")
 
-[node name="Label4" type="Label" parent="end_canvas/VBoxContainer" unique_id=141016043]
-layout_mode = 2
+[node name="Label4" type="Label" parent="end_canvas/VBoxContainer/TitleLabel4" unique_id=141016043]
+layout_mode = 0
+offset_left = -214.0
+offset_top = 38.0
+offset_right = 269.0
+offset_bottom = 105.0
 size_flags_horizontal = 4
 text = "Izva & Scylla/Kyunsei"
 label_settings = SubResource("LabelSettings_02kkc")
@@ -4898,11 +4924,38 @@ size_flags_vertical = 1
 text = "Special thanks:"
 label_settings = SubResource("LabelSettings_mf81u")
 
-[node name="Label5" type="Label" parent="end_canvas/VBoxContainer" unique_id=1507401186]
-layout_mode = 2
+[node name="Label5" type="Label" parent="end_canvas/VBoxContainer/TitleLabel5" unique_id=1507401186]
+layout_mode = 0
+offset_left = -116.0
+offset_top = 38.0
+offset_right = 289.0
+offset_bottom = 105.0
 size_flags_horizontal = 4
 text = "Dabols, Nox, Aste"
 label_settings = SubResource("LabelSettings_02kkc")
+
+[node name="TitleLabel10" type="Label" parent="end_canvas/VBoxContainer" unique_id=1977153071]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 1
+text = "Playtesters:"
+label_settings = SubResource("LabelSettings_mf81u")
+
+[node name="Label10" type="Label" parent="end_canvas/VBoxContainer/TitleLabel10" unique_id=383913358]
+layout_mode = 0
+offset_left = -439.0
+offset_top = 38.0
+offset_right = 575.0
+offset_bottom = 105.0
+size_flags_horizontal = 4
+text = "Dabols, Truite, Bast, Arthur, Aste, Marty, Nox"
+label_settings = SubResource("LabelSettings_02kkc")
+
+[node name="Label3" type="Label" parent="end_canvas/VBoxContainer" unique_id=972309800]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Thank you for playing!"
+label_settings = SubResource("LabelSettings_aomqu")
 
 [node name="Network" parent="." unique_id=1782053974 instance=ExtResource("5_2pltu")]
 
