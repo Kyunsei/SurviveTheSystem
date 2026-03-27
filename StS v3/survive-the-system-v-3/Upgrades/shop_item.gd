@@ -24,6 +24,10 @@ func setup(peer_id, item: ItemResource, qty: int, id):
 	item_resource = item
 	quantity = qty
 	id_in_stock = id
+	if quantity <= 0:
+		$NoStock1.show()
+	if quantity > 0:
+		$NoStock1.hide()
 
 	#if item.inventory_icon:
 	
@@ -40,6 +44,10 @@ func setup(peer_id, item: ItemResource, qty: int, id):
 
 @rpc("any_peer","call_local")
 func setup_client(item_path, qty: int,id):
+	#if quantity <= 0:
+		#$NoStock1.show()
+	#if quantity > 0:
+		#$NoStock1.hide()
 	#print(item_path)
 	var item = load(item_path)
 	itemz= item
@@ -62,7 +70,11 @@ func setup_client(item_path, qty: int,id):
 @rpc("any_peer","call_local")
 func _on_pressed() -> void:
 
-		
+
+	if quantity <= 0:
+		$NoStock1.show()
+	if quantity > 0:
+		$NoStock1.hide()
 	buy_item.rpc_id(1, multiplayer.get_unique_id(), prizez, itemz_path)
 
 
@@ -95,6 +107,10 @@ func change_quantity():
 		return
 	quantity -= 1
 	quantity_label.text = str("In stock: ") + str(quantity)
+	if quantity <= 0:
+		$NoStock1.show()
+	if quantity > 0:
+		$NoStock1.hide()
 	
 	
 	

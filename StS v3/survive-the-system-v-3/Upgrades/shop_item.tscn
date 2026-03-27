@@ -3,10 +3,17 @@
 [ext_resource type="Script" uid="uid://dan6hhrhduxb7" path="res://Upgrades/shop_item.gd" id="1_wuyhm"]
 [ext_resource type="Texture2D" uid="uid://ba3ghrf00sjvg" path="res://Alife/animal/Herbivor/sheep1.png" id="2_h1g10"]
 [ext_resource type="LabelSettings" uid="uid://dj3ciqlktrbfq" path="res://Upgrades/label_for_shop.tres" id="3_y6yvb"]
+[ext_resource type="Texture2D" uid="uid://dfi55n3oefnhv" path="res://assets/assets kyun/No_stock1.png" id="4_2tmsq"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_y6yvb"]
 
 [sub_resource type="Theme" id="Theme_2tmsq"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_2tmsq"]
+font_size = 24
+font_color = Color(1, 0, 0, 1)
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
 
 [node name="ShopItem" type="Button" unique_id=264215938]
 material = SubResource("CanvasItemMaterial_y6yvb")
@@ -46,5 +53,24 @@ offset_bottom = 174.0
 text = "Price
 "
 label_settings = ExtResource("3_y6yvb")
+
+[node name="NoStock1" type="Sprite2D" parent="." unique_id=618796449]
+visible = false
+modulate = Color(1, 1, 1, 0.735)
+position = Vector2(76, 76)
+scale = Vector2(1.18, 1.18)
+texture = ExtResource("4_2tmsq")
+
+[node name="Label" type="Label" parent="NoStock1" unique_id=404848809]
+texture_filter = 1
+offset_left = -38.135593
+offset_top = -55.932205
+offset_right = 37.864407
+offset_bottom = 52.067795
+text = "OUT 
+OF 
+STOCK"
+label_settings = SubResource("LabelSettings_2tmsq")
+horizontal_alignment = 1
 
 [connection signal="pressed" from="." to="." method="_on_pressed"]
