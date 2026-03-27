@@ -9,6 +9,7 @@ var peer: ENetMultiplayerPeer
 var is_screen_focus
 
 signal server_started
+signal simulation_started
 
 func _ready() -> void:
 	print(get_path())
@@ -53,11 +54,13 @@ func _on_button_pressed() -> void:
 		#hide()
 
 
+
+
 func start_server():
 	peer = ENetMultiplayerPeer.new()
 	peer.create_server(PORT, MAX_CLIENTS)
 	multiplayer.multiplayer_peer = peer
-	$Label.text = $Label.text + "\nServer ONLINE"
+	$Label.text = $Label.text + "\nServer ONLINE"	
 	server_started.emit()
 	
 
@@ -102,3 +105,7 @@ func _on_check_button_toggled(toggled_on: bool) -> void:
 
 func _on_port_text_changed(new_text: String) -> void:
 	PORT = int(new_text)
+
+
+func _on_button_simulation_pressed() -> void:
+	GlobalSimulationParameter.server_ready = true

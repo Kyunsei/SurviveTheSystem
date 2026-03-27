@@ -26,10 +26,25 @@ anchors_preset = -1
 anchor_left = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 469.0
-offset_top = 564.0
-offset_right = 560.0
-offset_bottom = 595.0
+offset_left = 436.0
+offset_top = 569.0
+offset_right = 575.0
+offset_bottom = 600.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+text = "Start -Simulation"
+
+[node name="Button_simulation" type="Button" parent="." unique_id=2123098886]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 268.0
+offset_top = 581.0
+offset_right = 407.0
+offset_bottom = 612.0
 grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 0
@@ -117,24 +132,37 @@ text = "New"
 
 [node name="Label4" type="Label" parent="." unique_id=421842275]
 layout_mode = 0
-offset_left = 461.0
-offset_top = 601.0
-offset_right = 731.0
-offset_bottom = 624.0
+offset_left = 455.0
+offset_top = 603.0
+offset_right = 725.0
+offset_bottom = 626.0
 text = "Port"
 
 [node name="Port" type="LineEdit" parent="." unique_id=171307088]
 layout_mode = 0
-offset_left = 505.0
-offset_top = 600.0
-offset_right = 563.0
-offset_bottom = 625.0
+offset_left = 500.0
+offset_top = 604.0
+offset_right = 558.0
+offset_bottom = 629.0
 focus_mode = 1
 theme_override_font_sizes/font_size = 12
 text = "10000"
 alignment = 1
 
+[node name="Label5" type="Label" parent="." unique_id=1350181332]
+layout_mode = 0
+offset_left = 581.0
+offset_top = 565.0
+offset_right = 729.0
+offset_bottom = 667.0
+theme_override_font_sizes/font_size = 10
+text = "To use Online:
+You need to open your port
+ on your router/modem  
+and give your public IP"
+
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button_simulation" to="." method="_on_button_simulation_pressed"]
 [connection signal="text_submitted" from="LineEdit" to="." method="_on_line_edit_text_submitted"]
 [connection signal="toggled" from="CheckButton" to="." method="_on_check_button_toggled"]
 [connection signal="text_changed" from="Port" to="." method="_on_port_text_changed"]

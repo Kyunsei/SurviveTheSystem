@@ -129,16 +129,6 @@ offset_right = 1074.0
 offset_bottom = 296.0
 text = "Port"
 
-[node name="Label5" type="Label" parent="." unique_id=845132563]
-layout_mode = 0
-offset_left = 926.0
-offset_top = 225.0
-offset_right = 1212.0
-offset_bottom = 327.0
-text = "To use Online:
-You need to open your port
- on your router/modem "
-
 [node name="Port" type="LineEdit" parent="." unique_id=1602316941]
 layout_mode = 0
 offset_left = 845.0
