@@ -1,7 +1,7 @@
 extends Node
 class_name DEBUG_control
 
-@export var DEBUG_ACTIVE = false
+@export var DEBUG_ACTIVE = true
 var player : Node3D
 var player_action_area : Node3D
 var camera_anchor : Node3D
