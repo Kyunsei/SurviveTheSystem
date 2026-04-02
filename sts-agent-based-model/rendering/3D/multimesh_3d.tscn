@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bqjby3yit4fqw"]
+
+[ext_resource type="Script" uid="uid://eximc5mx3vcu" path="res://rendering/3D/multimesh_3d.gd" id="1_05ws6"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_w6ua3"]
+
+[sub_resource type="MultiMesh" id="MultiMesh_2nlhj"]
+transform_format = 1
+use_colors = true
+use_custom_data = true
+mesh = SubResource("PrismMesh_w6ua3")
+
+[node name="multimesh3D" type="MultiMeshInstance3D" unique_id=322693166]
+multimesh = SubResource("MultiMesh_2nlhj")
+script = ExtResource("1_05ws6")

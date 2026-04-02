@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://b1meyecml6wr2"]
+
+[ext_resource type="Script" uid="uid://b1m8rmurnnaal" path="res://Menus/Simulation_menus/simulation_menu.gd" id="1_xe8do"]
+
+[node name="Simulation_menu" type="CanvasLayer" unique_id=318262611]
+script = ExtResource("1_xe8do")
+
+[node name="Panel" type="Panel" parent="." unique_id=1501049618]
+offset_right = 233.0
+offset_bottom = 385.0
+
+[node name="Label_agent_number" type="Label" parent="Panel" unique_id=757820834]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 10.0
+offset_right = 127.0
+offset_bottom = 33.0
+text = "Agents number:"
+
+[node name="LineEdit_agentnumber" type="LineEdit" parent="Panel" unique_id=1081216079]
+layout_mode = 0
+offset_left = 134.0
+offset_top = 8.0
+offset_right = 202.5
+offset_bottom = 39.0
+
+[node name="FPS" type="Label" parent="Panel" unique_id=206492244]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.086
+offset_left = 13.0
+offset_top = 71.0
+offset_right = 32.961998
+offset_bottom = 94.0
+
+[connection signal="text_submitted" from="Panel/LineEdit_agentnumber" to="." method="_on_line_edit_agentnumber_text_submitted"]

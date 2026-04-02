@@ -1,0 +1,78 @@
+[gd_scene format=3 uid="uid://u1lqps2jq571"]
+
+[ext_resource type="Script" uid="uid://cv1dlrbu6vp55" path="res://Menus/Start_menu/start_menu.gd" id="1_y23xx"]
+
+[node name="Start_menu" type="Control" unique_id=1248240519]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_y23xx")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1495782054]
+layout_mode = 0
+offset_right = 1150.0
+offset_bottom = 646.0
+color = Color(0.06147109, 0.20570105, 0.042253606, 1)
+
+[node name="Title" type="Label" parent="." unique_id=31300760]
+layout_mode = 0
+offset_left = 332.0
+offset_top = 29.0
+offset_right = 790.0
+offset_bottom = 200.0
+theme_override_font_sizes/font_size = 40
+text = "Survive The System:
+Agent Based Simulation
+Technical prototype"
+horizontal_alignment = 1
+
+[node name="version" type="Label" parent="." unique_id=728885763]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.017
+anchor_bottom = 0.035
+offset_left = 520.0
+offset_top = 216.0
+offset_right = 584.416
+offset_bottom = 216.32
+text = "version 0.3"
+
+[node name="credits" type="Label" parent="." unique_id=24255642]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.017
+anchor_bottom = 0.035
+offset_left = 12.0
+offset_top = 606.0
+offset_right = 142.416
+offset_bottom = 606.32
+text = "Developped by Izva"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=309481270]
+layout_mode = 0
+offset_left = 461.0
+offset_top = 286.0
+offset_right = 669.0
+offset_bottom = 420.0
+
+[node name="New" type="Button" parent="VBoxContainer" unique_id=1097639295]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "New Simulations"
+
+[node name="load" type="Button" parent="VBoxContainer" unique_id=1455488364]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Load Simulations"
+
+[node name="quit" type="Button" parent="VBoxContainer" unique_id=1057274752]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Quit"
+
+[connection signal="pressed" from="VBoxContainer/New" to="." method="_on_new_pressed"]
+[connection signal="pressed" from="VBoxContainer/load" to="." method="_on_load_pressed"]
+[connection signal="pressed" from="VBoxContainer/quit" to="." method="_on_quit_pressed"]
