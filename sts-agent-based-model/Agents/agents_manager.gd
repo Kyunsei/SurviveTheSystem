@@ -77,6 +77,7 @@ func Add_Agent():
 	var new_id : int
 	if free_indices.size()> 0:
 		new_id = free_indices.pop_back()
+		agent_count += 1
 		Build_Agent(new_id)
 	else:
 		new_id = agent_count
@@ -86,4 +87,5 @@ func Add_Agent():
 
 func Remove_Agent(id):
 	free_indices.append(id)
+	agent_count -= 1
 	active[id]=0

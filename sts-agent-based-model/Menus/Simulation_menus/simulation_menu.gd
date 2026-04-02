@@ -25,4 +25,9 @@ func change_agent_number(agent_number):
 		var diff = agent_number - agent_manager.agent_count
 		for d in range(diff):
 			agent_manager.Add_Agent()
+			
+	elif agent_manager.agent_count > agent_number:
+		var diff = agent_manager.agent_count - agent_number 
+		for d in range(diff):
+			agent_manager.Remove_Agent(d)
 	

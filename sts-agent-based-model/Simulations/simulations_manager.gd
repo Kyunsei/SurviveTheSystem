@@ -17,5 +17,5 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	agent_manager.update(delta)
-	multimesh.draw_all(agent_manager.positions)
+	multimesh.draw_all(agent_manager.positions, agent_manager.active, agent_manager.agent_count)
 	
