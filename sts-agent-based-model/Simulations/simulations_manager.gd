@@ -2,7 +2,7 @@ extends Node
 
 @export var simulation_menu : Node
 @export var agent_manager : AgentManager
-@export var multimesh : MultiMeshInstance3D
+@export var multimesh : Node #MultiMeshInstance3D
 
 
 
@@ -17,5 +17,5 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	agent_manager.update(delta)
-	multimesh.draw_all(agent_manager.positions, agent_manager.active, agent_manager.agent_count)
+	multimesh.draw_all(agent_manager.positions_x,agent_manager.positions_y,agent_manager.positions_z, agent_manager.active, agent_manager.agent_count)
 	

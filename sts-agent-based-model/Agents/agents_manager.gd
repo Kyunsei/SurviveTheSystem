@@ -4,6 +4,10 @@ class_name AgentManager
 
 #AGENTS VARIABLE
 var positions : PackedVector3Array
+var positions_x : PackedFloat32Array
+var positions_y : PackedFloat32Array
+var positions_z : PackedFloat32Array
+
 var directions: PackedVector3Array
 var bin_ids : PackedInt32Array
 var active : PackedInt32Array
@@ -66,10 +70,17 @@ func Generate_Arrays():
 
 func Build_New_Agent():
 	positions.append(Vector3(0,0,0))
+	positions_x.append(0)
+	positions_y.append(0)
+	positions_z.append(0)
+
 	active.append(1)
 
 func Build_Agent(id):
 	positions[id]=Vector3(0,0,0)
+	positions_x[id] =0
+	positions_y[id] =0
+	positions_z[id] =0
 	active[id]=1
 	
 	

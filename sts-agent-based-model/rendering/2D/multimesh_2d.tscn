@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://ca4kafihhu77t"]
+
+[ext_resource type="Script" uid="uid://c4jt4rv4prif7" path="res://rendering/2D/multimesh_2d.gd" id="1_1v55w"]
+
+[sub_resource type="MultiMesh" id="MultiMesh_1v55w"]
+use_colors = true
+use_custom_data = true
+
+[node name="multimesh2d" type="MultiMeshInstance2D" unique_id=422703149]
+multimesh = SubResource("MultiMesh_1v55w")
+script = ExtResource("1_1v55w")
