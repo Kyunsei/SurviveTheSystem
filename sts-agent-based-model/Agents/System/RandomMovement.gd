@@ -20,3 +20,10 @@ func update(manager,delta):
 			positions_x[i] += r.x * spd
 			positions_y[i] += r.y * spd
 			positions_z[i] += r.z * spd
+			var world_id = 0
+			if manager.world_manager.boundary_condition[world_id] == 0:
+				pass
+			else:
+				positions_x[i] = clamp(positions_x[i],0,manager.world_manager.size_x[world_id])
+				positions_y[i] = clamp(positions_y[i],0,manager.world_manager.size_y[world_id])
+				positions_z[i] = clamp(positions_z[i],0,manager.world_manager.size_z[world_id])

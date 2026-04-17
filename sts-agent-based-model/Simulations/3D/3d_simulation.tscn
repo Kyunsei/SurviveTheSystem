@@ -6,15 +6,18 @@
 [ext_resource type="PackedScene" uid="uid://bqjby3yit4fqw" path="res://rendering/3D/multimesh_3d.tscn" id="4_gbpvr"]
 [ext_resource type="Script" uid="uid://cpc6rnrusilpl" path="res://Agents/AgentSystem.gd" id="4_x4u22"]
 [ext_resource type="Script" uid="uid://dhryomltd4f4r" path="res://Agents/System/RandomMovement.gd" id="5_xbj35"]
+[ext_resource type="PackedScene" uid="uid://cklunj40dv1m" path="res://Camera/camera_3d.tscn" id="7_xbj35"]
+[ext_resource type="Script" uid="uid://m6nnvxujp5nt" path="res://World/WorldManager.gd" id="8_pxu6w"]
 
 [sub_resource type="Resource" id="Resource_pxu6w"]
 script = ExtResource("5_xbj35")
 metadata/_custom_type_script = "uid://dhryomltd4f4r"
 
-[node name="3D_simulation" type="Node3D" unique_id=1764471231 node_paths=PackedStringArray("simulation_menu", "agent_manager", "multimesh")]
+[node name="3D_simulation" type="Node3D" unique_id=1764471231 node_paths=PackedStringArray("simulation_menu", "agent_manager", "world_manager", "multimesh")]
 script = ExtResource("1_uxjfy")
 simulation_menu = NodePath("Simulation_menu")
 agent_manager = NodePath("AgentManager")
+world_manager = NodePath("WorldManager")
 multimesh = NodePath("multimesh3D")
 
 [node name="Simulation_menu" parent="." unique_id=318262611 instance=ExtResource("1_ik554")]
@@ -26,8 +29,12 @@ metadata/_custom_type_script = "uid://ijcyw54p3t4a"
 
 [node name="multimesh3D" parent="." unique_id=322693166 instance=ExtResource("4_gbpvr")]
 
-[node name="Camera3D" type="Camera3D" parent="." unique_id=188740324]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 20)
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=819284527]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2.0871058)
+
+[node name="Camera3D" parent="." unique_id=715359608 instance=ExtResource("7_xbj35")]
+transform = Transform3D(0.9659258, 0, 0.25881904, 0, 1, 0, -0.25881904, 0, 0.9659258, 0, 0, 0)
+
+[node name="WorldManager" type="Node" parent="." unique_id=642369612]
+script = ExtResource("8_pxu6w")
+metadata/_custom_type_script = "uid://m6nnvxujp5nt"

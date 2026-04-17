@@ -6,11 +6,13 @@
 [ext_resource type="Script" uid="uid://cpc6rnrusilpl" path="res://Agents/AgentSystem.gd" id="3_ecst5"]
 [ext_resource type="PackedScene" uid="uid://b1meyecml6wr2" path="res://Menus/Simulation_menus/simulation_menu.tscn" id="4_bi24j"]
 [ext_resource type="Resource" uid="uid://woa4h1ir07c8" path="res://0_Resource_for_simulation/systemresources/Random_move.tres" id="4_qu21b"]
+[ext_resource type="Script" uid="uid://m6nnvxujp5nt" path="res://World/WorldManager.gd" id="7_qu21b"]
 
-[node name="simulation_2D" type="Node2D" unique_id=1162454410 node_paths=PackedStringArray("simulation_menu", "agent_manager", "multimesh")]
+[node name="simulation_2D" type="Node2D" unique_id=1162454410 node_paths=PackedStringArray("simulation_menu", "agent_manager", "world_manager", "multimesh")]
 script = ExtResource("1_0hfcq")
 simulation_menu = NodePath("Simulation_menu")
 agent_manager = NodePath("AgentManager")
+world_manager = NodePath("WorldManager")
 multimesh = NodePath("multimesh2d")
 
 [node name="AgentManager" type="Node" parent="." unique_id=2040115238]
@@ -23,3 +25,7 @@ metadata/_custom_type_script = "uid://ijcyw54p3t4a"
 [node name="multimesh2d" parent="." unique_id=422703149 instance=ExtResource("1_k1y8k")]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=396163490]
+
+[node name="WorldManager" type="Node" parent="." unique_id=200087180]
+script = ExtResource("7_qu21b")
+metadata/_custom_type_script = "uid://m6nnvxujp5nt"

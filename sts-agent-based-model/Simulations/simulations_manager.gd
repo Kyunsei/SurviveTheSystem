@@ -2,6 +2,8 @@ extends Node
 
 @export var simulation_menu : Node
 @export var agent_manager : AgentManager
+@export var world_manager : WorldManager
+
 @export var multimesh : Node #MultiMeshInstance3D
 
 
@@ -11,7 +13,14 @@ func _ready() -> void:
 	if simulation_menu:
 		simulation_menu.agent_manager = agent_manager
 
-	agent_manager.init()
+	world_manager.init()
+	agent_manager.init(world_manager)
+
+	
+	
+func Load_Simulation():
+	pass
+	
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
