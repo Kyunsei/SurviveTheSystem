@@ -809,7 +809,10 @@ func Spawn_New_Grass(newpos:Vector3,s:int):
 	return i 
 	
 func Kill_Grass(i):
-
+	
+	var anticrash = i
+	if anticrash == null:
+		return
 	free_indices.append(i)
 	Active[i] = 0
 	remove_from_light_bin(i)
