@@ -1,7 +1,7 @@
 extends Control
 
-var IP_ADDRESS = "127.0.0.1"
-var Local_address = "127.0.0.1"
+var IP_ADDRESS = "192.168.0.1"#"127.0.0.1"
+var Local_address = "192.168.0.1"#"127.0.0.1"
 var V_address ="" 
 var K_address = ""
 var newIP = ""
