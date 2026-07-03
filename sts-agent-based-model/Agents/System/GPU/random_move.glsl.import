@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://cxqqba07kmram"
+path="res://.godot/imported/random_move.glsl-de5c064b94ab156c17a09d71a8c0cdf4.res"
+
+[deps]
+
+source_file="res://Agents/System/GPU/random_move.glsl"
+dest_files=["res://.godot/imported/random_move.glsl-de5c064b94ab156c17a09d71a8c0cdf4.res"]
+
+[params]
+

@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://b1meyecml6wr2"]
+
+[ext_resource type="Script" uid="uid://b1m8rmurnnaal" path="res://Menus/Simulation_menus/simulation_menu.gd" id="1_xe8do"]
+
+[node name="Simulation_menu" type="CanvasLayer" unique_id=318262611]
+script = ExtResource("1_xe8do")
+
+[node name="Panel" type="Panel" parent="." unique_id=1501049618]
+offset_right = 233.0
+offset_bottom = 385.0
+
+[node name="Label_agent_number" type="Label" parent="Panel" unique_id=757820834]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 46.0
+offset_right = 140.0
+offset_bottom = 69.0
+text = "Agents number:"
+
+[node name="Labed_Wsize" type="Label" parent="Panel" unique_id=247992857]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 100.0
+offset_right = 156.0
+offset_bottom = 123.0
+text = "World Size"
+
+[node name="LineEdit_ID" type="LineEdit" parent="Panel/Labed_Wsize" unique_id=1139576543]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 27.0
+offset_right = 80.5
+offset_bottom = 58.0
+max_length = 2
+
+[node name="Label" type="Label" parent="Panel/Labed_Wsize/LineEdit_ID" unique_id=457196374]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.81700003
+anchor_bottom = 0.5
+offset_left = -28.0
+offset_top = 2.0
+offset_right = -66.9645
+offset_bottom = 13.5
+text = "ID"
+
+[node name="LineEdit_X" type="LineEdit" parent="Panel/Labed_Wsize" unique_id=752009292]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 63.0
+offset_right = 75.5
+offset_bottom = 94.0
+max_length = 2
+
+[node name="Label" type="Label" parent="Panel/Labed_Wsize/LineEdit_X" unique_id=479639554]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.81700003
+anchor_bottom = 0.5
+offset_left = -28.0
+offset_top = 2.0
+offset_right = -66.9645
+offset_bottom = 13.5
+text = "X"
+
+[node name="LineEdit_Y" type="LineEdit" parent="Panel/Labed_Wsize" unique_id=2008440513]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 100.0
+offset_right = 74.5
+offset_bottom = 131.0
+max_length = 2
+
+[node name="Label" type="Label" parent="Panel/Labed_Wsize/LineEdit_Y" unique_id=181484429]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.81700003
+anchor_bottom = 0.5
+offset_left = -28.0
+offset_top = 2.0
+offset_right = -66.9645
+offset_bottom = 13.5
+text = "Y"
+
+[node name="LineEdit_Z" type="LineEdit" parent="Panel/Labed_Wsize" unique_id=1608826726]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 142.0
+offset_right = 73.5
+offset_bottom = 173.0
+max_length = 2
+
+[node name="Label" type="Label" parent="Panel/Labed_Wsize/LineEdit_Z" unique_id=1100580489]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.81700003
+anchor_bottom = 0.5
+offset_left = -28.0
+offset_top = 2.0
+offset_right = -66.9645
+offset_bottom = 13.5
+text = "Z"
+
+[node name="LineEdit_agentnumber" type="LineEdit" parent="Panel" unique_id=1081216079]
+layout_mode = 0
+offset_left = 147.0
+offset_top = 44.0
+offset_right = 215.5
+offset_bottom = 75.0
+
+[node name="FPS" type="Label" parent="Panel" unique_id=206492244]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.086
+offset_left = 74.0
+offset_top = 12.0
+offset_right = 93.962
+offset_bottom = 35.0
+
+[node name="CheckButton" type="CheckButton" parent="Panel" unique_id=585662912]
+layout_mode = 0
+offset_left = 94.0
+offset_top = 341.0
+offset_right = 172.0
+offset_bottom = 372.0
+text = "ddd"
+
+[connection signal="text_submitted" from="Panel/Labed_Wsize/LineEdit_ID" to="." method="_on_line_edit_id_text_submitted"]
+[connection signal="text_submitted" from="Panel/Labed_Wsize/LineEdit_X" to="." method="_on_line_edit_x_text_submitted"]
+[connection signal="text_submitted" from="Panel/Labed_Wsize/LineEdit_Y" to="." method="_on_line_edit_y_text_submitted"]
+[connection signal="text_submitted" from="Panel/Labed_Wsize/LineEdit_Z" to="." method="_on_line_edit_z_text_submitted"]
+[connection signal="text_submitted" from="Panel/LineEdit_agentnumber" to="." method="_on_line_edit_agentnumber_text_submitted"]
+[connection signal="toggled" from="Panel/CheckButton" to="." method="_on_check_button_toggled"]

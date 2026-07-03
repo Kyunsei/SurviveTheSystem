@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="BOIDS_SYSTEM_GPU" format=3 uid="uid://dtkac41fgqe0r"]
+
+[ext_resource type="Script" uid="uid://bgvoodl5kqmcl" path="res://Agents/System/boids_gpu_system.gd" id="1_pkwf4"]
+
+[resource]
+script = ExtResource("1_pkwf4")
+metadata/_custom_type_script = "uid://bgvoodl5kqmcl"

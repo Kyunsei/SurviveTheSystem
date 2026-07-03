@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="RANDOM_MOVE_SYSTEM_GPU" format=3 uid="uid://dkj3mqywn0ih1"]
+
+[ext_resource type="Script" uid="uid://dn2hghtxl1hhr" path="res://Agents/System/random_move_gpu_system.gd" id="1_wnafp"]
+
+[resource]
+script = ExtResource("1_wnafp")
+metadata/_custom_type_script = "uid://dn2hghtxl1hhr"

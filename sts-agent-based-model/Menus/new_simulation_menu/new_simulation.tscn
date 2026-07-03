@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://bid6is2rq3epw"]
+
+[ext_resource type="Script" uid="uid://fqqwommxfewp" path="res://Menus/new_simulation_menu/new_simulation.gd" id="1_qh6yh"]
+
+[node name="new_simulation" type="Control" unique_id=1151507747]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qh6yh")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=417318869]
+layout_mode = 0
+offset_right = 1150.0
+offset_bottom = 646.0
+color = Color(0.06147109, 0.20570105, 0.042253606, 1)
+
+[node name="Start" type="Button" parent="." unique_id=263965133]
+layout_mode = 0
+offset_left = 507.0
+offset_top = 563.0
+offset_right = 609.0
+offset_bottom = 626.0
+theme_override_font_sizes/font_size = 40
+text = "Start"
+
+[node name="CheckButton" type="CheckButton" parent="." unique_id=512743668]
+layout_mode = 0
+offset_left = 520.0
+offset_top = 436.0
+offset_right = 564.0
+offset_bottom = 460.0
+scale = Vector2(2, 2)
+
+[node name="Label_2D" type="Label" parent="." unique_id=1619908737]
+layout_mode = 0
+offset_left = 478.0
+offset_top = 436.0
+offset_right = 620.0
+offset_bottom = 484.0
+theme_override_font_sizes/font_size = 32
+text = "2D"
+
+[node name="Label_3D" type="Label" parent="." unique_id=967087893]
+layout_mode = 0
+offset_left = 603.0
+offset_top = 436.0
+offset_right = 745.0
+offset_bottom = 484.0
+theme_override_font_sizes/font_size = 32
+text = "3D"
+
+[connection signal="pressed" from="Start" to="." method="_on_start_pressed"]
+[connection signal="toggled" from="CheckButton" to="." method="_on_check_button_toggled"]

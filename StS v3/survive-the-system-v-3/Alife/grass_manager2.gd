@@ -809,7 +809,10 @@ func Spawn_New_Grass(newpos:Vector3,s:int):
 	return i 
 	
 func Kill_Grass(i):
-
+	
+	var anticrash = i
+	if anticrash == null:
+		return
 	free_indices.append(i)
 	Active[i] = 0
 	remove_from_light_bin(i)
@@ -1150,6 +1153,8 @@ func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_a
 	for r in SPECIES_RENDERERS.values():
 		if r:
 			r.init()
+
+
 
 	for c in range(id_array.size()):
 		var s = species_array[c]
