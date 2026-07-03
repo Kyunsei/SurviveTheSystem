@@ -53,3 +53,7 @@ func _on_line_edit_x_text_submitted(new_text: String) -> void:
 
 func _on_line_edit_id_text_submitted(new_text: String) -> void:
 	selected_world = int(new_text)
+
+
+func _on_check_button_toggled(toggled_on: bool) -> void:
+	agent_manager.isthreading = toggled_on

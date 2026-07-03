@@ -8,6 +8,10 @@ var positions_x : PackedFloat32Array
 var positions_y : PackedFloat32Array
 var positions_z : PackedFloat32Array
 
+var velocity_x : PackedFloat32Array
+var velocity_y : PackedFloat32Array
+var velocity_z : PackedFloat32Array
+
 var directions: PackedVector3Array
 var active : PackedInt32Array
 
@@ -25,6 +29,9 @@ var world_manager : WorldManager
 #AGENT MANAGER
 var free_indices : Array =[]
 var agent_count :int = 0 
+
+#threading
+var isthreading = false
 
 #SYSTEM CALLED
 @export var systems : Array[AgentSystem]
@@ -51,6 +58,10 @@ func physics_update(delta):
 		s.update(self,delta)
 
 
+
+#------------------------DEBUF PART ------------------------
+
+
 #------------------------ ARRAY MANAGEMNT --------------------
 
 func get_free_id() -> int :
@@ -72,18 +83,26 @@ func Generate_Arrays():
 
 
 func Build_New_Agent():
+	var r_pos = get_random_position(0)
 	positions.append(Vector3(0,0,0))
-	positions_x.append(0)
-	positions_y.append(0)
-	positions_z.append(0)
-
+	positions_x.append(r_pos.x)
+	positions_y.append(r_pos.y)
+	positions_z.append(r_pos.z)
+	velocity_x.append(randf()*2 - 1)
+	velocity_y.append(randf()*2 -1)
+	velocity_z.append(randf()*2 -1)
 	active.append(1)
 
 func Build_Agent(id):
+	var r_pos = get_random_position(0)
+
 	positions[id]=Vector3(0,0,0)
-	positions_x[id] =0
-	positions_y[id] =0
-	positions_z[id] =0
+	positions_x[id] =r_pos.x
+	positions_y[id] =r_pos.y
+	positions_z[id] =r_pos.z
+	velocity_x[id] = randf()*2 - 1
+	velocity_y[id] = randf()*2 -1
+	velocity_z[id] = randf()*2 -1
 	active[id]=1
 	
 	
@@ -107,6 +126,13 @@ func Remove_Agent(id):
 
 
 #------------------------ BIN MANAGEMNT --------------------
+func get_random_position(world_id: int) -> Vector3:
+	return Vector3(
+		randf() * world_manager.size_x[world_id],
+		randf() * world_manager.size_y[world_id],
+		randf() * world_manager.size_z[world_id]
+	)
+
 
 func get_current_bin(pos,binsize,world_id) -> int:
 	var x = pos.x/binsize.x

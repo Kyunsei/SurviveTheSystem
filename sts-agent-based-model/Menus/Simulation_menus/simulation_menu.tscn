@@ -117,8 +117,17 @@ offset_top = 12.0
 offset_right = 93.962
 offset_bottom = 35.0
 
+[node name="CheckButton" type="CheckButton" parent="Panel" unique_id=585662912]
+layout_mode = 0
+offset_left = 94.0
+offset_top = 341.0
+offset_right = 172.0
+offset_bottom = 372.0
+text = "ddd"
+
 [connection signal="text_submitted" from="Panel/Labed_Wsize/LineEdit_ID" to="." method="_on_line_edit_id_text_submitted"]
 [connection signal="text_submitted" from="Panel/Labed_Wsize/LineEdit_X" to="." method="_on_line_edit_x_text_submitted"]
 [connection signal="text_submitted" from="Panel/Labed_Wsize/LineEdit_Y" to="." method="_on_line_edit_y_text_submitted"]
 [connection signal="text_submitted" from="Panel/Labed_Wsize/LineEdit_Z" to="." method="_on_line_edit_z_text_submitted"]
 [connection signal="text_submitted" from="Panel/LineEdit_agentnumber" to="." method="_on_line_edit_agentnumber_text_submitted"]
+[connection signal="toggled" from="Panel/CheckButton" to="." method="_on_check_button_toggled"]

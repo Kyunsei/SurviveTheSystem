@@ -5,13 +5,9 @@
 [ext_resource type="Script" uid="uid://ijcyw54p3t4a" path="res://Agents/agents_manager.gd" id="3_gbpvr"]
 [ext_resource type="PackedScene" uid="uid://bqjby3yit4fqw" path="res://rendering/3D/multimesh_3d.tscn" id="4_gbpvr"]
 [ext_resource type="Script" uid="uid://cpc6rnrusilpl" path="res://Agents/AgentSystem.gd" id="4_x4u22"]
-[ext_resource type="Script" uid="uid://dhryomltd4f4r" path="res://Agents/System/RandomMovement.gd" id="5_xbj35"]
+[ext_resource type="Resource" uid="uid://dtkac41fgqe0r" path="res://0_Resource_for_simulation/systemresources/boids_GPU.tres" id="6_88lbl"]
 [ext_resource type="PackedScene" uid="uid://cklunj40dv1m" path="res://Camera/camera_3d.tscn" id="7_xbj35"]
 [ext_resource type="Script" uid="uid://m6nnvxujp5nt" path="res://World/WorldManager.gd" id="8_pxu6w"]
-
-[sub_resource type="Resource" id="Resource_pxu6w"]
-script = ExtResource("5_xbj35")
-metadata/_custom_type_script = "uid://dhryomltd4f4r"
 
 [node name="3D_simulation" type="Node3D" unique_id=1764471231 node_paths=PackedStringArray("simulation_menu", "agent_manager", "world_manager", "multimesh")]
 script = ExtResource("1_uxjfy")
@@ -24,7 +20,7 @@ multimesh = NodePath("multimesh3D")
 
 [node name="AgentManager" type="Node" parent="." unique_id=2040500759]
 script = ExtResource("3_gbpvr")
-systems = Array[ExtResource("4_x4u22")]([SubResource("Resource_pxu6w")])
+systems = Array[ExtResource("4_x4u22")]([ExtResource("6_88lbl")])
 metadata/_custom_type_script = "uid://ijcyw54p3t4a"
 
 [node name="multimesh3D" parent="." unique_id=322693166 instance=ExtResource("4_gbpvr")]

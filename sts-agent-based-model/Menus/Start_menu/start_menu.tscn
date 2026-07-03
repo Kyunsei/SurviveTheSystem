@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://u1lqps2jq571"]
 
 [ext_resource type="Script" uid="uid://cv1dlrbu6vp55" path="res://Menus/Start_menu/start_menu.gd" id="1_y23xx"]
+[ext_resource type="Script" uid="uid://brukytqq4vrbv" path="res://Agents/System/thread_manager.gd" id="2_yx36k"]
 
 [node name="Start_menu" type="Control" unique_id=1248240519]
 layout_mode = 3
@@ -72,6 +73,9 @@ text = "Load Simulations"
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Quit"
+
+[node name="Node" type="Node" parent="." unique_id=899319302]
+script = ExtResource("2_yx36k")
 
 [connection signal="pressed" from="VBoxContainer/New" to="." method="_on_new_pressed"]
 [connection signal="pressed" from="VBoxContainer/load" to="." method="_on_load_pressed"]
