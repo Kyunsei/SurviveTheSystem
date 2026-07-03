@@ -70,3 +70,8 @@ func Remove_World(id):
 #Will probably move in another script later
 func Generate_World(world_pos: Vector3, world_size:Vector3):
 	Add_World(world_pos,world_size)
+	
+func Change_World_Size(W_id: int, new_size:Vector3):
+	size_x[W_id] = new_size.x
+	size_y[W_id] = new_size.y
+	size_z[W_id] = new_size.z

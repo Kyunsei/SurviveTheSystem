@@ -12,6 +12,8 @@ extends Node
 func _ready() -> void:
 	if simulation_menu:
 		simulation_menu.agent_manager = agent_manager
+		simulation_menu.world_manager = world_manager
+
 
 	world_manager.init()
 	agent_manager.init(world_manager)

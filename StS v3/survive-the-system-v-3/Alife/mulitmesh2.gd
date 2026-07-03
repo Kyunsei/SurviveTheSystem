@@ -9,36 +9,58 @@ var player
 @export var test = false
 @export var animated = false
 
+#var max_instance = 1000
+var vision_range = 20
+var player_pos = Vector3(0,0,0)
 
 func _process(_delta: float):	
-	if test:
-		if player:
+	if player:
+		if test:
 			var mat := multimesh.mesh.surface_get_material(0) as ShaderMaterial
 			if mat:
 				mat.set_shader_parameter("player_position", player.global_position)
-
+		player_pos = player.global_position
 
 func init():
 	instance_number = 0
 	multimesh.visible_instance_count = instance_number 
 	id_to_slot = {}
 	slot_to_id = {}
-	
+	#var adapter_name = RenderingServer.get_video_adapter_name()
+	#var adapter_vendor = RenderingServer.get_video_adapter_vendor()
+	#print(adapter_name)
+	#print(adapter_vendor)
+	#print(RenderingDevice.LIMIT_MAX_TEXTURE_SIZE_3D)
+
 func _ready() -> void:
 	multimesh.instance_count = 1000000
 	if has_node("shadow"):
 		shadow = $shadow
 		shadow.multimesh.instance_count = 1000000
 
-func draw_all_grass(id, pos, state, alive, active,size,finite_state):
-	var slot= instance_number
+func check_if_in_rendering_range(pos: Vector3):
+	if pos.distance_to(player_pos) < vision_range:
+		return true
+	return true# false DEACTIVATED FOR NOW
+
+func draw_all_grass(id, pos, state, alive, active,size,finite_state):	
+	var draw_pos = pos
+
+	if !check_if_in_rendering_range(draw_pos):
+		return
+	var slot=  instance_number
 	id_to_slot[id] = instance_number
 	slot_to_id[instance_number] = id	
 	
 	var i_scale = size # Vector3.ONE * clamp(float(state) / 5, 0.2, 1)
-	var draw_pos = pos
 	if active == 0:
-		draw_pos.y = -100
+		draw_pos.y = -100	
+		
+
+
+	
+	instance_number += 1
+	
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(i_scale), draw_pos))
 	if !test:
 
@@ -46,7 +68,6 @@ func draw_all_grass(id, pos, state, alive, active,size,finite_state):
 			multimesh.set_instance_color(slot, Color(0.27, 0.27, 0.27, 1.0))
 		else:
 			multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
-	instance_number += 1
 	#multimesh.visible_instance_count = instance_number
 	
 	if test:
@@ -70,7 +91,10 @@ func draw_all_grass(id, pos, state, alive, active,size,finite_state):
 		shadow.multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 
 func update_drawn_grass(id_array, pos_array, life_state_array, alive_array, active_array,size_array, finite_state ):
-	
+	var pos = Vector3.ZERO
+	pos = pos_array
+	if !check_if_in_rendering_range(pos):
+		return
 	if !id_to_slot.has(id_array):
 		#print("strange: grass need update but not instantiated (yet?)")
 		return
@@ -78,12 +102,11 @@ func update_drawn_grass(id_array, pos_array, life_state_array, alive_array, acti
 	
 	
 	var i_scale = Vector3.ONE
-	var pos = Vector3.ZERO
-	#for i in range(id_array.size()):
-	pos = pos_array#[i]
+
 	i_scale = size_array# Vector3.ONE * clamp(float(state_array)/5,0.2,1)  # I guess it should be somthing else.. like a size variable
 	if active_array == 0:#[i] == 0:
 		pos.y = -100 #MAYBE THIS NEED TO CHANGE TOO
+
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(i_scale), pos))
 	multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))	
 	if !test:
@@ -112,27 +135,29 @@ func update_drawn_grass(id_array, pos_array, life_state_array, alive_array, acti
 		shadow.multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 
 func draw_new_grass(id_array, pos_array):# state_array, alive_array):
+
 	var slot= instance_number
 	id_to_slot[id_array] = instance_number
 	slot_to_id[instance_number] = id_array	
 	
-	
+	var pos = Vector3.ZERO
+	pos = pos_array
+
 	
 	var i_scale = Vector3.ONE * 0.2
-	var pos = Vector3.ZERO
-	#print(id_array)
-	#for i in range(id_array.size()):
-		#print(pos_array)
-	pos = pos_array
+
 	#i_scale = Vector3.ONE * clamp(float(state_array[i])/5,0.2,1)  # I guess it should be somthing else.. like a size variable
 
 	#if state_array[i] == 0:
 	#	pos.y = 1#-100
 	#multimesh.set_instance_visible(i, true)
+	instance_number += 1
+
+	if !check_if_in_rendering_range(pos):
+		return
 	multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(i_scale), pos))
 	multimesh.set_instance_color(slot, Color(1.0, 1.0, 1.0, 1.0))
 
-	instance_number += 1
 	#print(instance_number)
 	if shadow:
 		shadow.multimesh.set_instance_transform(slot, Transform3D(Basis().scaled(Vector3.ONE * i_scale), pos))

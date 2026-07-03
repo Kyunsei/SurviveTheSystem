@@ -1151,6 +1151,8 @@ func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_a
 		if r:
 			r.init()
 
+
+
 	for c in range(id_array.size()):
 		var s = species_array[c]
 		var renderer = SPECIES_RENDERERS[s]
