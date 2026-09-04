@@ -96,9 +96,13 @@ func _input(event: InputEvent) -> void:
 			if event.keycode == 35:
 				visible = not visible
 				if visible:
+					var p = get_parent().get_parent().get_node("Alife manager").get_node(str(1))
+					p.hide_inventory()
 					Input.mouse_mode = Input.MOUSE_MODE_VISIBLE   # free the cursor for the UI
 				else:
 					if GlobalSimulationParameter.ClientStarted:
+						var p = get_parent().get_parent().get_node("Alife manager").get_node(str(1))
+						p.show_inventory()
 						Input.mouse_mode = Input.MOUSE_MODE_CAPTURED  # back to gameplay
 
 func _on_line_edit_text_submitted(new_text: String) -> void:

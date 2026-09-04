@@ -372,7 +372,7 @@ func giving_position_to_others(pos: Vector3) -> void:
 func _process(delta: float) -> void:
 
 	if multiplayer.is_server():# and GlobalSimulationParameter.ClientStarted:
-		hide_inventory()
+		#hide_inventory()
 		if input_blocked:
 			return  
 		if int(name) == null:
@@ -615,6 +615,13 @@ func hide_inventory():
 	for child in get_node("Mouse_canvas").get_children():
 		child.position.y -=5000
 
+@rpc("any_peer","call_local")
+func show_inventory():
+	get_node("Player_HUD").get_node("Inventory").show()
+	for child in get_node("Controler_canvas").get_children():
+		child.position.y +=5000
+	for child in get_node("Mouse_canvas").get_children():
+		child.position.y +=5000
 
 @rpc("any_peer","call_local")
 func show_escape_timer(time):
