@@ -83,6 +83,7 @@ func interact(player, state:bool):
 			var player_list2 = alife_manager.player_array
 			spaceship.get_node("Stairs").hide()
 			for p in player_list2:
+				print(p)
 				p.change_player_energy.rpc_id(1,1000000.0)
 				change_camera.rpc_id(int(p.name))
 			await get_tree().create_timer(3.0).timeout
@@ -98,7 +99,7 @@ func interact(player, state:bool):
 	
 	
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func change_camera():
 	var main_game = get_parent().get_parent().get_parent()
 	var camera = main_game.get_node("endgame_camera")
@@ -106,7 +107,7 @@ func change_camera():
 	
 
 
-@rpc("any_peer")
+@rpc("any_peer","call_local")
 func sync_button_pressed():
 	#var alife_manager = get_parent().get_parent().get_parent().get_node("Alife manager")
 	#var player_list = alife_manager.player_array

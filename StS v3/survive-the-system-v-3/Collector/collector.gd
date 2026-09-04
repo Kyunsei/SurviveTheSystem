@@ -11,7 +11,7 @@ var credit_gain = 0
 var collecting = true
 var timer_to_escape = int(91)
 var safe_timer = int(6)
-var factor =  0.005
+var factor = 0.01 # 0.005
 #var factor =  5.0
 var InsideBiomassInitHeight
 
