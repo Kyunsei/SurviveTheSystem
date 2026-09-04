@@ -250,7 +250,7 @@ func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func go_back_to_ship(pos):
 	var ship_pos = get_parent().get_parent().get_node("SPACESHIP").position
 	ship_pos.x += pos
@@ -258,11 +258,11 @@ func go_back_to_ship(pos):
 	$MeshInstance3D.rotation.y = deg_to_rad(180)
 	$camera_anchor.rotation.y = deg_to_rad(180)
 	
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func go_to_position(pos):
 	position = pos
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func move_player_position(pos):
 	position = pos
 
@@ -287,7 +287,7 @@ func _ready() -> void:
 		energy_bar.max_value = max_energy
 		#update_status_of_player(inventory_capacity_upgrade, catnation_credits)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func show_halo(state:bool):
 	if state == true: 
 		get_node("MeshInstance3D").get_node("Halo").show()
@@ -302,7 +302,7 @@ func change_player_health(qty):
 @rpc("any_peer","call_local")
 func change_player_energy(qty):
 	manager.current_energy_array[alifemanager_id] = qty
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func change_halo_effect(state:bool):
 	if state == true: 
 		halo_effect = true
@@ -358,7 +358,7 @@ func _physics_process(_delta: float) -> void:
 			move_and_slide()		
 			change_bin.rpc_id(1)
 		
-@rpc("any_peer","call_remote",)
+@rpc("any_peer","call_local",)
 func data_movement_to_server(pos):
 	giving_position_to_others.rpc(pos)
 @rpc("any_peer","call_local","unreliable")
@@ -437,7 +437,7 @@ func _process(delta: float) -> void:
 				escape_timer_running = false
 
 var tween
-@rpc("any_peer", "call_remote")
+@rpc("any_peer", "call_local")
 func active_tint(fade_time: float, color: Color):
 	var rect = $TintColor
 	rect.color = color
@@ -568,7 +568,7 @@ func respawn_server():
 	lifedata["current_energy"] = 100
 	lifedata["Alive"] = 1'
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func update_status_of_player():
 		#print("somethinf status")
 		#lifedata["Money"] = catnation_credits
@@ -607,7 +607,7 @@ func stop_escape_ui():
 	escape_timer_running = false
 	timer_label.hide()
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func hide_inventory():
 	get_node("Player_HUD").get_node("Inventory").hide()
 	for child in get_node("Controler_canvas").get_children():
@@ -630,10 +630,10 @@ func start_escape_ui(time):
 	timer_label.show()
 
 #Server sync movement
-@rpc("any_peer","call_remote","unreliable")
+@rpc("any_peer","call_local","unreliable")
 func receive_input(dir: Vector3, jump: bool, sprint: bool):
-	if !multiplayer.is_server():
-		return
+	#if !multiplayer.is_server():
+	#	return
 		
 	input_direction = dir
 	input_jump = jump
@@ -641,11 +641,11 @@ func receive_input(dir: Vector3, jump: bool, sprint: bool):
 	
 	
 #OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func first_ascension():
 		has_wings = true
 		get_node("MeshInstance3D").get_node("Wings").show()
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func second_ascension():
 		has_halo = true
 		halo_effect = true
@@ -693,7 +693,7 @@ func spear_attack():
 		await get_tree().create_timer(time_before_attack).timeout
 		spear_animation_in_course = false
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func spear_attack_animation():
 	$AnimationPlayer.play("spear_attack_2")
 	$PlayerAnimater.play("hold_spear_to_strike_2")
@@ -745,7 +745,7 @@ func remove_health_to_target(p_id,value):
 func spear_defense(number):
 	spear_defense_animation.rpc_id(int(name), number)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func spear_defense_animation(defendingornot):
 	if defendingornot == 0:
 		$AnimationPlayer.play("spear_going_to_defense")
@@ -784,7 +784,7 @@ func vacuum_activation():
 func vacuum_activation2():
 	vacuum_animation2.rpc_id(int(name))
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func vacuum_animation():
 	if vacuum_turned_on == false:
 		$AnimationPlayer.play("vacuum_on_2")
@@ -795,7 +795,7 @@ func vacuum_animation():
 		set_vacuum_state.rpc_id(1, false) # tell server
 		vacuum_turned_on = false
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func vacuum_animation2():
 	if vacuum_turned_on == false:
 		$AnimationPlayer.play("gold_vac_2_on")
@@ -863,7 +863,7 @@ func add_to_inventory(alife):
 				return false
 
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func show_label_above_player(string, color, time, Special, type):
 	var label := Label3D.new()
 	label.modulate = color
@@ -892,13 +892,13 @@ func show_label_above_player(string, color, time, Special, type):
 
 #OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!OBJECT FUNCTION HERE!!!!
 
-@rpc("any_peer", "call_remote")
+@rpc("any_peer", "call_local")
 func set_input_blocked(blocked: bool):
 	input_blocked = blocked
 	set_process_input(not blocked)  # disables _input() if blocked
 
 var isWorldAccelerated = false
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func change_server_simulation_speed(value):
 	if isWorldAccelerated == false:
 		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 1000

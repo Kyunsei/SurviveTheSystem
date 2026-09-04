@@ -58,7 +58,7 @@ func _physics_process(_delta: float) -> void:
 			if Input.is_action_just_pressed("F5"):
 				player.get_parent().get_node("Grass_Manager2").send_full_state_to_peer.rpc_id(1,multiplayer.get_unique_id())
 	
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func grant_player_money(id):
 	player.catnation_credits += 100
 	player.update_status_of_player.rpc_id(id)
@@ -83,7 +83,7 @@ func _process(_delta: float) -> void:
 
 
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func change_server_simulation_speed(value):
 	if isWorldAccelerated == false:
 		get_parent().get_parent().get_node("Grass_Manager2").Grass_simulator_time = 1000

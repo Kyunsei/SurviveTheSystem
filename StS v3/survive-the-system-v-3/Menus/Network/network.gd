@@ -1,8 +1,8 @@
 extends CanvasLayer
 
-signal client_started
+#signal client_started
 
-func _ready():
+'func _ready():
 	call_deferred("_decide_start_scene")
 
 func _decide_start_scene():
@@ -16,4 +16,4 @@ func _decide_start_scene():
 		$server_menu.hide()
 	
 	#$client_menu.hide()
-	#$server_menu.show()
+	#$server_menu.show()'

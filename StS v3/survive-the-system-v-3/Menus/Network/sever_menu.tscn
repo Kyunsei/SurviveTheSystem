@@ -21,6 +21,7 @@ offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="Button" type="Button" parent="." unique_id=547815757]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -36,6 +37,7 @@ focus_mode = 0
 text = "Start -Simulation"
 
 [node name="Button_simulation" type="Button" parent="." unique_id=2123098886]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
@@ -131,6 +133,7 @@ offset_bottom = 22.0
 text = "New"
 
 [node name="Label4" type="Label" parent="." unique_id=421842275]
+visible = false
 layout_mode = 0
 offset_left = 455.0
 offset_top = 603.0
@@ -139,6 +142,7 @@ offset_bottom = 626.0
 text = "Port"
 
 [node name="Port" type="LineEdit" parent="." unique_id=171307088]
+visible = false
 layout_mode = 0
 offset_left = 500.0
 offset_top = 604.0
@@ -150,6 +154,7 @@ text = "10000"
 alignment = 1
 
 [node name="Label5" type="Label" parent="." unique_id=1350181332]
+visible = false
 layout_mode = 0
 offset_left = 581.0
 offset_top = 565.0
@@ -160,6 +165,15 @@ text = "To use Online:
 You need to open your port
  on your router/modem  
 and give your public IP"
+
+[node name="Instruction2" type="Label" parent="." unique_id=698384475]
+layout_mode = 0
+offset_left = 798.0
+offset_top = 611.0
+offset_right = 1165.0
+offset_bottom = 634.0
+text = "Press '#' to close server & Simulation status"
+autowrap_mode = 3
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Button_simulation" to="." method="_on_button_simulation_pressed"]

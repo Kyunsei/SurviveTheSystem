@@ -7,10 +7,9 @@ func _ready() -> void:
 
 func _process(_delta):
 	pass
-	pass
-	pass
+
 	
-@rpc("any_peer", "call_remote")
+@rpc("any_peer", "call_local")
 func tween_that_shit(fade_time: float, color: Color):
 	var end_canvas = get_parent().get_parent().get_parent().get_node("end_canvas")
 	var text = end_canvas.get_node("VBoxContainer").get_children()

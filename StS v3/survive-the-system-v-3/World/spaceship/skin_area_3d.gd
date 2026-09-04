@@ -18,7 +18,7 @@ func _ready():
 	$PopupMenu.add_item("Orange striped", 4)
 	$PopupMenu.add_item("Deep blue striped", 5)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func _on_popup_menu_id_pressed(id):
 	#if p == null:
 		#print("Player not set")
@@ -48,7 +48,7 @@ func _process(_delta: float) -> void:
 		$PopupMenu.hide()
 
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func show_popup():
 	#p = multiplayer.get_unique_id()
 	print("show_popup called on peer: ", multiplayer.get_unique_id())

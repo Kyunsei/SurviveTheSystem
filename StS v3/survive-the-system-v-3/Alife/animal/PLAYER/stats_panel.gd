@@ -2,7 +2,7 @@ extends Panel
 
 
 
-@rpc ("any_peer","call_remote")
+@rpc ("any_peer","call_local")
 func update_status(peer_id):
 	var player = get_parent().get_parent()
 	#var alife_manager = player.get_parent()
@@ -23,7 +23,7 @@ func update_status(peer_id):
 	$VBoxContainer/CreditLabel.text = "Money : " +str(player.lifedata["Money"]) 
 	update_status_client.rpc_id(peer_id, c_health, M_health, M_energy,c_energy)
 
-@rpc ("any_peer","call_remote")
+@rpc ("any_peer","call_local")
 func update_status_client(c_health, M_health, M_energy,c_energy):
 	var player = get_parent().get_parent()
 	$VBoxContainer/HealthLabel.text = "Health : " +str(int(c_health)) + "/" + str(M_health)

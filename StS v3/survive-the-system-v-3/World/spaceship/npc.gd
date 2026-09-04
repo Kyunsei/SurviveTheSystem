@@ -23,6 +23,12 @@ func interact(p):
 	if not player.dialogue_box.button_pressed.is_connected(_on_next):
 		player.dialogue_box.button_pressed.connect(_on_next)
 	display_text(p.dialogue_box, "Welcome Catraunaute! \nWe need you to collect bioressources for the magnificient catempire! \nAre you READY ?!!?!")
+	$SurviveTheSystemSdhSoundsNpcSoundsCatGreet02.play()
+	await get_tree().create_timer(.8).timeout
+	$SurviveTheSystemSdhSoundsNpcSoundsCatChat02.play()
+	await get_tree().create_timer(.8).timeout
+	$SurviveTheSystemSdhSoundsNpcSoundsCatGreet03.play()
+
 	player.dialogue_box.show_button()
 
 

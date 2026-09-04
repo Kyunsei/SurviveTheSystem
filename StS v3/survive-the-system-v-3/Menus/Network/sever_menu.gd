@@ -89,8 +89,17 @@ func on_disconnection(id):
 			get_parent().get_parent().get_node("Alife manager").get_node("Grass_Manager2").Kill_Grass(p.alifemanager_id)
 			p.queue_free()
 
-	
 
+func _input(event: InputEvent) -> void:
+	if multiplayer.multiplayer_peer and multiplayer.is_server():
+		if event is InputEventKey and event.pressed and not event.echo:
+			if event.keycode == 35:
+				visible = not visible
+				if visible:
+					Input.mouse_mode = Input.MOUSE_MODE_VISIBLE   # free the cursor for the UI
+				else:
+					if GlobalSimulationParameter.ClientStarted:
+						Input.mouse_mode = Input.MOUSE_MODE_CAPTURED  # back to gameplay
 
 func _on_line_edit_text_submitted(new_text: String) -> void:
 	GlobalSimulationParameter.simulation_speed = float(new_text)

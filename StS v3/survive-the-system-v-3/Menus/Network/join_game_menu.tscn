@@ -1,0 +1,102 @@
+[gd_scene format=3 uid="uid://cgg58sycuy2c6"]
+
+[ext_resource type="Script" uid="uid://daaceig2gpwyg" path="res://Menus/Network/join_game_menu.gd" id="1_6jna8"]
+[ext_resource type="Texture2D" uid="uid://byuxyvhfp1k36" path="res://Alife/animal/Herbivor/Sheep/SHEEP-Sheet.png" id="1_yqg8l"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6jna8"]
+atlas = ExtResource("1_yqg8l")
+region = Rect2(0, 0, 240, 98.585815)
+
+[node name="JoinGame_menu" type="Control" unique_id=1566038921]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6jna8")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=342208750]
+layout_mode = 0
+offset_right = 1154.0
+offset_bottom = 650.0
+color = Color(0.42708987, 0.47737074, 0.37941444, 1)
+
+[node name="SheepSheet" type="Sprite2D" parent="." unique_id=1058519179]
+position = Vector2(580, 188)
+texture = SubResource("AtlasTexture_6jna8")
+
+[node name="IP" type="LineEdit" parent="." unique_id=508158223]
+layout_mode = 0
+offset_left = 507.0
+offset_top = 259.0
+offset_right = 678.0
+offset_bottom = 309.0
+theme_override_font_sizes/font_size = 30
+text = "127.0.0.1"
+
+[node name="Label" type="Label" parent="IP" unique_id=458279069]
+layout_mode = 0
+offset_left = -45.0
+offset_top = 5.0
+offset_right = -5.0
+offset_bottom = 47.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "IP"
+
+[node name="Port" type="LineEdit" parent="." unique_id=1861825530]
+layout_mode = 0
+offset_left = 507.0
+offset_top = 317.0
+offset_right = 678.0
+offset_bottom = 367.0
+theme_override_font_sizes/font_size = 30
+text = "10000"
+
+[node name="Label" type="Label" parent="Port" unique_id=2126296597]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.263
+offset_left = -33.026997
+offset_top = 5.0
+offset_right = -16.0
+offset_bottom = 47.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "Port"
+
+[node name="ButtonStart" type="Button" parent="." unique_id=174135312]
+layout_mode = 0
+offset_left = 505.0
+offset_top = 438.0
+offset_right = 672.0
+offset_bottom = 501.0
+theme_override_font_sizes/font_size = 40
+text = "Connect"
+
+[node name="Label" type="Label" parent="ButtonStart" unique_id=1416514268]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.120000005
+anchor_bottom = 0.18300001
+offset_left = -129.0
+offset_top = 76.0
+offset_right = 276.96
+offset_bottom = 119.471
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+
+[node name="Return" type="Button" parent="." unique_id=1478324431]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 566.0
+offset_right = 296.0
+offset_bottom = 629.0
+theme_override_font_sizes/font_size = 40
+text = "Back to Menu"
+
+[connection signal="text_changed" from="IP" to="." method="_on_ip_text_changed"]
+[connection signal="text_changed" from="Port" to="." method="_on_port_text_changed"]
+[connection signal="pressed" from="ButtonStart" to="." method="_on_button_start_pressed"]
+[connection signal="pressed" from="Return" to="." method="_on_return_pressed"]

@@ -166,11 +166,11 @@ func stop_go_button():
 func start_go_button():
 	spaceship.get_node("go_button").currently_active = false
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func end_of_quest(player):
 	player.go_back_to_ship()
 	
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func set_world_readiness(yesorno):
 		GlobalSimulationParameter.WorldReady = yesorno
 
@@ -197,7 +197,7 @@ func credit_player(player):
 
 
 func _process(_delta: float) -> void:
-	if multiplayer.is_server():
+	if multiplayer.multiplayer_peer and multiplayer.is_server():
 		if isWorldAccelerated:
 			if get_parent().get_node("Alife manager").get_node("Grass_Manager2").Grass_simulator_time <0 :
 				GlobalSimulationParameter.simulation_speed = 1
@@ -212,7 +212,7 @@ func Start_time_wrap():
 
 		
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func change_server_simulation_speed(value):
 	if isWorldAccelerated == false:
 		get_parent().get_node("Alife manager").get_node("Grass_Manager2").Grass_simulator_time = 500

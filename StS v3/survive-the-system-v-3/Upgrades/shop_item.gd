@@ -77,7 +77,7 @@ func _on_pressed() -> void:
 	buy_item.rpc_id(1, multiplayer.get_unique_id(), prizez, itemz_path)
 
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func buy_item(id, price, path):
 	if id_in_stock == null:
 		return
@@ -101,7 +101,7 @@ func buy_item(id, price, path):
 					#quantity -= 1
 					change_quantity.rpc()
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func change_quantity():
 	if quantity == null:
 		return

@@ -66,7 +66,7 @@ func refresh_label():
 	item_label.text = str(item_count)
 
 #old
-@rpc("any_peer", "call_remote")
+@rpc("any_peer", "call_local")
 func Update_info_multiplayer( new_item):
 	item = new_item
 	item_count += 1
@@ -82,7 +82,7 @@ func Update_info_multiplayer( new_item):
 		item_icon.texture = load(new_item["inventory_icon"])
 
 	refresh_label()
-@rpc("any_peer", "call_remote")
+@rpc("any_peer", "call_local")
 func send_remove_info():
 	item_count -= 1
 	if item_count == 0:

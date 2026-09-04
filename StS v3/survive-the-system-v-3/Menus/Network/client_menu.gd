@@ -13,14 +13,16 @@ var peer: ENetMultiplayerPeer
 var isconnected = false
 
 signal client_started
+signal simulation_started
 
 func _ready() -> void:
 		#connect signal of connection with function
 	#multiplayer.peer_connected.connect(on_connection)
-	multiplayer.server_disconnected.connect(on_server_disconnected)
-	multiplayer.connected_to_server.connect(on_client_connection)
-	multiplayer.connection_failed.connect(on_connection_failed)
-
+	
+	#multiplayer.server_disconnected.connect(on_server_disconnected)
+	#multiplayer.connected_to_server.connect(on_client_connection)
+	#multiplayer.connection_failed.connect(on_connection_failed)
+	pass
 
 	#connect_to_server(IP_ADDRESS, PORT)
 
@@ -39,12 +41,12 @@ func check_connection():
 
 func _process(_delta: float) -> void:
 	pass
-	get_server_readiness.rpc_id(1)
+	'get_server_readiness.rpc_id(1)
 
 	if GlobalSimulationParameter.server_ready:
 		$VBoxContainer/Button_Play.disabled = false
 	else:
-			$VBoxContainer/Button_Play.disabled = true
+			$VBoxContainer/Button_Play.disabled = true'
 
 	#check_connection()
 
@@ -96,6 +98,7 @@ func on_server_disconnected():
 func _on_button_play_pressed() -> void:
 	hide()
 	client_started.emit()
+	print("client started emit")
 	#get_tree().change_scene_to_file("res://main_game.tscn")
 
 
@@ -129,5 +132,25 @@ func _on_ip_text_changed(new_text: String) -> void:
 	IP_ADDRESS = new_text
 
 
+###############################################New menu
+
 func _on_button_quit_pressed() -> void:
 	get_tree().quit()
+
+
+func _on_button_join_game_pressed() -> void:
+	$JoinGame_menu.show()
+	$JoinGame_menu.init()
+
+
+func _on_button_host_game_pressed() -> void:
+	$HostGame_menu.show()
+	$HostGame_menu.init()
+
+
+func _on_button_settings_pressed() -> void:
+	pass # Replace with function body.
+
+
+func _on_button_credits_pressed() -> void:
+	pass # Replace with function body.

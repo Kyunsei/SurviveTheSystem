@@ -13,24 +13,38 @@ var current_index = null
 func _ready():
 	player = get_parent().get_parent()
 	if player.is_multiplayer_authority() or multiplayer.is_server():
-
 		for x in range(row_size):
-			items.append([])
-			
+			items.append([])		
 			for y in range(column_size):
+				print(multiplayer.get_unique_id())
 				items[x].append([])
 				var instance = ITEM_SLOT.instantiate()
 				instance.global_position = Vector2(x*150,y*150-35)
 				instance.slot_number = Vector2i(x,y)
 				add_child(instance, true)
 				items[x][y] = instance
-			
 
-				
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_G:
+			setup()		
+
+func setup():
+	player = get_parent().get_parent()
+	if player.is_multiplayer_authority() or multiplayer.is_server():
+		for x in range(row_size):
+			items.append([])		
+			for y in range(column_size):
+				print(multiplayer.get_unique_id())
+				items[x].append([])
+				var instance = ITEM_SLOT.instantiate()
+				instance.global_position = Vector2(x*150,y*150-35)
+				instance.slot_number = Vector2i(x,y)
+				add_child(instance, true)
+				items[x][y] = instance			
 			
 			
 func prep_item(new_item):
-	print("prep_item is working")
 	var item ={}
 	#print(new_item.item_ressources.name)
 	#print(new_item.item_ressources.inventory_icon)
@@ -86,7 +100,7 @@ func add_item(item, peer_id):
 	return false
 
 
-@rpc("authority","call_remote")
+@rpc("authority","call_local")
 func remove_last_item(peer_id):
 	for y in range(column_size):
 		for x in range(row_size):
@@ -99,7 +113,7 @@ func remove_last_item(peer_id):
 	return null
 
 
-@rpc("authority","call_remote")
+@rpc("authority","call_local")
 func remove_selected(peer_id):
 	if current_index != null:
 		var slot = items[current_index][0]		
@@ -142,7 +156,7 @@ func update_durability(peer_id):
 		slot.show_durability.rpc_id(peer_id, slot.item["Data"][0]["durability"],slot.item["Data"][0]["Init_durability"])	
 
 
-'@rpc("authority","call_remote")
+'@rpc("authority","call_local")
 func equip_item_at_index(idx):
 	var slot = items[idx][0]		
 	#var item_eqp = slot.remove_item(peer_id)
@@ -165,7 +179,7 @@ func select_item(idx, peer_id):
 	current_index = idx
 	change_index.rpc_id(1,peer_id,idx)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func select_item2(idx, peer_id):
 	if idx != null:   #mean unselected	
 		var slot = items[idx][0]
@@ -183,7 +197,7 @@ func select_item2(idx, peer_id):
 
 
 
-@rpc("authority","call_remote")
+@rpc("authority","call_local")
 func change_index(peer_id,idx):
 	current_index = idx
 	var item
