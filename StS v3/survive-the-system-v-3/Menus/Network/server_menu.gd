@@ -24,13 +24,28 @@ func _ready() -> void:
 	multiplayer.connection_failed
 	multiplayer.server_disconnected'
 	#call_deferred("_on_button_pressed")
-
-
-
+	var thread_count := OS.get_processor_count()
+	var cpu_name := OS.get_processor_name()
+	print("Threads: ", thread_count, " CPU: ", cpu_name)
+	var rd := RenderingServer.create_local_rendering_device()
+	if rd:
+		print("Device: ", rd.get_device_name(), " / ", rd.get_device_vendor_name())
+		print("API: ", RenderingServer.get_video_adapter_api_version())
+		print("Max compute workgroup size: ",
+			rd.limit_get(RenderingDevice.LIMIT_MAX_COMPUTE_WORKGROUP_SIZE_X), "x",
+			rd.limit_get(RenderingDevice.LIMIT_MAX_COMPUTE_WORKGROUP_SIZE_Y), "x",
+			rd.limit_get(RenderingDevice.LIMIT_MAX_COMPUTE_WORKGROUP_SIZE_Z))
+		print("Max invocations per workgroup: ",
+			rd.limit_get(RenderingDevice.LIMIT_MAX_COMPUTE_WORKGROUP_INVOCATIONS))
+		print("Max workgroups: ",
+			rd.limit_get(RenderingDevice.LIMIT_MAX_COMPUTE_WORKGROUP_COUNT_X), "x",
+			rd.limit_get(RenderingDevice.LIMIT_MAX_COMPUTE_WORKGROUP_COUNT_Y), "x",
+			rd.limit_get(RenderingDevice.LIMIT_MAX_COMPUTE_WORKGROUP_COUNT_Z))
+		print("Max shared memory: ", rd.limit_get(RenderingDevice.LIMIT_MAX_COMPUTE_SHARED_MEMORY_SIZE))
+		rd.free()
 func _process(_delta: float) -> void:
-
-	if peer:
-		if multiplayer.is_server():
+	#if peer:
+	if multiplayer.is_server():
 			var beastfps = alifemanager.get_node("beast_manager").FPS
 			#var grassfps = alifemanager.get_node("Grass_Manager").FPS
 			var grassfps2 = alifemanager.get_node("Grass_Manager2").FPS
@@ -38,10 +53,12 @@ func _process(_delta: float) -> void:
 
 
 			$FPS.text ="Peer ID: " + str(multiplayer.get_unique_id())
+			$FPS.text = $FPS.text +  "nThreads: " + str(OS.get_processor_count()) +" " + str(WorkerThreadPool)
 			$FPS.text = $FPS.text +  "\nfps: " + str(Engine.get_frames_per_second()) 
-			$FPS.text = $FPS.text +  " \t Beats_Time: " + str(beastfps) 
+			$FPS.text = $FPS.text +  " \t Beast_Time: " + str(beastfps) 
 			$FPS.text = $FPS.text +  " \t World_Time: " + str(grassworld2) 
 			$FPS.text = $FPS.text +  " \t Grass2_Time: " + str(grassfps2) 
+
 
 
 func _on_button_pressed() -> void:
@@ -58,6 +75,7 @@ func _on_button_pressed() -> void:
 
 func start_server():
 	peer = ENetMultiplayerPeer.new()
+
 	peer.create_server(PORT, MAX_CLIENTS)
 	multiplayer.multiplayer_peer = peer
 	$Label.text = $Label.text + "\nServer ONLINE"	
@@ -97,13 +115,18 @@ func _input(event: InputEvent) -> void:
 				visible = not visible
 				if visible:
 					var p = get_parent().get_parent().get_node("Alife manager").get_node(str(1))
-					p.hide_inventory()
+					if p:
+						p.hide_inventory()
+					$WorldVisualisation.isOn = true
 					Input.mouse_mode = Input.MOUSE_MODE_VISIBLE   # free the cursor for the UI
 				else:
 					if GlobalSimulationParameter.ClientStarted:
+						$WorldVisualisation.isOn = false
 						var p = get_parent().get_parent().get_node("Alife manager").get_node(str(1))
-						p.show_inventory()
+						if p:
+							p.show_inventory()
 						Input.mouse_mode = Input.MOUSE_MODE_CAPTURED  # back to gameplay
+
 
 func _on_line_edit_text_submitted(new_text: String) -> void:
 	GlobalSimulationParameter.simulation_speed = float(new_text)

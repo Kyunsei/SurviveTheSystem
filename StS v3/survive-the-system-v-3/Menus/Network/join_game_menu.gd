@@ -79,6 +79,7 @@ func on_server_disconnected():
 
 func connect_to_server(IP_ADDRESSv, PORTv):
 	peer = ENetMultiplayerPeer.new()
+	print(IP_ADDRESSv,PORTv)
 	peer.create_client(IP_ADDRESSv, PORTv)
 	multiplayer.multiplayer_peer = peer
 	$ButtonStart/Label.text = "Connecting..."

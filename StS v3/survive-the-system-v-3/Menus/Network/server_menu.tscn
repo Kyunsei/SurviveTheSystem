@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dlmqilve4y502"]
 
-[ext_resource type="Script" uid="uid://by2bosylwn5ip" path="res://Menus/Network/sever_menu.gd" id="1_s1xjv"]
+[ext_resource type="Script" uid="uid://by2bosylwn5ip" path="res://Menus/Network/server_menu.gd" id="1_s1xjv"]
 [ext_resource type="PackedScene" uid="uid://bvi5of21ge52k" path="res://Menus/data/life_data_menu.tscn" id="2_15i2s"]
 [ext_resource type="PackedScene" uid="uid://dfapvv6me7ncs" path="res://Menus/data/world_visualisation.tscn" id="3_v3bq4"]
 
@@ -57,18 +57,19 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 459.0
-offset_top = 39.0
-offset_right = 499.0
-offset_bottom = 62.0
+offset_left = 648.0
+offset_top = 33.0
+offset_right = 1109.0
+offset_bottom = 238.0
 grow_vertical = 0
+autowrap_mode = 2
 
 [node name="LifeDataMenu" parent="." unique_id=1757348478 instance=ExtResource("2_15i2s")]
 layout_mode = 0
-offset_left = 762.0
-offset_top = 254.0
-offset_right = 762.0
-offset_bottom = 254.0
+offset_left = 626.0
+offset_top = 270.0
+offset_right = 626.0
+offset_bottom = 270.0
 
 [node name="Label_speed" type="Label" parent="." unique_id=1743212148]
 layout_mode = 0
@@ -89,10 +90,10 @@ text = "1"
 
 [node name="WorldVisualisation" parent="." unique_id=2031418219 instance=ExtResource("3_v3bq4")]
 layout_mode = 1
-offset_left = 323.0
-offset_top = 148.0
-offset_right = 323.0
-offset_bottom = 148.0
+offset_left = 204.0
+offset_top = 157.0
+offset_right = 204.0
+offset_bottom = 157.0
 
 [node name="CheckButton" type="CheckButton" parent="." unique_id=690147902]
 visible = false

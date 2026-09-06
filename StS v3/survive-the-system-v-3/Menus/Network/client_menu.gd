@@ -3,7 +3,7 @@ extends Control
 var IP_ADDRESS = "192.168.0.1"#"127.0.0.1"
 var Local_address = "192.168.0.1"#"127.0.0.1"
 var V_address ="" 
-var K_address = ""
+var K_address = "http://192.168.1.175"
 var newIP = ""
 #var tried_already = false
 var PORT = 10000
@@ -52,6 +52,7 @@ func _process(_delta: float) -> void:
 
 func connect_to_server(IP_ADDRESSv, PORTv):
 	peer = ENetMultiplayerPeer.new()
+	print(IP_ADDRESSv, PORTv)
 	peer.create_client(IP_ADDRESSv, PORTv)
 	multiplayer.multiplayer_peer = peer
 	$Label_server.text = "Connecting..."

@@ -86,6 +86,7 @@ func update(delta):
 	
 		#move(b)
 	FPS = Time.get_ticks_msec() - ss
+	print(FPS)
 
 
 func Spawn_and_Kill():		

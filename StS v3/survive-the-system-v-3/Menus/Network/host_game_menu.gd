@@ -87,3 +87,7 @@ func _on_button_start_pressed() -> void:
 		$ButtonStart.disabled = true
 		get_parent().simulation_started.emit()
 		pass # Replace with function body.
+
+
+func _on_port_text_changed(new_text: String) -> void:
+	PORT = int(new_text)

@@ -67,6 +67,7 @@ func init():
 				#$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.TREE)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.BERRY)
 
+			
 
 #########################
 			for i in range(1):
@@ -167,7 +168,7 @@ func _process(delta: float) -> void:
 			$Grass_Manager.update(delta)
 			#$Grass_Manager2.update(delta)
 
-			$beast_manager.update(delta)
+			#$beast_manager.update(delta)
 			
 	elif GlobalSimulationParameter.ClientStarted:
 		if tempbool:

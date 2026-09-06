@@ -16,13 +16,14 @@ func _ready():
 		for x in range(row_size):
 			items.append([])		
 			for y in range(column_size):
-				print(multiplayer.get_unique_id())
 				items[x].append([])
 				var instance = ITEM_SLOT.instantiate()
 				instance.global_position = Vector2(x*150,y*150-35)
 				instance.slot_number = Vector2i(x,y)
 				add_child(instance, true)
 				items[x][y] = instance
+				if !player.is_multiplayer_authority():
+					hide()
 	
 
 		
