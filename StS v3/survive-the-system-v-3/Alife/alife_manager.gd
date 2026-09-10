@@ -6,6 +6,7 @@ extends Node3D
 @export var tree_scene: PackedScene
 @export var bone_scene: PackedScene
 
+signal simulationReady
 
 
 var World_time = 0
@@ -66,6 +67,7 @@ func init():
 				#$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.TREE)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.BERRY)
 
+			
 
 #########################
 			for i in range(1):
@@ -133,7 +135,7 @@ func init():
 				var pos = get_random_worldpos()
 				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.SNAILCAT)
-	
+			simulationReady.emit()
 func get_random_worldpos():
 	var x = randf_range(-World.World_Size.x/2,World.World_Size.x/2)
 	var z = randf_range(-World.World_Size.z/2,World.World_Size.z/2)
@@ -166,7 +168,7 @@ func _process(delta: float) -> void:
 			$Grass_Manager.update(delta)
 			#$Grass_Manager2.update(delta)
 
-			$beast_manager.update(delta)
+			#$beast_manager.update(delta)
 			
 	elif GlobalSimulationParameter.ClientStarted:
 		if tempbool:

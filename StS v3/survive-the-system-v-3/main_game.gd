@@ -4,6 +4,11 @@ extends Node3D
 func _ready() -> void:
 	$Network.get_node("client_menu").client_started.connect(on_game_started)
 	$Network.get_node("server_menu").server_started.connect(on_server_started)
+	$Network.get_node("client_menu").simulation_started.connect(on_server_started)
+	$"Alife manager".simulationReady.connect($Network.get_node("client_menu").get_node("HostGame_menu").on_simulation_ready)
+	
+	
+	#$Network.get_node("client_menu").client_started.connect(get_node("Alife manager/Grass_Manager2")._on_peer_connected)
 	#$Network.get_node("server_menu").simulation_started.connect(on_generation_started)
 
 
@@ -13,13 +18,16 @@ func _ready() -> void:
 
 func on_game_started():
 	#if MultiplayerPeer.CONNECTION_CONNECTED == 1:
-	if multiplayer.is_server() == false:
+	#if multiplayer.is_server() == false:
 			$"Alife manager".spawn_player.rpc_id(1,multiplayer.get_unique_id(),$SPACESHIP.global_position)
-			GlobalSimulationParameter.ClientStarted = true
+			GlobalSimulationParameter.ClientStarted = true #do I still need this?
 		
 
 func on_server_started():
+
 	if multiplayer.is_server():
+		print("here")
+
 		$World.generate_world()#.rpc()
 		#$"Alife manager".Spawn_life.rpc_id(1,Vector3(5,0,5),$"Alife manager".plant_scene)
 		#for i in range(40000):

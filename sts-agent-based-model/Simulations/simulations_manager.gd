@@ -28,5 +28,5 @@ func Load_Simulation():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	agent_manager.update(delta)
-	multimesh.draw_all(agent_manager.positions_x,agent_manager.positions_y,agent_manager.positions_z, agent_manager.active, agent_manager.agent_count)
+	multimesh.draw_all(agent_manager.positions_x,agent_manager.positions_y,agent_manager.positions_z,agent_manager.velocity_x, agent_manager.velocity_y, agent_manager.velocity_z, agent_manager.active, agent_manager.agent_count)
 	

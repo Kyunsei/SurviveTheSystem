@@ -355,7 +355,7 @@ func action():
 
 
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func action_on_server():
 	var collision = Action_area.get_node("CollisionShape3D")
 	collision.shape = collision.shape.duplicate()
@@ -424,7 +424,7 @@ func add_to_inventory(alife):
 				return false
 
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func Drop():
 
 	if player.item_hold:

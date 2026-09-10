@@ -19,7 +19,7 @@ func _ready() -> void:
 	graph_size = $Graph_population.size
 
 func _process(_delta: float) -> void:
-	if multiplayer.is_server():
+	if multiplayer.multiplayer_peer and multiplayer.is_server():
 		queue_redraw()
 		update_number()
 

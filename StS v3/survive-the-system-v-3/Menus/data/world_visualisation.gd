@@ -16,8 +16,9 @@ Color(0.492, 0.21, 0.524, 1.0),
 Color(0.0, 0.722, 0.867, 1.0),
 Color(0.566, 0.554, 0.022, 1.0)
 ]
-var isOn = true
+var isOn = false
 var update_time = 1
+var update_time_value = 1
 
 
 #------- different affichage -----------
@@ -93,7 +94,7 @@ func _process(delta: float) -> void:
 	if isOn:	
 		if update_time < 0:
 			update()
-			update_time = 1
+			update_time = update_time_value
 
 func update():
 
@@ -325,7 +326,7 @@ func _on_menu_button_pressed(id : int) -> void:
 
 
 func _on_line_edit_text_submitted(new_text: String) -> void:
-	update_time = float(new_text)
+	update_time_value = float(new_text)
 
 
 func _on_button_toggled(toggled_on: bool) -> void:

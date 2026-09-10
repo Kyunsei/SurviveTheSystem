@@ -1,0 +1,186 @@
+[gd_scene format=3 uid="uid://cl1w0rjflsd01"]
+
+[ext_resource type="Script" uid="uid://b531viovc7bd4" path="res://Menus/Network/host_game_menu.gd" id="1_6mtfq"]
+[ext_resource type="Texture2D" uid="uid://b67pvsxyij28d" path="res://Alife/Plant/tree/tree.png" id="2_6mtfq"]
+
+[node name="HostGame_menu" type="Control" unique_id=1566038921]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_6mtfq")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=342208750]
+layout_mode = 0
+offset_right = 1154.0
+offset_bottom = 650.0
+color = Color(0.24388376, 0.27829123, 0.21187472, 1)
+
+[node name="IP" type="LineEdit" parent="." unique_id=508158223]
+layout_mode = 0
+offset_left = 539.0
+offset_top = 201.0
+offset_right = 788.0
+offset_bottom = 251.0
+theme_override_font_sizes/font_size = 30
+text = "127.0.0.1"
+editable = false
+
+[node name="Label" type="Label" parent="IP" unique_id=458279069]
+layout_mode = 0
+offset_left = -113.0
+offset_top = 6.0
+offset_right = -10.0
+offset_bottom = 48.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "Your IP"
+
+[node name="Port" type="LineEdit" parent="." unique_id=1861825530]
+layout_mode = 0
+offset_left = 539.0
+offset_top = 260.0
+offset_right = 702.0
+offset_bottom = 310.0
+theme_override_font_sizes/font_size = 30
+text = "10000"
+
+[node name="Label" type="Label" parent="Port" unique_id=2126296597]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.263
+offset_left = -33.026997
+offset_top = 5.0
+offset_right = -16.0
+offset_bottom = 47.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "Port"
+
+[node name="ButtonHelp" type="Button" parent="Port" unique_id=853681635]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.321
+offset_left = 170.0
+offset_top = -1.0
+offset_right = 201.023
+offset_bottom = 49.0
+theme_override_font_sizes/font_size = 30
+text = "Help"
+
+[node name="ButtonStart" type="Button" parent="." unique_id=174135312]
+layout_mode = 0
+offset_left = 505.0
+offset_top = 323.0
+offset_right = 672.0
+offset_bottom = 386.0
+theme_override_font_sizes/font_size = 40
+text = "Host"
+
+[node name="Label" type="Label" parent="ButtonStart" unique_id=1416514268]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.120000005
+anchor_bottom = 0.18300001
+offset_left = -129.0
+offset_top = 76.0
+offset_right = 276.96
+offset_bottom = 119.471
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+
+[node name="Return" type="Button" parent="." unique_id=1478324431]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 566.0
+offset_right = 296.0
+offset_bottom = 629.0
+theme_override_font_sizes/font_size = 40
+text = "Back to Menu"
+
+[node name="Instruction" type="Label" parent="." unique_id=1129831778]
+layout_mode = 0
+offset_left = 496.0
+offset_top = 78.0
+offset_right = 777.0
+offset_bottom = 192.0
+text = "Only share this address with people you trust. Your IP reveals your approximate location and exposes your connection to them."
+autowrap_mode = 3
+
+[node name="Panel" type="Panel" parent="." unique_id=959606014]
+visible = false
+layout_mode = 0
+offset_left = 232.0
+offset_top = 48.0
+offset_right = 961.0
+offset_bottom = 583.0
+
+[node name="ColorRect" type="ColorRect" parent="Panel" unique_id=67762451]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 18.0
+offset_right = 709.0
+offset_bottom = 520.0
+color = Color(0.10224319, 0.10224321, 0.10224321, 1)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel" unique_id=841162618]
+layout_mode = 0
+offset_left = 41.0
+offset_top = 27.0
+offset_right = 701.0
+offset_bottom = 438.0
+text = "Letting others connect over the internet
+
+1. Pick a port —the game uses port 10000 (UDP) by default. Note it down.
+2. Find your router's admin page — open a browser and go to 192.168.1.1 or 192.168.0.1 (check the sticker on your router). Log in.
+3. Open \"Port Forwarding\" — sometimes under Advanced, NAT, or Gaming.
+4. Add a rule:
+	External/public port: 10000
+	Internal/private port: 10000
+	Protocol: UDP (or Both)
+	Internal IP: your PC's local IP (shown in the host window as 192.168.x.x)
+5. Save / apply. Some routers reboot.
+6. Give friends your public IP (shown in the host window) and the port.
+7. Allow the game through your firewall if Windows/macOS asks.
+
+Same network (LAN)? Skip all of this — friends just use your local 192.168.x.x  or 127.0.0.X address."
+
+[node name="Button" type="Button" parent="Panel" unique_id=1581659402]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.069000006
+anchor_bottom = 0.058000002
+offset_left = 296.0
+offset_top = 450.0
+offset_right = 331.699
+offset_bottom = 468.97
+theme_override_font_sizes/font_size = 30
+text = "Close"
+
+[node name="Instruction2" type="Label" parent="." unique_id=1147806342]
+layout_mode = 0
+offset_left = 798.0
+offset_top = 611.0
+offset_right = 1131.0
+offset_bottom = 634.0
+text = "Press '#' to see server & Simulation status"
+autowrap_mode = 3
+
+[node name="Tree" type="Sprite2D" parent="." unique_id=561090230]
+position = Vector2(207, 195.99997)
+scale = Vector2(2.1953125, 2.1953125)
+texture = ExtResource("2_6mtfq")
+
+[node name="Tree2" type="Sprite2D" parent="." unique_id=1375047599]
+position = Vector2(985, 335)
+scale = Vector2(2.1953125, 2.1953125)
+texture = ExtResource("2_6mtfq")
+
+[connection signal="text_changed" from="IP" to="." method="_on_ip_text_changed"]
+[connection signal="text_changed" from="Port" to="." method="_on_port_text_changed"]
+[connection signal="pressed" from="Port/ButtonHelp" to="." method="_on_button_help_pressed"]
+[connection signal="pressed" from="ButtonStart" to="." method="_on_button_start_pressed"]
+[connection signal="pressed" from="Return" to="." method="_on_return_pressed"]
+[connection signal="pressed" from="Panel/Button" to="." method="_on_button_pressed"]

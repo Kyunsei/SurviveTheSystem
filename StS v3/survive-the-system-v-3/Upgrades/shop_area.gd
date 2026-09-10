@@ -21,7 +21,7 @@ func interact(player):
 	player.get_node("Player_HUD").get_node("Inventory").select_item2.rpc_id(int(player.name),null,int(player.name))
 	
 
-@rpc("any_peer", "call_remote")
+@rpc("any_peer", "call_local")
 func rpc_show_shop():
 	#player.get_node("Player_HUD").get_node("Inventory").select_item(null,int(player.name))
 	$shopCanvas.show()
@@ -49,6 +49,6 @@ func update_credits_in_shop(p_id, value):
 			update_client_money.rpc_id(p_id, value)
 			#get_node("shopCanvas/Node/TextureRect2/MoneyLabel").text = "Current credits: " + str(p.catnation_credits)
 
-@rpc("any_peer", "call_remote")
+@rpc("any_peer", "call_local")
 func update_client_money(value):
 	get_node("shopCanvas/Node/TextureRect2/MoneyLabel").text = "Current credits: " + str(value)

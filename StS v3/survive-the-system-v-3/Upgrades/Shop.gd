@@ -24,7 +24,7 @@ func _process(delta: float) -> void:
 	##if is_multiplayer_authority():
 		#if Input.is_action_just_pressed("ui_cancel"):
 			#_on_quit_pressed2()
-	if multiplayer.is_server():
+	if multiplayer.multiplayer_peer and multiplayer.is_server():
 		if GlobalSimulationParameter.simulation_speed > 1:
 			needupdgrade =  true
 		
@@ -173,7 +173,7 @@ func know_who_is_player(player_id):
 			player = p
 			#print(str("player from for loop :")+str(player))'
 
-@rpc("any_peer", "call_remote")
+@rpc("any_peer", "call_local")
 func block(peer_id, state:bool):
 	var player_list = get_parent().get_parent().get_parent().get_parent().get_node("Alife manager").player_array
 	var player

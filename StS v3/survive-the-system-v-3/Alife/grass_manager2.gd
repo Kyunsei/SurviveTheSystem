@@ -300,7 +300,7 @@ func _process(_delta):
 	c= 0
 	if GlobalSimulationParameter.DEBUG_grass_sim == 0:
 		return
-	if !multiplayer.is_server():
+	if multiplayer.multiplayer_peer and !multiplayer.is_server():
 		return
 	if GlobalSimulationParameter.SimulationStarted == false:
 		return
@@ -1115,7 +1115,7 @@ func init_multimesh(player):
 			mm.player = player
 			
 
-@rpc("authority", "call_remote", "reliable") 
+@rpc("authority", "call_local", "reliable") 
 func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):	
 	for c in range(id_array.size()):
 		var i = id_array[c]
@@ -1130,7 +1130,7 @@ func draw_new_grass(id_array, pos_array, sp_array):#, state_array, alive_array):
 			
 
 
-@rpc("authority", "call_remote", "reliable") 			
+@rpc("authority", "call_local", "reliable") 			
 func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,species_array,size_arrayy,fstate_array):
 	for c in range(id_array.size()):
 		var s = species_array[c]
@@ -1138,7 +1138,7 @@ func update_drawn_grass(id_array, pos_array, state_array, alive_array,active,spe
 		if renderer:
 			renderer.update_drawn_grass(id_array[c], pos_array[c], state_array[c], alive_array[c], active[c],size_arrayy[c],fstate_array[c])
 
-@rpc("authority", "call_remote", "reliable") 
+@rpc("authority", "call_local", "reliable") 
 func erase_grass(id_array,species_array):
 	for c in range(id_array.size()):
 		var s = species_array[c]
@@ -1147,7 +1147,7 @@ func erase_grass(id_array,species_array):
 			renderer.remove_grass(id_array[c])
 				
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func send_and_draw_array(id_array, pos_array, state_array, alive_array, active_array,species_array,size_array,finite_state_array):
 
 	for r in SPECIES_RENDERERS.values():
@@ -1179,7 +1179,7 @@ func _on_peer_connected(id):
 	if multiplayer.is_server():
 		send_full_state_to_peer(id)
 
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func send_full_state_to_peer(peer_id):
 
 	var ids := PackedInt32Array()
