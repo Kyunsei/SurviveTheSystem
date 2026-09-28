@@ -1,0 +1,2312 @@
+[
+ {
+  "params": {
+   "sun_energy": 0.001369,
+   "compute_cost": 0.000426,
+   "organ_jump": 0.001291,
+   "metabolism": 0.012237,
+   "plant_efficiency": 0.45186,
+   "meat_efficiency": 1.052957,
+   "attack_power": 0.571211,
+   "mutation_scale": 1.59295,
+   "kin_distance": 0.19577,
+   "fire_rate": 0.030788,
+   "jc_strength": 0.285157,
+   "trample_strength": 1.272493,
+   "climate_strength": 0.758587
+  },
+  "score": 8.21775,
+  "runs": [
+   {
+    "score": 9.327,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.921,
+    "bodyplan": 0.391,
+    "cv": 0.078,
+    "mobile_end": 29626,
+    "sessile_end": 2286304,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 80
+   },
+   {
+    "score": 9.211,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.975,
+    "bodyplan": 0.396,
+    "cv": 0.323,
+    "mobile_end": 48753,
+    "sessile_end": 2712712,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 101
+   },
+   {
+    "score": 7.164,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.976,
+    "bodyplan": 0.196,
+    "cv": 0.573,
+    "mobile_end": 709,
+    "sessile_end": 4838728,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 27
+   },
+   {
+    "score": 7.169,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.984,
+    "bodyplan": 0.2,
+    "cv": 0.601,
+    "mobile_end": 697,
+    "sessile_end": 4780192,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 26
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.00195,
+   "compute_cost": 0.000759,
+   "organ_jump": 0.001008,
+   "metabolism": 0.023984,
+   "plant_efficiency": 0.735383,
+   "meat_efficiency": 1.216667,
+   "attack_power": 0.578874,
+   "mutation_scale": 0.649249,
+   "kin_distance": 0.118035,
+   "fire_rate": 0.070843,
+   "jc_strength": 0.289043,
+   "trample_strength": 1.473164,
+   "climate_strength": 0.362835
+  },
+  "score": 8.156,
+  "runs": [
+   {
+    "score": 9.42,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.922,
+    "bodyplan": 0.414,
+    "cv": 0.078,
+    "mobile_end": 52802,
+    "sessile_end": 2167312,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 136
+   },
+   {
+    "score": 9.408,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.983,
+    "bodyplan": 0.413,
+    "cv": 0.212,
+    "mobile_end": 78493,
+    "sessile_end": 2467752,
+    "tick_end": 5616,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 187
+   },
+   {
+    "score": 6.841,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.971,
+    "bodyplan": 0.142,
+    "cv": 0.667,
+    "mobile_end": 389,
+    "sessile_end": 5967600,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 46
+   },
+   {
+    "score": 6.955,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.98,
+    "bodyplan": 0.147,
+    "cv": 0.593,
+    "mobile_end": 491,
+    "sessile_end": 5968352,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 49
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.001818,
+   "compute_cost": 0.000822,
+   "organ_jump": 0.005921,
+   "metabolism": 0.014252,
+   "plant_efficiency": 0.639353,
+   "meat_efficiency": 1.209007,
+   "attack_power": 0.880776,
+   "mutation_scale": 0.592288,
+   "kin_distance": 0.147655,
+   "fire_rate": 0.026061,
+   "jc_strength": 0.305045,
+   "trample_strength": 0.841657,
+   "climate_strength": 0.866772
+  },
+  "score": 8.0485,
+  "runs": [
+   {
+    "score": 9.442,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.919,
+    "bodyplan": 0.419,
+    "cv": 0.071,
+    "mobile_end": 46602,
+    "sessile_end": 1767424,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 111
+   },
+   {
+    "score": 9.44,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.987,
+    "bodyplan": 0.418,
+    "cv": 0.206,
+    "mobile_end": 69290,
+    "sessile_end": 2179464,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 156
+   },
+   {
+    "score": 6.67,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.947,
+    "bodyplan": 0.13,
+    "cv": 0.743,
+    "mobile_end": 185,
+    "sessile_end": 5971416,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 39
+   },
+   {
+    "score": 6.642,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.966,
+    "bodyplan": 0.132,
+    "cv": 0.817,
+    "mobile_end": 339,
+    "sessile_end": 5965296,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 39
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.001268,
+   "compute_cost": 0.000287,
+   "organ_jump": 0.001365,
+   "metabolism": 0.023197,
+   "plant_efficiency": 0.465144,
+   "meat_efficiency": 0.833844,
+   "attack_power": 0.938259,
+   "mutation_scale": 1.540073,
+   "kin_distance": 0.15394,
+   "fire_rate": 0.063872,
+   "jc_strength": 0.129968,
+   "trample_strength": 0.853752,
+   "climate_strength": 0.454772
+  },
+  "score": 7.9495,
+  "runs": [
+   {
+    "score": 8.123,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.925,
+    "bodyplan": 0.345,
+    "cv": 0.109,
+    "mobile_end": 12810,
+    "sessile_end": 1647680,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 48
+   },
+   {
+    "score": 9.314,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.962,
+    "bodyplan": 0.371,
+    "cv": 0.091,
+    "mobile_end": 18081,
+    "sessile_end": 1958632,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 54
+   },
+   {
+    "score": 7.221,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.977,
+    "bodyplan": 0.204,
+    "cv": 0.546,
+    "mobile_end": 440,
+    "sessile_end": 4675776,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 26
+   },
+   {
+    "score": 7.14,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.981,
+    "bodyplan": 0.205,
+    "cv": 0.642,
+    "mobile_end": 536,
+    "sessile_end": 4522056,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 25
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.001118,
+   "compute_cost": 0.000559,
+   "organ_jump": 0.004259,
+   "metabolism": 0.009155,
+   "plant_efficiency": 0.485609,
+   "meat_efficiency": 1.166851,
+   "attack_power": 0.435327,
+   "mutation_scale": 1.619357,
+   "kin_distance": 0.156026,
+   "fire_rate": 0.032143,
+   "jc_strength": 0.224586,
+   "trample_strength": 0.528681,
+   "climate_strength": 0.716055
+  },
+  "score": 7.93,
+  "runs": [
+   {
+    "score": 9.109,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.908,
+    "bodyplan": 0.386,
+    "cv": 0.25,
+    "mobile_end": 23372,
+    "sessile_end": 1595040,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 56
+   },
+   {
+    "score": 8.911,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.966,
+    "bodyplan": 0.381,
+    "cv": 0.544,
+    "mobile_end": 40594,
+    "sessile_end": 2187384,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 67
+   },
+   {
+    "score": 6.876,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.918,
+    "bodyplan": 0.192,
+    "cv": 0.728,
+    "mobile_end": 121,
+    "sessile_end": 2553008,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 15
+   },
+   {
+    "score": 6.824,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.935,
+    "bodyplan": 0.188,
+    "cv": 0.8,
+    "mobile_end": 105,
+    "sessile_end": 2026904,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 14
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.00107,
+   "compute_cost": 0.000322,
+   "organ_jump": 0.00107,
+   "metabolism": 0.013866,
+   "plant_efficiency": 0.760496,
+   "meat_efficiency": 1.140916,
+   "attack_power": 1.025602,
+   "mutation_scale": 1.900821,
+   "kin_distance": 0.064285,
+   "fire_rate": 0.048197,
+   "jc_strength": 0.093975,
+   "trample_strength": 0.793889,
+   "climate_strength": 0.327285
+  },
+  "score": 6.868,
+  "runs": [
+   {
+    "score": 7.95,
+    "present": [
+     "plants",
+     "creepers",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.879,
+    "bodyplan": 0.396,
+    "cv": 0.392,
+    "mobile_end": 29006,
+    "sessile_end": 1539208,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 59
+   },
+   {
+    "score": 7.088,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.957,
+    "bodyplan": 0.406,
+    "cv": 0.449,
+    "mobile_end": 50210,
+    "sessile_end": 1939600,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 67
+   },
+   {
+    "score": 6.188,
+    "present": [
+     "plants",
+     "creepers",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.957,
+    "bodyplan": 0.205,
+    "cv": 0.546,
+    "mobile_end": 159,
+    "sessile_end": 3324720,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 19
+   },
+   {
+    "score": 6.246,
+    "present": [
+     "plants",
+     "creepers",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.962,
+    "bodyplan": 0.21,
+    "cv": 0.519,
+    "mobile_end": 161,
+    "sessile_end": 3098120,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 18
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.001127,
+   "compute_cost": 0.000713,
+   "organ_jump": 0.006681,
+   "metabolism": 0.021721,
+   "plant_efficiency": 0.416154,
+   "meat_efficiency": 1.298552,
+   "attack_power": 0.61638,
+   "mutation_scale": 1.702849,
+   "kin_distance": 0.137712,
+   "fire_rate": 0.014866,
+   "jc_strength": 0.294304,
+   "trample_strength": 1.036479,
+   "climate_strength": 0.871064
+  },
+  "score": 6.84575,
+  "runs": [
+   {
+    "score": 5.502,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.957,
+    "bodyplan": 0.155,
+    "cv": 0.033,
+    "mobile_end": 1679,
+    "sessile_end": 2173720,
+    "tick_end": 1936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 30
+   },
+   {
+    "score": 8.414,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.939,
+    "bodyplan": 0.217,
+    "cv": 0.332,
+    "mobile_end": 5292,
+    "sessile_end": 2520168,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 30
+   },
+   {
+    "score": 6.691,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.9,
+    "bodyplan": 0.19,
+    "cv": 0.871,
+    "mobile_end": 100,
+    "sessile_end": 2334512,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 15
+   },
+   {
+    "score": 6.776,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.882,
+    "bodyplan": 0.192,
+    "cv": 0.757,
+    "mobile_end": 51,
+    "sessile_end": 1845720,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 14
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.00128,
+   "compute_cost": 0.000505,
+   "organ_jump": 0.005254,
+   "metabolism": 0.008404,
+   "plant_efficiency": 0.769896,
+   "meat_efficiency": 1.318906,
+   "attack_power": 1.093818,
+   "mutation_scale": 0.802429,
+   "kin_distance": 0.147585,
+   "fire_rate": 0.00225,
+   "jc_strength": 0.19885,
+   "trample_strength": 0.430739,
+   "climate_strength": 0.592866
+  },
+  "score": 6.753,
+  "runs": [
+   {
+    "score": 6.769,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [
+     "omnivores"
+    ],
+    "entropy": 0.882,
+    "bodyplan": 0.361,
+    "cv": 0.438,
+    "mobile_end": 22915,
+    "sessile_end": 1449872,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 63
+   },
+   {
+    "score": 7.058,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [
+     "omnivores"
+    ],
+    "entropy": 0.951,
+    "bodyplan": 0.407,
+    "cv": 0.47,
+    "mobile_end": 46015,
+    "sessile_end": 1579400,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 71
+   },
+   {
+    "score": 6.658,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.948,
+    "bodyplan": 0.154,
+    "cv": 0.855,
+    "mobile_end": 272,
+    "sessile_end": 3645520,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 20
+   },
+   {
+    "score": 6.527,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.949,
+    "bodyplan": 0.151,
+    "cv": 0.977,
+    "mobile_end": 248,
+    "sessile_end": 3051640,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 18
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000991,
+   "compute_cost": 0.000204,
+   "organ_jump": 0.006687,
+   "metabolism": 0.013077,
+   "plant_efficiency": 0.484206,
+   "meat_efficiency": 0.754929,
+   "attack_power": 0.966008,
+   "mutation_scale": 0.742532,
+   "kin_distance": 0.077397,
+   "fire_rate": 0.034635,
+   "jc_strength": 0.281039,
+   "trample_strength": 0.348687,
+   "climate_strength": 0.587255
+  },
+  "score": 6.207999999999999,
+  "runs": [
+   {
+    "score": 9.136,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.887,
+    "bodyplan": 0.375,
+    "cv": 0.138,
+    "mobile_end": 13905,
+    "sessile_end": 1172128,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 46
+   },
+   {
+    "score": 8.834,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.948,
+    "bodyplan": 0.337,
+    "cv": 0.411,
+    "mobile_end": 19093,
+    "sessile_end": 1988880,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 47
+   },
+   {
+    "score": 2.925,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.66,
+    "bodyplan": 0.151,
+    "cv": 1.0,
+    "mobile_end": 18,
+    "sessile_end": 304600,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 12
+   },
+   {
+    "score": 3.937,
+    "present": [
+     "plants",
+     "creepers",
+     "sessile_feeders"
+    ],
+    "lost": [],
+    "entropy": 0.664,
+    "bodyplan": 0.152,
+    "cv": 1.0,
+    "mobile_end": 10,
+    "sessile_end": 215392,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 12
+   }
+  ]
+ },
+ {
+  "params": {},
+  "score": 5.8957500000000005,
+  "runs": [
+   {
+    "score": 8.175,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.906,
+    "bodyplan": 0.369,
+    "cv": 0.114,
+    "mobile_end": 11774,
+    "sessile_end": 1122120,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 44
+   },
+   {
+    "score": 9.24,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.969,
+    "bodyplan": 0.361,
+    "cv": 0.144,
+    "mobile_end": 15638,
+    "sessile_end": 1744464,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 50
+   },
+   {
+    "score": 3.079,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.704,
+    "bodyplan": 0.168,
+    "cv": 1.0,
+    "mobile_end": 18,
+    "sessile_end": 715088,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 12
+   },
+   {
+    "score": 3.089,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.696,
+    "bodyplan": 0.174,
+    "cv": 1.0,
+    "mobile_end": 27,
+    "sessile_end": 489592,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 12
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000811,
+   "compute_cost": 0.000236,
+   "organ_jump": 0.006221,
+   "metabolism": 0.012272,
+   "plant_efficiency": 0.579855,
+   "meat_efficiency": 0.613239,
+   "attack_power": 0.963462,
+   "mutation_scale": 1.683874,
+   "kin_distance": 0.169899,
+   "fire_rate": 0.026271,
+   "jc_strength": 0.064202,
+   "trample_strength": 1.218953,
+   "climate_strength": 0.414555
+  },
+  "score": 5.57225,
+  "runs": [
+   {
+    "score": 8.351,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.829,
+    "bodyplan": 0.266,
+    "cv": 0.37,
+    "mobile_end": 4950,
+    "sessile_end": 1200680,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 36
+   },
+   {
+    "score": 8.416,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.915,
+    "bodyplan": 0.291,
+    "cv": 0.58,
+    "mobile_end": 8675,
+    "sessile_end": 1522560,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 34
+   },
+   {
+    "score": 2.815,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.494,
+    "bodyplan": 0.207,
+    "cv": 1.0,
+    "mobile_end": 2,
+    "sessile_end": 98784,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": 2.707,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.507,
+    "bodyplan": 0.173,
+    "cv": 1.0,
+    "mobile_end": 3,
+    "sessile_end": 57904,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 11
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000782,
+   "compute_cost": 0.000298,
+   "organ_jump": 0.005561,
+   "metabolism": 0.010756,
+   "plant_efficiency": 0.594069,
+   "meat_efficiency": 0.793353,
+   "attack_power": 1.393821,
+   "mutation_scale": 1.985957,
+   "kin_distance": 0.18934,
+   "fire_rate": 0.072007,
+   "jc_strength": 0.276847,
+   "trample_strength": 1.861711,
+   "climate_strength": 0.647902
+  },
+  "score": 5.0805,
+  "runs": [
+   {
+    "score": 7.061,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.839,
+    "bodyplan": 0.215,
+    "cv": 0.478,
+    "mobile_end": 1872,
+    "sessile_end": 936520,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 33
+   },
+   {
+    "score": 8.169,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.887,
+    "bodyplan": 0.235,
+    "cv": 0.546,
+    "mobile_end": 3044,
+    "sessile_end": 1150168,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 30
+   },
+   {
+    "score": 2.425,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.369,
+    "bodyplan": 0.172,
+    "cv": 1.0,
+    "mobile_end": 1,
+    "sessile_end": 28280,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": 2.667,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.399,
+    "bodyplan": 0.217,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 15568,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 11
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000937,
+   "compute_cost": 0.000687,
+   "organ_jump": 0.004604,
+   "metabolism": 0.017557,
+   "plant_efficiency": 0.625338,
+   "meat_efficiency": 1.292005,
+   "attack_power": 1.313956,
+   "mutation_scale": 0.66267,
+   "kin_distance": 0.064218,
+   "fire_rate": 0.073087,
+   "jc_strength": 0.455133,
+   "trample_strength": 0.735959,
+   "climate_strength": 0.479788
+  },
+  "score": 4.7177500000000006,
+  "runs": [
+   {
+    "score": 8.153,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.901,
+    "bodyplan": 0.36,
+    "cv": 0.089,
+    "mobile_end": 11270,
+    "sessile_end": 1030896,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 37
+   },
+   {
+    "score": 8.034,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.953,
+    "bodyplan": 0.317,
+    "cv": 0.139,
+    "mobile_end": 8666,
+    "sessile_end": 1638616,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 38
+   },
+   {
+    "score": 1.315,
+    "present": [
+     "plants"
+    ],
+    "lost": [],
+    "entropy": 0.386,
+    "bodyplan": 0.136,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 22576,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": 1.369,
+    "present": [
+     "plants"
+    ],
+    "lost": [],
+    "entropy": 0.405,
+    "bodyplan": 0.14,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 9680,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 11
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000846,
+   "compute_cost": 0.000291,
+   "organ_jump": 0.002474,
+   "metabolism": 0.019597,
+   "plant_efficiency": 0.500772,
+   "meat_efficiency": 1.117158,
+   "attack_power": 1.127824,
+   "mutation_scale": 1.715516,
+   "kin_distance": 0.139911,
+   "fire_rate": 0.079225,
+   "jc_strength": 0.251037,
+   "trample_strength": 1.074367,
+   "climate_strength": 0.660827
+  },
+  "score": 4.70275,
+  "runs": [
+   {
+    "score": 6.815,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.912,
+    "bodyplan": 0.298,
+    "cv": 0.202,
+    "mobile_end": 6828,
+    "sessile_end": 1140480,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 30
+   },
+   {
+    "score": 6.794,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.938,
+    "bodyplan": 0.301,
+    "cv": 0.285,
+    "mobile_end": 8311,
+    "sessile_end": 1429520,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 31
+   },
+   {
+    "score": 2.615,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.452,
+    "bodyplan": 0.178,
+    "cv": 1.0,
+    "mobile_end": 1,
+    "sessile_end": 111952,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": 2.587,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.428,
+    "bodyplan": 0.183,
+    "cv": 1.0,
+    "mobile_end": 1,
+    "sessile_end": 59088,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 11
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.00092,
+   "compute_cost": 0.001113,
+   "organ_jump": 0.001234,
+   "metabolism": 0.024637,
+   "plant_efficiency": 0.50606,
+   "meat_efficiency": 1.003148,
+   "attack_power": 0.548146,
+   "mutation_scale": 1.578451,
+   "kin_distance": 0.086596,
+   "fire_rate": 0.027325,
+   "jc_strength": 0.011761,
+   "trample_strength": 0.679036,
+   "climate_strength": 0.877238
+  },
+  "score": 4.55875,
+  "runs": [
+   {
+    "score": 6.649,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.919,
+    "bodyplan": 0.28,
+    "cv": 0.308,
+    "mobile_end": 9664,
+    "sessile_end": 1796440,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 24
+   },
+   {
+    "score": 6.574,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.939,
+    "bodyplan": 0.239,
+    "cv": 0.258,
+    "mobile_end": 5463,
+    "sessile_end": 2189640,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 25
+   },
+   {
+    "score": 2.507,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.402,
+    "bodyplan": 0.176,
+    "cv": 1.0,
+    "mobile_end": 1,
+    "sessile_end": 208128,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": 2.505,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.389,
+    "bodyplan": 0.182,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 149240,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 11
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000727,
+   "compute_cost": 0.000743,
+   "organ_jump": 0.007068,
+   "metabolism": 0.008246,
+   "plant_efficiency": 0.39746,
+   "meat_efficiency": 1.22744,
+   "attack_power": 1.16805,
+   "mutation_scale": 1.340871,
+   "kin_distance": 0.077123,
+   "fire_rate": 0.02122,
+   "jc_strength": 0.117858,
+   "trample_strength": 1.961168,
+   "climate_strength": 0.357727
+  },
+  "score": 3.82875,
+  "runs": [
+   {
+    "score": 7.588,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.908,
+    "bodyplan": 0.243,
+    "cv": 0.202,
+    "mobile_end": 2890,
+    "sessile_end": 860960,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 25
+   },
+   {
+    "score": 8.25,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.912,
+    "bodyplan": 0.193,
+    "cv": 0.347,
+    "mobile_end": 1744,
+    "sessile_end": 1028024,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 25
+   },
+   {
+    "score": -0.311,
+    "present": [],
+    "lost": [],
+    "entropy": 0.137,
+    "bodyplan": 0.104,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 3368,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 10
+   },
+   {
+    "score": -0.212,
+    "present": [],
+    "lost": [],
+    "entropy": 0.203,
+    "bodyplan": 0.095,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 2440,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 10
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000845,
+   "compute_cost": 0.000928,
+   "organ_jump": 0.001235,
+   "metabolism": 0.016969,
+   "plant_efficiency": 0.574737,
+   "meat_efficiency": 1.125837,
+   "attack_power": 0.810136,
+   "mutation_scale": 1.285984,
+   "kin_distance": 0.168894,
+   "fire_rate": 0.012128,
+   "jc_strength": 0.26581,
+   "trample_strength": 1.176163,
+   "climate_strength": 0.747188
+  },
+  "score": 3.6805,
+  "runs": [
+   {
+    "score": 5.734,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.907,
+    "bodyplan": 0.271,
+    "cv": 0.164,
+    "mobile_end": 4776,
+    "sessile_end": 1024336,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 28
+   },
+   {
+    "score": 6.785,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.921,
+    "bodyplan": 0.271,
+    "cv": 0.142,
+    "mobile_end": 4559,
+    "sessile_end": 1205312,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 28
+   },
+   {
+    "score": 1.866,
+    "present": [
+     "plants",
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.199,
+    "bodyplan": 0.117,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 17744,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": 0.337,
+    "present": [],
+    "lost": [],
+    "entropy": 0.336,
+    "bodyplan": 0.166,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 5608,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 10
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000731,
+   "compute_cost": 0.00042,
+   "organ_jump": 0.001058,
+   "metabolism": 0.019263,
+   "plant_efficiency": 0.734015,
+   "meat_efficiency": 0.882822,
+   "attack_power": 1.216266,
+   "mutation_scale": 1.487043,
+   "kin_distance": 0.062385,
+   "fire_rate": 0.037619,
+   "jc_strength": 0.02287,
+   "trample_strength": 0.626444,
+   "climate_strength": 0.760447
+  },
+  "score": 2.5915,
+  "runs": [
+   {
+    "score": 5.256,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.853,
+    "bodyplan": 0.233,
+    "cv": 0.381,
+    "mobile_end": 3219,
+    "sessile_end": 957880,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 30
+   },
+   {
+    "score": 4.848,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.835,
+    "bodyplan": 0.192,
+    "cv": 0.59,
+    "mobile_end": 2189,
+    "sessile_end": 1149192,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 28
+   },
+   {
+    "score": -0.099,
+    "present": [],
+    "lost": [],
+    "entropy": 0.237,
+    "bodyplan": 0.107,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 1264,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": 0.361,
+    "present": [
+     "creepers"
+    ],
+    "lost": [],
+    "entropy": 0.062,
+    "bodyplan": 0.059,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 6056,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 11
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000698,
+   "compute_cost": 0.000551,
+   "organ_jump": 0.00114,
+   "metabolism": 0.009867,
+   "plant_efficiency": 0.776082,
+   "meat_efficiency": 0.677126,
+   "attack_power": 0.574114,
+   "mutation_scale": 1.910113,
+   "kin_distance": 0.103239,
+   "fire_rate": 0.017319,
+   "jc_strength": 0.048228,
+   "trample_strength": 0.998521,
+   "climate_strength": 0.241224
+  },
+  "score": 2.567,
+  "runs": [
+   {
+    "score": 5.86,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.764,
+    "bodyplan": 0.178,
+    "cv": 0.378,
+    "mobile_end": 323,
+    "sessile_end": 599424,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 33
+   },
+   {
+    "score": 4.645,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.816,
+    "bodyplan": 0.225,
+    "cv": 0.89,
+    "mobile_end": 2534,
+    "sessile_end": 677096,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 31
+   },
+   {
+    "score": 0.29,
+    "present": [],
+    "lost": [],
+    "entropy": 0.305,
+    "bodyplan": 0.17,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 736,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": -0.527,
+    "present": [],
+    "lost": [],
+    "entropy": 0.103,
+    "bodyplan": 0.067,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 1016,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 10
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000913,
+   "compute_cost": 0.001006,
+   "organ_jump": 0.005314,
+   "metabolism": 0.022387,
+   "plant_efficiency": 0.337742,
+   "meat_efficiency": 0.840675,
+   "attack_power": 1.184161,
+   "mutation_scale": 0.560677,
+   "kin_distance": 0.086561,
+   "fire_rate": 0.006549,
+   "jc_strength": 0.408778,
+   "trample_strength": 0.464492,
+   "climate_strength": 0.497004
+  },
+  "score": 1.5665,
+  "runs": [
+   {
+    "score": 5.316,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders"
+    ],
+    "lost": [],
+    "entropy": 0.707,
+    "bodyplan": 0.063,
+    "cv": 0.352,
+    "mobile_end": 5,
+    "sessile_end": 2210384,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 22
+   },
+   {
+    "score": 5.288,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders"
+    ],
+    "lost": [],
+    "entropy": 0.775,
+    "bodyplan": 0.065,
+    "cv": 0.522,
+    "mobile_end": 10,
+    "sessile_end": 2412272,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 23
+   },
+   {
+    "score": -2.111,
+    "present": [],
+    "lost": [
+     "plants"
+    ],
+    "entropy": 0.248,
+    "bodyplan": 0.098,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 728,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 10
+   },
+   {
+    "score": -2.227,
+    "present": [],
+    "lost": [
+     "plants"
+    ],
+    "entropy": 0.184,
+    "bodyplan": 0.101,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 240,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 10
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000631,
+   "compute_cost": 0.000268,
+   "organ_jump": 0.009623,
+   "metabolism": 0.022147,
+   "plant_efficiency": 0.375136,
+   "meat_efficiency": 0.78329,
+   "attack_power": 0.939138,
+   "mutation_scale": 0.735471,
+   "kin_distance": 0.105327,
+   "fire_rate": 0.003946,
+   "jc_strength": 0.355839,
+   "trample_strength": 0.157125,
+   "climate_strength": 0.896223
+  },
+  "score": 1.56325,
+  "runs": [
+   {
+    "score": 4.08,
+    "present": [
+     "plants",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.875,
+    "bodyplan": 0.179,
+    "cv": 0.385,
+    "mobile_end": 2767,
+    "sessile_end": 1244960,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 19
+   },
+   {
+    "score": 4.173,
+    "present": [
+     "plants",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.834,
+    "bodyplan": 0.19,
+    "cv": 0.256,
+    "mobile_end": 1899,
+    "sessile_end": 1099104,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 19
+   },
+   {
+    "score": -1.0,
+    "present": [],
+    "lost": [],
+    "entropy": 0.0,
+    "bodyplan": 0.0,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 0,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": -1.0,
+    "present": [],
+    "lost": [],
+    "entropy": 0.0,
+    "bodyplan": 0.0,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 0,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 11
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.00061,
+   "compute_cost": 0.000245,
+   "organ_jump": 0.003266,
+   "metabolism": 0.021452,
+   "plant_efficiency": 0.470513,
+   "meat_efficiency": 0.855479,
+   "attack_power": 0.440812,
+   "mutation_scale": 0.649424,
+   "kin_distance": 0.080792,
+   "fire_rate": 0.016501,
+   "jc_strength": 0.284924,
+   "trample_strength": 0.717787,
+   "climate_strength": 0.884409
+  },
+  "score": 1.556,
+  "runs": [
+   {
+    "score": 4.082,
+    "present": [
+     "plants",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.895,
+    "bodyplan": 0.172,
+    "cv": 0.395,
+    "mobile_end": 1467,
+    "sessile_end": 826952,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 21
+   },
+   {
+    "score": 4.142,
+    "present": [
+     "plants",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.889,
+    "bodyplan": 0.168,
+    "cv": 0.307,
+    "mobile_end": 717,
+    "sessile_end": 745624,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 20
+   },
+   {
+    "score": -1.0,
+    "present": [],
+    "lost": [],
+    "entropy": 0.0,
+    "bodyplan": 0.0,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 0,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 11
+   },
+   {
+    "score": -1.0,
+    "present": [],
+    "lost": [],
+    "entropy": 0.0,
+    "bodyplan": 0.0,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 0,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 10
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.00062,
+   "compute_cost": 0.000362,
+   "organ_jump": 0.002482,
+   "metabolism": 0.011026,
+   "plant_efficiency": 0.639967,
+   "meat_efficiency": 1.014613,
+   "attack_power": 0.648941,
+   "mutation_scale": 1.119876,
+   "kin_distance": 0.156864,
+   "fire_rate": 0.025997,
+   "jc_strength": 0.033853,
+   "trample_strength": 0.921006,
+   "climate_strength": 0.336545
+  },
+  "score": 1.5390000000000001,
+  "runs": [
+   {
+    "score": 3.459,
+    "present": [
+     "plants",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.704,
+    "bodyplan": 0.152,
+    "cv": 0.556,
+    "mobile_end": 437,
+    "sessile_end": 385376,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 30
+   },
+   {
+    "score": 4.697,
+    "present": [
+     "plants",
+     "creepers",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.748,
+    "bodyplan": 0.181,
+    "cv": 0.525,
+    "mobile_end": 430,
+    "sessile_end": 282240,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 28
+   },
+   {
+    "score": -1.0,
+    "present": [],
+    "lost": [],
+    "entropy": 0.0,
+    "bodyplan": 0.0,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 0,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 10
+   },
+   {
+    "score": -1.0,
+    "present": [],
+    "lost": [],
+    "entropy": 0.0,
+    "bodyplan": 0.0,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 0,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 10
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000765,
+   "compute_cost": 0.000793,
+   "organ_jump": 0.004995,
+   "metabolism": 0.017462,
+   "plant_efficiency": 0.340023,
+   "meat_efficiency": 0.731961,
+   "attack_power": 1.367282,
+   "mutation_scale": 0.845964,
+   "kin_distance": 0.082896,
+   "fire_rate": 0.023064,
+   "jc_strength": 0.26856,
+   "trample_strength": 1.039227,
+   "climate_strength": 0.202332
+  },
+  "score": 1.4965,
+  "runs": [
+   {
+    "score": 5.43,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.796,
+    "bodyplan": 0.098,
+    "cv": 0.554,
+    "mobile_end": 605,
+    "sessile_end": 1751328,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 21
+   },
+   {
+    "score": 2.45,
+    "present": [
+     "plants",
+     "creepers",
+     "traps"
+    ],
+    "lost": [
+     "grazers"
+    ],
+    "entropy": 0.891,
+    "bodyplan": 0.079,
+    "cv": 0.649,
+    "mobile_end": 50,
+    "sessile_end": 1810392,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 20
+   },
+   {
+    "score": -0.962,
+    "present": [],
+    "lost": [],
+    "entropy": 0.0,
+    "bodyplan": 0.009,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 32,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 10
+   },
+   {
+    "score": -0.932,
+    "present": [],
+    "lost": [],
+    "entropy": 0.008,
+    "bodyplan": 0.013,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 40,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 10
+   }
+  ]
+ },
+ {
+  "params": {
+   "sun_energy": 0.000602,
+   "compute_cost": 0.000486,
+   "organ_jump": 0.001531,
+   "metabolism": 0.018328,
+   "plant_efficiency": 0.699232,
+   "meat_efficiency": 0.676699,
+   "attack_power": 0.905167,
+   "mutation_scale": 1.109207,
+   "kin_distance": 0.170663,
+   "fire_rate": 0.076383,
+   "jc_strength": 0.208359,
+   "trample_strength": 0.486536,
+   "climate_strength": 0.814931
+  },
+  "score": 1.21975,
+  "runs": [
+   {
+    "score": 3.754,
+    "present": [
+     "plants",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.767,
+    "bodyplan": 0.169,
+    "cv": 0.458,
+    "mobile_end": 612,
+    "sessile_end": 408096,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "seeded",
+    "secs": 24
+   },
+   {
+    "score": 3.125,
+    "present": [
+     "plants",
+     "grazers"
+    ],
+    "lost": [],
+    "entropy": 0.732,
+    "bodyplan": 0.125,
+    "cv": 0.839,
+    "mobile_end": 83,
+    "sessile_end": 267864,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "seeded",
+    "secs": 23
+   },
+   {
+    "score": -1.0,
+    "present": [],
+    "lost": [],
+    "entropy": 0.0,
+    "bodyplan": 0.0,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 0,
+    "tick_end": 5936,
+    "seed": 1,
+    "mode": "primordial",
+    "secs": 10
+   },
+   {
+    "score": -1.0,
+    "present": [],
+    "lost": [],
+    "entropy": 0.0,
+    "bodyplan": 0.0,
+    "cv": 1.0,
+    "mobile_end": 0,
+    "sessile_end": 0,
+    "tick_end": 5936,
+    "seed": 2,
+    "mode": "primordial",
+    "secs": 10
+   }
+  ]
+ }
+]

@@ -1,0 +1,90 @@
+[
+ {
+  "params": {},
+  "score": 8.477,
+  "runs": [
+   {
+    "score": 9.186,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.936,
+    "bodyplan": 0.37,
+    "cv": 0.167,
+    "mobile_end": 30794,
+    "sessile_end": 3726440,
+    "tick_end": 19856,
+    "seed": 3,
+    "mode": "seeded",
+    "secs": 498
+   },
+   {
+    "score": 9.051,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.954,
+    "bodyplan": 0.354,
+    "cv": 0.272,
+    "mobile_end": 21420,
+    "sessile_end": 3236920,
+    "tick_end": 19856,
+    "seed": 4,
+    "mode": "seeded",
+    "secs": 429
+   },
+   {
+    "score": 7.816,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.991,
+    "bodyplan": 0.241,
+    "cv": 0.131,
+    "mobile_end": 1518,
+    "sessile_end": 3849544,
+    "tick_end": 19856,
+    "seed": 3,
+    "mode": "primordial",
+    "secs": 132
+   },
+   {
+    "score": 7.855,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.995,
+    "bodyplan": 0.248,
+    "cv": 0.127,
+    "mobile_end": 1600,
+    "sessile_end": 3128296,
+    "tick_end": 19856,
+    "seed": 4,
+    "mode": "primordial",
+    "secs": 111
+   }
+  ]
+ }
+]

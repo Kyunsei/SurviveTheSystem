@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://ckmwqw4mne183"
+
+[deps]
+
+files=["res://runs/eco4_seeded/base_seed2.tps.translation", "res://runs/eco4_seeded/base_seed2.organisms.translation", "res://runs/eco4_seeded/base_seed2.sessile.translation", "res://runs/eco4_seeded/base_seed2.mobile.translation", "res://runs/eco4_seeded/base_seed2.plants.translation", "res://runs/eco4_seeded/base_seed2.creepers.translation", "res://runs/eco4_seeded/base_seed2.traps.translation", "res://runs/eco4_seeded/base_seed2.sessile.translation", "res://runs/eco4_seeded/base_seed2.sessile.translation", "res://runs/eco4_seeded/base_seed2.grazers.translation", "res://runs/eco4_seeded/base_seed2.predators.translation", "res://runs/eco4_seeded/base_seed2.omnivores.translation", "res://runs/eco4_seeded/base_seed2.mobile.translation", "res://runs/eco4_seeded/base_seed2.mobile.translation", "res://runs/eco4_seeded/base_seed2.with.translation", "res://runs/eco4_seeded/base_seed2.with.translation", "res://runs/eco4_seeded/base_seed2.lineages.translation", "res://runs/eco4_seeded/base_seed2.lineages.translation", "res://runs/eco4_seeded/base_seed2.lineage.translation", "res://runs/eco4_seeded/base_seed2.bodyplan.translation", "res://runs/eco4_seeded/base_seed2.settled.translation", "res://runs/eco4_seeded/base_seed2.uprooted.translation", "res://runs/eco4_seeded/base_seed2.births.translation", "res://runs/eco4_seeded/base_seed2.deaths.translation", "res://runs/eco4_seeded/base_seed2.max.translation", "res://runs/eco4_seeded/base_seed2.sun.translation", "res://runs/eco4_seeded/base_seed2.mobile.translation", "res://runs/eco4_seeded/base_seed2.sexual.translation"]
+
+source_file="res://runs/eco4_seeded/base_seed2.csv"
+dest_files=["res://runs/eco4_seeded/base_seed2.tps.translation", "res://runs/eco4_seeded/base_seed2.organisms.translation", "res://runs/eco4_seeded/base_seed2.sessile.translation", "res://runs/eco4_seeded/base_seed2.mobile.translation", "res://runs/eco4_seeded/base_seed2.plants.translation", "res://runs/eco4_seeded/base_seed2.creepers.translation", "res://runs/eco4_seeded/base_seed2.traps.translation", "res://runs/eco4_seeded/base_seed2.sessile.translation", "res://runs/eco4_seeded/base_seed2.sessile.translation", "res://runs/eco4_seeded/base_seed2.grazers.translation", "res://runs/eco4_seeded/base_seed2.predators.translation", "res://runs/eco4_seeded/base_seed2.omnivores.translation", "res://runs/eco4_seeded/base_seed2.mobile.translation", "res://runs/eco4_seeded/base_seed2.mobile.translation", "res://runs/eco4_seeded/base_seed2.with.translation", "res://runs/eco4_seeded/base_seed2.with.translation", "res://runs/eco4_seeded/base_seed2.lineages.translation", "res://runs/eco4_seeded/base_seed2.lineages.translation", "res://runs/eco4_seeded/base_seed2.lineage.translation", "res://runs/eco4_seeded/base_seed2.bodyplan.translation", "res://runs/eco4_seeded/base_seed2.settled.translation", "res://runs/eco4_seeded/base_seed2.uprooted.translation", "res://runs/eco4_seeded/base_seed2.births.translation", "res://runs/eco4_seeded/base_seed2.deaths.translation", "res://runs/eco4_seeded/base_seed2.max.translation", "res://runs/eco4_seeded/base_seed2.sun.translation", "res://runs/eco4_seeded/base_seed2.mobile.translation", "res://runs/eco4_seeded/base_seed2.sexual.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

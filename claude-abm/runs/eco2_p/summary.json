@@ -1,0 +1,25 @@
+[
+ {
+  "params": {},
+  "score": 4.548,
+  "runs": [
+   {
+    "score": 4.548,
+    "present": [
+     "plants",
+     "creepers",
+     "sessile_feeders"
+    ],
+    "lost": [],
+    "entropy": 0.759,
+    "bodyplan": 0.166,
+    "cv": 0.635,
+    "mobile_end": 8,
+    "sessile_end": 728744,
+    "tick_end": 7856,
+    "seed": 1,
+    "secs": 16
+   }
+  ]
+ }
+]

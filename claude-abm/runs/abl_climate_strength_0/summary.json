@@ -1,0 +1,29 @@
+[
+ {
+  "params": {
+   "climate_strength": "0"
+  },
+  "score": 7.132,
+  "runs": [
+   {
+    "score": 7.132,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.927,
+    "bodyplan": 0.195,
+    "cv": 0.502,
+    "mobile_end": 83,
+    "sessile_end": 1892912,
+    "tick_end": 7856,
+    "seed": 1,
+    "secs": 18
+   }
+  ]
+ }
+]

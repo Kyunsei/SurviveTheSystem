@@ -1,0 +1,1901 @@
+// =============================================================================
+// Unified life - one kind of organism, bodies grown from a body-plan genome
+// (GPU kernels).
+//
+// Compiled once per kernel by scripts/life/life_sim.gd. The host prepends
+// "#version 450" and defines K_<NAME>, OCAP (organisms), LCAP (leg pool), BCAP
+// (brain pool), WORLD (cells per side), CELL (metres per cell), BUCKET (cells per
+// spatial-hash bucket), SLOTS (entries per bucket), NINIT and NMOB (initial
+// organisms, of which mobile).
+//
+// Every organism has the same core (64 bytes): position, energy, age and
+// development, flags, 16 life-history genes (core1) and a 16-gene body plan
+// (core3). Plants and animals share one body grammar - an axis of segments with
+// appendages, surfaces, feeding, protection and sensor modules - and differ by
+// five continuous switches: anchorage (rooted .. free), axis (horizontal ..
+// vertical), symmetry (bilateral .. radial), growth (indeterminate ..
+// determinate) and actuation (rigid .. muscular). develop() turns genome, age
+// and energy into abilities: movement = muscular appendages / anchorage,
+// sunlight = surfaces, bite = feeding modules, and so on.
+//
+// Plant <-> animal transitions happen three ways: gradually (the switches drift
+// every generation), suddenly (a rare switch mutation), and within a life
+// (metamorphosis: at a genetic age anchorage and actuation take adult values, so
+// a free larva can settle and root, or a rooted juvenile break free). Whenever a
+// developed body crosses the movement threshold it takes legs (and a brain) from
+// their pools, or gives them back.
+//
+// Only legs and brains need storage, and every pass only runs what a body has,
+// so its GPU work - paid in energy (compute_cost) - follows its body: a rooted
+// sun-eater is updated every 8 ticks for a few units, a brainy hunter every tick.
+// =============================================================================
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+#extension GL_KHR_shader_subgroup_basic : require
+#extension GL_KHR_shader_subgroup_arithmetic : require
+
+// ---- Life-history genes (core1) ----------------------------------------------
+#define G_SIZE 0      // body / stature
+#define G_TEMP 1      // preferred temperature (climate niche)
+#define G_BRAIN 5     // brain: number of neurons (x 8); only used while mobile
+#define G_HUE 7       // lineage colour (neutral, used for kin recognition)
+#define G_REPRO 8     // energy (share of capacity) needed to reproduce
+#define G_CHILD 9     // share of energy given to each child
+#define G_DISPERSE 10 // how far sessile offspring are spread
+#define G_MUT 11      // mutation rate
+#define G_CARNI 12    // what feeding modules eat: 0 plants (sessile) .. 1 animals and carrion
+#define G_DETOX 13    // tolerance to defences
+#define G_GROWTH 14   // growth tempo (fast growers respire more)
+#define G_SOCIAL 15   // reflex attraction to kin
+// (genes 2-4 and 6 of core1 are unused spares)
+
+// ---- Body-plan genes (core3) -------------------------------------------------
+#define M_ANCHOR 0        // switch: 0 free .. 1 rooted
+#define M_AXIS 1          // switch: 0 horizontal (moves forward) .. 1 vertical (grows up)
+#define M_SYM 2           // switch: 0 bilateral .. 1 radial
+#define M_DETERM 3        // switch: 0 indeterminate (grows with energy) .. 1 determinate (adult form)
+#define M_ACT 4           // switch: 0 rigid appendages (branches) .. 1 muscular (legs, tentacles)
+#define M_SEGS 5          // axis segments: 1..6
+#define M_APPS 6          // appendage pairs: 0..4
+#define M_APPLEN 7        // appendage length
+#define M_SURFACE 8       // surfaces: leaves / sails (photosynthesis)
+#define M_FEED 9          // feeding modules: jaw / trap (mouth)
+#define M_PROTECT 10      // protection: bark / armour / thorns
+#define M_SENSOR 11       // sensors: eyes
+#define M_SLENDER 12      // body / trunk thickness (visual, and a little mass)
+#define M_META 13         // metamorphosis age (x 3000 ticks); below T_META: none
+#define M_ADULT_ANCHOR 14 // anchorage after metamorphosis
+#define M_ADULT_ACT 15    // actuation after metamorphosis
+
+// Module thresholds: below them a module is absent (and costs nothing).
+#define T_PHOTO 0.05
+#define T_LEGS 0.1
+#define T_MOUTH 0.05
+#define T_EYES 0.1
+#define T_BRAIN 0.125
+#define T_META 0.1
+
+#define BRAIN_WORDS 36   // 7 hidden x 4 words + 4 outputs x 2 words (int8 weights)
+#define NONE 0xffffffffu
+#define PSTRIDE 8u       // sessile organisms are updated every PSTRIDE ticks
+#define FIELD_STRIDE 4
+#define M2C (1.0 / CELL)
+#define BW (WORLD / BUCKET)
+#define NB (BW * BW)
+#define DEAD_MAX (OCAP / 4)
+#define BIRTH_MAX (OCAP / 8)
+#define LD0 DEAD_MAX                 // lists: dead legs
+#define BD0 (DEAD_MAX + LCAP)        // lists: dead brains
+#define BR0 (DEAD_MAX + LCAP + BCAP) // lists: birth requests
+
+// core0.w flags
+#define F_ALIVE 1u
+#define F_MOBILE 2u
+#define F_BRAIN 4u
+
+// Actions (for colours, animation and stats)
+#define A_EAT 0u
+#define A_HUNT 1u
+#define A_FLEE 2u
+#define A_BASK 3u
+#define A_WANDER 4u
+#define A_REST 5u
+#define A_FLOCK 6u
+
+// core0 = (packed position, energy (float bits), age (16 bits) | development x 65535 << 16,
+//          flags | canopy layer << 3 | cover contribution << 16)
+// core1 = life-history genes, core3 = body plan (8 bits each)
+// core2 = (leg slot, brain slot, generation, last action)
+layout(set = 0, binding = 0, std430) buffer Core0 { uvec4 core0[]; };
+layout(set = 0, binding = 1, std430) buffer Core1 { uvec4 core1[]; };
+layout(set = 0, binding = 2, std430) buffer Core2 { uvec4 core2[]; };
+layout(set = 0, binding = 3, std430) buffer Damage { uint damage[]; };   // energy x 1000, applied by the victim
+// Leg pool: (owner organism, heading, speed in cells/tick, memory) - floats as bits.
+layout(set = 0, binding = 4, std430) buffer Legs { uvec4 legs[]; };
+layout(set = 0, binding = 5, std430) buffer Brains { uint brains[]; };
+// Spatial hash of the mobile organisms, rebuilt at the start of every tick:
+// (organism, packed position, phenotype, half2(energy, speed)).
+layout(set = 0, binding = 6, std430) buffer GridCount { int grid_count[]; };
+layout(set = 0, binding = 7, std430) buffer GridSlot { uvec4 grid_slot[]; };
+layout(set = 0, binding = 8, std430) buffer Fert { float fert[]; };      // < 0: water
+layout(set = 0, binding = 9, std430) buffer Height { float height[]; };
+layout(set = 0, binding = 10, std430) buffer Meat { int meat[]; };       // carrion x PS
+layout(set = 0, binding = 11, std430) buffer Cover { int cover[]; };     // 3 canopy layers per cell, x1000
+layout(set = 0, binding = 12, std430) buffer OFree { uint ofree[]; };
+layout(set = 0, binding = 13, std430) buffer LFree { uint lfree[]; };
+layout(set = 0, binding = 14, std430) buffer BFree { uint bfree[]; };
+// 0 organism free-stack size, 1 claimed, 2 births, 3 deaths (stats), 4 high-water
+// mark, 5 dead-list length, 6 birth requests, 7 organisms counted by the last sort;
+// 8-11 the same for legs (size, claimed, hwm, dead), 12-15 for brains;
+// 16-23 modules gained / lost at birth (legs, brain, mouth, leaves: +, -);
+// 24-29 energy flows (see flow_add); 30 max generation; 31 / 32 3D instances
+// written (mobile / sessile); 33 settled (mobile -> rooted in life); 34 uprooted.
+layout(set = 0, binding = 15, std430) buffer Counters { int counters[]; };
+layout(set = 0, binding = 16, std430) buffer Stats { uint stats[]; };
+layout(set = 0, binding = 17, rgba8) uniform writeonly image2D view;
+layout(set = 0, binding = 18, std430) buffer Tmp { uint tmp[]; };
+layout(set = 0, binding = 19, std430) buffer PPerm { uint pperm[]; };
+layout(set = 0, binding = 20, std430) buffer Offsets { uint offsets[]; };
+layout(set = 0, binding = 21, std430) buffer BlockSums { uint block_sums[]; };
+// Per cell: (first organism, count) in the storage order of the last sort.
+layout(set = 0, binding = 22, std430) buffer PCell { uvec2 pcell[]; };
+layout(set = 0, binding = 23, std430) buffer PCount { uint pcount[]; };
+layout(set = 0, binding = 24, std430) buffer Lists { uint lists[]; };
+// 3D view: pose before the last move of each leg-pool slot (packed position,
+// heading bits); the viewer; body-rig MultiMesh buffers (12 floats row-major
+// transform, 4 colour, 4 custom) for mobile and sessile organisms.
+layout(set = 0, binding = 25, std430) buffer LegPrev { uvec2 legprev[]; };
+struct Viewer {
+	vec2 pos;          // player position in cells
+	float radius;      // mobile organisms are drawn this far (m)
+	float phase;       // 0..1 progress towards the next tick (interpolation)
+	uint flags3d;      // 1 in the 3D view
+	uint pad_a;
+	uint pad_b;
+	uint pad_c;
+};
+layout(set = 0, binding = 26, std430) buffer ViewerBuf { Viewer viewer; };
+layout(set = 0, binding = 27, std430) buffer MInst { float minst[]; };
+layout(set = 0, binding = 28, std430) buffer SInst { float sinst[]; };
+layout(set = 0, binding = 32, std430) buffer Core3 { uvec4 core3[]; };
+// Trampling by mobile organisms (x100, decays), litter from dead sessile organisms
+// (x PS, eaten by grazers and sessile feeders, decays), and the tick each cell
+// last burned.
+layout(set = 0, binding = 33, std430) buffer Trample { int trample[]; };
+layout(set = 0, binding = 34, std430) buffer Litter { int litter[]; };
+layout(set = 0, binding = 35, std430) buffer Burn { uint burn[]; };
+
+layout(push_constant, std430) uniform Params {
+	uint tick;
+	uint seed;
+	uint init_mode;       // 0 primordial, 1 seeded
+	uint color_mode;
+	uint show_fields;
+	uint fire_pos;        // FIRE: packed centre
+	float fire_radius;    // FIRE: radius (m)
+	uint pad2;
+	float sun_energy;     // energy per m2 of land per tick
+	float compute_cost;   // energy per unit of GPU work (~1 ns on the reference GPU)
+	float season_strength;
+	float season_length;
+	float mutation_scale;
+	float organ_jump;     // chance per birth of a macro-mutation (module or switch)
+	float metabolism;
+	float move_cost;
+	float attack_power;
+	float meat_decay;
+	float plant_efficiency;
+	float meat_efficiency;
+	float vision_cost;
+	float detox_cost;
+	float max_age;
+	float kin_distance;
+	float jc_strength;      // seedling failure per same-lineage adult nearby (Janzen-Connell)
+	float trample_strength; // damage to low plants from running animals
+	float climate_strength; // how much being off the preferred temperature costs
+	float pad_f;
+} pc;
+
+// ---- Helpers ---------------------------------------------------------------
+const float PI = 3.14159265;
+#define PS 10000.0
+
+uint gidx() { return gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * gl_NumWorkGroups.x * 256u; }
+uint pcg(uint v) {
+	uint state = v * 747796405u + 2891336453u;
+	uint word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+	return (word >> 22u) ^ word;
+}
+float rnd(inout uint s) { s = pcg(s); return float(s) * (1.0 / 4294967296.0); }
+float gauss(inout uint s) {
+	float u1 = max(rnd(s), 1e-7);
+	float u2 = rnd(s);
+	return sqrt(-2.0 * log(u1)) * cos(2.0 * PI * u2);
+}
+int wrapi(int v) { return ((v % WORLD) + WORLD) % WORLD; }
+uint cell_at(ivec2 c) { return uint(wrapi(c.y) * WORLD + wrapi(c.x)); }
+uint cell_of(vec2 p) { return cell_at(ivec2(floor(p))); }
+vec2 wrap_pos(vec2 p) { return mod(p, float(WORLD)); }
+vec2 tdelta(vec2 a, vec2 b) { vec2 d = b - a; return d - float(WORLD) * round(d / float(WORLD)); }
+float bearing(vec2 d, float heading) {
+	float a = atan(d.y, d.x) - heading;
+	return (mod(a + PI, 2.0 * PI) - PI) / PI;
+}
+ivec2 bucket_coord(vec2 p) { return ivec2(floor(p / float(BUCKET))); }
+uint bucket_at(ivec2 b) { return uint(((b.y % BW) + BW) % BW * BW + ((b.x % BW) + BW) % BW); }
+uint pack_pos(vec2 p) {
+	uvec2 q = uvec2(clamp(p * (65536.0 / float(WORLD)), vec2(0.0), vec2(65535.0)));
+	return q.x | (q.y << 16);
+}
+vec2 unpack_pos(uint v) { return (vec2(v & 0xffffu, v >> 16) + 0.5) * (float(WORLD) / 65536.0); }
+vec3 hue2rgb(float h, float s, float v) {
+	vec3 k = clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+	return v * mix(vec3(1.0), k, s);
+}
+float hash2(ivec2 p, uint salt) { return float(pcg(uint(p.x) * 1973u ^ pcg(uint(p.y) * 9277u + salt))) * (1.0 / 4294967296.0); }
+float vnoise(vec2 p, int period, uint salt) {
+	ivec2 i = ivec2(floor(p));
+	vec2 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	ivec2 i0 = ivec2(i.x % period, i.y % period);
+	ivec2 i1 = ivec2((i.x + 1) % period, (i.y + 1) % period);
+	return mix(mix(hash2(i0, salt), hash2(ivec2(i1.x, i0.y), salt), f.x),
+			mix(hash2(ivec2(i0.x, i1.y), salt), hash2(i1, salt), f.x), f.y);
+}
+float fbm(vec2 uv, int base_freq, uint salt) {
+	float sum = 0.0, amp = 0.5, norm = 0.0;
+	int freq = base_freq;
+	for (int o = 0; o < 6; o++) {
+		sum += vnoise(uv * float(freq), freq, salt + uint(o) * 101u) * amp;
+		norm += amp;
+		amp *= 0.5;
+		freq *= 2;
+	}
+	return sum / norm;
+}
+float terrain_height(float h) { return h >= 0.42 ? (h - 0.42) * (40.0 + 12.0 * CELL) : (h - 0.42) * 50.0; }
+
+// Genes: 16 bytes in a uvec4.
+float gene(uvec4 g, int k) { return float((g[k >> 2] >> ((k & 3) * 8)) & 255u) / 255.0; }
+uvec4 set_gene(uvec4 g, int k, float v) {
+	uint b = uint(clamp(v, 0.0, 1.0) * 255.0 + 0.5);
+	g[k >> 2] = bitfieldInsert(g[k >> 2], b, (k & 3) * 8, 8);
+	return g;
+}
+// Age (ticks, 16 bits) and development (0..1, 16 bits) share core0.z.
+uint c_age(uvec4 c0) { return c0.z & 0xffffu; }
+float c_dev(uvec4 c0) { return float(c0.z >> 16) / 65535.0; }
+uint pack_age(uint age, float dev) { return min(age, 65535u) | (uint(clamp(dev, 0.0, 1.0) * 65535.0) << 16); }
+
+// Int8 weights, four per word.
+vec4 unpack_w(uint w) {
+	ivec4 v = ivec4(int(w) << 24, int(w) << 16, int(w) << 8, int(w)) >> 24;
+	return vec4(v) * (1.0 / 32.0);
+}
+uint mutate_word(uint word, float p, inout uint rs) {
+	for (int k = 0; k < 4; k++) {
+		if (rnd(rs) < p) {
+			int b = bitfieldExtract(int(word), k * 8, 8);
+			b = clamp(b + int(round(gauss(rs) * 14.0)), -127, 127);
+			word = bitfieldInsert(word, uint(b) & 255u, k * 8, 8);
+		}
+	}
+	return word;
+}
+uint random_word(inout uint rs, float sd) {
+	uint w = 0u;
+	for (int k = 0; k < 4; k++) w = bitfieldInsert(w, uint(clamp(int(round(gauss(rs) * sd)), -127, 127)) & 255u, k * 8, 8);
+	return w;
+}
+
+// A new brain starts by wiring the reflexes (brains grew out of reflex circuits),
+// plus noise: neuron 0 steers (towards food and prey, away from threats),
+// neuron 1 sets the pace (hunger, danger), neuron 2 attacks close prey. Extra
+// neurons start as noise for evolution to use. Weights: int8 / 32.
+uint wbytes(float a, float b, float c, float d) {
+	ivec4 q = clamp(ivec4(round(vec4(a, b, c, d) * 32.0)), -127, 127);
+	return (uint(q.x) & 255u) | ((uint(q.y) & 255u) << 8) | ((uint(q.z) & 255u) << 16) | ((uint(q.w) & 255u) << 24);
+}
+void instinct_brain(uint base, inout uint rs) {
+	for (uint w = 0u; w < uint(BRAIN_WORDS); w++) brains[base + w] = random_word(rs, 5.0);
+	// Hidden neuron h owns words 4h..4h+3 over x0 (satiety, food here, food ahead, food left-right),
+	// x1 (carrion, -, threat, threat bearing), x2 (prey, prey bearing, kin, kin bearing),
+	// x3 (memory, sunlight, noise, bias).
+	brains[base + 0u] = wbytes(0.0, 0.0, 0.0, 3.0);
+	brains[base + 1u] = wbytes(0.0, 0.0, 0.0, -3.0);
+	brains[base + 2u] = wbytes(0.0, 2.0, 0.0, 0.0);
+	brains[base + 3u] = wbytes(0.0, 0.0, 0.5, 0.0);
+	brains[base + 4u] = wbytes(-1.5, -2.0, 0.0, 0.0);
+	brains[base + 5u] = wbytes(0.0, 0.0, 3.0, 0.0);
+	brains[base + 6u] = wbytes(1.0, 0.0, 0.0, 0.0);
+	brains[base + 7u] = wbytes(0.0, -1.0, 0.0, 0.5);
+	brains[base + 8u] = wbytes(-2.0, 0.0, 0.0, 0.0);
+	brains[base + 9u] = wbytes(0.0, 0.0, 0.0, 0.0);
+	brains[base + 10u] = wbytes(4.0, 0.0, 0.0, 0.0);
+	brains[base + 11u] = wbytes(0.0, 0.0, 0.0, -0.5);
+	// Outputs (turn, speed, attack, memory): 2 words each over h0..h3 and h4..h6 + bias.
+	brains[base + 28u] = wbytes(3.0, 0.0, 0.0, 0.0);
+	brains[base + 29u] = wbytes(0.0, 0.0, 0.0, 0.0);
+	brains[base + 30u] = wbytes(0.0, 3.0, 0.0, 0.0);
+	brains[base + 31u] = wbytes(0.0, 0.0, 0.0, 0.3);
+	brains[base + 32u] = wbytes(0.0, 0.0, 3.0, 0.0);
+	brains[base + 33u] = wbytes(0.0, 0.0, 0.0, 0.0);
+}
+
+// ---- Development: body plan + age + energy -> abilities ------------------------
+struct Body {
+	float anchor, axis, sym, act;       // switches (adult values after metamorphosis)
+	float photo, mouth, sense, defence; // modules (0 = absent)
+	float nseg, apps, applen;           // segments, appendage pairs, appendage length
+	float mobil;                        // movement ability 0..1
+	float gf;                           // growth: energy fill (indeterminate) or development (determinate)
+	bool legs, meta;
+};
+float module_of(float v, float t) { return v >= t ? v : 0.0; }
+Body develop(uvec4 m, float age, float dev, float fill) {
+	Body b;
+	float mt = gene(m, M_META);
+	b.meta = mt >= T_META && age >= mt * 3000.0;
+	b.anchor = b.meta ? gene(m, M_ADULT_ANCHOR) : gene(m, M_ANCHOR);
+	b.act = b.meta ? gene(m, M_ADULT_ACT) : gene(m, M_ACT);
+	b.axis = gene(m, M_AXIS);
+	b.sym = gene(m, M_SYM);
+	b.photo = module_of(gene(m, M_SURFACE), T_PHOTO);
+	b.mouth = module_of(gene(m, M_FEED), T_MOUTH);
+	b.sense = module_of(gene(m, M_SENSOR), T_EYES);
+	b.defence = gene(m, M_PROTECT);
+	b.nseg = 1.0 + floor(gene(m, M_SEGS) * 5.99);
+	b.apps = floor(gene(m, M_APPS) * 4.99);
+	b.applen = gene(m, M_APPLEN);
+	// Muscular appendages move the body, unless it is rooted. Radial bodies and
+	// upright ones move less efficiently.
+	float power = b.apps * 0.25 * (0.3 + b.applen);
+	b.mobil = clamp(1.4 * power * b.act * (1.0 - b.anchor) * (1.0 - 0.4 * b.sym) * (1.0 - 0.3 * b.axis) - 0.05, 0.0, 1.0);
+	b.legs = b.mobil >= T_LEGS;
+	b.gf = mix(sqrt(clamp(fill, 0.0, 1.0)), dev, gene(m, M_DETERM));
+	return b;
+}
+Body body_of(uvec4 c0, uvec4 m, float emax) {
+	return develop(m, float(c_age(c0)), c_dev(c0), uintBitsToFloat(c0.y) / max(emax, 0.01));
+}
+
+float body_len(float s) { return 0.4 + 2.1 * s; }                          // metres (mobile)
+float e_max(float s) { return 1.0 + 20.0 * s * s * s; }                     // energy capacity
+float s_height(float s, float fill) { return (0.2 + 13.8 * s * s * s) * (0.3 + 0.7 * sqrt(clamp(fill, 0.0, 1.0))); }
+float s_crown(float s, float fill) { return (2.0 + 3.0 * s * s) * (0.4 + 0.6 * sqrt(clamp(fill, 0.0, 1.0))); }
+// Sessile shape: upright axes grow tall, creeping ones spread; branches widen the crown.
+float sess_height(float s, Body b) { return s_height(s, b.gf * b.gf) * (0.25 + 0.75 * b.axis); }
+float sess_crown(float s, Body b) {
+	return s_crown(s, b.gf * b.gf) * (0.7 + 0.5 * min(b.apps * 0.25 * (0.3 + b.applen), 1.0)) * (1.0 + 0.15 * (1.0 - b.axis));
+}
+uint layer_for(float h) { return h < 1.0 ? 0u : (h < 3.0 ? 1u : 2u); }
+float lifespan(float s, bool mobile) { return mobile ? pc.max_age * (0.6 + 0.4 * body_len(s)) : min(1500.0 + 40000.0 * s * s * s, 60000.0); }
+float maturity(float s, bool mobile) { return mobile ? 20.0 : 150.0 + 4000.0 * s * s * s; }
+int neurons(uvec4 g) { float b = gene(g, G_BRAIN); return b < T_BRAIN ? 0 : clamp(int(b * 8.0), 1, 7); }
+float light_at(uint c, uint layer) {
+	float l = 1.0;
+	if (layer < 2u) l *= 1.0 - min(float(cover[c * 3u + 2u]) / 1000.0, 0.95);
+	if (layer < 1u) l *= 1.0 - min(float(cover[c * 3u + 1u]) / 1000.0, 0.9);
+	return l;
+}
+float season_at(uint c) {
+	float y = float(c / uint(WORLD)) / float(WORLD);
+	return max(1.0 + pc.season_strength * sin(2.0 * PI * (float(pc.tick) / pc.season_length + y)), 0.0);
+}
+// Climate: warm around the equator line (y = 0), cold around y = 0.5 and on
+// mountains. Organisms do best near their preferred temperature.
+float temperature_at(uint c) {
+	float y = float(c / uint(WORLD)) / float(WORLD);
+	return clamp(0.5 + 0.35 * cos(2.0 * PI * y) - max(height[c], 0.0) / 90.0, 0.0, 1.0);
+}
+float thermal_fit(uvec4 g, uint c) {
+	float d = (temperature_at(c) - gene(g, G_TEMP)) / 0.3;
+	return 1.0 - pc.climate_strength * (1.0 - exp(-d * d));
+}
+float edibility(float defence, float detox) { return clamp(1.0 - 1.5 * max(defence - detox, 0.0), 0.05, 1.0); }
+float power_of(float s, float mouth, float carni) { return body_len(s) * (0.3 + mouth) * (0.4 + carni); }
+// Neighbour phenotype: size, carnivory, hue (8 bits each), mouth, photosynthesis (4 bits).
+uint pack_pheno(uvec4 g, Body b) {
+	return uint(gene(g, G_SIZE) * 255.0) | (uint(gene(g, G_CARNI) * 255.0) << 8) | (uint(gene(g, G_HUE) * 255.0) << 16)
+			| (uint(b.mouth * 15.0) << 24) | (uint(b.photo * 15.0) << 28);
+}
+float ph_size(uint p) { return float(p & 255u) / 255.0; }
+float ph_carni(uint p) { return float((p >> 8) & 255u) / 255.0; }
+float ph_hue(uint p) { return float((p >> 16) & 255u) / 255.0; }
+float ph_mouth(uint p) { return float((p >> 24) & 15u) / 15.0; }
+float gdist(uint a, uint b) {
+	float dh = abs(ph_hue(a) - ph_hue(b));
+	return min(dh, 1.0 - dh) * 2.0 + abs(ph_carni(a) - ph_carni(b)) + abs(ph_size(a) - ph_size(b)) * 0.5;
+}
+float f_energy(uvec4 c0) { return uintBitsToFloat(c0.y); }
+vec2 c_pos(uvec4 c0) { return unpack_pos(c0.x); }
+float sess_emax(float s, uint c) { return e_max(s) * pow(max(fert[c], 0.05), 0.5 + s); }
+
+// Energy flows (reset by STATS): 24 sun captured x10, 25 sessile compute x1000,
+// 26 sessile upkeep x10, 27 mobile intake x100, 28 mobile compute x100, 29 mobile upkeep x100.
+void flow_add(int k, float v, float scale) {
+	float sum = subgroupAdd(v);
+	if (subgroupElect()) atomicAdd(counters[k], int(sum * scale + 0.5));
+}
+
+// A dying organism: frees its organs and its slot, leaves carrion if mobile.
+void die(uint i, uvec4 c0, uvec4 c2, float s) {
+	uint fl = c0.w;
+	if ((fl & F_MOBILE) == 0u) {
+		uint contrib = fl >> 16;
+		if (contrib > 0u) atomicAdd(cover[cell_of(c_pos(c0)) * 3u + ((fl >> 3) & 3u)], -int(contrib));
+		atomicAdd(litter[cell_of(c_pos(c0))], int((max(f_energy(c0), 0.0) + 0.3 + 0.5 * s) * 0.6 * PS));
+	} else {
+		atomicAdd(meat[cell_of(c_pos(c0))], int((max(f_energy(c0), 0.0) + 0.3 + 0.5 * s) * PS));
+	}
+	if (c2.x != NONE) {
+		legs[c2.x].x = NONE;
+		lists[LD0 + uint(atomicAdd(counters[11], 1))] = c2.x;
+	}
+	if (c2.y != NONE) lists[BD0 + uint(atomicAdd(counters[15], 1))] = c2.y;
+	core0[i] = uvec4(0u);
+	core2[i] = uvec4(NONE, NONE, 0u, 0u);
+	lists[uint(atomicAdd(counters[5], 1))] = i;
+	atomicAdd(counters[3], 1);
+}
+
+// Ask to reproduce (handled by BIRTH after the passes).
+void request_birth(uint i) {
+	if (counters[6] >= min(counters[0], BIRTH_MAX)) return;
+	int k = atomicAdd(counters[6], 1);
+	if (k < BIRTH_MAX) lists[BR0 + uint(k)] = i;
+}
+
+// Take a leg slot (and a brain slot if the genes ask for one); false if the pool is full.
+bool grow_legs(uint i, uvec4 g, vec2 pos, inout uint rs, out uint leg, out uint brn) {
+	leg = NONE;
+	brn = NONE;
+	int lk = atomicAdd(counters[9], 1);
+	int lf = counters[8];
+	if (lk >= lf) return false;
+	leg = lfree[lf - 1 - lk];
+	atomicMax(counters[10], int(leg) + 1);
+	float heading = rnd(rs) * 2.0 * PI;
+	legs[leg] = uvec4(i, floatBitsToUint(heading), 0u, 0u);
+	legprev[leg] = uvec2(pack_pos(pos), floatBitsToUint(heading));
+	if (neurons(g) > 0) {
+		int bk = atomicAdd(counters[13], 1);
+		int bf = counters[12];
+		if (bk < bf) {
+			brn = bfree[bf - 1 - bk];
+			atomicMax(counters[14], int(brn) + 1);
+		}
+	}
+	return true;
+}
+
+// ---- Colours (2D) ----------------------------------------------------------
+vec3 life_color(uvec4 g, uvec4 c0, Body b) {
+	int n = neurons(g);
+	bool brain = (c0.w & F_BRAIN) != 0u;
+	if (pc.color_mode == 1u) return hue2rgb(gene(g, G_HUE), 0.75, 1.0);
+	if (pc.color_mode == 2u) { // organs: blue = brain size, white = eyes, dark = neither
+		vec3 c = b.sense > 0.0 ? vec3(0.85) : vec3(0.35, 0.35, 0.4);
+		return mix(c, vec3(0.2, 0.5, 1.0), brain ? float(n) / 7.0 : 0.0);
+	}
+	if (pc.color_mode == 3u) {
+		float e = f_energy(c0) / e_max(gene(g, G_SIZE));
+		return mix(vec3(0.9, 0.1, 0.1), vec3(0.1, 1.0, 0.3), clamp(e, 0.0, 1.0));
+	}
+	if (pc.color_mode == 4u) { // body plan: rooted upright = green, creeping = teal, free = grey -> orange (muscles), radial = purple tint
+		vec3 rooted = mix(vec3(0.1, 0.6, 0.6), vec3(0.25, 0.85, 0.2), b.axis);
+		vec3 free_ = mix(vec3(0.6), vec3(1.0, 0.55, 0.1), b.act);
+		return mix(mix(free_, rooted, b.anchor), vec3(0.7, 0.3, 0.9), 0.35 * b.sym);
+	}
+	// Lifestyle: green = sunlight, yellow = eats plants, red = eats animals; bluish = brainy.
+	float carni = gene(g, G_CARNI);
+	vec3 c = b.photo * vec3(0.2, 0.95, 0.25) + b.mouth * (1.0 - carni) * vec3(1.0, 0.85, 0.15) + b.mouth * carni * vec3(1.0, 0.15, 0.1);
+	float w = b.photo + b.mouth;
+	c = w > 0.0 ? c / w : vec3(0.6);
+	return mix(c, vec3(0.55, 0.75, 1.0), brain ? 0.45 * float(n) / 7.0 : 0.0);
+}
+
+// =============================================================================
+#ifdef K_INIT_FIELD
+void main() {
+	uint c = gidx();
+	if (c >= uint(WORLD * WORLD)) return;
+	vec2 uv = (vec2(c % uint(WORLD), c / uint(WORLD)) + 0.5) / float(WORLD);
+	uint salt = pc.seed * 7919u;
+	float h = fbm(uv, 4, salt);
+	float f;
+	if (h < 0.42) {
+		f = -1.0 + h;
+	} else {
+		float lush = fbm(uv, 6, salt + 5000u);
+		float shore = 1.0 - smoothstep(0.42, 0.5, h);
+		f = clamp(0.1 + 0.9 * smoothstep(0.3, 0.7, lush) + 0.35 * shore, 0.05, 1.0);
+	}
+	fert[c] = f;
+	height[c] = terrain_height(h);
+	meat[c] = 0;
+	cover[c * 3u] = 0;
+	cover[c * 3u + 1u] = 0;
+	cover[c * 3u + 2u] = 0;
+	pcell[c] = uvec2(0u);
+	pcount[c] = 0u;
+	trample[c] = 0;
+	litter[c] = 0;
+	burn[c] = 0xffffffffu;
+	if (c < uint(NB)) grid_count[c] = 0;
+}
+#endif
+
+// Initial organisms: NMOB mobile founders (seeded mode) then sessile ones.
+#ifdef K_INIT_ORGS
+void main() {
+	uint k = gidx();
+	if (k >= uint(OCAP)) return;
+	uint n0 = min(uint(NINIT), uint(OCAP));
+	uint nm = min(uint(NMOB), n0);
+	if (k == 0u) {
+		for (int j = 0; j < 40; j++) counters[j] = 0;
+		counters[0] = OCAP - int(n0);
+		counters[4] = int(n0);
+		counters[8] = LCAP - int(nm);
+		counters[10] = int(nm);
+		counters[12] = BCAP - int(nm);
+		counters[14] = int(nm);
+	}
+	damage[k] = 0u;
+	if (k >= n0) {
+		ofree[uint(OCAP) - 1u - k] = k;
+		core0[k] = uvec4(0u);
+		core1[k] = uvec4(0u);
+		core2[k] = uvec4(NONE, NONE, 0u, 0u);
+		core3[k] = uvec4(0u);
+		return;
+	}
+	uint rs = pcg(k * 2246822519u + pc.seed * 7u + 3u);
+	vec2 p = vec2(0.0);
+	float f = -1.0;
+	for (int t = 0; t < 32; t++) {
+		p = vec2(rnd(rs), rnd(rs)) * float(WORLD);
+		f = fert[cell_of(p)];
+		if (f > 0.0 && rnd(rs) < f + 0.2) break;
+	}
+	vec2 uv = p / float(WORLD);
+	uint salt = pc.seed * 7919u;
+	float hue = fract(fbm(uv, 3, salt + 9000u) * 2.5 + gauss(rs) * 0.02);
+	uvec4 g = uvec4(0u);
+	g = set_gene(g, G_HUE, hue);
+	g = set_gene(g, G_MUT, 0.05 + 0.03 * rnd(rs));
+	g = set_gene(g, G_GROWTH, 0.4 + 0.2 * rnd(rs));
+	g = set_gene(g, G_REPRO, 0.5 + 0.2 * rnd(rs));
+	g = set_gene(g, G_CHILD, 0.25 + 0.1 * rnd(rs));
+	g = set_gene(g, G_DISPERSE, 0.3 + 0.4 * rnd(rs));
+	g = set_gene(g, G_CARNI, rnd(rs));
+	g = set_gene(g, G_TEMP, temperature_at(cell_of(p)) + gauss(rs) * 0.05);
+	uvec4 m = uvec4(0u);
+	m = set_gene(m, M_SLENDER, 0.3 + 0.4 * rnd(rs));
+	m = set_gene(m, M_PROTECT, 0.05 * rnd(rs));
+	bool mobile = k < nm;
+	if (pc.init_mode == 0u) {
+		// Primordial: small rooted sun-eaters, loosely radial, rigid, no mouth, eyes or brain.
+		g = set_gene(g, G_SIZE, 0.02 + 0.1 * rnd(rs));
+		g = set_gene(g, G_CARNI, 0.5 * rnd(rs));
+		m = set_gene(m, M_ANCHOR, 0.8 + 0.2 * rnd(rs));
+		m = set_gene(m, M_AXIS, 0.5 + 0.3 * rnd(rs));
+		m = set_gene(m, M_SYM, 0.6 + 0.4 * rnd(rs));
+		m = set_gene(m, M_DETERM, 0.3 * rnd(rs));
+		m = set_gene(m, M_ACT, 0.1 * rnd(rs));
+		m = set_gene(m, M_SEGS, 0.15 * rnd(rs));
+		m = set_gene(m, M_APPS, 0.3 * rnd(rs));
+		m = set_gene(m, M_APPLEN, 0.2 + 0.3 * rnd(rs));
+		m = set_gene(m, M_SURFACE, 0.3 + 0.4 * rnd(rs));
+	} else if (!mobile) {
+		// Seeded plants: rooted, upright, radial, rigid; growth forms by region.
+		float st = clamp(fbm(uv, 5, salt + 12000u) * 1.8 - 0.55 + (f - 0.5) * 0.5 + (rnd(rs) - 0.5) * 0.3, 0.0, 1.0);
+		g = set_gene(g, G_SIZE, st);
+		m = set_gene(m, M_ANCHOR, 0.95);
+		m = set_gene(m, M_AXIS, 0.75 + 0.25 * rnd(rs));
+		m = set_gene(m, M_SYM, 0.8 + 0.2 * rnd(rs));
+		m = set_gene(m, M_DETERM, 0.1 * rnd(rs));
+		m = set_gene(m, M_SEGS, 0.2 + 0.6 * st);
+		m = set_gene(m, M_APPS, 0.3 + 0.5 * st);
+		m = set_gene(m, M_APPLEN, 0.4 + 0.3 * rnd(rs));
+		m = set_gene(m, M_SURFACE, 0.6 + 0.4 * rnd(rs));
+	} else {
+		// Seeded animals: free, horizontal, bilateral, determinate, muscular;
+		// herbivores and some carnivores, half with a brain.
+		bool carn = rnd(rs) < 0.08;
+		g = set_gene(g, G_SIZE, carn ? 0.5 + 0.2 * rnd(rs) : 0.3 + 0.3 * rnd(rs));
+		g = set_gene(g, G_CARNI, carn ? 0.8 + 0.2 * rnd(rs) : 0.15 * rnd(rs));
+		g = set_gene(g, G_BRAIN, rnd(rs) < 0.5 ? 0.5 + 0.2 * rnd(rs) : 0.0);
+		g = set_gene(g, G_REPRO, 0.6);
+		g = set_gene(g, G_SOCIAL, 0.3 * rnd(rs));
+		g = set_gene(g, G_HUE, fract(hue + (carn ? 0.5 : 0.0)));
+		m = set_gene(m, M_ANCHOR, 0.0);
+		m = set_gene(m, M_AXIS, 0.05 * rnd(rs));
+		m = set_gene(m, M_SYM, 0.1 * rnd(rs));
+		m = set_gene(m, M_DETERM, 0.85 + 0.15 * rnd(rs));
+		m = set_gene(m, M_ACT, 0.85 + 0.15 * rnd(rs));
+		m = set_gene(m, M_SEGS, 0.2 + 0.3 * rnd(rs));
+		m = set_gene(m, M_APPS, 0.45 + 0.1 * rnd(rs));
+		m = set_gene(m, M_APPLEN, 0.5 + 0.3 * rnd(rs));
+		m = set_gene(m, M_FEED, 0.5 + 0.3 * rnd(rs));
+		m = set_gene(m, M_SENSOR, carn ? 0.8 + 0.2 * rnd(rs) : 0.3 + 0.3 * rnd(rs)); // hunters see far
+		m = set_gene(m, M_PROTECT, 0.1 * rnd(rs));
+	}
+	m = set_gene(m, M_ADULT_ANCHOR, gene(m, M_ANCHOR));
+	m = set_gene(m, M_ADULT_ACT, gene(m, M_ACT));
+	float s = gene(g, G_SIZE);
+	uint flags = F_ALIVE;
+	uint leg = NONE, br = NONE;
+	if (mobile) {
+		flags |= F_MOBILE;
+		leg = k;
+		float heading = rnd(rs) * 2.0 * PI;
+		legs[k] = uvec4(k, floatBitsToUint(heading), 0u, 0u);
+		legprev[k] = uvec2(pack_pos(p), floatBitsToUint(heading));
+		if (neurons(g) > 0) {
+			flags |= F_BRAIN;
+			br = k;
+		}
+	}
+	core0[k] = uvec4(pack_pos(p), floatBitsToUint(e_max(s) * (mobile ? 0.62 : 0.3)),
+			pack_age(uint(rnd(rs) * 300.0), mobile ? 1.0 : 0.5), flags);
+	core1[k] = g;
+	core2[k] = uvec4(leg, br, 0u, 0u);
+	core3[k] = m;
+}
+#endif
+
+// Organ pools: free stacks, and reflex-wired brains.
+#ifdef K_INIT_POOLS
+void main() {
+	uint t = gidx();
+	uint nm = min(uint(NMOB), min(uint(NINIT), uint(OCAP)));
+	if (t < uint(LCAP)) {
+		if (t >= nm) {
+			legs[t] = uvec4(NONE, 0u, 0u, 0u);
+			lfree[uint(LCAP) - 1u - t] = t;
+		}
+	}
+	if (t < uint(BCAP)) {
+		if (t >= nm) bfree[uint(BCAP) - 1u - t] = t;
+		uint rs = pcg(t * 7331u + pc.seed * 13u);
+		instinct_brain(t * uint(BRAIN_WORDS), rs);
+	}
+}
+#endif
+
+// =============================================================================
+// Start of a tick: rebuild the spatial hash of the mobile organisms.
+#ifdef K_CLEAR_GRID
+void main() {
+	uint b = gidx();
+	if (b < uint(NB) && pc.tick != 0xffffffffu) grid_count[b] = 0;
+}
+#endif
+
+#ifdef K_REGISTER
+void main() {
+	uint l = gidx();
+	if (l >= uint(LCAP) || l >= uint(counters[10]) || pc.tick == 0xffffffffu) return;
+	uint i = legs[l].x;
+	if (i == NONE) return;
+	uvec4 c0 = core0[i];
+	uvec4 g = core1[i];
+	Body b = body_of(c0, core3[i], e_max(gene(g, G_SIZE)));
+	vec2 p = c_pos(c0);
+	uint bk = bucket_at(bucket_coord(p));
+	int k = atomicAdd(grid_count[bk], 1);
+	if (k < SLOTS) grid_slot[bk * uint(SLOTS) + uint(k)] = uvec4(i, c0.x, pack_pheno(g, b),
+			packHalf2x16(vec2(f_energy(c0), uintBitsToFloat(legs[l].z))));
+}
+#endif
+
+// =============================================================================
+// Mobile organisms (one thread per leg-pool slot), every tick: damage, ageing,
+// death; development - and settling if the body no longer moves (metamorphosis);
+// senses (touch, or eyes); reflex or brain; move; eat; sunlight on its surfaces;
+// upkeep including its GPU work; breeding.
+#ifdef K_MOBILE
+void main() {
+	uint l = gidx();
+	if (l >= uint(LCAP) || l >= uint(counters[10]) || pc.tick == 0xffffffffu) return;
+	uvec4 lg = legs[l];
+	uint i = lg.x;
+	if (i == NONE) return;
+	uvec4 c0 = core0[i];
+	uvec4 g = core1[i];
+	uvec4 c2 = core2[i];
+	uvec4 m = core3[i];
+	float s = gene(g, G_SIZE);
+	float emax = e_max(s);
+	float E = f_energy(c0);
+	uint dmg = damage[i];
+	if (dmg != 0u) E -= float(atomicExchange(damage[i], 0u)) / 1000.0;
+	uint age = c_age(c0) + 1u;
+	c0.y = floatBitsToUint(E);
+	if (E <= 0.0 || float(age) > lifespan(s, true)) {
+		die(i, c0, c2, s);
+		return;
+	}
+	float growth = gene(g, G_GROWTH);
+	float dev = c_dev(c0);
+	if (E > 0.3 * emax) dev = min(dev + 0.002 * (0.5 + growth), 1.0);
+	Body b = develop(m, float(age), dev, E / emax);
+	if (!b.legs) {
+		// Metamorphosis: the body roots. Give the legs and brain back; the sessile
+		// pass takes over from its next update.
+		legs[l].x = NONE;
+		lists[LD0 + uint(atomicAdd(counters[11], 1))] = l;
+		if (c2.y != NONE) lists[BD0 + uint(atomicAdd(counters[15], 1))] = c2.y;
+		core2[i] = uvec4(NONE, NONE, c2.z, A_REST);
+		core0[i] = uvec4(c0.x, c0.y, pack_age(age, dev), F_ALIVE);
+		atomicAdd(counters[33], 1);
+		return;
+	}
+	float se = s * (0.4 + 0.6 * b.gf); // juveniles are smaller and weaker
+	float body = body_len(se);
+	uint rs = pcg(i * 9781u + pc.tick * 6271u + pc.seed * 31u);
+	vec2 pos = c_pos(c0);
+	float heading = uintBitsToFloat(lg.y);
+	float memory = uintBitsToFloat(lg.w);
+	float photo = b.photo;
+	float mouth = b.mouth;
+	float carni = gene(g, G_CARNI);
+	float sense = b.sense;
+	bool eyes = sense > 0.0;
+	float detox = gene(g, G_DETOX);
+	int nn = (c0.w & F_BRAIN) != 0u ? neurons(g) : 0;
+	float work = 9.0;
+	float intake = 0.0;
+
+	// ---- Senses. Without eyes an organism only feels what touches it; upright bodies see further.
+	float pr = eyes ? min((3.0 + 25.0 * sense) * (1.0 + 0.3 * b.axis) * M2C, float(BUCKET)) : (0.6 + 0.4 * body) * M2C;
+	float reach = (0.6 + 0.4 * body) * M2C;
+	float pl_here = 0.0, pl_ahead = 0.0, pl_left = 0.0, pl_right = 0.0;
+	int food_j = -1;
+	if (mouth > 0.0) {
+		ivec2 cc = ivec2(floor(pos - 0.5));
+		for (int dy = 0; dy <= 1; dy++) {
+			for (int dx = 0; dx <= 1; dx++) {
+				uvec2 r = pcell[cell_at(cc + ivec2(dx, dy))];
+				uint end = r.x + min(r.y, 12u);
+				work += 0.25 * float(end - r.x);
+				for (uint j = r.x; j < end; j++) {
+					uvec4 q0 = core0[j];
+					if ((q0.w & (F_ALIVE | F_MOBILE)) != F_ALIVE) continue;
+					uvec4 qg = core1[j];
+					float qs = gene(qg, G_SIZE);
+					float qe = f_energy(q0);
+					float h = s_height(qs, qe / e_max(qs));
+					float food = min(max(qe, 0.0) * edibility(gene(core3[j], M_PROTECT), detox)
+							* clamp((0.4 + 0.8 * body) / max(h, 0.2), 0.08, 1.0), 1.5) * (1.0 - carni);
+					vec2 d = tdelta(pos, c_pos(q0));
+					float dist = length(d);
+					if (dist < reach && food > pl_here) {
+						pl_here = food;
+						food_j = int(j);
+					}
+					if (!eyes) continue;
+					float w = food / (1.0 + dist * CELL * 0.2);
+					float bb = bearing(d, heading);
+					if (abs(bb) < 0.2) pl_ahead += w;
+					else if (bb > 0.0 && bb < 0.6) pl_left += w;
+					else if (bb < 0.0 && bb > -0.6) pl_right += w;
+				}
+			}
+		}
+		pl_ahead = min(pl_ahead, 1.5);
+		pl_left = min(pl_left, 1.5);
+		pl_right = min(pl_right, 1.5);
+	}
+	uint me = pack_pheno(g, b);
+	float my_pw = power_of(se, mouth, carni);
+	float best_threat = 1e9, best_prey = 1e9, prey_e = 0.0, prey_v = 0.0;
+	int prey_j = -1, kin_n = 0, prey_n = 0;
+	vec2 threat_d = vec2(0.0), prey_d = vec2(0.0), kin_sum = vec2(0.0);
+	ivec2 b0 = bucket_coord(pos);
+	int br = eyes ? 1 : 0;
+	for (int by = -br; by <= br; by++) {
+		for (int bx = -br; bx <= br; bx++) {
+			uint bk = bucket_at(b0 + ivec2(bx, by));
+			int n = min(grid_count[bk], SLOTS);
+			work += 0.25 * float(n);
+			for (int k = 0; k < n; k++) {
+				uvec4 e = grid_slot[bk * uint(SLOTS) + uint(k)];
+				if (e.x == i) continue;
+				vec2 d = tdelta(pos, unpack_pos(e.y));
+				float dd = dot(d, d);
+				if (dd > pr * pr) continue;
+				uint op = e.z;
+				if (gdist(me, op) < pc.kin_distance) {
+					kin_sum += d;
+					kin_n++;
+					continue;
+				}
+				float o_carni = ph_carni(op);
+				float o_mouth = ph_mouth(op);
+				float o_pw = power_of(ph_size(op), o_mouth, o_carni);
+				// A threat: a carnivore clearly stronger than us (predators only fear much
+				// stronger ones, otherwise they would flee each other instead of hunting).
+				if (o_mouth > 0.05 && o_carni > 0.4 && o_pw > my_pw * (0.8 + 0.8 * carni * (mouth > 0.0 ? 1.0 : 0.0)) && dd < best_threat) {
+					best_threat = dd;
+					threat_d = d;
+				}
+				// Prey: weaker bodies - other carnivores only when much weaker.
+				if (mouth > 0.0 && carni > 0.4 && my_pw > o_pw * (o_carni > 0.5 ? 1.6 : 0.9)) {
+					if (dd < 25.0 * M2C * M2C) prey_n++;
+					if (dd < best_prey) {
+						best_prey = dd;
+						prey_d = d;
+						prey_j = int(e.x);
+						vec2 ev = unpackHalf2x16(e.w);
+						prey_e = ev.x;
+						prey_v = ev.y;
+					}
+				}
+			}
+		}
+	}
+	float threat_prox = best_threat < 1e8 ? clamp(1.0 - sqrt(best_threat) / pr, 0.0, 1.0) : 0.0;
+	float prey_prox = best_prey < 1e8 ? clamp(1.0 - sqrt(best_prey) / pr, 0.0, 1.0) : 0.0;
+	float kin_prox = min(float(kin_n) / 4.0, 1.0);
+	float threat_b = best_threat < 1e8 ? bearing(threat_d, heading) : 0.0;
+	float prey_b = best_prey < 1e8 ? bearing(prey_d, heading) : 0.0;
+	float kin_b = kin_n > 0 ? bearing(kin_sum, heading) : 0.0;
+	uint c = cell_of(pos);
+	float mt_here = float(meat[c]) / PS;
+	vec2 fwd = vec2(cos(heading), sin(heading));
+	float mt_ahead = eyes ? float(meat[cell_of(pos + fwd * pr * 0.7)]) / PS : 0.0;
+	float lt_here = float(litter[c]) / PS;
+	float lt_ahead = eyes ? float(litter[cell_of(pos + fwd * pr * 0.7)]) / PS : 0.0;
+	float light = light_at(c, 0u);
+	float thermal = thermal_fit(g, c);
+
+	// ---- Decide: brain (neurons) or reflexes.
+	float turn = 0.0, speed01 = 0.0;
+	bool attack = false;
+	uint action = A_WANDER;
+	float hunger = clamp(1.0 - E / (emax * (0.3 + 0.65 * gene(g, G_REPRO))), 0.0, 1.0);
+	if (nn > 0 && c2.y != NONE) {
+		uint wb = c2.y * uint(BRAIN_WORDS);
+		vec4 x0 = vec4(1.0 - hunger, pl_here, pl_ahead, pl_left - pl_right);
+		vec4 x1 = vec4(min((mt_here + mt_ahead) * 0.5, 1.0) * carni, min((lt_here + lt_ahead) * 0.5, 1.0) * (1.0 - carni), threat_prox, threat_b);
+		vec4 x2 = vec4(prey_prox, prey_b, kin_prox, kin_b);
+		vec4 x3 = vec4(memory, light * photo, rnd(rs) * 2.0 - 1.0, 1.0);
+		vec4 h0 = vec4(0.0), h1 = vec4(0.0, 0.0, 0.0, 1.0);
+		for (int h = 0; h < nn; h++) {
+			float v = tanh(clamp(dot(unpack_w(brains[wb + uint(h) * 4u]), x0) + dot(unpack_w(brains[wb + uint(h) * 4u + 1u]), x1)
+					+ dot(unpack_w(brains[wb + uint(h) * 4u + 2u]), x2) + dot(unpack_w(brains[wb + uint(h) * 4u + 3u]), x3), -10.0, 10.0));
+			if (h < 4) h0[h] = v; else h1[h - 4] = v;
+		}
+		uint vb = wb + 28u;
+		vec4 o = vec4(0.0);
+		for (int k = 0; k < 4; k++) o[k] = clamp(dot(unpack_w(brains[vb + uint(k) * 2u]), h0) + dot(unpack_w(brains[vb + uint(k) * 2u + 1u]), h1), -10.0, 10.0);
+		turn = tanh(o.x);
+		speed01 = 1.0 / (1.0 + exp(-o.y));
+		attack = o.z > 0.0;
+		memory = tanh(o.w);
+		action = attack ? A_HUNT : (threat_prox > 0.0 ? A_FLEE : (speed01 < 0.15 ? (photo > 0.0 ? A_BASK : A_REST) : A_WANDER));
+		work += 1.1 * float(nn) + 1.0;
+	} else {
+		work += 0.5;
+		if (threat_prox > 0.0) {
+			float away = threat_b > 0.0 ? threat_b - 1.0 : threat_b + 1.0;
+			turn = clamp(away * 4.0, -1.0, 1.0);
+			speed01 = 1.0;
+			action = A_FLEE;
+		} else if (mouth > 0.0 && carni > 0.5 && mt_here > 0.1 && hunger > 0.02) {
+			// Eat the kill (or any carrion) before hunting again.
+			speed01 = 0.0;
+			action = A_EAT;
+		} else if (prey_j != -1 && hunger > 0.1) {
+			turn = clamp(prey_b * 4.0, -1.0, 1.0);
+			speed01 = 1.0;
+			attack = true;
+			action = A_HUNT;
+		} else if ((pl_here > 0.02 || (mouth > 0.0 && carni < 0.6 && lt_here > 0.05)) && hunger > 0.05) {
+			speed01 = 0.05;
+			action = A_EAT;
+		} else if (photo > 0.2 && light > 0.4 && hunger > 0.05) {
+			speed01 = 0.0;
+			action = A_BASK;
+		} else if (kin_n > 0 && gene(g, G_SOCIAL) > 0.3) {
+			turn = clamp(kin_b * 3.0, -1.0, 1.0);
+			speed01 = 0.5;
+			action = A_FLOCK;
+		} else if (hunger < 0.02) {
+			speed01 = 0.0;
+			action = A_REST;
+		} else {
+			float steer = pl_left - pl_right;
+			memory = clamp(memory + (rnd(rs) - 0.5) * 0.3, -1.0, 1.0);
+			turn = abs(steer) > 0.01 ? clamp(steer * 6.0, -1.0, 1.0) : memory * 0.5;
+			speed01 = 0.6;
+		}
+	}
+
+	// ---- Move (surfaces drag).
+	legprev[l] = uvec2(pack_pos(pos), floatBitsToUint(heading));
+	heading = mod(heading + turn * 0.6, 2.0 * PI);
+	float v_m = speed01 * (0.3 + 1.9 * b.mobil) / (1.0 + photo);
+	if (attack && prey_j >= 0 && hunger > 0.0 && prey_prox > 0.4) v_m *= 1.35; // closing sprint (paid through move cost)
+	vec2 np = wrap_pos(pos + vec2(cos(heading), sin(heading)) * v_m * M2C);
+	if (fert[cell_of(np)] < 0.0) {
+		heading = mod(heading + PI * (0.5 + rnd(rs)), 2.0 * PI);
+		v_m = 0.0;
+		np = pos;
+	}
+	pos = np;
+	// Running bodies trample low plants.
+	if (v_m > 0.3) atomicAdd(trample[cell_of(pos)], int(v_m * body * 100.0));
+
+	// ---- Eat.
+	float cost = 0.0;
+	if (mouth > 0.0) {
+		float bite = 0.2 * body * mouth * (1.0 - 0.5 * speed01);
+		if (food_j >= 0) {
+			uint j = uint(food_j);
+			float qe = max(f_energy(core0[j]), 0.0);
+			float eff = pc.plant_efficiency * pow(1.0 - carni, 1.25) * edibility(gene(core3[j], M_PROTECT), detox);
+			float take = min(bite, qe * 0.5);
+			if (take > 0.0 && eff > 0.01) {
+				atomicAdd(damage[j], uint(take * 1000.0));
+				E += take * eff;
+				intake += take * eff;
+			}
+		}
+		// Litter: detritus from dead sessile organisms, for mouths that are not strict carnivores.
+		float lit_eff = pc.plant_efficiency * 0.7 * pow(1.0 - carni, 1.25);
+		if (lit_eff > 0.02) {
+			int take = min(litter[cell_of(pos)], int(bite * PS));
+			if (take > 0) {
+				atomicAdd(litter[cell_of(pos)], -take);
+				E += float(take) / PS * lit_eff;
+				intake += float(take) / PS * lit_eff;
+			}
+		}
+		float meat_eff = pow(carni, 1.25) * pc.meat_efficiency;
+		if (meat_eff > 0.01) {
+			int take = min(meat[cell_of(pos)], int(bite * PS));
+			if (take > 0) {
+				atomicAdd(meat[cell_of(pos)], -take);
+				E += float(take) / PS * meat_eff;
+				intake += float(take) / PS * meat_eff;
+			}
+		}
+		if (attack && carni > 0.4 && hunger > 0.0) {
+			cost += 0.01 * body;
+			float reach_a = (2.0 + body * 0.8) * M2C; // lunge
+			// Dense cover (shrubs, canopy) where the prey is gives it a refuge.
+			uint pcell_c = cell_of(pos + prey_d);
+			float refuge = 1.0 - 0.5 * min(float(cover[pcell_c * 3u + 1u] + cover[pcell_c * 3u + 2u]) / 1000.0, 1.0);
+			if (prey_j >= 0 && best_prey <= reach_a * reach_a
+					&& rnd(rs) < clamp(0.55 + 0.8 * (v_m - prey_v * CELL), 0.05, 0.9) * min(2.0 / (1.0 + float(prey_n)), 1.0) * refuge) {
+				float dmg = pc.attack_power * my_pw;
+				atomicAdd(damage[prey_j], uint(dmg * 1000.0));
+				E += min(dmg, max(prey_e, 0.0)) * meat_eff;
+				intake += min(dmg, max(prey_e, 0.0)) * meat_eff;
+			}
+		}
+	}
+
+	// ---- Sunlight on its surfaces (sails), best when still.
+	float leaf_r = 0.25 * body * (1.0 + 2.0 * photo);
+	float leaf_area = PI * leaf_r * leaf_r;
+	if (photo > 0.0) {
+		float sun = pc.sun_energy * season_at(c) * light_at(cell_of(pos), 0u) * leaf_area * photo * (1.0 - 0.8 * speed01);
+		E += sun;
+		intake += sun;
+		cost += 0.0002 * photo * leaf_area;
+	}
+
+	// ---- Upkeep of every module, and the GPU work of this tick.
+	cost += pc.metabolism * (0.4 + 0.6 * body * body) * (0.8 + 0.1 * b.nseg) * (v_m < 0.05 ? 0.6 : 1.0) * (2.0 - thermal);
+	cost += pc.move_cost * v_m * v_m * body * (1.0 + photo);
+	cost += 0.004 * b.act * b.apps * 0.25 * (0.3 + b.applen);
+	if (eyes) cost += pc.vision_cost * sense * sense;
+	cost += 0.003 * mouth + 0.004 * b.defence * body + pc.detox_cost * detox * detox;
+	float compute = pc.compute_cost * work;
+	E = min(E - cost - compute, emax);
+	flow_add(27, intake, 100.0);
+	flow_add(28, compute, 100.0);
+	flow_add(29, cost, 100.0);
+
+	// ---- Breed (adults only).
+	float child = 0.1 + 0.5 * gene(g, G_CHILD);
+	if (b.gf > 0.6 && E >= emax * (0.3 + 0.65 * gene(g, G_REPRO)) && float(age) >= maturity(s, true)
+			&& E * (1.0 - 1.1 * child) > 0.3 + 0.5 * s + 0.1) request_birth(i);
+
+	core0[i] = uvec4(pack_pos(pos), floatBitsToUint(E), pack_age(age, dev), c0.w);
+	core2[i].w = action;
+	legs[l] = uvec4(i, floatBitsToUint(heading), floatBitsToUint(v_m * M2C), floatBitsToUint(memory));
+}
+#endif
+
+// =============================================================================
+// Sessile organisms, 1/PSTRIDE of the storage per tick (dt = PSTRIDE): damage,
+// ageing, death; development - and uprooting if the body now moves
+// (metamorphosis); sunlight through the canopy; feeding on neighbours (traps
+// catch mobile ones, parasites feed on sessile ones); upkeep and GPU work;
+// canopy contribution; seeds.
+#ifdef K_SESSILE
+void main() {
+	uint chunk = (uint(OCAP) + PSTRIDE - 1u) / PSTRIDE;
+	uint t = gidx();
+	if (t >= chunk || pc.tick == 0xffffffffu) return;
+	uint i = t + (pc.tick % PSTRIDE) * chunk;
+	if (i >= uint(OCAP) || i >= uint(counters[4])) return;
+	uvec4 c0 = core0[i];
+	if ((c0.w & (F_ALIVE | F_MOBILE)) != F_ALIVE) return;
+	uvec4 g = core1[i];
+	uvec4 m = core3[i];
+	float dt = float(PSTRIDE);
+	float s = gene(g, G_SIZE);
+	float E = f_energy(c0);
+	uint dmg = damage[i];
+	if (dmg != 0u) E -= float(atomicExchange(damage[i], 0u)) / 1000.0;
+	uint age = c_age(c0) + PSTRIDE;
+	c0.y = floatBitsToUint(E);
+	if (E <= 0.0 || float(age) > lifespan(s, false)) {
+		die(i, c0, core2[i], s);
+		return;
+	}
+	uint rs = pcg(i * 747796405u + pc.tick * 2891336453u + pc.seed);
+	vec2 pos = c_pos(c0);
+	uint c = cell_of(pos);
+	float emax = sess_emax(s, c);
+	float growth = gene(g, G_GROWTH);
+	float dev = c_dev(c0);
+	if (E > 0.3 * emax) dev = min(dev + dt * 0.001 * (0.5 + growth), 1.0);
+	Body b = develop(m, float(age), dev, E / emax);
+	uint layer = (c0.w >> 3) & 3u;
+	uint contrib = c0.w >> 16;
+	if (b.legs) {
+		// Metamorphosis: the body breaks free. Take legs (and a brain) from the pools.
+		uint leg, brn;
+		if (grow_legs(i, g, pos, rs, leg, brn)) {
+			if (brn != NONE) instinct_brain(brn * uint(BRAIN_WORDS), rs);
+			if (contrib > 0u) atomicAdd(cover[c * 3u + layer], -int(contrib));
+			core2[i] = uvec4(leg, brn, core2[i].z, A_WANDER);
+			core0[i] = uvec4(c0.x, c0.y, pack_age(age, dev), F_ALIVE | F_MOBILE | (brn != NONE ? F_BRAIN : 0u));
+			atomicAdd(counters[34], 1);
+			return;
+		}
+	}
+	float photo = b.photo;
+	float mouth = b.mouth;
+	float carni = gene(g, G_CARNI);
+	float work = 3.5;
+	float cr = sess_crown(s, b);
+	float area = PI * cr * cr;
+	float thermal = thermal_fit(g, c);
+	// Fire (this cell burned since our last update): big bodies burn most.
+	if (burn[c] <= pc.tick && pc.tick - burn[c] < PSTRIDE) E *= 0.15 + 0.6 * (1.0 - s) * (1.0 - 0.5 * b.axis);
+	// Trampling: low bodies under running animals lose some tissue.
+	if (layer == 0u) E -= min(float(trample[c]) * 0.00002 * pc.trample_strength * dt * (1.0 - b.defence), 0.3 * max(E, 0.0));
+
+	// Sunlight: what reaches our layer over our crown, shared when the layer is full.
+	float gross = 0.0;
+	if (photo > 0.0) {
+		float crowd = float(cover[c * 3u + layer]) / 1000.0;
+		float sun = dt * pc.sun_energy * season_at(c) * light_at(c, layer) * area * photo / max(crowd, 1.0);
+		float rgr = 0.13 * (0.4 + 1.2 * growth) * (1.0 - 0.6 * b.defence) * (1.4 - s);
+		gross = min(sun, dt * rgr * (E + 0.02)) * thermal;
+	}
+	float intake = gross;
+	// Feeding modules on neighbours within reach (muscular, radial bodies reach and catch better).
+	if (mouth > 0.0) {
+		float r = max(cr * 0.5, 0.8) * (1.0 + 0.5 * b.sym) * M2C;
+		if (carni > 0.4) {
+			uint bk = bucket_at(bucket_coord(pos));
+			int n = min(grid_count[bk], SLOTS);
+			work += 0.25 * float(n);
+			for (int k = 0; k < n; k++) {
+				uvec4 e = grid_slot[bk * uint(SLOTS) + uint(k)];
+				vec2 d = tdelta(pos, unpack_pos(e.y));
+				if (dot(d, d) > r * r) continue;
+				if (power_of(ph_size(e.z), ph_mouth(e.z), ph_carni(e.z)) > power_of(s, mouth, carni) * 1.5) continue;
+				if (rnd(rs) < 0.2 + 0.4 * b.act) {
+					float dm = pc.attack_power * power_of(s, mouth, carni) * dt * 0.25;
+					float prey = max(unpackHalf2x16(e.w).x, 0.0);
+					atomicAdd(damage[e.x], uint(dm * 1000.0));
+					intake += min(dm, prey) * pow(carni, 1.25) * pc.meat_efficiency;
+				}
+				break;
+			}
+		} else {
+			// Decomposers: absorb the litter under them.
+			int lt = min(litter[c], int(0.06 * mouth * dt * PS));
+			if (lt > 0) {
+				atomicAdd(litter[c], -lt);
+				intake += float(lt) / PS * 0.7 * pc.plant_efficiency;
+			}
+			uvec2 rr = pcell[c];
+			uint end = rr.x + min(rr.y, 12u);
+			work += 0.25 * float(end - rr.x);
+			for (uint j = rr.x; j < end; j++) {
+				if (j == i) continue;
+				uvec4 q0 = core0[j];
+				if ((q0.w & (F_ALIVE | F_MOBILE)) != F_ALIVE) continue;
+				vec2 d = tdelta(pos, c_pos(q0));
+				if (dot(d, d) > r * r) continue;
+				float take = min(0.2 * body_len(s) * mouth * dt * 0.25, max(f_energy(q0), 0.0) * 0.3);
+				float eff = pc.plant_efficiency * pow(1.0 - carni, 1.25) * edibility(gene(core3[j], M_PROTECT), gene(g, G_DETOX));
+				atomicAdd(damage[j], uint(take * 1000.0));
+				intake += take * eff;
+				break;
+			}
+		}
+	}
+	// Upkeep: respiration of the living mass (fast growers more, wood less), and
+	// every module: surfaces, feeding, protection, muscles, sensors.
+	float upkeep = dt * (0.006 * max(E, 0.0) * (0.6 + 0.8 * growth) * (1.15 - s) + 0.0002 * photo * area
+			+ 0.003 * mouth + 0.002 * b.defence * (1.0 + s) + 0.002 * b.act * b.apps * 0.25 * (0.3 + b.applen)
+			+ pc.vision_cost * 0.3 * b.sense * b.sense + pc.detox_cost * 0.3 * gene(g, G_DETOX));
+	E = min(E + intake - upkeep, emax);
+
+	float child = 0.1 + 0.5 * gene(g, G_CHILD);
+	if (E >= emax * (0.3 + 0.65 * gene(g, G_REPRO)) && float(age) >= maturity(s, false)
+			&& E * (1.0 - 1.1 * child) > 0.3 + 0.5 * s + 0.05 && rnd(rs) < 0.5) {
+		request_birth(i);
+		work += 1.0;
+	}
+	float compute = pc.compute_cost * work;
+	E -= compute;
+	flow_add(24, gross, 10.0);
+	flow_add(25, compute, 1000.0);
+	flow_add(26, upkeep, 10.0);
+
+	// Canopy: what our crown adds to our cell's layer (leafless bodies shade nothing).
+	Body b2 = develop(m, float(age), dev, E / emax);
+	float h = sess_height(s, b2);
+	float cr2 = sess_crown(s, b2);
+	uint nc = photo > 0.0 ? uint(clamp(PI * cr2 * cr2 / (CELL * CELL) * 1000.0, 0.0, 65535.0)) : 0u;
+	uint nl = layer_for(h);
+	if (nl != layer) {
+		if (contrib > 0u) atomicAdd(cover[c * 3u + layer], -int(contrib));
+		if (nc > 0u) atomicAdd(cover[c * 3u + nl], int(nc));
+	} else if (nc != contrib) {
+		atomicAdd(cover[c * 3u + layer], int(nc) - int(contrib));
+	}
+	core0[i] = uvec4(c0.x, floatBitsToUint(E), pack_age(age, dev), (c0.w & 7u) | (nl << 3) | (nc << 16));
+}
+#endif
+
+// =============================================================================
+// Births. Genes drift (absent modules only appear through a rare macro-mutation,
+// which can also flip a body switch or add a life cycle); the child's developed
+// juvenile body decides whether it gets legs (and a brain) from the pools.
+#ifdef K_BIRTH
+const int JUMPS = 11;
+void main() {
+	uint t = gidx();
+	if (t >= uint(min(counters[6], BIRTH_MAX)) || pc.tick == 0xffffffffu) return;
+	uint p = lists[BR0 + t];
+	uvec4 c0 = core0[p];
+	if ((c0.w & F_ALIVE) == 0u) return;
+	uvec4 g = core1[p];
+	uvec4 m = core3[p];
+	uvec4 c2 = core2[p];
+	bool pmobile = (c0.w & F_MOBILE) != 0u;
+	uint rs = pcg(p * 4099u + pc.tick * 7919u + pc.seed * 131u);
+	float E = f_energy(c0);
+	float s = gene(g, G_SIZE);
+	float mr = gene(g, G_MUT) * pc.mutation_scale;
+
+	// A mate: a compatible organism nearby (mobile: in view; sessile: pollen
+	// range, 20 m). Genes cross over; without a mate the child is a clone + mutations.
+	int mate = -1;
+	vec2 ppos = c_pos(c0);
+	uint pheno_p = pack_pheno(g, develop(m, float(c_age(c0)), c_dev(c0), 0.5));
+	if (pmobile) {
+		ivec2 b0 = bucket_coord(ppos);
+		for (int by = -1; by <= 1 && mate < 0; by++) {
+			for (int bx = -1; bx <= 1 && mate < 0; bx++) {
+				uint bk = bucket_at(b0 + ivec2(bx, by));
+				int n = min(grid_count[bk], SLOTS);
+				for (int k = 0; k < n; k++) {
+					uvec4 e = grid_slot[bk * uint(SLOTS) + uint(k)];
+					vec2 d = tdelta(ppos, unpack_pos(e.y));
+					if (e.x != p && dot(d, d) < 100.0 * M2C * M2C && gdist(pheno_p, e.z) < pc.kin_distance) {
+						mate = int(e.x);
+						break;
+					}
+				}
+			}
+		}
+	} else {
+		ivec2 cc0 = ivec2(floor(ppos - 0.5));
+		for (int k = 0; k < 4 && mate < 0; k++) {
+			uvec2 r = pcell[cell_at(cc0 + ivec2(k & 1, k >> 1))];
+			uint end = r.x + min(r.y, 12u);
+			for (uint j = r.x; j < end; j++) {
+				if (j == p) continue;
+				uvec4 q0 = core0[j];
+				if ((q0.w & (F_ALIVE | F_MOBILE)) != F_ALIVE) continue;
+				vec2 d = tdelta(ppos, c_pos(q0));
+				if (dot(d, d) > 400.0 * M2C * M2C) continue;
+				uvec4 qg = core1[j];
+				float dh = abs(gene(qg, G_HUE) - gene(g, G_HUE));
+				if (min(dh, 1.0 - dh) * 2.0 + abs(gene(qg, G_SIZE) - s) < pc.kin_distance) {
+					mate = int(j);
+					break;
+				}
+			}
+		}
+	}
+	uvec4 mg = mate >= 0 ? core1[uint(mate)] : g;
+	uvec4 mm = mate >= 0 ? core3[uint(mate)] : m;
+	// Life-history genes drift (the brain only if present).
+	uvec4 cg = g;
+	uvec4 cm = m;
+	if (mate >= 0) { // uniform crossover
+		for (int k = 0; k < 16; k++) {
+			if (rnd(rs) < 0.5) cg = set_gene(cg, k, gene(mg, k));
+			if (rnd(rs) < 0.5) cm = set_gene(cm, k, gene(mm, k));
+		}
+	}
+	uvec4 cg0 = cg;
+	uvec4 cm0 = cm;
+	for (int k = 0; k < 16; k++) {
+		if (k == G_BRAIN && gene(cg0, k) < T_BRAIN) continue;
+		float v = gene(cg0, k) + gauss(rs) * mr * (k == G_HUE ? 0.3 : 1.0);
+		cg = set_gene(cg, k, k == G_HUE ? fract(v + 1.0) : v);
+	}
+	// Body plan drifts; absent modules (surfaces, feeding, sensors) stay absent.
+	for (int k = 0; k < 16; k++) {
+		if ((k == M_SURFACE && gene(cm0, k) < T_PHOTO) || (k == M_FEED && gene(cm0, k) < T_MOUTH)
+				|| (k == M_SENSOR && gene(cm0, k) < T_EYES) || (k == M_META && gene(cm0, k) < T_META)) continue;
+		cm = set_gene(cm, k, gene(cm0, k) + gauss(rs) * mr);
+	}
+	// Macro-mutations: a module appears or disappears, a body switch flips, a life
+	// cycle (metamorphosis) appears or disappears, or an appendage pair is added.
+	if (rnd(rs) < pc.organ_jump) {
+		int j = int(rnd(rs) * float(JUMPS)) % JUMPS;
+		if (j == 0) cm = set_gene(cm, M_SURFACE, gene(cm, M_SURFACE) < T_PHOTO ? T_PHOTO + 0.05 + 0.1 * rnd(rs) : 0.0);
+		else if (j == 1) cm = set_gene(cm, M_FEED, gene(cm, M_FEED) < T_MOUTH ? T_MOUTH + 0.05 + 0.1 * rnd(rs) : 0.0);
+		else if (j == 2) cm = set_gene(cm, M_SENSOR, gene(cm, M_SENSOR) < T_EYES ? T_EYES + 0.05 + 0.1 * rnd(rs) : 0.0);
+		else if (j == 3) cg = set_gene(cg, G_BRAIN, gene(cg, G_BRAIN) < T_BRAIN ? T_BRAIN + 0.03 + 0.05 * rnd(rs) : 0.0);
+		else if (j == 4) { // rooted <-> free
+			cm = set_gene(cm, M_ANCHOR, 1.0 - gene(cm, M_ANCHOR));
+			cm = set_gene(cm, M_ADULT_ANCHOR, 1.0 - gene(cm, M_ADULT_ANCHOR));
+		} else if (j == 5) { // rigid <-> muscular
+			cm = set_gene(cm, M_ACT, 1.0 - gene(cm, M_ACT));
+			cm = set_gene(cm, M_ADULT_ACT, 1.0 - gene(cm, M_ADULT_ACT));
+		} else if (j == 6) cm = set_gene(cm, M_AXIS, 1.0 - gene(cm, M_AXIS));
+		else if (j == 7) cm = set_gene(cm, M_SYM, 1.0 - gene(cm, M_SYM));
+		else if (j == 8) cm = set_gene(cm, M_DETERM, 1.0 - gene(cm, M_DETERM));
+		else if (j == 9) { // a life cycle: the adult takes the opposite anchorage and actuation
+			if (gene(cm, M_META) < T_META) {
+				cm = set_gene(cm, M_META, 0.15 + 0.35 * rnd(rs));
+				cm = set_gene(cm, M_ADULT_ANCHOR, 1.0 - gene(cm, M_ANCHOR));
+				cm = set_gene(cm, M_ADULT_ACT, 1.0 - gene(cm, M_ACT));
+			} else {
+				cm = set_gene(cm, M_META, 0.0);
+			}
+		} else cm = set_gene(cm, M_APPS, gene(cm, M_APPS) + 0.25);
+	}
+	float cs = gene(cg, G_SIZE);
+	Body pb = develop(m, float(c_age(c0)), c_dev(c0), E / e_max(s));
+	Body cb = develop(cm, 0.0, 0.0, 0.5);
+
+	// Where it starts: mobile children next to the parent, sessile ones dispersed
+	// (dropped where they are by a mobile parent) and only where they can grow.
+	float dist = cb.legs ? 1.0 : (pmobile ? 1.0 : (1.0 + 40.0 * gene(cg, G_DISPERSE)) * rnd(rs));
+	float ang = rnd(rs) * 2.0 * PI;
+	vec2 cp = wrap_pos(c_pos(c0) + vec2(cos(ang), sin(ang)) * dist * M2C);
+	uint cc = cell_of(cp);
+	bool ok = fert[cc] > 0.0;
+	if (ok && !cb.legs && cb.photo > 0.0) {
+		float crowd = float(cover[cc * 3u]) / 1000.0;
+		// Janzen-Connell: seedlings fail near adults of their own lineage (their
+		// specialist pests and pathogens), which holds common lineages back.
+		uvec2 r = pcell[cc];
+		uint end = r.x + min(r.y, 12u);
+		float same = 0.0;
+		for (uint j = r.x; j < end; j++) {
+			uvec4 q0 = core0[j];
+			if ((q0.w & (F_ALIVE | F_MOBILE)) != F_ALIVE) continue;
+			float dh = abs(gene(core1[j], G_HUE) - gene(cg, G_HUE));
+			if (min(dh, 1.0 - dh) < 0.04) same += 1.0;
+		}
+		ok = rnd(rs) < light_at(cc, 0u) * clamp(1.3 - crowd, 0.05, 1.0) / (1.0 + pc.jc_strength * same);
+	}
+	float child_e = E * (0.1 + 0.5 * gene(g, G_CHILD));
+	float paid = child_e * 1.1 + 0.3 + 0.5 * cs + pc.compute_cost * (cb.legs ? (neurons(cg) > 0 ? 40.0 : 25.0) : 5.0);
+	core0[p].y = floatBitsToUint(E - paid); // the seed or child is paid for even if it fails
+	if (!ok) return;
+
+	int k = atomicAdd(counters[1], 1);
+	int fn = counters[0];
+	if (k >= fn) return;
+	uint slot = ofree[fn - 1 - k];
+	atomicMax(counters[4], int(slot) + 1);
+
+	uint flags = F_ALIVE;
+	uint leg = NONE, brn = NONE;
+	if (cb.legs && grow_legs(slot, cg, cp, rs, leg, brn)) {
+		flags |= F_MOBILE;
+		if (brn != NONE) {
+			flags |= F_BRAIN;
+			uint dst = brn * uint(BRAIN_WORDS);
+			uint mbrain = mate >= 0 ? core2[uint(mate)].y : NONE;
+			if (c2.y != NONE) { // inherit the parents' brains (word-wise crossover), mutated
+				uint src = c2.y * uint(BRAIN_WORDS);
+				uint src2 = mbrain != NONE ? mbrain * uint(BRAIN_WORDS) : src;
+				for (uint w = 0u; w < uint(BRAIN_WORDS); w++)
+					brains[dst + w] = mutate_word(brains[(rnd(rs) < 0.5 ? src : src2) + w], mr * 2.0, rs);
+			} else {
+				instinct_brain(dst, rs);
+			}
+		}
+	}
+	// Module bookkeeping for the stats: gained / lost relative to the parent.
+	bool pl = pmobile, pbr = c2.y != NONE;
+	if (leg != NONE && !pl) atomicAdd(counters[16], 1);
+	if (leg == NONE && pl) atomicAdd(counters[17], 1);
+	if (brn != NONE && !pbr) atomicAdd(counters[18], 1);
+	if (brn == NONE && pbr) atomicAdd(counters[19], 1);
+	if (cb.mouth > 0.0 && pb.mouth == 0.0) atomicAdd(counters[20], 1);
+	if (cb.mouth == 0.0 && pb.mouth > 0.0) atomicAdd(counters[21], 1);
+	if (cb.photo > 0.0 && pb.photo == 0.0) atomicAdd(counters[22], 1);
+	if (cb.photo == 0.0 && pb.photo > 0.0) atomicAdd(counters[23], 1);
+
+	damage[slot] = 0u;
+	core0[slot] = uvec4(pack_pos(cp), floatBitsToUint(child_e), 0u, flags);
+	core1[slot] = cg;
+	core2[slot] = uvec4(leg, brn, c2.z + 1u, 0u);
+	core3[slot] = cm;
+	atomicMax(counters[30], int(c2.z + 1u));
+	atomicAdd(counters[2], 1);
+	if (mate >= 0) atomicAdd(counters[36], 1);
+}
+#endif
+
+// Free-stack bookkeeping for organisms, legs and brains (claim / commit).
+#ifdef K_FINALIZE
+void main() {
+	uint t = gidx();
+	if (pc.tick == 0xffffffffu) return;
+	if (t < uint(counters[5])) ofree[counters[0] - min(counters[1], counters[0]) + int(t)] = lists[t];
+	if (t < uint(counters[11])) lfree[counters[8] - min(counters[9], counters[8]) + int(t)] = lists[LD0 + t];
+	if (t < uint(counters[15])) bfree[counters[12] - min(counters[13], counters[12]) + int(t)] = lists[BD0 + t];
+}
+#endif
+
+#ifdef K_COMMIT
+void main() {
+	if (gidx() != 0u || pc.tick == 0xffffffffu) return;
+	counters[0] = counters[0] - min(counters[1], counters[0]) + counters[5];
+	counters[8] = counters[8] - min(counters[9], counters[8]) + counters[11];
+	counters[12] = counters[12] - min(counters[13], counters[12]) + counters[15];
+	counters[1] = 0; counters[5] = 0; counters[6] = 0;
+	counters[9] = 0; counters[11] = 0;
+	counters[13] = 0; counters[15] = 0;
+}
+#endif
+
+// Carrion decays (1/FIELD_STRIDE of the cells per tick).
+#ifdef K_FIELD
+void main() {
+	uint chunk = uint(WORLD * WORLD / FIELD_STRIDE);
+	uint t = gidx();
+	if (t >= chunk || pc.tick == 0xffffffffu) return;
+	uint c = t + (pc.tick % uint(FIELD_STRIDE)) * chunk;
+	int mt = meat[c];
+	if (mt > 0) meat[c] = min(int(float(mt) * (1.0 - pc.meat_decay * float(FIELD_STRIDE))), int(20.0 * PS));
+	int lt = litter[c];
+	if (lt > 0) litter[c] = min(int(float(lt) * (1.0 - 0.002 * float(FIELD_STRIDE))), int(40.0 * PS));
+	trample[c] = trample[c] / 2;
+}
+#endif
+
+// A fire: burns the land with enough fuel (plant cover) in a circle.
+#ifdef K_FIRE
+void main() {
+	int R = int(ceil(pc.fire_radius * M2C));
+	int S = 2 * R + 1;
+	uint t = gidx();
+	if (t >= uint(S * S) || pc.tick == 0xffffffffu) return;
+	ivec2 off = ivec2(int(t % uint(S)), int(t / uint(S))) - R;
+	if (length(vec2(off)) * CELL > pc.fire_radius) return;
+	uint c = cell_at(ivec2(floor(unpack_pos(pc.fire_pos))) + off);
+	if (fert[c] < 0.0) return;
+	float fuel = float(cover[c * 3u] + cover[c * 3u + 1u] + cover[c * 3u + 2u]) / 1000.0;
+	if (fuel > 0.3) burn[c] = pc.tick;
+}
+#endif
+
+// =============================================================================
+// Sort: all organisms by cell (counting sort), which also rebuilds the per-cell
+// index. Legs point back at their owners, so they are re-pointed afterwards.
+#ifdef K_S_CLEAR
+void main() {
+	uint c = gidx();
+	if (c < uint(WORLD * WORLD) && pc.tick != 0xffffffffu) pcount[c] = 0u;
+}
+#endif
+
+#ifdef K_S_COUNT
+void main() {
+	uint k = gidx();
+	if (k >= uint(OCAP) || k >= uint(counters[4]) || pc.tick == 0xffffffffu) return;
+	if ((core0[k].w & F_ALIVE) == 0u) return;
+	pperm[k] = atomicAdd(pcount[cell_of(c_pos(core0[k]))], 1u);
+}
+#endif
+
+#if defined(K_S_SCAN1) || defined(K_S_SCAN2)
+shared uint sh[256];
+void scan_shared(uint t) {
+	for (uint off = 1u; off < 256u; off <<= 1) {
+		uint x = t >= off ? sh[t - off] : 0u;
+		barrier();
+		sh[t] += x;
+		barrier();
+	}
+}
+#endif
+#define SCAN_N uint(WORLD * WORLD)
+
+#ifdef K_S_SCAN1
+void main() {
+	uint t = gl_LocalInvocationID.x;
+	uint b = gidx();
+	uint v = (b < SCAN_N && pc.tick != 0xffffffffu) ? pcount[b] : 0u;
+	sh[t] = v;
+	barrier();
+	scan_shared(t);
+	if (b < SCAN_N) offsets[b] = sh[t] - v;
+	if (t == 255u) block_sums[b / 256u] = sh[255];
+}
+#endif
+
+#ifdef K_S_SCAN2
+void main() {
+	uint t = gl_LocalInvocationID.x;
+	uint nblk = SCAN_N / 256u;
+	uint per = (nblk + 255u) / 256u;
+	uint sum = 0u;
+	for (uint k = 0u; k < per; k++) {
+		uint idx = t * per + k;
+		if (idx < nblk) {
+			uint v = block_sums[idx];
+			block_sums[idx] = sum;
+			sum += v;
+		}
+	}
+	sh[t] = sum;
+	barrier();
+	scan_shared(t);
+	uint prefix = sh[t] - sum;
+	for (uint k = 0u; k < per; k++) {
+		uint idx = t * per + k;
+		if (idx < nblk) block_sums[idx] += prefix;
+	}
+	if (t == 255u && pc.tick != 0xffffffffu) counters[7] = int(sh[255]);
+}
+#endif
+
+#ifdef K_S_SCAN3
+void main() {
+	uint b = gidx();
+	if (b >= SCAN_N || pc.tick == 0xffffffffu) return;
+	offsets[b] += block_sums[b / 256u];
+	pcell[b] = uvec2(offsets[b], pcount[b]);
+}
+#endif
+
+#ifdef K_S_DEST
+void main() {
+	uint k = gidx();
+	if (k >= uint(OCAP) || k >= uint(counters[4]) || pc.tick == 0xffffffffu) return;
+	if ((core0[k].w & F_ALIVE) == 0u) return;
+	pperm[k] += offsets[cell_of(c_pos(core0[k]))];
+}
+#endif
+
+// Scatter one buffer into tmp (words per organism: 4 for core0-3, 1 for damage),
+// then copy back into place. Alive checks read core0, so core0 goes last.
+#if defined(K_S_SCATTER0) || defined(K_S_SCATTER1) || defined(K_S_SCATTER2) || defined(K_S_SCATTER3) || defined(K_S_SCATTERD)
+void main() {
+	uint k = gidx();
+	if (k >= uint(OCAP) || k >= uint(counters[4]) || pc.tick == 0xffffffffu) return;
+	if ((core0[k].w & F_ALIVE) == 0u) return;
+	uint j = pperm[k];
+#if defined(K_S_SCATTERD)
+	tmp[j] = damage[k];
+#else
+#if defined(K_S_SCATTER0)
+	uvec4 v = core0[k];
+#elif defined(K_S_SCATTER1)
+	uvec4 v = core1[k];
+#elif defined(K_S_SCATTER2)
+	uvec4 v = core2[k];
+#else
+	uvec4 v = core3[k];
+#endif
+	tmp[j * 4u] = v.x;
+	tmp[j * 4u + 1u] = v.y;
+	tmp[j * 4u + 2u] = v.z;
+	tmp[j * 4u + 3u] = v.w;
+#endif
+}
+#endif
+
+#if defined(K_S_COPY0) || defined(K_S_COPY1) || defined(K_S_COPY2) || defined(K_S_COPY3) || defined(K_S_COPYD)
+void main() {
+	uint k = gidx();
+	if (k >= uint(counters[7]) || k >= uint(OCAP) || pc.tick == 0xffffffffu) return;
+#if defined(K_S_COPYD)
+	damage[k] = tmp[k];
+#else
+	uvec4 v = uvec4(tmp[k * 4u], tmp[k * 4u + 1u], tmp[k * 4u + 2u], tmp[k * 4u + 3u]);
+#if defined(K_S_COPY0)
+	core0[k] = v;
+#elif defined(K_S_COPY1)
+	core1[k] = v;
+#elif defined(K_S_COPY2)
+	core2[k] = v;
+#else
+	core3[k] = v;
+#endif
+#endif
+}
+#endif
+
+// After the copies: organisms are [0, N) in cell order. Clear the tail, rebuild
+// the free stack, and point every leg at its owner's new index.
+#ifdef K_S_TAIL
+void main() {
+	uint k = gidx();
+	if (k >= uint(OCAP) || pc.tick == 0xffffffffu) return;
+	uint n = uint(counters[7]);
+	if (k >= n) {
+		if (k < uint(counters[4])) {
+			core0[k] = uvec4(0u);
+			core2[k] = uvec4(NONE, NONE, 0u, 0u);
+			damage[k] = 0u;
+		}
+	} else {
+		uint leg = core2[k].x;
+		if (leg != NONE) legs[leg].x = k;
+	}
+	if (k < uint(OCAP) - n) ofree[k] = uint(OCAP) - 1u - k;
+}
+#endif
+
+#ifdef K_S_COMMIT
+void main() {
+	if (gidx() != 0u || pc.tick == 0xffffffffu) return;
+	int n = counters[7];
+	counters[0] = OCAP - n;
+	counters[1] = 0;
+	counters[4] = n;
+}
+#endif
+
+// =============================================================================
+// 2D view: canopy and carrion per cell, then organisms drawn on top.
+#ifdef K_RENDER_FIELD
+void main() {
+	uint c = gidx();
+	if (c >= uint(WORLD * WORLD)) return;
+	float f = fert[c];
+	vec3 col;
+	if (f < 0.0) {
+		col = mix(vec3(0.02, 0.05, 0.14), vec3(0.06, 0.16, 0.32), clamp((f + 0.58) * 6.0, 0.0, 1.0));
+	} else {
+		float g0 = float(cover[c * 3u]) / 1000.0;
+		float g1 = float(cover[c * 3u + 1u]) / 1000.0;
+		float g2 = float(cover[c * 3u + 2u]) / 1000.0;
+		col = mix(vec3(0.17, 0.13, 0.09), vec3(0.30, 0.52, 0.16), clamp(g0 * (viewer.flags3d != 0u ? 1.5 : 0.8), 0.0, 1.0));
+		if (viewer.flags3d == 0u) { // in 3D the taller bodies are drawn as models
+			col = mix(col, vec3(0.16, 0.36, 0.12), clamp(g1 * 0.8, 0.0, 0.9));
+			col = mix(col, vec3(0.06, 0.24, 0.08), clamp(g2 * 0.9, 0.0, 0.95));
+		}
+		col = mix(col, vec3(0.45, 0.06, 0.05), clamp(float(meat[c]) / PS * 0.4, 0.0, 0.8));
+		if (burn[c] <= pc.tick && pc.tick - burn[c] < 300u) col = mix(col, vec3(0.08, 0.07, 0.07), 0.7 * (1.0 - float(pc.tick - burn[c]) / 300.0));
+	}
+	if (pc.show_fields == 0u) col *= 0.25;
+	imageStore(view, ivec2(int(c % uint(WORLD)), int(c / uint(WORLD))), vec4(col, 1.0));
+}
+#endif
+
+// Sessile organisms that are not plain rooted sun-eaters (feeding modules, no
+// leaves, muscles or a life cycle) - and, in the other colour modes, a strided
+// sample of all of them so the canopy stays visible.
+#ifdef K_RENDER_SESSILE
+void main() {
+	uint k = gidx();
+	if (k >= uint(OCAP) || k >= uint(counters[4])) return;
+	uvec4 c0 = core0[k];
+	if ((c0.w & (F_ALIVE | F_MOBILE)) != F_ALIVE) return;
+	uvec4 m = core3[k];
+	bool special = gene(m, M_FEED) >= T_MOUTH || gene(m, M_SURFACE) < T_PHOTO || gene(m, M_ACT) > 0.5 || gene(m, M_META) >= T_META;
+	if (!special && (pc.color_mode == 0u || (k & 7u) != 0u)) return;
+	uvec4 g = core1[k];
+	Body b = develop(m, float(c_age(c0)), c_dev(c0), 0.5);
+	imageStore(view, ivec2(floor(c_pos(c0))), vec4(life_color(g, c0, b), 1.0));
+}
+#endif
+
+#ifdef K_RENDER_MOBILE
+void main() {
+	uint l = gidx();
+	if (l >= uint(LCAP) || l >= uint(counters[10])) return;
+	uint i = legs[l].x;
+	if (i == NONE) return;
+	uvec4 c0 = core0[i];
+	uvec4 g = core1[i];
+	Body b = body_of(c0, core3[i], e_max(gene(g, G_SIZE)));
+	imageStore(view, ivec2(floor(c_pos(c0))), vec4(life_color(g, c0, b), 1.0));
+}
+#endif
+
+// =============================================================================
+#ifdef K_CLEAR_STATS
+void main() {
+	uint i = gidx();
+	if (i < 256u && pc.tick != 0xffffffffu) stats[i] = 0u;
+}
+#endif
+
+// Statistics (read back by the host). Mobile organisms are all counted; sessile
+// ones are sampled (every SSTRIDE-th slot).
+//  0 mobile  1 mobile eating plants  2 mobile carnivores  3 mobile with surfaces
+//  4 mobile without feeding  5 with eyes  6 with a brain  7 sum of neurons
+//  8..14 actions  15 sum mobile size x1000  16 sum mobility x1000  17 sum sense x1000
+//  18 sum carnivory x1000  19 sum mobile photo x1000
+//  20 sessile sampled  21 with surfaces  22 with feeding  23 traps
+//  24..27 sessile by height (< 0.5 m, < 2 m, < 6 m, taller)  28 sum sessile size x1000
+//  29 sum sessile photo x1000  30 sessile without surfaces  31 sample stride
+//  32 births  33 deaths  34 organism hwm  35 leg hwm  36 brain hwm  37 max generation
+//  38..43 energy flows  44..51 modules gained / lost  52 settled  53 uprooted
+//  54 mobile with a life cycle  55 sessile with a life cycle  56..59 mobile sums x1000:
+//  anchorage, axis, symmetry, segments  60..62 sessile sums x1000: actuation, axis,
+//  symmetry  63 sessile creepers (horizontal axis)  64..95 hue histogram of mobile ones
+//  96 sessile with muscles (actuation > 0.5)  97 mobile upright (axis > 0.5)
+//  128..159 hue histogram of the sessile ones (sampled)
+//  160..169 guilds: 160 upright plants, 161 creepers, 162 traps, 163 sessile feeders
+//  (parasites / decomposers), 164 sessile with neither leaves nor feeding (sampled),
+//  165 grazers, 166 predators, 167 omnivores, 168 mobile with leaves, 169 mobile
+//  without feeding
+//  170..174 sums of the five switches x1000 (anchorage, axis, symmetry, growth,
+//  actuation), 175..179 their sums of squares x1000, 180 organisms in those sums
+//  (sessile sampled + all mobile, unweighted)
+#define SSTRIDE 32u
+#ifdef K_STATS
+shared uint ls[256];
+void add_switches(uvec4 m) {
+	for (int k = 0; k < 5; k++) {
+		float v = gene(m, k);
+		atomicAdd(ls[170 + k], uint(v * 1000.0));
+		atomicAdd(ls[175 + k], uint(v * v * 1000.0));
+	}
+	atomicAdd(ls[180], 1u);
+}
+void main() {
+	uint lt = gl_LocalInvocationID.x;
+	ls[lt] = 0u;
+	barrier();
+	uint i = gidx();
+	if (i == 0u && pc.tick != 0xffffffffu) {
+		stats[31] = SSTRIDE;
+		stats[32] = uint(counters[2]);
+		stats[33] = uint(counters[3]);
+		stats[34] = uint(counters[4]);
+		stats[35] = uint(counters[10]);
+		stats[36] = uint(counters[14]);
+		stats[37] = uint(counters[30]);
+		counters[2] = 0;
+		counters[3] = 0;
+		for (int k = 0; k < 6; k++) { stats[38 + k] = uint(counters[24 + k]); counters[24 + k] = 0; }
+		for (int k = 0; k < 8; k++) { stats[44 + k] = uint(counters[16 + k]); counters[16 + k] = 0; }
+		stats[52] = uint(counters[33]);
+		stats[53] = uint(counters[34]);
+		stats[98] = uint(counters[36]);
+		counters[33] = 0;
+		counters[34] = 0;
+		counters[36] = 0;
+	}
+	if (pc.tick != 0xffffffffu && i < uint(LCAP) && i < uint(counters[10])) {
+		uint o = legs[i].x;
+		if (o != NONE) {
+			uvec4 c0 = core0[o];
+			uvec4 g = core1[o];
+			uvec4 m = core3[o];
+			Body b = body_of(c0, m, e_max(gene(g, G_SIZE)));
+			float carni = gene(g, G_CARNI);
+			atomicAdd(ls[0], 1u);
+			if (b.mouth > 0.0) atomicAdd(ls[carni > 0.5 ? 2 : 1], 1u); else atomicAdd(ls[4], 1u);
+			if (b.photo > 0.0) atomicAdd(ls[3], 1u);
+			if (b.sense > 0.0) atomicAdd(ls[5], 1u);
+			if (core2[o].y != NONE) { atomicAdd(ls[6], 1u); atomicAdd(ls[7], uint(neurons(g))); }
+			atomicAdd(ls[8u + min(core2[o].w, 6u)], 1u);
+			atomicAdd(ls[15], uint(gene(g, G_SIZE) * 1000.0));
+			atomicAdd(ls[16], uint(b.mobil * 1000.0));
+			atomicAdd(ls[17], uint(b.sense * 1000.0));
+			atomicAdd(ls[18], uint(carni * 1000.0));
+			atomicAdd(ls[19], uint(b.photo * 1000.0));
+			if (gene(m, M_META) >= T_META) atomicAdd(ls[54], 1u);
+			atomicAdd(ls[56], uint(b.anchor * 1000.0));
+			atomicAdd(ls[57], uint(b.axis * 1000.0));
+			atomicAdd(ls[58], uint(b.sym * 1000.0));
+			atomicAdd(ls[59], uint(b.nseg * 1000.0));
+			if (b.axis > 0.5) atomicAdd(ls[97], 1u);
+			atomicAdd(ls[64u + min(uint(gene(g, G_HUE) * 32.0), 31u)], 1u);
+			if (b.mouth > 0.0) atomicAdd(ls[carni > 0.6 ? 166 : (carni > 0.3 ? 167 : 165)], 1u); else atomicAdd(ls[169], 1u);
+			if (b.photo > 0.0) atomicAdd(ls[168], 1u);
+			add_switches(m);
+		}
+	}
+	uint k = i * SSTRIDE + (pc.tick % SSTRIDE);
+	if (pc.tick != 0xffffffffu && k < uint(OCAP) && k < uint(counters[4])) {
+		uvec4 c0 = core0[k];
+		if ((c0.w & (F_ALIVE | F_MOBILE)) == F_ALIVE) {
+			uvec4 g = core1[k];
+			uvec4 m = core3[k];
+			float s = gene(g, G_SIZE);
+			Body b = body_of(c0, m, sess_emax(s, cell_of(c_pos(c0))));
+			float h = sess_height(s, b);
+			atomicAdd(ls[20], 1u);
+			if (b.photo > 0.0) atomicAdd(ls[21], 1u); else atomicAdd(ls[30], 1u);
+			if (b.mouth > 0.0) {
+				atomicAdd(ls[22], 1u);
+				if (gene(g, G_CARNI) > 0.4) atomicAdd(ls[23], 1u);
+			}
+			atomicAdd(ls[h < 0.5 ? 24 : (h < 2.0 ? 25 : (h < 6.0 ? 26 : 27))], 1u);
+			atomicAdd(ls[28], uint(s * 1000.0));
+			atomicAdd(ls[29], uint(b.photo * 1000.0));
+			if (gene(m, M_META) >= T_META) atomicAdd(ls[55], 1u);
+			atomicAdd(ls[60], uint(b.act * 1000.0));
+			atomicAdd(ls[61], uint(b.axis * 1000.0));
+			atomicAdd(ls[62], uint(b.sym * 1000.0));
+			if (b.axis < 0.4) atomicAdd(ls[63], 1u);
+			if (b.act > 0.5) atomicAdd(ls[96], 1u);
+			atomicAdd(ls[128u + min(uint(gene(g, G_HUE) * 32.0), 31u)], 1u);
+			if (b.mouth > 0.0) atomicAdd(ls[gene(g, G_CARNI) > 0.4 ? 162 : 163], 1u);
+			else if (b.photo > 0.0) atomicAdd(ls[b.axis < 0.4 ? 161 : 160], 1u);
+			else atomicAdd(ls[164], 1u);
+			add_switches(m);
+		}
+	}
+	barrier();
+	if (ls[lt] != 0u && !(lt >= 31u && lt <= 53u) && lt != 98u) atomicAdd(stats[lt], ls[lt]);
+}
+#endif
+
+// =============================================================================
+// 3D view: every organism near the player becomes an instance of one universal
+// body rig (shaders/organism.gdshader). The instance carries the developed body,
+// 24 exact bits per custom float (the vertex stage only sees these):
+//   custom.x = axis | symmetry << 8 | anchorage << 16
+//   custom.y = appendage length | speed (7 bits) << 8 | segments - 1 << 15 | appendage pairs << 18 | action << 21
+//   custom.z = surfaces | feeding << 8 | sensors << 16
+//   custom.w = carnivory | growth << 8 | protection << 16
+// colour.rgb = body colour and colour.a = hue (fragment stage; alpha must stay
+// within 0..1 or the instance colour is lost), and the
+// transform places and scales it (x L metres, facing its heading).
+#define MAX_VIS 32768
+#define MAX_SVIS 49152
+#define PLANT_VIEW 260.0
+float height_at(vec2 p) {
+	vec2 q = p - 0.5;
+	ivec2 c = ivec2(floor(q));
+	vec2 f = q - vec2(c);
+	return mix(mix(height[cell_at(c)], height[cell_at(c + ivec2(1, 0))], f.x),
+			mix(height[cell_at(c + ivec2(0, 1))], height[cell_at(c + ivec2(1, 1))], f.x), f.y);
+}
+float pack3(float a, float b, float c) {
+	uvec3 q = uvec3(clamp(vec3(a, b, c), 0.0, 1.0) * 255.0 + 0.5);
+	return float(q.x + q.y * 256u + q.z * 65536u);
+}
+void write_rig(bool mobile, uint k, vec2 f, float L, vec3 o, vec3 col, Body b, uvec4 g, uint action, float speed01, bool brain) {
+	float v[20];
+	v[0] = -f.y * L; v[1] = 0.0; v[2] = -f.x * L; v[3] = o.x;
+	v[4] = 0.0; v[5] = L; v[6] = 0.0; v[7] = o.y;
+	v[8] = f.x * L; v[9] = 0.0; v[10] = -f.y * L; v[11] = o.z;
+	v[12] = col.r; v[13] = col.g; v[14] = col.b;
+	v[15] = gene(g, G_HUE); // instance alpha must stay within 0..1
+	v[16] = pack3(b.axis, b.sym, b.anchor);
+	v[17] = float(uint(clamp(b.applen, 0.0, 1.0) * 255.0 + 0.5) | (uint(clamp(speed01, 0.0, 1.0) * 127.0 + 0.5) << 8)
+			| (uint(b.nseg - 1.0) << 15) | (uint(b.apps) << 18) | (min(action, 7u) << 21));
+	v[18] = pack3(b.photo, b.mouth, b.sense);
+	v[19] = pack3(gene(g, G_CARNI), b.gf, b.defence);
+	uint base = k * 20u;
+	if (mobile) { for (uint w = 0u; w < 20u; w++) minst[base + w] = v[w]; }
+	else { for (uint w = 0u; w < 20u; w++) sinst[base + w] = v[w]; }
+}
+vec3 body_colour(uvec4 g, Body b, bool mobile) {
+	float hue = gene(g, G_HUE);
+	vec3 animal = hue2rgb(hue, 0.55, 0.85);
+	vec3 plant = mix(vec3(0.34, 0.2, 0.09), hue2rgb(0.07 + hue * 0.06, 0.6, 0.32), 0.3); // bark
+	return mix(animal, plant, clamp(b.anchor * (0.5 + 0.5 * b.axis) + (mobile ? 0.0 : 0.3), 0.0, 1.0));
+}
+
+#ifdef K_NEAR_RESET
+void main() {
+	uint k = gidx();
+	if (k < 2u) counters[31 + int(k)] = 0;
+}
+#endif
+
+// Mobile organisms, interpolated between their last two poses.
+#ifdef K_NEAR_MOBILE
+void main() {
+	uint l = gidx();
+	if (l >= uint(LCAP) || l >= uint(counters[10])) return;
+	uvec4 lg = legs[l];
+	uint i = lg.x;
+	if (i == NONE) return;
+	uvec4 c0 = core0[i];
+	vec2 cur = c_pos(c0);
+	uvec2 pv = legprev[l];
+	vec2 d0 = tdelta(unpack_pos(pv.x), cur);
+	float t = clamp(viewer.phase, 0.0, 1.0);
+	vec2 p = dot(d0, d0) < 1.0 ? wrap_pos(unpack_pos(pv.x) + d0 * t) : cur;
+	float h0 = uintBitsToFloat(pv.y), h1 = uintBitsToFloat(lg.y);
+	float heading = h0 + (mod(h1 - h0 + PI, 2.0 * PI) - PI) * t;
+	vec2 d = tdelta(viewer.pos, p);
+	float vr = viewer.radius * M2C;
+	if (dot(d, d) > vr * vr) return;
+	uint k = uint(atomicAdd(counters[31], 1));
+	if (k >= uint(MAX_VIS)) return;
+	uvec4 g = core1[i];
+	float s = gene(g, G_SIZE);
+	Body b = body_of(c0, core3[i], e_max(s));
+	float L = body_len(s * (0.4 + 0.6 * b.gf)) * (0.7 + 0.1 * b.nseg);
+	vec2 wp = (viewer.pos + d) * CELL;
+	float speed01 = clamp(uintBitsToFloat(lg.z) * CELL / 2.2, 0.0, 1.0);
+	write_rig(true, k, vec2(cos(heading), sin(heading)), L, vec3(wp.x, height_at(p), wp.y),
+			body_colour(g, b, true), b, g, core2[i].w, speed01, core2[i].y != NONE);
+}
+#endif
+
+// Sessile organisms: one thread per cell in a square around the player.
+#ifdef K_NEAR_SESSILE
+void main() {
+	int R = int(ceil(PLANT_VIEW * M2C));
+	int S = 2 * R + 1;
+	uint t = gidx();
+	if (t >= uint(S * S)) return;
+	ivec2 cc = ivec2(floor(viewer.pos)) + ivec2(int(t % uint(S)), int(t / uint(S))) - R;
+	uvec2 r = pcell[cell_at(cc)];
+	uint end = r.x + min(r.y, 64u);
+	for (uint j = r.x; j < end; j++) {
+		uvec4 c0 = core0[j];
+		if ((c0.w & (F_ALIVE | F_MOBILE)) != F_ALIVE) continue;
+		vec2 pp = c_pos(c0);
+		vec2 d = tdelta(viewer.pos, pp);
+		float dist = length(d) * CELL;
+		uvec4 g = core1[j];
+		float s = gene(g, G_SIZE);
+		Body b = body_of(c0, core3[j], sess_emax(s, cell_of(pp)));
+		float h = sess_height(s, b);
+		float range = h < 0.8 ? 70.0 : (h < 3.0 ? 120.0 : PLANT_VIEW);
+		if (dist > range) continue;
+		uint k = uint(atomicAdd(counters[32], 1));
+		if (k >= uint(MAX_SVIS)) continue;
+		// Upright bodies: the rig axis spans the height; creeping ones: the crown.
+		float L = max(mix(sess_crown(s, b) * 1.2, h, b.axis), 0.3);
+		float yaw = float(pcg(c0.x) & 1023u) / 1023.0 * 2.0 * PI;
+		vec3 o = vec3((viewer.pos + d).x * CELL, height_at(pp), (viewer.pos + d).y * CELL);
+		write_rig(false, k, vec2(cos(yaw), sin(yaw)), L, o, body_colour(g, b, false), b, g, A_REST, 0.0, false);
+	}
+}
+#endif
+
+// Unused instances collapse to a zero-size transform.
+#ifdef K_CLEAR_INST
+void main() {
+	uint t = gidx();
+	if (t < uint(MAX_VIS)) {
+		if (int(t) >= min(counters[31], MAX_VIS)) for (uint j = 0u; j < 12u; j++) minst[t * 20u + j] = 0.0;
+		return;
+	}
+	t -= uint(MAX_VIS);
+	if (t < uint(MAX_SVIS) && int(t) >= min(counters[32], MAX_SVIS)) for (uint j = 0u; j < 12u; j++) sinst[t * 20u + j] = 0.0;
+}
+#endif

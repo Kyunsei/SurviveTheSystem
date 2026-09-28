@@ -1,0 +1,43 @@
+[
+ {
+  "params": {},
+  "score": 5.077500000000001,
+  "runs": [
+   {
+    "score": 5.341,
+    "present": [
+     "plants",
+     "creepers",
+     "sessile_feeders",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.584,
+    "bodyplan": 0.172,
+    "cv": 0.514,
+    "mobile_end": 126,
+    "sessile_end": 1072600,
+    "tick_end": 7856,
+    "seed": 1,
+    "secs": 16
+   },
+   {
+    "score": 4.814,
+    "present": [
+     "plants",
+     "creepers",
+     "sessile_feeders"
+    ],
+    "lost": [],
+    "entropy": 0.828,
+    "bodyplan": 0.188,
+    "cv": 0.594,
+    "mobile_end": 26,
+    "sessile_end": 1022000,
+    "tick_end": 7856,
+    "seed": 2,
+    "secs": 15
+   }
+  ]
+ }
+]

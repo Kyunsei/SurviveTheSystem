@@ -1,0 +1,27 @@
+[
+ {
+  "params": {
+   "jc_strength": "0"
+  },
+  "score": 4.573,
+  "runs": [
+   {
+    "score": 4.573,
+    "present": [
+     "plants",
+     "creepers",
+     "sessile_feeders"
+    ],
+    "lost": [],
+    "entropy": 0.788,
+    "bodyplan": 0.152,
+    "cv": 0.608,
+    "mobile_end": 13,
+    "sessile_end": 1193472,
+    "tick_end": 7856,
+    "seed": 1,
+    "secs": 15
+   }
+  ]
+ }
+]

@@ -1,0 +1,34 @@
+[
+ {
+  "params": {},
+  "score": -44.964,
+  "runs": [
+   {
+    "score": 9.072,
+    "present": [
+     "plants",
+     "creepers",
+     "traps",
+     "sessile_feeders",
+     "grazers",
+     "mobile_leafy"
+    ],
+    "lost": [],
+    "entropy": 0.913,
+    "bodyplan": 0.362,
+    "cv": 0.202,
+    "mobile_end": 19219,
+    "sessile_end": 1745064,
+    "tick_end": 7856,
+    "seed": 1,
+    "secs": 57
+   },
+   {
+    "score": -99.0,
+    "note": "too short",
+    "seed": 2,
+    "secs": 119
+   }
+  ]
+ }
+]

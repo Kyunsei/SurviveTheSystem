@@ -1,0 +1,27 @@
+[
+ {
+  "params": {
+   "fire_rate": "0"
+  },
+  "score": 4.535,
+  "runs": [
+   {
+    "score": 4.535,
+    "present": [
+     "plants",
+     "creepers",
+     "sessile_feeders"
+    ],
+    "lost": [],
+    "entropy": 0.748,
+    "bodyplan": 0.161,
+    "cv": 0.607,
+    "mobile_end": 11,
+    "sessile_end": 760328,
+    "tick_end": 7856,
+    "seed": 1,
+    "secs": 15
+   }
+  ]
+ }
+]

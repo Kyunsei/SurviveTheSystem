@@ -1,0 +1,2376 @@
+// =============================================================================
+// Evolving ecosystem ABM - GPU kernels.
+//
+// This file is compiled once per kernel by simulation.gd. The host prepends
+// "#version 450" and defines: one K_<NAME> kernel selector, CAPACITY, WORLD (cells
+// per side), CELL (metres per cell), BUCKET, SLOTS, MAX_VIS, MAX_NEAR, and for the
+// plants PCAP (capacity), PINIT (initial count), MAX_PVIS, PLANT_VIEW.
+//
+// Units: positions live in cells (CELL x CELL m of terrain); speeds, vision and
+// reach are genes / constants in metres, converted with M2C.
+//
+// Plants are individuals too (a second, immobile population): each has a
+// position, biomass, root reserve, age and a genome (form, growth, defence,
+// lineage, seed size, dispersal mode, flowering season, root allocation). They
+// compete for light through a per-cell canopy map, are pollinated by wind or by
+// visiting animals, and spread by wind-borne seeds or by fruit that animals eat
+// and carry. Every PLANT_SORT ticks they are sorted by cell, which gives the
+// per-cell plant index animals use to find them.
+//
+// One simulation tick = THINK -> BIRTH -> FINALIZE -> COMMIT -> PLANT_TICK
+//                       -> PLANT_FINALIZE -> PLANT_COMMIT -> FIELD
+//   THINK is the only full pass over agents: damage, ageing, death, senses, brain,
+//   movement, feeding, attacks, registration in the next grid. Agents that die
+//   go on the dead list, agents ready to breed go on the birth list; BIRTH and
+//   FINALIZE then only touch those lists.
+// Every SORT_INTERVAL ticks = SCAN1 -> SCAN2 -> SCAN3 -> PERM -> SCATTER_* -> SORT_TAIL
+//                              -> CLEAR_GRID_W -> REGISTER
+// 2D rendering         = RENDER_FIELD -> RENDER_AGENTS
+// 3D explorer          = PLAYER + SPAWN at the start of each tick (the player is visible
+//   to agents and can issue commands); THINK may be split into chunks spread over
+//   frames; every frame VIS_RESET -> NEARBY -> CLEAR_INSTANCES -> INSPECT write the
+//   agents around the player straight into a MultiMesh buffer and a small readback.
+//
+// Spatial hash: the world is split into BUCKET x BUCKET cell buckets holding up
+// to SLOTS agents each. A slot stores (index, packed position, phenotype,
+// half2(energy, speed)) so the neighbour scan never touches the agent array.
+// Agents in a full bucket are still counted but are invisible to neighbours.
+// Two grids are double-buffered: each tick THINK/BIRTH read grid R and register
+// into grid W, then FIELD clears R; the host swaps them every tick.
+//
+// Spatial sort: agent storage is periodically reordered by bucket (counting
+// sort using the grid counts), so consecutive threads handle nearby agents and
+// both their own data and the spatial lookups are coherent in memory. This is
+// what makes 1M agents fast; without it every agent is a cache miss.
+// =============================================================================
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+#extension GL_KHR_shader_subgroup_basic : require
+#extension GL_KHR_shader_subgroup_arithmetic : require
+
+// ---- Brain / genome dimensions ---------------------------------------------
+// Network: 23 inputs + bias -> 7 tanh hidden + bias -> 8 outputs, int8 weights.
+// Each hidden neuron owns 6 words (24 weights), each output owns 2 words (8 weights),
+// so the forward pass is pure vec4 dot products with no local arrays.
+#define W1_WORDS 42         // 7 hidden * 6 words
+#define W2_WORDS 16         // 8 outputs * 2 words
+#define NG 24               // genes per agent
+
+#define G_SIZE 0
+#define G_SPEED 1
+#define G_DIET 2
+#define G_REPRO 3
+#define G_MUT 4
+#define G_HUE 5
+#define G_SENSE 6
+#define G_CHILD 7
+#define G_U0 8              // utility weights U0..U6 = genes 8..14
+#define G_CURVE 15          // utility hunger response exponent
+#define G_DETOX 16          // tolerance to plant defences (costly)
+#define G_U7 17             // utility weights U7..U11 = genes 17..21: hide, care, mark, home, recall
+#define G_ALARM 22          // how loudly a utility agent calls when it flees or hides (0-1)
+#define G_CARE 23           // how much energy a parent gives its young (0-1)
+
+#define M2C (1.0 / CELL)      // metres -> cells
+#define BW (WORLD / BUCKET)
+#define NB (BW * BW)
+#define BIRTH_MAX (CAPACITY / 8) // births processed per tick at most
+#define FIELD_STRIDE 4      // each tick updates 1/FIELD_STRIDE of the carrion field
+#define PSTRIDE 8u          // each tick updates 1/PSTRIDE of the plants (dt = PSTRIDE)
+#define NO_BUCKET 0xffffffffu
+#define PLAYER_ID 0xfffffffeu   // grid slot index used by the 3D player
+#define PLAYER_RANGE (30.0 * M2C) // agents notice the player (threat or kin) this far away (cells)
+
+// Player commands (3D explorer)
+#define CMD_KILL 1u
+#define CMD_FEED 2u
+#define CMD_SOW 3u
+#define CMD_TRACK 4u
+#define CMD_UNTRACK 5u
+#define CMD_SPAWN 6u
+
+#define PS 10000.0          // fixed-point scale for plant biomass and carrion
+#define BODY_COST 1.0       // energy per unit of size paid at birth, returned as carrion
+#define F_ALIVE 1u
+#define F_NN 2u
+
+// Actions (utility AI choices; neural agents get an approximate label)
+#define A_GRAZE 0u
+#define A_HUNT 1u
+#define A_FLEE 2u
+#define A_FLOCK 3u
+#define A_WANDER 4u
+#define A_REST 5u
+#define A_SCAVENGE 6u
+#define A_HIDE 7u           // freeze low (hard to see, cheap, slow)
+#define A_CARE 8u           // go to own young and feed it
+#define A_MARK 9u           // patrol and scent-mark the territory
+#define A_HOME 10u          // go back to the remembered home (den) to rest
+#define A_RECALL 11u        // go to the remembered food place
+#define N_ACTIONS 12u
+#define YOUNG_AGE 200.0     // ticks a child follows its parent
+#define NO_PLACE 0xffffffffu
+
+// Posture and call live in spare flag bits (and are copied into the grid entry,
+// so neighbours sense them): call strength 6 bits, posture 2 bits.
+#define POSTURE_NORMAL 0u
+#define POSTURE_HIDE 1u
+#define POSTURE_DISPLAY 2u
+uint flag_signal(uint f) { return (f >> 8) & 63u; }
+uint flag_posture(uint f) { return (f >> 14) & 3u; }
+uint with_social(uint f, float signal, uint posture) {
+	return (f & ~0xff00u) | (uint(clamp(signal, 0.0, 1.0) * 63.0 + 0.5) << 8) | ((posture & 3u) << 14);
+}
+
+struct Agent {
+	vec2 pos;
+	float heading;
+	float energy;
+	float age;
+	uint flags;
+	uint pheno;      // packed size | diet | hue | brain bit | max speed - cheap to read for neighbours
+	float memory;    // recurrent state (NN) / wander drift (utility)
+	uint generation;
+	uint action;
+	float speed;
+	uint reg;        // bucket this agent is registered in (grid R), or NO_BUCKET
+	uint uid;        // unique id (children recognise their parent by it, across sorts)
+	uint parent_uid; // the parent's uid (0 = founder)
+	uint home;       // remembered home / den (packed position, NO_PLACE)
+	uint food;       // remembered food place (packed position, NO_PLACE)
+};
+
+layout(set = 0, binding = 0, std430) buffer Agents { Agent agents[]; };
+layout(set = 0, binding = 1, std430) buffer Genes { float genes[]; };
+layout(set = 0, binding = 2, std430) buffer W1 { uint w1[]; };
+layout(set = 0, binding = 3, std430) buffer W2 { uint w2[]; };
+layout(set = 0, binding = 4, std430) buffer CountR { int count_r[]; };   // grid read this tick
+layout(set = 0, binding = 5, std430) buffer SlotR { uvec4 slot_r[]; };
+layout(set = 0, binding = 6, std430) buffer CountW { int count_w[]; };   // grid built for next tick
+layout(set = 0, binding = 7, std430) buffer SlotW { uvec4 slot_w[]; };
+// Plants: a = (packed position, biomass x PS (eaten atomically), genome A, genome B)
+//         b = (age in PSTRIDE ticks | half(root reserve) << 16, pollen donor genome A,
+//              donor genome B, state bits: see p_state()).
+layout(set = 0, binding = 8, std430) buffer PlantA { uvec4 plant_a[]; };
+layout(set = 0, binding = 9, std430) buffer Meat { int meat[]; };
+layout(set = 0, binding = 10, std430) buffer Fert { float fert[]; };     // < 0 means water
+layout(set = 0, binding = 11, std430) buffer Damage { uint damage[]; };
+layout(set = 0, binding = 12, std430) buffer FreeStack { uint free_stack[]; };
+// 0 free-stack size, 1 slots claimed by BIRTH/SPAWN, 2 births, 3 deaths (both for stats),
+// 4 high-water mark (slots >= it are all dead), 6 live agents counted by the last
+// sort, 7 dead-list length, 8 birth-list length, 10 tracked agent (-1 = none),
+// 11 tracked agent's index after the running sort, 12 visible instances this frame.
+// Plants: 16 free-stack size, 17 slots claimed, 18 births, 19 deaths (for stats),
+// 20 high-water mark, 21 live plants counted by the last plant sort, 22 dead-list
+// length, 23..26 3D instances written per form (grass, flowers, bushes, trees).
+layout(set = 0, binding = 13, std430) buffer Counters { int counters[]; };
+layout(set = 0, binding = 14, std430) buffer Stats { uint stats[]; };
+layout(set = 0, binding = 15, rgba8) uniform writeonly image2D view;
+// Sort scratch.
+#ifdef K_SCATTER_AGENTS
+layout(set = 0, binding = 16, std430) buffer Tmp { Agent tmp_agents[]; };
+#else
+layout(set = 0, binding = 16, std430) buffer Tmp { uint tmp[]; };
+#endif
+layout(set = 0, binding = 17, std430) buffer Perm { uint perm[]; };
+layout(set = 0, binding = 18, std430) buffer Offsets { uint offsets[]; };
+layout(set = 0, binding = 19, std430) buffer BlockSums { uint block_sums[]; };
+// [0, CAPACITY): agents that died this tick. [CAPACITY, +BIRTH_MAX): agents about to breed.
+layout(set = 0, binding = 20, std430) buffer Lists { uint lists[]; };
+// Terrain height in metres per cell (water surface is 0).
+layout(set = 0, binding = 21, std430) buffer Height { float height[]; };
+// Written by the host every frame (all zero in the 2D view).
+struct PlayerData {
+	vec2 pos;              // player position in cells (1 cell = 1 m)
+	float phase;           // fraction used to interpolate agent motion between ticks
+	float vis_radius;      // agents closer than this are drawn in 3D
+	uint presence;         // 0 invisible, else registered in the grid with presence_pheno
+	uint presence_pheno;
+	uint cmd;              // CMD_* executed once, at tick cmd_tick
+	uint cmd_tick;
+	uint target;           // aimed agent index
+	uint spawn_n;
+	vec2 target_pos;       // where the host saw the target (guards against stale indices)
+	uint inspect_tracked;  // INSPECT reports the tracked agent instead of the target
+	float near_radius;     // agents closer than this are reported for picking
+	float speed;           // player speed in cells per tick (prey escape odds)
+	uint flags3d;          // 1 = 3D view (ground colours for the 3D terrain)
+	uint chunks;           // how many chunks THINK is split into (for interpolation)
+	uint pad_a;
+	uint pad_b;
+	uint pad_c;
+};
+layout(set = 0, binding = 22, std430) buffer Player { PlayerData player; };
+// MultiMesh instance data: 12 floats row-major Transform3D, 4 color, 4 custom.
+layout(set = 0, binding = 23, std430) buffer Instances { float inst[]; };
+// 0 near count, 1 damage dealt to the player (x1000, cumulative), 2 inspected index,
+// 3 tracked index, 4..15 inspected agent, 16..32 its genes, 56..59 plant instances
+// per form, 62 instances written,
+// 64.. near list (8 words each).
+layout(set = 0, binding = 24, std430) buffer Readback { uint rb[]; };
+layout(set = 0, binding = 25, std430) buffer PlantB { uvec4 plant_b[]; };
+// Canopy cover per cell and layer (ground, shrub, tree), x1000 of the cell area.
+layout(set = 0, binding = 26, std430) buffer Cover { int cover[]; };
+// Pose before the agent's last move (pos.xy, heading, unused): the 3D view
+// interpolates from it to the current pose, so motion is smooth between ticks.
+layout(set = 0, binding = 27, std430) buffer Prev { vec4 prev[]; };
+// Plant index: sorted plants of each cell are plant_a[start .. start + count).
+layout(set = 0, binding = 28, std430) buffer PCell { uvec2 pcell[]; };
+layout(set = 0, binding = 29, std430) buffer PPerm { uint pperm[]; };
+layout(set = 0, binding = 30, std430) buffer PFree { uint pfree[]; };
+layout(set = 0, binding = 31, std430) buffer PLists { uint plists[]; }; // plants that died this tick
+// What each animal carries: pollen (genome A, B of its last flower) and a seed
+// in its gut (genome A, B), 0 = none.
+layout(set = 0, binding = 32, std430) buffer Carry { uvec4 carry[]; };
+// 3D plant instances (MultiMesh layout, 20 floats) per form.
+layout(set = 0, binding = 33, std430) buffer PInst0 { float pinst0[]; };
+layout(set = 0, binding = 34, std430) buffer PInst1 { float pinst1[]; };
+layout(set = 0, binding = 35, std430) buffer PInst2 { float pinst2[]; };
+layout(set = 0, binding = 36, std430) buffer PInst3 { float pinst3[]; };
+layout(set = 0, binding = 37, std430) buffer PCount { uint pcount[]; };
+// Energy given to an agent this tick (x1000, applied by the receiver), and the
+// scent marks per cell: intensity x1000 << 8 | lineage hue (the strongest mark wins).
+layout(set = 0, binding = 38, std430) buffer Gift { uint gift[]; };
+layout(set = 0, binding = 39, std430) buffer Scent { uint scent[]; };
+
+layout(push_constant, std430) uniform Params {
+	uint tick;
+	uint seed;
+	uint brain_mode;       // 0 utility, 1 neural, 2 mixed
+	uint color_mode;
+	uint initial_pop;
+	uint show_fields;
+	uint chunk_offset;     // THINK processes agents [chunk_offset, chunk_offset + chunk_count)
+	uint chunk_count;      // 0 = all
+	float plant_growth;
+	float season_strength;
+	float season_length;
+	float mutation_scale;
+	float metabolism;
+	float move_cost;
+	float attack_power;
+	float meat_decay;
+	float plant_efficiency;
+	float meat_efficiency;
+	float max_age;
+	float mate_distance;
+	float vision_cost;
+	float detox_cost;
+	float plant_mutation;
+	float sun_energy;      // energy per m2 of land per tick (at full sun, mean season)
+	float compute_cost;    // energy per unit of GPU work (1 unit ~ 1 ns on the reference GPU)
+	float pad_pc0;
+	float pad_pc1;         // push constants come in 16-byte steps
+} pc;
+
+// ---- Helpers ---------------------------------------------------------------
+const float PI = 3.14159265;
+
+uint gidx() {
+	return gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * gl_NumWorkGroups.x * 256u;
+}
+
+uint pcg(uint v) {
+	uint state = v * 747796405u + 2891336453u;
+	uint word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+	return (word >> 22u) ^ word;
+}
+
+float rnd(inout uint s) {
+	s = pcg(s);
+	return float(s) * (1.0 / 4294967296.0);
+}
+
+float gauss(inout uint s) {
+	float u1 = max(rnd(s), 1e-7);
+	float u2 = rnd(s);
+	return sqrt(-2.0 * log(u1)) * cos(2.0 * PI * u2);
+}
+
+int wrapi(int v) { return ((v % WORLD) + WORLD) % WORLD; }
+
+uint cell_at(ivec2 c) { return uint(wrapi(c.y) * WORLD + wrapi(c.x)); }
+uint cell_of(vec2 p) { return cell_at(ivec2(floor(p))); }
+vec2 wrap_pos(vec2 p) { return mod(p, float(WORLD)); }
+
+// Shortest vector a -> b on the torus.
+vec2 tdelta(vec2 a, vec2 b) {
+	vec2 d = b - a;
+	return d - float(WORLD) * round(d / float(WORLD));
+}
+
+// Relative bearing of vector d w.r.t. heading, in [-1, 1] (-1/1 = behind).
+float bearing(vec2 d, float heading) {
+	float a = atan(d.y, d.x) - heading;
+	a = mod(a + PI, 2.0 * PI) - PI;
+	return a / PI;
+}
+
+bool past_hwm(uint i) { return i >= uint(CAPACITY) || i >= uint(counters[4]); }
+
+ivec2 bucket_coord(vec2 p) { return ivec2(floor(p / float(BUCKET))); }
+uint bucket_at(ivec2 b) { return uint(((b.y % BW) + BW) % BW * BW + ((b.x % BW) + BW) % BW); }
+
+uint pack_pos(vec2 p) {
+	uvec2 q = uvec2(clamp(p * (65536.0 / float(WORLD)), vec2(0.0), vec2(65535.0)));
+	return q.x | (q.y << 16);
+}
+vec2 unpack_pos(uint v) { return (vec2(v & 0xffffu, v >> 16) + 0.5) * (float(WORLD) / 65536.0); }
+
+// Grid entry .w: half(energy) | speed (m/tick / 3 x 255) << 16 | call (6 bits) << 24 | posture << 30.
+uint pack_ew(float energy, float speed_cells, uint flags) {
+	uint e = packHalf2x16(vec2(energy, 0.0)) & 0xffffu;
+	uint v = uint(clamp(speed_cells * CELL / 3.0, 0.0, 1.0) * 255.0 + 0.5);
+	return e | (v << 16) | (flag_signal(flags) << 24) | (flag_posture(flags) << 30);
+}
+float ew_energy(uint w) { return unpackHalf2x16(w & 0xffffu).x; }
+float ew_speed(uint w) { return float((w >> 16) & 255u) / 255.0 * 3.0 * M2C; } // cells per tick
+float ew_signal(uint w) { return float((w >> 24) & 63u) / 63.0; }
+uint ew_posture(uint w) { return w >> 30; }
+
+// Add a live agent to the grid being built for the next tick.
+uint register_agent(uint i, Agent a) {
+	uint b = bucket_at(bucket_coord(a.pos));
+	int k = atomicAdd(count_w[b], 1);
+	if (k < SLOTS) slot_w[b * SLOTS + uint(k)] = uvec4(i, pack_pos(a.pos), a.pheno, pack_ew(a.energy, a.speed, a.flags));
+	return b;
+}
+
+// Terrain height (m) from the landscape noise value (water below 0.42). Relief grows
+// with the size of the world.
+float terrain_height(float h) { return h >= 0.42 ? (h - 0.42) * (40.0 + 12.0 * CELL) : (h - 0.42) * 50.0; }
+
+// Bilinear height at a position in cells (cell centres at +0.5, like the textures).
+float height_at(vec2 p) {
+	vec2 q = p - 0.5;
+	ivec2 c = ivec2(floor(q));
+	vec2 f = q - vec2(c);
+	float a = height[cell_at(c)];
+	float b = height[cell_at(c + ivec2(1, 0))];
+	float d = height[cell_at(c + ivec2(0, 1))];
+	float e = height[cell_at(c + ivec2(1, 1))];
+	return mix(mix(a, b, f.x), mix(d, e, f.x), f.y);
+}
+
+vec3 hue2rgb(float h, float s, float v);
+vec2 smooth_pose(uint i, Agent a, out float heading); // defined with the 3D explorer kernels
+
+// ---- Individual plants -------------------------------------------------------
+#define FORM_FLOWER 0.25
+#define FORM_BUSH 0.45
+#define FORM_TREE 0.7
+#define P_ALIVE 1u
+#define P_POLLINATED 2u
+#define P_FLOWERING 4u
+
+// State word: alive, pollinated, flowering (bits 0-2), canopy layer (3-4), ripe
+// fruit (5-8), crown cover this plant adds to its cell's layer, x1000 (16-31).
+uint p_layer(uint st) { return (st >> 3) & 3u; }
+uint p_fruit(uint st) { return (st >> 5) & 15u; }
+uint p_contrib(uint st) { return st >> 16; }
+uint p_state(uint flags, uint layer, uint fruit, uint contrib) {
+	return (flags & 7u) | (layer << 3) | (min(fruit, 15u) << 5) | (min(contrib, 65535u) << 16);
+}
+
+// Genomes pack four 8-bit genes. A = (stature, growth, defence, lineage hue),
+// B = (seed size, dispersal: 0 wind .. 1 fruit, flowering phase, root allocation).
+uint pack4(vec4 v) {
+	uvec4 q = uvec4(clamp(v, 0.0, 1.0) * 255.0 + 0.5);
+	return q.x | (q.y << 8) | (q.z << 16) | (q.w << 24);
+}
+vec4 unpack4(uint g) { return vec4(g & 255u, (g >> 8) & 255u, (g >> 16) & 255u, g >> 24) / 255.0; }
+
+// Form trade-offs: tall plants store far more but need fertile soil, grow slowly
+// and live long; grasses and flowers are small, fast and short-lived.
+float p_bmax(float st, float f) { return (1.0 + 20.0 * st * st * st) * pow(max(f, 0.05), 0.5 + st); }
+float p_height(float st, float fill) { return (0.2 + 13.8 * st * st * st) * (0.3 + 0.7 * sqrt(clamp(fill, 0.0, 1.0))); }
+// Crown radius (m). A grass or flower individual is a clonal patch (one genet)
+// about 4 m across, a bush ~5 m, a tree ~8 m: so sunlight, not storage, limits
+// how many fit on the land.
+float p_crown(float st, float fill) { return (2.0 + 3.0 * st * st) * (0.4 + 0.6 * sqrt(clamp(fill, 0.0, 1.0))); }
+uint p_layer_of(float st, float h) { return st < FORM_BUSH ? 0u : (h < 3.0 ? 1u : 2u); }
+float p_lifespan(float st) { return 1500.0 + 40000.0 * st * st * st; }
+float p_maturity(float st) { return 150.0 + 4000.0 * st * st * st; }
+float p_biomass(uvec4 q) { return max(float(int(q.y)), 0.0) / PS; }
+
+// Energy-flow counters (fixed point, reset by STATS): 27 sunlight captured by
+// plants x10, 28 plant compute x1000, 29 animal intake x100, 30 animal compute x100,
+// 31 other animal costs x100.
+void flow_add(int k, float v, float scale) {
+	float sum = subgroupAdd(v);
+	if (subgroupElect()) atomicAdd(counters[k], int(sum * scale + 0.5));
+}
+
+// Light reaching a layer through the canopy above it.
+float p_light(uint c, uint layer) {
+	float l = 1.0;
+	if (layer < 2u) l *= 1.0 - min(float(cover[c * 3u + 2u]) / 1000.0, 0.95);
+	if (layer < 1u) l *= 1.0 - min(float(cover[c * 3u + 1u]) / 1000.0, 0.9);
+	return l;
+}
+
+// Plants of the same lineage (similar hue and form) can pollinate each other.
+float p_dist(vec4 a, vec4 b) {
+	float dh = abs(a.w - b.w);
+	return min(dh, 1.0 - dh) * 2.0 + abs(a.x - b.x) * 1.5;
+}
+
+// How much of a plant's energy a herbivore with this detox level can use.
+float edibility(float defence, float detox) { return clamp(1.0 - 1.5 * max(defence - detox, 0.0), 0.05, 1.0); }
+// Fraction of a plant an animal can reach (it browses up to 0.4 + 0.8 x size m).
+float reach_frac(float h, float size) { return clamp((0.4 + 0.8 * size) / max(h, 0.2), 0.08, 1.0); }
+
+vec3 plant_leaf(vec4 A) {
+	float shift = (A.w - 0.5) * 0.12; // lineages differ slightly in tint
+	vec3 grass = hue2rgb(0.25 + shift, 0.7, 0.62);
+	vec3 bush = hue2rgb(0.30 + shift, 0.75, 0.40);
+	vec3 tree = hue2rgb(0.36 + shift, 0.8, 0.26);
+	vec3 leaf = A.x < FORM_BUSH ? mix(grass, bush, smoothstep(0.1, FORM_BUSH, A.x)) : mix(bush, tree, smoothstep(FORM_BUSH, FORM_TREE + 0.1, A.x));
+	return mix(leaf, vec3(0.30, 0.08, 0.30), A.z * 0.75); // defended plants turn purple
+}
+
+// Offspring genome: uniform crossover with the pollen donor (if any) + mutation.
+uvec2 plant_offspring(uvec2 mother, uvec2 donor, bool pollinated, inout uint rs) {
+	vec4 A = unpack4(mother.x), B = unpack4(mother.y);
+	if (pollinated) {
+		vec4 dA = unpack4(donor.x), dB = unpack4(donor.y);
+		A = mix(A, dA, step(0.5, vec4(rnd(rs), rnd(rs), rnd(rs), rnd(rs))));
+		B = mix(B, dB, step(0.5, vec4(rnd(rs), rnd(rs), rnd(rs), rnd(rs))));
+	}
+	float m = pc.plant_mutation;
+	A += vec4(gauss(rs), gauss(rs), gauss(rs), gauss(rs) * 0.2) * m;
+	B += vec4(gauss(rs), gauss(rs), gauss(rs) * 0.5, gauss(rs)) * m;
+	A.w = fract(A.w + 1.0);
+	B.z = fract(B.z + 1.0);
+	return uvec2(pack4(A), pack4(B));
+}
+
+// A new plant takes a free slot (false only if the plant storage is full, which
+// makes the host grow it).
+bool plant_place(vec2 p, uint ga, uint gb, float bio) {
+	int k = atomicAdd(counters[17], 1);
+	int fn = counters[16];
+	if (k >= fn) return false;
+	uint slot = pfree[fn - 1 - k];
+	plant_a[slot] = uvec4(pack_pos(p), uint(int(bio * PS)), ga, gb);
+	plant_b[slot] = uvec4(0u, 0u, 0u, p_state(P_ALIVE, 0u, 0u, 0u));
+	atomicMax(counters[20], int(slot) + 1);
+	atomicAdd(counters[18], 1);
+	return true;
+}
+
+// A seed lands at p. It sprouts only on land, with enough light and room
+// (big seeds cope better with shade and crowding). Returns true if it grew.
+bool plant_germinate(vec2 p, uint ga, uint gb, bool sown, inout uint rs) {
+	p = wrap_pos(p);
+	uint c = cell_of(p);
+	if (fert[c] <= 0.0) return false;
+	vec4 B = unpack4(gb);
+	float light = p_light(c, 0u);
+	float crowd = float(cover[c * 3u]) / 1000.0;
+	float chance = pow(light, 1.5 * (1.0 - B.x)) * clamp(1.3 - crowd, 0.05, 1.0) * (0.25 + 0.75 * B.x);
+	if (!sown && rnd(rs) > chance) return false;
+	return plant_place(p, ga, gb, sown ? 0.2 : 0.02 + 0.2 * B.x);
+}
+
+float meat_at(vec2 p) { return float(meat[cell_of(p)]) / PS; }
+
+uint pack_pheno(float size, float diet, float hue, uint nn, float speed) {
+	uint s = uint(clamp((size - 0.4) / 2.1, 0.0, 1.0) * 255.0 + 0.5);
+	uint d = uint(clamp(diet, 0.0, 1.0) * 255.0 + 0.5);
+	uint h = uint(fract(hue) * 255.0 + 0.5) & 255u;
+	uint v = uint(clamp((speed - 0.1) / 1.9, 0.0, 1.0) * 127.0 + 0.5);
+	return s | (d << 8) | (h << 16) | ((nn & 1u) << 24) | (v << 25);
+}
+float ph_size(uint p) { return 0.4 + float(p & 255u) / 255.0 * 2.1; }
+float ph_diet(uint p) { return float((p >> 8) & 255u) / 255.0; }
+float ph_hue(uint p) { return float((p >> 16) & 255u) / 255.0; }
+
+// Genetic distance used for kin recognition and mate compatibility.
+// Different brain types are never kin (their genomes are not compatible).
+float gdist(uint a, uint b) {
+	if ((((a ^ b) >> 24) & 1u) != 0u) return 99.0;
+	float dh = abs(ph_hue(a) - ph_hue(b));
+	dh = min(dh, 1.0 - dh);
+	return dh * 2.0 + abs(ph_diet(a) - ph_diet(b)) + abs(ph_size(a) - ph_size(b)) * 0.3;
+}
+
+float power_of(float size, float diet) { return size * (0.4 + diet); }
+
+// Gene ranges: x = min, y = max. Hue wraps instead of clamping.
+vec2 gene_range(int g) {
+	if (g == G_SIZE) return vec2(0.4, 2.5);
+	if (g == G_SPEED) return vec2(0.1, 2.0);
+	if (g == G_DIET) return vec2(0.0, 1.0);
+	if (g == G_REPRO) return vec2(2.0, 40.0);
+	if (g == G_MUT) return vec2(0.005, 0.25);
+	if (g == G_HUE) return vec2(0.0, 1.0);
+	if (g == G_SENSE) return vec2(0.5, 3.0);
+	if (g == G_CHILD) return vec2(0.1, 0.8);
+	if (g == G_CURVE) return vec2(0.25, 4.0);
+	if (g == G_DETOX) return vec2(0.0, 1.0);
+	if (g == G_ALARM || g == G_CARE) return vec2(0.0, 1.0);
+	return vec2(0.0, 3.0); // utility weights
+}
+
+vec3 hue2rgb(float h, float s, float v) {
+	vec3 k = clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+	return v * mix(vec3(1.0), k, s);
+}
+
+// Periodic value noise so the torus world has no seams.
+float hash2(ivec2 p, uint salt) {
+	return float(pcg(uint(p.x) * 1973u ^ pcg(uint(p.y) * 9277u + salt))) * (1.0 / 4294967296.0);
+}
+float vnoise(vec2 p, int period, uint salt) {
+	ivec2 i = ivec2(floor(p));
+	vec2 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	ivec2 i0 = ivec2(i.x % period, i.y % period);
+	ivec2 i1 = ivec2((i.x + 1) % period, (i.y + 1) % period);
+	float a = hash2(i0, salt);
+	float b = hash2(ivec2(i1.x, i0.y), salt);
+	float c = hash2(ivec2(i0.x, i1.y), salt);
+	float d = hash2(i1, salt);
+	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+float fbm(vec2 uv, int base_freq, uint salt) {
+	float sum = 0.0, amp = 0.5, norm = 0.0;
+	int freq = base_freq;
+	for (int o = 0; o < 6; o++) {
+		sum += vnoise(uv * float(freq), freq, salt + uint(o) * 101u) * amp;
+		norm += amp;
+		amp *= 0.5;
+		freq *= 2;
+	}
+	return sum / norm;
+}
+
+// Four signed int8 weights -> floats in about [-4, 4]. Byte 0 is lane x.
+vec4 unpack_w(uint w) {
+	ivec4 v = ivec4(int(w) << 24, int(w) << 16, int(w) << 8, int(w)) >> 24;
+	return vec4(v) * (1.0 / 32.0);
+}
+
+uint mutate_word(uint word, float p, inout uint rs) {
+	for (int k = 0; k < 4; k++) {
+		if (rnd(rs) < p) {
+			int b = bitfieldExtract(int(word), k * 8, 8);
+			b = clamp(b + int(round(gauss(rs) * 14.0)), -127, 127);
+			word = bitfieldInsert(word, uint(b) & 255u, k * 8, 8);
+		}
+	}
+	return word;
+}
+
+void add_weight(inout uint word, int j, int val) {
+	int b = clamp(bitfieldExtract(int(word), j * 8, 8) + val, -127, 127);
+	word = bitfieldInsert(word, uint(b) & 255u, j * 8, 8);
+}
+
+// Founder "instincts" (in int8 units, 32 = 1.0) so neural agents start viable:
+// follow plant/carrion gradients, turn from threats, slow down on food, and
+// (predators only) chase and attack prey. Evolution is free to rewrite them.
+// Hidden input k: 0 energy, 1 plant here, 2 plant ahead, 3 plant gradient,
+// 4 carrion, 5 carrion gradient, 6 threat, 7 threat bearing, 8 prey, 9 prey bearing,
+// 10 kin, 11 kin bearing, 12 memory, 13 age, 14 noise, 15 bias,
+// 16 call heard, 17 call bearing, 18 family (young: parent near; parent: young in need),
+// 19 family bearing, 20 foreign scent ahead, 21 own scent here, 22 remembered food
+// (bearing x closeness), 23 home (bearing x closeness). New ones start unwired.
+int instinct_hidden(int h, int k, bool carn) {
+	if (h == 0) return k == 3 ? 64 : (k == 5 && carn ? 64 : 0); // food gradient
+	if (h == 1) return k == 7 ? -64 : 0;                          // away from threat
+	if (h == 2) return k == 9 ? 64 : 0;                           // toward prey
+	if (h == 3) return k == 0 ? -64 : (k == 15 ? 32 : 0);         // hunger
+	if (h == 4) return k == (carn ? 4 : 1) ? 64 : 0;              // food right here
+	if (h == 5) return k == 6 ? 64 : 0;                           // fear
+	if (h == 6) return k == 8 ? 64 : 0;                           // prey close
+	return 0;
+}
+// Output inputs k: 0..6 hidden neurons, 7 bias. Outputs: 0 turn, 1 speed, 2 attack,
+// 3 memory, 4 call, 5 posture (< -0.33 hide, > 0.33 display), 6 give to young, 7 scent mark.
+// Founders call a little when afraid; posture, giving and marking start off.
+int instinct_output(int o, int k, bool carn) {
+	if (o == 4) return k == 5 ? 48 : (k == 7 ? -24 : 0);
+	if (o == 6) return k == 7 ? -32 : 0;
+	if (o == 7) return k == 7 ? -64 : 0;
+	if (o == 0) return k == 0 ? (carn ? 16 : 32) : (k == 1 ? 48 : (k == 2 && carn ? 48 : 0));
+	if (o == 1) return k == 4 ? -64 : (k == 5 ? 64 : (k == 7 ? 16 : 0));
+	if (o == 2) {
+		if (!carn) return k == 7 ? -64 : 0;
+		return k == 6 ? 64 : (k == 3 ? 32 : (k == 7 ? -32 : 0));
+	}
+	return 0;
+}
+
+uint random_word(inout uint rs, float stdev) {
+	uint word = 0u;
+	for (int k = 0; k < 4; k++) {
+		int b = clamp(int(round(gauss(rs) * stdev)), -127, 127);
+		word = bitfieldInsert(word, uint(b) & 255u, k * 8, 8);
+	}
+	return word;
+}
+
+// Rewrite pheno after any genome change.
+uint pheno_of(uint i, uint nn) {
+	uint g = i * NG;
+	return pack_pheno(genes[g + G_SIZE], genes[g + G_DIET], genes[g + G_HUE], nn, genes[g + G_SPEED]);
+}
+
+// Child genome and brain in `slot` from parent p (uniform crossover with `mate` if
+// >= 0), plus gaussian mutation scaled by the parent's evolvable mutation rate.
+void inherit(uint slot, uint p, int mate, inout uint rs) {
+	uint g = p * NG;
+	uint cg = slot * NG;
+	uint mg = mate >= 0 ? uint(mate) * NG : g;
+	float mut = genes[g + G_MUT] * pc.mutation_scale;
+	for (int q = 0; q < NG; q++) {
+		float v = (mate >= 0 && rnd(rs) < 0.5) ? genes[mg + q] : genes[g + q];
+		vec2 r = gene_range(q);
+		if (q == G_HUE) {
+			v = fract(v + gauss(rs) * mut * 0.15 + 1.0);
+		} else {
+			v = clamp(v + gauss(rs) * mut * (r.y - r.x) * 0.25, r.x, r.y);
+		}
+		genes[cg + q] = v;
+	}
+	float wp = mut * 0.5;
+	uint mw = mate >= 0 ? uint(mate) : p;
+	for (int w = 0; w < W1_WORDS; w++) {
+		uint word = (rnd(rs) < 0.5) ? w1[mw * W1_WORDS + w] : w1[p * W1_WORDS + w];
+		w1[slot * W1_WORDS + w] = mutate_word(word, wp, rs);
+	}
+	for (int w = 0; w < W2_WORDS; w++) {
+		uint word = (rnd(rs) < 0.5) ? w2[mw * W2_WORDS + w] : w2[p * W2_WORDS + w];
+		w2[slot * W2_WORDS + w] = mutate_word(word, wp, rs);
+	}
+}
+
+vec3 agent_color(Agent a, uint i) {
+	float diet = ph_diet(a.pheno);
+	if (pc.color_mode == 0u) return hue2rgb(ph_hue(a.pheno), 0.75, 1.0);
+	if (pc.color_mode == 1u) {
+		return diet < 0.5 ? mix(vec3(0.3, 1.0, 0.4), vec3(1.0, 0.9, 0.2), diet * 2.0)
+				: mix(vec3(1.0, 0.9, 0.2), vec3(1.0, 0.15, 0.1), diet * 2.0 - 1.0);
+	}
+	if (pc.color_mode == 2u) return (a.flags & F_NN) != 0u ? vec3(1.0, 0.35, 0.85) : vec3(0.3, 0.85, 1.0);
+	if (pc.color_mode == 3u) {
+		const vec3 pal[12] = vec3[12](vec3(0.3, 1.0, 0.3), vec3(1.0, 0.2, 0.2), vec3(1.0, 1.0, 0.3),
+				vec3(0.4, 0.6, 1.0), vec3(0.85, 0.85, 0.85), vec3(0.5, 0.4, 0.8), vec3(1.0, 0.55, 0.1),
+				vec3(0.35, 0.3, 0.25), vec3(1.0, 0.5, 0.8), vec3(0.6, 0.9, 0.9), vec3(0.6, 0.45, 0.2), vec3(0.2, 0.9, 0.7));
+		return pal[min(a.action, N_ACTIONS - 1u)];
+	}
+	float e = clamp(a.energy / genes[i * NG + G_REPRO], 0.0, 1.0);
+	return mix(vec3(0.2, 0.2, 0.9), vec3(1.0, 0.95, 0.4), e);
+}
+
+// =============================================================================
+#ifdef K_INIT_FIELD
+void main() {
+	uint c = gidx();
+	if (c >= uint(WORLD * WORLD)) return;
+	vec2 uv = (vec2(c % uint(WORLD), c / uint(WORLD)) + 0.5) / float(WORLD);
+	uint salt = pc.seed * 7919u;
+	float h = fbm(uv, 4, salt);
+	float f;
+	if (h < 0.42) {
+		f = -1.0 + h; // water; more negative = deeper
+	} else {
+		float lush = fbm(uv, 6, salt + 5000u);
+		float shore = 1.0 - smoothstep(0.42, 0.5, h); // riverbanks are fertile
+		f = clamp(0.1 + 0.9 * smoothstep(0.3, 0.7, lush) + 0.35 * shore, 0.05, 1.0);
+	}
+	fert[c] = f;
+	height[c] = terrain_height(h);
+	meat[c] = 0;
+	cover[c * 3u] = 0;
+	cover[c * 3u + 1u] = 0;
+	cover[c * 3u + 2u] = 0;
+	pcell[c] = uvec2(0u);
+	pcount[c] = 0u;
+	scent[c] = 0u;
+	if (c < uint(NB)) {
+		count_r[c] = 0;
+		count_w[c] = 0;
+	}
+}
+#endif
+
+// =============================================================================
+#ifdef K_INIT_AGENTS
+void main() {
+	uint i = gidx();
+	if (i >= uint(CAPACITY)) return;
+	if (i == 0u) {
+		counters[0] = CAPACITY - int(min(pc.initial_pop, uint(CAPACITY)));
+		counters[1] = 0;
+		counters[2] = 0;
+		counters[3] = 0;
+		counters[4] = int(min(pc.initial_pop, uint(CAPACITY)));
+		counters[7] = 0;
+		counters[8] = 0;
+		counters[10] = -1;
+		counters[12] = 0;
+	}
+	damage[i] = 0u;
+	carry[i] = uvec4(0u);
+	if (i >= pc.initial_pop) {
+		// Free slots: low indices at the top of the stack so the population stays compact.
+		uint k = uint(CAPACITY) - 1u - i;
+		free_stack[k] = i;
+		Agent a;
+		a.pos = vec2(0.0);
+		a.heading = 0.0;
+		a.energy = 0.0;
+		a.age = 0.0;
+		a.flags = 0u;
+		a.pheno = 0u;
+		a.memory = 0.0;
+		a.generation = 0u;
+		a.action = 0u;
+		a.speed = 0.0;
+		a.reg = NO_BUCKET;
+		a.uid = 0u;
+		a.parent_uid = 0u;
+		a.home = NO_PLACE;
+		a.food = NO_PLACE;
+		agents[i] = a;
+		gift[i] = 0u;
+		return;
+	}
+
+	// Founder species: every agent belongs to one of 16 lineages that share a
+	// genome template (and a base neural network), plus individual noise.
+	uint species = pcg(i * 31u + pc.seed) % 16u;
+	uint ss = pcg(species * 7727u + pc.seed * 13u + 17u);
+	uint rs = pcg(i * 2654435761u + pc.seed);
+
+	uint nn = 0u;
+	if (pc.brain_mode == 1u) nn = 1u;
+	else if (pc.brain_mode == 2u) nn = species & 1u;
+
+	bool carnivore = species < 2u; // 2 of 16 founder species are predators (one per brain type)
+	uint g = i * NG;
+	genes[g + G_SIZE] = mix(0.7, 1.5, rnd(ss)) + gauss(rs) * 0.05;
+	genes[g + G_SPEED] = (carnivore ? mix(1.0, 1.4, rnd(ss)) : mix(0.4, 1.2, rnd(ss))) + gauss(rs) * 0.05;
+	genes[g + G_DIET] = clamp((carnivore ? mix(0.7, 0.95, rnd(ss)) : mix(0.0, 0.2, rnd(ss))) + gauss(rs) * 0.02, 0.0, 1.0);
+	genes[g + G_REPRO] = mix(5.0, 12.0, rnd(ss));
+	genes[g + G_MUT] = 0.05;
+	genes[g + G_HUE] = fract(float(species) / 16.0 + gauss(rs) * 0.005);
+	genes[g + G_SENSE] = carnivore ? mix(2.0, 2.8, rnd(ss)) : mix(1.0, 2.2, rnd(ss));
+	genes[g + G_CHILD] = mix(0.3, 0.5, rnd(ss));
+	for (int u = 0; u < 7; u++) genes[g + G_U0 + u] = mix(0.5, 2.0, rnd(ss));
+	genes[g + G_CURVE] = mix(0.7, 1.5, rnd(ss));
+	genes[g + G_DETOX] = mix(0.0, 0.2, rnd(ss));
+	for (int u = 0; u < 5; u++) genes[g + G_U7 + u] = mix(0.2, 1.2, rnd(ss));
+	genes[g + G_ALARM] = mix(0.0, 0.5, rnd(ss));
+	genes[g + G_CARE] = mix(0.0, 0.5, rnd(ss));
+
+	// Founder network = instincts + species template noise + individual noise.
+	for (int w = 0; w < W1_WORDS; w++) {
+		uint word = random_word(ss, 8.0);
+		int k0 = (w % 6) * 4;
+		for (int j = 0; j < 4; j++) add_weight(word, j, k0 + j < 16 ? instinct_hidden(w / 6, k0 + j, carnivore) : 0);
+		w1[i * W1_WORDS + w] = mutate_word(word, 0.15, rs);
+	}
+	for (int w = 0; w < W2_WORDS; w++) {
+		uint word = random_word(ss, 8.0);
+		for (int j = 0; j < 4; j++) add_weight(word, j, instinct_output(w / 2, (w % 2) * 4 + j, carnivore));
+		w2[i * W2_WORDS + w] = mutate_word(word, 0.15, rs);
+	}
+
+	vec2 p = vec2(rnd(rs), rnd(rs)) * float(WORLD);
+	for (int t = 0; t < 32 && fert[cell_of(p)] < 0.0; t++) p = vec2(rnd(rs), rnd(rs)) * float(WORLD);
+
+	Agent a;
+	a.pos = p;
+	a.heading = rnd(rs) * 2.0 * PI;
+	a.energy = genes[g + G_REPRO] * mix(0.3, 0.7, rnd(rs));
+	a.age = floor(rnd(rs) * pc.max_age * 0.5);
+	a.flags = F_ALIVE | (nn == 1u ? F_NN : 0u);
+	a.pheno = pheno_of(i, nn);
+	a.memory = 0.0;
+	a.generation = 0u;
+	a.action = A_WANDER;
+	a.speed = 0.0;
+	a.reg = NO_BUCKET;
+	a.uid = pcg(i * 2654435761u + pc.seed * 40503u) | 1u;
+	a.parent_uid = 0u;
+	a.home = pack_pos(p);
+	a.food = NO_PLACE;
+	agents[i] = a;
+	gift[i] = 0u;
+}
+#endif
+
+// =============================================================================
+// Registration after init and after a sort (otherwise THINK/BIRTH register agents).
+#ifdef K_REGISTER
+void main() {
+	uint i = gidx();
+	if (past_hwm(i) || pc.tick == 0xffffffffu) return;
+	Agent a = agents[i];
+	if ((a.flags & F_ALIVE) == 0u) return;
+	agents[i].reg = register_agent(i, a);
+}
+#endif
+
+// =============================================================================
+// Damage + ageing + death, then sense -> decide (utility AI or neural net) ->
+// act (move, eat, attack), then queue for breeding and register in grid W.
+#ifdef K_THINK
+void main() {
+	if (pc.chunk_count != 0u && gidx() >= pc.chunk_count) return;
+	uint i = gidx() + pc.chunk_offset;
+	if (past_hwm(i)) return;
+	Agent a = agents[i];
+	if ((a.flags & F_ALIVE) == 0u) return;
+
+	uint g = i * NG;
+	float size = genes[g + G_SIZE];
+
+	// ---- Combat damage, ageing, death (corpses become carrion) ----
+	uint dmg_in = damage[i];
+	if (dmg_in != 0u) a.energy -= float(atomicExchange(damage[i], 0u)) / 1000.0;
+	if (gift[i] != 0u) a.energy += float(atomicExchange(gift[i], 0u)) / 1000.0; // fed by a parent
+	a.age += 1.0;
+	if (a.energy <= 0.0 || a.age > pc.max_age * (0.6 + 0.4 * size)) {
+		a.flags = 0u;
+		a.reg = NO_BUCKET;
+		atomicAdd(meat[cell_of(a.pos)], int((max(a.energy, 0.0) + size * BODY_COST) * PS));
+		lists[atomicAdd(counters[7], 1)] = i;
+		atomicAdd(counters[3], 1);
+		if (counters[10] == int(i)) counters[10] = -1; // tracked agent died
+		carry[i] = uvec4(0u);
+		agents[i] = a;
+		return;
+	}
+
+	prev[i] = vec4(a.pos, a.heading, 0.0);
+	uint rs = pcg(i * 9781u + pc.tick * 6271u + pc.seed * 31u);
+	float max_speed = genes[g + G_SPEED];
+	float diet = genes[g + G_DIET];
+	float repro = genes[g + G_REPRO];
+	float sense = genes[g + G_SENSE];
+	float detox = genes[g + G_DETOX];
+	bool is_nn = (a.flags & F_NN) != 0u;
+	// Vision: 5 + 8 x sense metres (9-29 m), limited to what the bucket scan covers.
+	float pr = min((5.0 + 8.0 * sense) * M2C, float(BUCKET));
+	bool young = a.age < YOUNG_AGE && a.parent_uid != 0u;
+
+	// ---- Plant senses: individual plants in the 2x2 cells nearest to us ----
+	// Each is judged by the biomass we can reach and digest, plus nectar and fruit.
+	// Within reach, the best one is our meal this tick.
+	vec2 dir = vec2(cos(a.heading), sin(a.heading));
+	float sd = max(pr * 0.7, 1.0);
+	vec2 dl = vec2(cos(a.heading + 0.7), sin(a.heading + 0.7));
+	vec2 dr = vec2(cos(a.heading - 0.7), sin(a.heading - 0.7));
+	float pl_here = 0.0, pl_ahead = 0.0, pl_left = 0.0, pl_right = 0.0;
+	int food_j = -1;
+	// GPU work of this tick in units of ~1 ns (measured on an Intel iGPU: ~18 ns
+	// per utility agent, ~26 per neural one): a fixed part, every plant and
+	// neighbour record read, and the brain. It is paid in energy (compute_cost).
+	float work = 8.0;
+	float intake = 0.0;
+	{
+		float here_f = max(fert[cell_of(a.pos)], 0.05);
+		float reach_c = (1.0 + 0.5 * size) * M2C;
+		ivec2 c0 = ivec2(floor(a.pos - 0.5));
+		for (int dy = 0; dy <= 1; dy++) {
+			for (int dx = 0; dx <= 1; dx++) {
+				uvec2 r = pcell[cell_at(c0 + ivec2(dx, dy))];
+				uint end = r.x + min(r.y, 12u);
+				work += 0.25 * float(end - r.x);
+				for (uint j = r.x; j < end; j++) {
+					uvec4 q = plant_a[j];
+					float bio = p_biomass(q);
+					if (bio <= 0.0) continue;
+					vec2 d = tdelta(a.pos, unpack_pos(q.x));
+					float dist = length(d);
+					vec4 qA = unpack4(q.z);
+					float h = p_height(qA.x, bio / p_bmax(qA.x, here_f));
+					float food = min(bio * edibility(qA.z, detox) * reach_frac(h, size), 1.5);
+					if (dist < reach_c && food > pl_here) {
+						pl_here = food;
+						food_j = int(j);
+					}
+					float w = food / (1.0 + dist * CELL * 0.2);
+					float b = bearing(d, a.heading);
+					if (abs(b) < 0.2) pl_ahead += w;
+					else if (b > 0.0 && b < 0.6) pl_left += w;
+					else if (b < 0.0 && b > -0.6) pl_right += w;
+				}
+			}
+		}
+		pl_ahead = min(pl_ahead, 1.5);
+		pl_left = min(pl_left, 1.5);
+		pl_right = min(pl_right, 1.5);
+	}
+	float mt_here = meat_at(a.pos);
+	float mt_ahead = meat_at(a.pos + dir * sd);
+	float mt_left = meat_at(a.pos + dl * sd);
+	float mt_right = meat_at(a.pos + dr * sd);
+
+	// ---- Neighbour senses (3x3 bucket scan) ----
+	ivec2 b0 = bucket_coord(a.pos);
+	float my_pw = power_of(size, diet);
+	float best_threat = 1e9, best_prey = 1e9, prey_e = 0.0, prey_v = 0.0, threat_r = pr;
+	int prey_j = -1;
+	vec2 threat_d = vec2(0.0), prey_d = vec2(0.0), kin_sum = vec2(0.0);
+	int kin_n = 0, prey_n = 0;
+	// Calls are heard further than things are seen; the loudest one counts.
+	float hear = min(pr * 1.5, float(BUCKET));
+	float heard = 0.0, heard_kin = 0.0;
+	vec2 heard_d = vec2(0.0);
+	// Family: a young one looks for its parent; a parent for its young in need (within 6 m).
+	float family = 0.0, child_need = 0.0;
+	vec2 family_d = vec2(0.0);
+	int child_j = -1;
+	float care_r = 6.0 * M2C;
+	for (int by = -1; by <= 1; by++) {
+		for (int bx = -1; bx <= 1; bx++) {
+			uint b = bucket_at(b0 + ivec2(bx, by));
+			int n = min(count_r[b], SLOTS);
+			work += 0.25 * float(n);
+			for (int s = 0; s < n; s++) {
+				uvec4 e = slot_r[b * SLOTS + uint(s)];
+				if (e.x == i) continue;
+				vec2 d = tdelta(a.pos, unpack_pos(e.y));
+				float dd = dot(d, d);
+				bool is_player = e.x == PLAYER_ID; // noticed from further away
+				uint op = e.z;
+				bool kin = gdist(a.pheno, op) < pc.mate_distance;
+				float sig = ew_signal(e.w);
+				if (sig > 0.0 && dd < hear * hear) {
+					float loud = sig * (1.0 - sqrt(dd) / hear);
+					if (loud > heard) { heard = loud; heard_d = d; }
+					if (kin) heard_kin = max(heard_kin, loud);
+				}
+				// Hiding bodies are only noticed close by; displaying ones look stronger.
+				uint o_post = ew_posture(e.w);
+				float seen_r = o_post == POSTURE_HIDE ? pr * 0.35 : pr;
+				if (dd > (is_player ? PLAYER_RANGE * PLAYER_RANGE : seen_r * seen_r)) continue;
+				if (kin) {
+					kin_sum += d;
+					kin_n++;
+					if (!is_player && (young || (dd < care_r * care_r && genes[g + G_CARE] > 0.02))) {
+						work += 0.5;
+						uint ouid = agents[e.x].uid;
+						if (young && ouid == a.parent_uid) { family = max(family, 1.0 - sqrt(dd) / pr); family_d = d; }
+						else if (!young && dd < care_r * care_r && agents[e.x].parent_uid == a.uid) {
+							float need = clamp(1.0 - ew_energy(e.w) / (repro * 0.5), 0.0, 1.0);
+							if (need > child_need) { child_need = need; child_j = int(e.x); family_d = d; }
+						}
+					}
+					continue;
+				}
+				float o_diet = ph_diet(op);
+				float o_pw = power_of(ph_size(op), o_diet) * (o_post == POSTURE_DISPLAY ? 1.4 : 1.0);
+				if (o_diet > 0.3 && o_pw > my_pw * 0.8 && dd < best_threat) {
+					best_threat = dd;
+					threat_d = d;
+					threat_r = is_player ? PLAYER_RANGE : pr;
+				}
+				if (is_player && dd > pr * pr) continue; // prey must be within normal range
+				if (my_pw > o_pw * 0.9 && dd < 25.0 * M2C * M2C) prey_n++; // prey within 5 m
+				// Callers give themselves away: predators go for them first.
+				float dd_eff = dd * (1.0 - 0.4 * sig);
+				if (my_pw > o_pw * 0.9 && dd_eff < best_prey) {
+					best_prey = dd_eff;
+					prey_d = d;
+					prey_j = e.x == PLAYER_ID ? -2 : int(e.x); // -2: the 3D player
+					prey_e = ew_energy(e.w);
+					prey_v = ew_speed(e.w);
+				}
+			}
+		}
+	}
+	float threat_prox = best_threat < 1e8 ? clamp(1.0 - sqrt(best_threat) / threat_r, 0.0, 1.0) : 0.0;
+	float prey_prox = best_prey < 1e8 ? clamp(1.0 - sqrt(best_prey) / pr, 0.0, 1.0) : 0.0;
+	float kin_prox = min(float(kin_n) / 4.0, 1.0);
+	float threat_b = best_threat < 1e8 ? bearing(threat_d, a.heading) : 0.0;
+	float prey_b = best_prey < 1e8 ? bearing(prey_d, a.heading) : 0.0;
+	float kin_b = kin_n > 0 ? bearing(kin_sum, a.heading) : 0.0;
+	float meat_sig = min((mt_here + mt_ahead) * 0.5, 1.0);
+	best_prey = best_prey < 1e8 ? dot(prey_d, prey_d) : best_prey; // true distance for reach checks
+	float heard_b = heard > 0.0 ? bearing(heard_d, a.heading) : 0.0;
+	if (!young) family = child_need;
+	float family_b = family > 0.0 ? bearing(family_d, a.heading) : 0.0;
+	// Scent marks: our lineage's here, a foreign one ahead.
+	uint c_here = cell_of(a.pos);
+	float my_hue = ph_hue(a.pheno);
+	float own_here = 0.0, foreign_ahead = 0.0;
+	{
+		uint sh = scent[c_here];
+		float dh = abs(float(sh & 255u) / 255.0 - my_hue);
+		if (min(dh, 1.0 - dh) < 0.04) own_here = min(float(sh >> 8) / 1000.0, 1.0);
+		uint sa = scent[cell_of(a.pos + dir * sd)];
+		dh = abs(float(sa & 255u) / 255.0 - my_hue);
+		if (min(dh, 1.0 - dh) >= 0.04) foreign_ahead = min(float(sa >> 8) / 1000.0, 1.0);
+	}
+	// Remembered places: bearing weighted by closeness (0 when none).
+	float food_w = 0.0, food_b = 0.0, food_dist = 1e9, home_w = 0.0, home_b = 0.0, home_dist = 1e9;
+	if (a.food != NO_PLACE) {
+		vec2 d = tdelta(a.pos, unpack_pos(a.food));
+		food_dist = length(d) * CELL;
+		food_b = bearing(d, a.heading);
+		food_w = 1.0 / (1.0 + food_dist / 40.0);
+	}
+	if (a.home != NO_PLACE) {
+		vec2 d = tdelta(a.pos, unpack_pos(a.home));
+		home_dist = length(d) * CELL;
+		home_b = bearing(d, a.heading);
+		home_w = 1.0 / (1.0 + home_dist / 40.0);
+	}
+	work += 1.5;
+
+	// ---- Decide ----
+	float turn = 0.0, speed01 = 0.0;
+	bool attack = false;
+	uint action = A_WANDER;
+	float signal = 0.0;
+	uint posture = POSTURE_NORMAL;
+	bool give = false, mark = false;
+
+	work += is_nn ? 12.0 : 1.0; // 58 weight words + 224 multiply-adds vs 12 scores
+	if (is_nn) {
+		// Inputs (x3.w is the bias input).
+		vec4 x0 = vec4(clamp(a.energy / repro, 0.0, 1.5), pl_here, pl_ahead, pl_left - pl_right);
+		vec4 x1 = vec4(meat_sig, clamp(mt_left - mt_right, -1.0, 1.0), threat_prox, threat_b);
+		vec4 x2 = vec4(prey_prox, prey_b, kin_prox, kin_b);
+		vec4 x3 = vec4(a.memory, min(a.age / pc.max_age, 1.0), rnd(rs) * 2.0 - 1.0, 1.0);
+		vec4 x4 = vec4(heard, heard_b, family, family_b);
+		vec4 x5 = vec4(foreign_ahead, own_here, food_w * food_b, home_w * home_b);
+		uint wb = i * W1_WORDS;
+#define HID(h) tanh(clamp(dot(unpack_w(w1[wb + h * 6]), x0) + dot(unpack_w(w1[wb + h * 6 + 1]), x1) \
+		+ dot(unpack_w(w1[wb + h * 6 + 2]), x2) + dot(unpack_w(w1[wb + h * 6 + 3]), x3) \
+		+ dot(unpack_w(w1[wb + h * 6 + 4]), x4) + dot(unpack_w(w1[wb + h * 6 + 5]), x5), -10.0, 10.0))
+		vec4 h0 = vec4(HID(0), HID(1), HID(2), HID(3));
+		vec4 h1 = vec4(HID(4), HID(5), HID(6), 1.0); // h1.w is the bias input
+		uint vb = i * W2_WORDS;
+#define OUT(o) clamp(dot(unpack_w(w2[vb + o * 2]), h0) + dot(unpack_w(w2[vb + o * 2 + 1]), h1), -10.0, 10.0)
+		turn = tanh(OUT(0));
+		speed01 = 1.0 / (1.0 + exp(-OUT(1)));
+		attack = OUT(2) > 0.0;
+		a.memory = tanh(OUT(3));
+		signal = max(tanh(OUT(4)), 0.0);
+		float post = tanh(OUT(5));
+		posture = post < -0.33 ? POSTURE_HIDE : (post > 0.33 ? POSTURE_DISPLAY : POSTURE_NORMAL);
+		give = OUT(6) > 0.0 && child_j >= 0;
+		mark = OUT(7) > 0.0;
+		action = attack ? A_HUNT : (posture == POSTURE_HIDE ? A_HIDE : (give ? A_CARE : (mark ? A_MARK
+				: (speed01 < 0.2 ? A_REST : A_WANDER))));
+	} else {
+		float hunger = clamp(1.0 - a.energy / repro, 0.0, 1.0);
+		float hc = pow(hunger, genes[g + G_CURVE]);
+		float food = max(pl_here, pl_ahead);
+		// Score every action, keep the best (small noise breaks ties).
+		float best = -1.0;
+#define CONSIDER(act, score) { float v_ = (score) + rnd(rs) * 0.03; if (v_ > best) { best = v_; action = act; } }
+		// Feeding drives have a baseline plus a hunger boost (shaped by the curve gene).
+		float drive = 0.4 + 0.6 * hc;
+		CONSIDER(A_GRAZE, genes[g + G_U0 + 0] * drive * (1.0 - diet) * (0.2 + food));
+		CONSIDER(A_HUNT, genes[g + G_U0 + 1] * drive * diet * (prey_prox > 0.0 ? 0.5 + prey_prox : 0.0));
+		CONSIDER(A_FLEE, genes[g + G_U0 + 2] * threat_prox);
+		CONSIDER(A_FLOCK, genes[g + G_U0 + 3] * kin_prox * (1.0 - hc) * 0.4);
+		CONSIDER(A_WANDER, genes[g + G_U0 + 4] * 0.15);
+		CONSIDER(A_REST, genes[g + G_U0 + 5] * (1.0 - hc) * 0.2);
+		CONSIDER(A_SCAVENGE, genes[g + G_U0 + 6] * drive * diet * meat_sig);
+		// Kin alarm calls count as danger too (flee away from the caller).
+		float alarm = heard_kin * 0.8;
+		if (alarm > threat_prox) CONSIDER(A_FLEE, genes[g + G_U0 + 2] * alarm);
+		CONSIDER(A_HIDE, genes[g + G_U7 + 0] * max(threat_prox, alarm) * (0.4 + min(pl_here, 1.0)));
+		CONSIDER(A_CARE, genes[g + G_U7 + 1] * child_need * (1.0 - hc));
+		CONSIDER(A_MARK, genes[g + G_U7 + 2] * (1.0 - hc) * (1.0 - own_here) * 0.3);
+		CONSIDER(A_HOME, genes[g + G_U7 + 3] * (1.0 - hc) * clamp(home_dist / 50.0, 0.0, 1.0) * 0.3);
+		CONSIDER(A_RECALL, genes[g + G_U7 + 4] * drive * (food < 0.05 ? 1.0 : 0.1) * food_w * 0.8);
+		// Young ones stay with their parent.
+		if (young && family > 0.0 && threat_prox == 0.0) CONSIDER(A_FLOCK, genes[g + G_U0 + 3] * 0.6);
+		if (action == A_GRAZE) {
+			// Stay while this cell is as good as what is in view, else head for the best side.
+			if (pl_here > 0.02 && pl_here >= 0.8 * max(pl_ahead, max(pl_left, pl_right))) {
+				speed01 = 0.05;
+			} else {
+				float steer = pl_left - pl_right;
+				turn = abs(steer) > 0.01 ? clamp(steer * 6.0, -1.0, 1.0) : (rnd(rs) - 0.5);
+				speed01 = 0.5;
+			}
+		} else if (action == A_HUNT) {
+			turn = clamp(prey_b * 4.0, -1.0, 1.0);
+			speed01 = 1.0;
+			attack = true;
+		} else if (action == A_FLEE) {
+			float from = threat_prox >= heard_kin * 0.8 ? threat_b : heard_b;
+			float away = from > 0.0 ? from - 1.0 : from + 1.0;
+			turn = clamp(away * 4.0, -1.0, 1.0);
+			speed01 = 1.0;
+			signal = genes[g + G_ALARM];
+		} else if (action == A_FLOCK) {
+			turn = clamp((young && family > 0.0 ? family_b : kin_b) * 3.0, -1.0, 1.0);
+			speed01 = 0.5;
+		} else if (action == A_HIDE) {
+			posture = POSTURE_HIDE;
+			signal = genes[g + G_ALARM] * 0.5;
+		} else if (action == A_CARE) {
+			turn = clamp(family_b * 3.0, -1.0, 1.0);
+			speed01 = 0.4;
+			give = true;
+		} else if (action == A_MARK) {
+			a.memory = clamp(a.memory + (rnd(rs) - 0.5) * 0.3, -1.0, 1.0);
+			turn = a.memory * 0.5;
+			speed01 = 0.4;
+			mark = true;
+		} else if (action == A_HOME) {
+			turn = clamp(home_b * 4.0, -1.0, 1.0);
+			speed01 = home_dist < 5.0 ? 0.0 : 0.6;
+		} else if (action == A_RECALL) {
+			turn = clamp(food_b * 4.0, -1.0, 1.0);
+			speed01 = 0.7;
+			if (food_dist < 4.0) a.food = NO_PLACE; // nothing left here: forget it
+		} else if (action == A_WANDER) {
+			a.memory = clamp(a.memory + (rnd(rs) - 0.5) * 0.3, -1.0, 1.0);
+			turn = a.memory * 0.5;
+			speed01 = 0.6;
+		} else if (action == A_REST) {
+			speed01 = 0.0;
+		} else { // scavenge
+			if (mt_here > 0.1) {
+				speed01 = 0.0;
+			} else {
+				turn = clamp((mt_left - mt_right) * 6.0, -1.0, 1.0);
+				speed01 = 0.6;
+			}
+		}
+		// Utility agents keep out of foreign-marked ground unless hungry.
+		if (foreign_ahead > 0.3 && hc < 0.5 && (action == A_WANDER || action == A_MARK || action == A_FLOCK))
+			turn = clamp(turn + (rnd(rs) < 0.5 ? 0.8 : -0.8), -1.0, 1.0);
+	}
+	if (posture == POSTURE_HIDE) speed01 = min(speed01, 0.15); // hiding means keeping low and still
+
+	// ---- Act: move ----
+	a.heading = mod(a.heading + turn * 0.6, 2.0 * PI);
+	float v_m = speed01 * max_speed; // metres per tick
+	float v = v_m * M2C;             // cells per tick
+	vec2 np = wrap_pos(a.pos + vec2(cos(a.heading), sin(a.heading)) * v);
+	if (fert[cell_of(np)] < 0.0) { // water blocks movement
+		a.heading = mod(a.heading + PI * (0.5 + rnd(rs)), 2.0 * PI);
+		v = 0.0;
+		v_m = 0.0;
+		np = a.pos;
+	}
+	a.pos = np;
+	a.speed = v;
+
+	// ---- Act: eat the chosen plant, and carrion from the current cell ----
+	uint c = cell_of(a.pos);
+	float bite = 0.2 * size * (1.0 - 0.5 * speed01);
+	// Specialists digest better than generalists (exponent > 1), but omnivory stays viable.
+	float plant_base = pow(1.0 - diet, 1.25) * pc.plant_efficiency;
+	uvec4 cr = carry[i];
+	if (food_j >= 0) {
+		uint j = uint(food_j);
+		uvec4 q = plant_a[j];
+		uint qs = plant_b[j].w;
+		vec4 qA = unpack4(q.z);
+		vec4 qB = unpack4(q.w);
+		float bio = p_biomass(q);
+		float h = p_height(qA.x, bio / p_bmax(qA.x, max(fert[cell_of(unpack_pos(q.x))], 0.05)));
+		float eff = plant_base * edibility(qA.z, detox);
+		if (eff > 0.01) {
+			int take = min(int(bio * reach_frac(h, size) * PS), int(bite * PS)); // only what we can reach
+			if (take > 0) {
+				atomicAdd(plant_a[j].y, uint(-take));
+				a.energy += float(take) / PS * eff;
+				intake += float(take) / PS * eff;
+			}
+		}
+		// Flowers pay visitors with nectar; visitors deliver the pollen they carry
+		// (if it is from a compatible flower) and pick up this flower's pollen.
+		if ((qs & P_FLOWERING) != 0u) {
+			a.energy += 0.03;
+			intake += 0.03;
+			atomicAdd(plant_a[j].y, uint(-int(0.03 * PS)));
+			if (cr.x != 0u && cr.x != q.z && (qs & P_POLLINATED) == 0u
+					&& p_dist(unpack4(cr.x), qA) < pc.mate_distance * 2.0) {
+				plant_b[j].y = cr.x;
+				plant_b[j].z = cr.y;
+				atomicOr(plant_b[j].w, P_POLLINATED);
+			}
+			cr.x = q.z;
+			cr.y = q.w;
+		}
+		// Ripe fruit: eat one and carry its seed in the gut.
+		if (p_fruit(qs) > 0u && plant_base > 0.05 && cr.z == 0u) {
+			uint old = atomicAdd(plant_b[j].w, uint(-int(1u << 5)));
+			if (p_fruit(old) == 0u) {
+				atomicAdd(plant_b[j].w, 1u << 5); // someone else got the last one
+			} else {
+				a.energy += (0.05 + 0.3 * qB.x) * plant_base;
+				intake += (0.05 + 0.3 * qB.x) * plant_base;
+				uvec2 child = plant_offspring(q.zw, plant_b[j].yz, (old & P_POLLINATED) != 0u, rs);
+				cr.z = child.x;
+				cr.w = child.y;
+			}
+		}
+	}
+	// Swallowed seeds are dropped a while later, wherever we are by then.
+	if (cr.z != 0u && rnd(rs) < 0.03) {
+		plant_germinate(a.pos, cr.z, cr.w, false, rs);
+		cr.z = 0u;
+		cr.w = 0u;
+	}
+	if (cr.x != 0u && rnd(rs) < 0.01) cr.xy = uvec2(0u); // pollen does not last
+	carry[i] = cr;
+	float meat_eff = pow(diet, 1.25) * pc.meat_efficiency;
+	if (meat_eff > 0.01) {
+		int avail = meat[c];
+		int take = min(avail, int(bite * PS));
+		if (take > 0) {
+			atomicAdd(meat[c], -take);
+			a.energy += float(take) / PS * meat_eff;
+			intake += float(take) / PS * meat_eff;
+		}
+	}
+
+	// ---- Act: attack the chosen prey if it is within reach ----
+	// Satiated predators do not hunt. Capture odds depend on how fast the prey is
+	// moving compared to the predator (grazing prey is easy, fleeing prey escapes)
+	// and drop when many prey are in view (confusion effect: herds protect).
+	float cost = 0.0;
+	if (attack && a.energy < repro) {
+		cost += 0.01 * size;
+		float reach = (1.5 + size * 0.5) * M2C;
+		if (prey_j != -1 && best_prey <= reach * reach
+				&& rnd(rs) < clamp(0.55 + 0.8 * (v_m - prey_v * CELL), 0.05, 0.9) * min(2.0 / (1.0 + float(prey_n)), 1.0)) {
+			// Prey is at most ~1.1x our power by construction, so damage needs no ratio term.
+			float dmg = pc.attack_power * my_pw;
+			if (prey_j == -2) atomicAdd(rb[1], uint(dmg * 1000.0));
+			else atomicAdd(damage[prey_j], uint(dmg * 1000.0));
+			a.energy += min(dmg, max(prey_e, 0.0)) * meat_eff; // what it cannot take stays as carrion
+			intake += min(dmg, max(prey_e, 0.0)) * meat_eff;
+		}
+	}
+
+	// ---- Social acts: feed young, scent-mark, remember places ----
+	if (give && child_j >= 0 && a.energy > repro * 0.4) {
+		float amount = 0.03 + 0.15 * genes[g + G_CARE];
+		atomicAdd(gift[child_j], uint(amount * 0.9 * 1000.0)); // 10 % lost in the handover
+		a.energy -= amount;
+		atomicAdd(counters[13], 1);
+	}
+	if (mark) {
+		uint old = scent[c];
+		float dh = abs(float(old & 255u) / 255.0 - my_hue);
+		float have = min(dh, 1.0 - dh) < 0.04 ? float(old >> 8) / 1000.0 : 0.0;
+		uint val = uint(min(have + 0.25, 4.0) * 1000.0) << 8 | (uint(my_hue * 255.0 + 0.5) & 255u);
+		atomicMax(scent[c], val);
+		cost += 0.004;
+		atomicAdd(counters[14], 1);
+	}
+	if (pl_here > 0.4 || (diet > 0.5 && mt_here > 0.5)) a.food = pack_pos(a.pos);
+	bool at_home = home_dist < 6.0;
+	if (v_m < 0.05 && (action == A_REST || action == A_HOME) && a.home == NO_PLACE) a.home = pack_pos(a.pos);
+	if (v_m < 0.05 && at_home && (action == A_REST || action == A_HOME)) posture = POSTURE_HIDE; // in the den
+
+	// ---- Metabolism ----
+	cost += pc.metabolism * (0.4 + 0.6 * size * size) * (v_m < 0.05 ? (at_home ? 0.48 : 0.6) : 1.0); // resting saves energy, more in the den
+	cost += 0.006 * signal + (posture == POSTURE_DISPLAY ? 0.01 * size : 0.0);
+	cost += pc.move_cost * v_m * v_m * size;
+	cost += pc.vision_cost * sense * sense;
+	cost += pc.detox_cost * detox * detox;
+	float compute = pc.compute_cost * work;
+	a.energy = min(a.energy - cost - compute, repro * 1.5 + 1.0);
+	flow_add(29, intake, 100.0);
+	flow_add(30, compute, 100.0);
+	flow_add(31, cost, 100.0);
+	a.action = action;
+	a.flags = with_social(a.flags, signal, posture);
+
+	// Queue for breeding only while free slots remain (a plain read first keeps
+	// a full world from hammering the list counter).
+	float child_frac = genes[g + G_CHILD];
+	bool can_afford = a.energy * (1.0 - 1.1 * child_frac) > size * BODY_COST + 0.2;
+	if (a.energy >= repro && a.age >= 20.0 && can_afford && counters[8] < min(counters[0], BIRTH_MAX)) {
+		int k = atomicAdd(counters[8], 1);
+		if (k < BIRTH_MAX) lists[CAPACITY + k] = i;
+	}
+	a.reg = register_agent(i, a);
+	agents[i] = a;
+}
+#endif
+
+// =============================================================================
+// Reproduction for agents on the birth list: sexual with a nearby compatible
+// mate, otherwise asexual. Free slots come from the top of the free stack.
+#ifdef K_BIRTH
+void main() {
+	uint t = gidx();
+	if (t >= uint(min(counters[8], BIRTH_MAX)) || pc.tick == 0xffffffffu) return;
+	uint i = lists[CAPACITY + t];
+	Agent a = agents[i];
+	uint g = i * NG;
+
+	int k = atomicAdd(counters[1], 1);
+	int free_n = counters[0];
+	if (k >= free_n) return; // population at capacity
+	uint slot = free_stack[free_n - 1 - k];
+
+	uint rs = pcg(i * 4099u + pc.tick * 7919u + pc.seed * 131u);
+
+	// Look for a compatible mate within 2 cells.
+	int mate = -1;
+	ivec2 b0 = bucket_coord(a.pos);
+	for (int by = -1; by <= 1 && mate < 0; by++) {
+		for (int bx = -1; bx <= 1 && mate < 0; bx++) {
+			uint b = bucket_at(b0 + ivec2(bx, by));
+			int n = min(count_r[b], SLOTS);
+			for (int s = 0; s < n; s++) {
+				uvec4 e = slot_r[b * SLOTS + uint(s)];
+				vec2 d = tdelta(a.pos, unpack_pos(e.y));
+				if (e.x != i && e.x < uint(CAPACITY) && dot(d, d) < 100.0 * M2C * M2C && gdist(a.pheno, e.z) < pc.mate_distance) {
+					mate = int(e.x);
+					break;
+				}
+			}
+		}
+	}
+
+	uint cg = slot * NG;
+	inherit(slot, i, mate, rs);
+
+	// The parent pays the child's starting energy (+10%), its body, and the GPU
+	// work of the birth (mate search, genome copy, and weights for neural agents).
+	float child_e = a.energy * genes[g + G_CHILD];
+	a.energy -= child_e * 1.1 + genes[cg + G_SIZE] * BODY_COST
+			+ pc.compute_cost * ((a.flags & F_NN) != 0u ? 40.0 : 25.0);
+
+	uint nn = (a.flags & F_NN) != 0u ? 1u : 0u;
+	Agent ch;
+	vec2 cp = wrap_pos(a.pos + vec2(rnd(rs) - 0.5, rnd(rs) - 0.5) * 2.0 * M2C);
+	ch.pos = fert[cell_of(cp)] < 0.0 ? a.pos : cp;
+	ch.heading = rnd(rs) * 2.0 * PI;
+	ch.energy = child_e;
+	ch.age = 0.0;
+	ch.flags = a.flags & (F_ALIVE | F_NN);
+	ch.pheno = pheno_of(slot, nn);
+	ch.memory = 0.0;
+	uint mgen = mate >= 0 ? agents[mate].generation : 0u;
+	ch.generation = max(a.generation, mgen) + 1u;
+	ch.action = A_WANDER;
+	ch.speed = 0.0;
+	ch.uid = pcg(slot * 2654435761u ^ pc.tick * 40503u ^ pc.seed * 97u) | 1u;
+	ch.parent_uid = a.uid;
+	ch.home = pack_pos(ch.pos);
+	ch.food = a.food; // parents pass on where the food is
+	ch.reg = register_agent(slot, ch); // visible to others from the next tick
+	gift[slot] = 0u;
+	agents[slot] = ch;
+	prev[slot] = vec4(ch.pos, ch.heading, 0.0);
+	carry[slot] = uvec4(0u);
+	damage[slot] = 0u;
+	atomicMax(counters[4], int(slot) + 1);
+	agents[i] = a;
+	atomicAdd(counters[2], 1);
+}
+#endif
+
+// =============================================================================
+// Free-stack bookkeeping. Slots claimed by BIRTH were popped off the top; the
+// dead list is written over them. (Slots freed this tick are reusable next tick.)
+#ifdef K_FINALIZE
+void main() {
+	uint t = gidx();
+	if (t >= uint(counters[7]) || pc.tick == 0xffffffffu) return;
+	int top = counters[0] - min(counters[1], counters[0]);
+	free_stack[top + int(t)] = lists[t];
+}
+#endif
+
+#ifdef K_COMMIT
+void main() {
+	if (gidx() != 0u || pc.tick == 0xffffffffu) return;
+	counters[0] = counters[0] - min(counters[1], counters[0]) + counters[7];
+	counters[1] = 0;
+	counters[7] = 0;
+	counters[8] = 0;
+}
+#endif
+
+// =============================================================================
+// Carrion decay (one contiguous 1/FIELD_STRIDE of the map per tick, with a
+// FIELD_STRIDE-times larger time step) and recycling of grid R.
+#ifdef K_FIELD
+void main() {
+	uint chunk = uint(WORLD * WORLD / FIELD_STRIDE);
+	uint t = gidx();
+	if (t < uint(NB)) count_r[t] = 0; // recycle grid R: it is next tick's grid W (NB <= chunk)
+	if (t >= chunk) return;
+	uint c = t + (pc.tick % uint(FIELD_STRIDE)) * chunk;
+	int m = meat[c];
+	if (m > 0) {
+		meat[c] = min(int(float(m) * (1.0 - pc.meat_decay * float(FIELD_STRIDE))), int(20.0 * PS));
+	}
+	uint sc = scent[c];
+	if (sc > 255u) { // scent fades (about 1 % per tick)
+		uint inten = uint(float(sc >> 8) * (1.0 - 0.01 * float(FIELD_STRIDE)));
+		scent[c] = inten > 5u ? (inten << 8) | (sc & 255u) : 0u;
+	}
+}
+#endif
+
+// =============================================================================
+#ifdef K_RENDER_FIELD
+void main() {
+	uint c = gidx();
+	if (c >= uint(WORLD * WORLD)) return;
+	float f = fert[c];
+	vec3 col;
+	if (f < 0.0) {
+		col = mix(vec3(0.02, 0.05, 0.14), vec3(0.06, 0.16, 0.32), clamp((f + 0.58) * 6.0, 0.0, 1.0));
+	} else {
+		float m = float(meat[c]) / PS;
+		float g0 = float(cover[c * 3u]) / 1000.0;      // grass and flowers
+		float g1 = float(cover[c * 3u + 1u]) / 1000.0; // shrubs and saplings
+		float g2 = float(cover[c * 3u + 2u]) / 1000.0; // tree canopy
+		vec3 soil = vec3(0.17, 0.13, 0.09);
+		col = mix(soil, vec3(0.30, 0.52, 0.16), clamp(g0 * (player.flags3d != 0u ? 1.5 : 0.8), 0.0, 1.0));
+		// In 3D bushes and trees are drawn as models, so the ground only shows grass.
+		if (player.flags3d == 0u) {
+			col = mix(col, vec3(0.16, 0.36, 0.12), clamp(g1 * 0.8, 0.0, 0.9));
+			col = mix(col, vec3(0.06, 0.24, 0.08), clamp(g2 * 0.9, 0.0, 0.95));
+		}
+		col = mix(col, vec3(0.45, 0.06, 0.05), clamp(m * 0.4, 0.0, 0.8));
+	}
+	if (pc.show_fields == 0u) col *= 0.25;
+	float alpha = 1.0;
+	imageStore(view, ivec2(int(c % uint(WORLD)), int(c / uint(WORLD))), vec4(col, alpha));
+}
+#endif
+
+// =============================================================================
+#ifdef K_RENDER_AGENTS
+void main() {
+	uint i = gidx();
+	if (past_hwm(i) || pc.tick == 0xffffffffu) return;
+	Agent a = agents[i];
+	if ((a.flags & F_ALIVE) == 0u) return;
+	vec3 col = agent_color(a, i);
+	imageStore(view, ivec2(floor(a.pos)), vec4(col, 1.0));
+}
+#endif
+
+// =============================================================================
+#ifdef K_CLEAR_STATS
+void main() {
+	uint i = gidx();
+	if (i < 96u && pc.tick != 0xffffffffu) stats[i] = 0u;
+}
+#endif
+
+// =============================================================================
+// Population statistics (read back asynchronously by the host). Each workgroup
+// reduces into shared memory first, so global atomics stay cheap.
+//  0 alive  1 utility  2 neural  3 herbivores  4 omnivores  5 carnivores
+//  6 sum energy*10  7 sum size*1000  8 sum speed*1000  9 max generation
+//  10..16 action counts  17 sum diet*1000  18 sum sense*1000  19 sum repro*10
+//  20 sum mutation*1000  21 births  22 deaths  23 free slots  24 high-water mark
+//  25 sum herbivore detox*1000  26 sampled live plants  27 sum plant growth*1000
+//  28 sum plant defence*1000  29 sum plant fill (biomass / max)*1000  32..63 hue histogram
+//  64..67 sampled grass / flowers / bushes / trees  68 pollinated  69 with fruit
+//  70 fruit-dispersed  71 sum seed size*1000  72 flowering  73 plant sample stride
+//  74 plant births  75 plant deaths  76 plant high-water mark
+//  77..81 energy flows since the last read (see flow_add)
+//  82..86 actions hide, care, mark, home, recall  87 calling  88 hiding  89 displaying
+//  90 young with a parent  91 gifts to young  92 scent marks (since the last read)
+#ifdef K_STATS
+shared uint ls[96];
+void main() {
+	uint lt = gl_LocalInvocationID.x;
+	if (lt < 96u) ls[lt] = 0u;
+	barrier();
+	uint i = gidx();
+	if (i == 0u) {
+		stats[21] = uint(counters[2]);
+		stats[22] = uint(counters[3]);
+		stats[23] = uint(counters[0]);
+		stats[24] = uint(counters[4]);
+		stats[74] = uint(counters[18]);
+		stats[75] = uint(counters[19]);
+		stats[76] = uint(counters[20]);
+		stats[91] = uint(counters[13]); // gifts to young
+		stats[92] = uint(counters[14]); // scent marks
+		counters[13] = 0;
+		counters[14] = 0;
+		for (int k = 0; k < 5; k++) {
+			stats[77 + k] = uint(counters[27 + k]);
+			counters[27 + k] = 0;
+		}
+		counters[2] = 0;
+		counters[3] = 0;
+		counters[18] = 0;
+		counters[19] = 0;
+	}
+	if (!past_hwm(i) && pc.tick != 0xffffffffu) {
+		Agent a = agents[i];
+		if ((a.flags & F_ALIVE) != 0u) {
+			uint g = i * NG;
+			float diet = genes[g + G_DIET];
+			atomicAdd(ls[0], 1u);
+			atomicAdd(ls[(a.flags & F_NN) != 0u ? 2 : 1], 1u);
+			atomicAdd(ls[diet < 0.33 ? 3 : (diet < 0.66 ? 4 : 5)], 1u);
+			atomicAdd(ls[6], uint(clamp(a.energy, 0.0, 100.0) * 10.0));
+			atomicAdd(ls[7], uint(genes[g + G_SIZE] * 1000.0));
+			atomicAdd(ls[8], uint(genes[g + G_SPEED] * 1000.0));
+			atomicMax(ls[9], a.generation);
+			if (a.action < 7u) atomicAdd(ls[10u + a.action], 1u); else atomicAdd(ls[82u + min(a.action - 7u, 4u)], 1u);
+			if (flag_signal(a.flags) > 12u) atomicAdd(ls[87], 1u);
+			if (flag_posture(a.flags) == POSTURE_HIDE) atomicAdd(ls[88], 1u);
+			if (flag_posture(a.flags) == POSTURE_DISPLAY) atomicAdd(ls[89], 1u);
+			if (a.age < YOUNG_AGE && a.parent_uid != 0u) atomicAdd(ls[90], 1u);
+			atomicAdd(ls[17], uint(diet * 1000.0));
+			atomicAdd(ls[18], uint(genes[g + G_SENSE] * 1000.0));
+			atomicAdd(ls[19], uint(genes[g + G_REPRO] * 10.0));
+			atomicAdd(ls[20], uint(genes[g + G_MUT] * 1000.0));
+			atomicAdd(ls[32u + min(uint(ph_hue(a.pheno) * 32.0), 31u)], 1u);
+			if (diet < 0.33) atomicAdd(ls[25], uint(genes[g + G_DETOX] * 1000.0));
+		}
+	}
+	// Sample every stride-th plant for the plant averages.
+	uint stride = max(16u, (uint(PCAP) + uint(CAPACITY) - 1u) / uint(CAPACITY));
+	if (i == 0u) stats[73] = stride;
+	uint pk = i * stride + (pc.tick % stride);
+	if (pk < uint(counters[20]) && pc.tick != 0xffffffffu) {
+		uvec4 q = plant_a[pk];
+		uint qs = plant_b[pk].w;
+		if ((qs & P_ALIVE) != 0u) {
+			vec4 A = unpack4(q.z), B = unpack4(q.w);
+			float st = A.x;
+			atomicAdd(ls[26], 1u);
+			atomicAdd(ls[27], uint(A.y * 1000.0));
+			atomicAdd(ls[28], uint(A.z * 1000.0));
+			atomicAdd(ls[29], uint(clamp(p_biomass(q) / p_bmax(st, max(fert[cell_of(unpack_pos(q.x))], 0.05)), 0.0, 1.0) * 1000.0));
+			atomicAdd(ls[st < FORM_FLOWER ? 64 : (st < FORM_BUSH ? 65 : (st < FORM_TREE ? 66 : 67))], 1u);
+			if ((qs & P_POLLINATED) != 0u) atomicAdd(ls[68], 1u);
+			if (p_fruit(qs) > 0u) atomicAdd(ls[69], 1u);
+			if (B.y > 0.5) atomicAdd(ls[70], 1u);
+			atomicAdd(ls[71], uint(B.x * 1000.0));
+			if ((qs & P_FLOWERING) != 0u) atomicAdd(ls[72], 1u);
+		}
+	}
+	barrier();
+	if (lt < 96u && (lt < 21u || lt > 24u) && (lt < 73u || lt > 76u) && ls[lt] != 0u) {
+		if (lt == 9u) atomicMax(stats[9], ls[9]);
+		else atomicAdd(stats[lt], ls[lt]);
+	}
+}
+#endif
+
+// =============================================================================
+// Spatial sort (counting sort by bucket of grid W, which THINK/BIRTH just filled).
+// 1) exclusive prefix sum of the bucket counts in three passes.
+#if defined(K_PSCAN1) || defined(K_PSCAN2) || defined(K_PSCAN3)
+#define SCAN_N uint(WORLD * WORLD)   // plants: one entry per cell
+#define SCAN_IN(b) pcount[b]
+#define SCAN_TOTAL 21
+#else
+#define SCAN_N uint(NB)              // agents: one entry per bucket of grid W
+#define SCAN_IN(b) uint(count_w[b])
+#define SCAN_TOTAL 6
+#endif
+
+#if defined(K_SCAN1) || defined(K_SCAN2) || defined(K_PSCAN1) || defined(K_PSCAN2)
+shared uint sh[256];
+void scan_shared(uint t) { // inclusive Hillis-Steele scan of sh[]
+	for (uint off = 1u; off < 256u; off <<= 1) {
+		uint x = t >= off ? sh[t - off] : 0u;
+		barrier();
+		sh[t] += x;
+		barrier();
+	}
+}
+#endif
+
+#if defined(K_SCAN1) || defined(K_PSCAN1)
+void main() {
+	uint t = gl_LocalInvocationID.x;
+	uint b = gidx();
+	uint v = (b < SCAN_N && pc.tick != 0xffffffffu) ? SCAN_IN(b) : 0u;
+	sh[t] = v;
+	barrier();
+	scan_shared(t);
+	if (b < SCAN_N) offsets[b] = sh[t] - v;
+	if (t == 255u) block_sums[b / 256u] = sh[255];
+#ifdef K_SCAN1
+	if (b == 0u) counters[11] = -1;
+#endif
+}
+#endif
+
+#if defined(K_SCAN2) || defined(K_PSCAN2)
+void main() { // single workgroup: scan the block sums
+	uint t = gl_LocalInvocationID.x;
+	uint nblk = SCAN_N / 256u;
+	uint per = (nblk + 255u) / 256u;
+	uint sum = 0u;
+	for (uint k = 0u; k < per; k++) {
+		uint idx = t * per + k;
+		if (idx < nblk) {
+			uint v = block_sums[idx];
+			block_sums[idx] = sum;
+			sum += v;
+		}
+	}
+	sh[t] = sum;
+	barrier();
+	scan_shared(t);
+	uint prefix = sh[t] - sum;
+	for (uint k = 0u; k < per; k++) {
+		uint idx = t * per + k;
+		if (idx < nblk) block_sums[idx] += prefix;
+	}
+	if (t == 255u && pc.tick != 0xffffffffu) counters[SCAN_TOTAL] = int(sh[255]);
+}
+#endif
+
+#if defined(K_SCAN3) || defined(K_PSCAN3)
+void main() {
+	uint b = gidx();
+	if (b >= SCAN_N || pc.tick == 0xffffffffu) return;
+	offsets[b] += block_sums[b / 256u];
+#ifdef K_PSCAN3
+	pcell[b] = uvec2(offsets[b], pcount[b]); // the plant index for the next PLANT_SORT ticks
+#endif
+}
+#endif
+
+// 2) new index of every live agent.
+#ifdef K_PERM
+void main() {
+	uint i = gidx();
+	if (past_hwm(i) || pc.tick == 0xffffffffu) return;
+	Agent a = agents[i];
+	if ((a.flags & F_ALIVE) == 0u) return;
+	perm[i] = atomicAdd(offsets[a.reg], 1u);
+	if (counters[10] == int(i)) counters[11] = int(perm[i]);
+}
+#endif
+
+// 3) scatter each per-agent buffer into tmp (the host copies tmp back).
+#if defined(K_SCATTER_GENES) || defined(K_SCATTER_W1) || defined(K_SCATTER_W2)
+#if defined(K_SCATTER_GENES)
+#define WORDS NG
+#define SRC(k) floatBitsToUint(genes[k])
+#elif defined(K_SCATTER_W1)
+#define WORDS W1_WORDS
+#define SRC(k) w1[k]
+#else
+#define WORDS W2_WORDS
+#define SRC(k) w2[k]
+#endif
+void main() {
+	uint t = gidx();
+	uint i = t / uint(WORDS);
+	if (past_hwm(i) || pc.tick == 0xffffffffu) return;
+	if ((agents[i].flags & F_ALIVE) == 0u) return;
+	uint w = t % uint(WORDS);
+	tmp[perm[i] * uint(WORDS) + w] = SRC(i * uint(WORDS) + w);
+}
+#endif
+
+#ifdef K_SCATTER_CARRY
+void main() {
+	uint i = gidx();
+	if (past_hwm(i) || pc.tick == 0xffffffffu) return;
+	if ((agents[i].flags & F_ALIVE) == 0u) return;
+	uvec4 cr = carry[i];
+	uint j = perm[i] * 4u;
+	tmp[j] = cr.x;
+	tmp[j + 1u] = cr.y;
+	tmp[j + 2u] = cr.z;
+	tmp[j + 3u] = cr.w;
+}
+#endif
+
+// The sort moves agents to other THINK chunks, which changes where they are in
+// their interpolation. Rewrite each previous pose so the displayed pose carries on
+// seamlessly under the new timing (and still ends at the current pose).
+#ifdef K_SCATTER_PREV
+float chunk_t(uint i) {
+	uint chunks = max(player.chunks, 1u);
+	uint chunk = min(i / ((uint(CAPACITY) + chunks - 1u) / chunks), chunks - 1u);
+	return fract(player.phase - float(chunk) / float(chunks));
+}
+
+void main() {
+	uint i = gidx();
+	if (past_hwm(i) || pc.tick == 0xffffffffu) return;
+	Agent a = agents[i];
+	if ((a.flags & F_ALIVE) == 0u) return;
+	uint j = perm[i];
+	float heading;
+	vec2 shown = smooth_pose(i, a, heading); // what is on screen now
+	float t_new = chunk_t(j);
+	vec4 pv = vec4(a.pos, a.heading, 0.0);
+	if (t_new < 0.9) {
+		// shown = prev' + (cur - prev') * t_new  =>  prev' = cur - (cur - shown) / (1 - t_new)
+		vec2 back = tdelta(a.pos, shown) / (1.0 - t_new);
+		float dh = mod(heading - a.heading + PI, 2.0 * PI) - PI;
+		pv = vec4(wrap_pos(a.pos + back), a.heading + dh / (1.0 - t_new), 0.0);
+	}
+	tmp[j * 4u] = floatBitsToUint(pv.x);
+	tmp[j * 4u + 1u] = floatBitsToUint(pv.y);
+	tmp[j * 4u + 2u] = floatBitsToUint(pv.z);
+	tmp[j * 4u + 3u] = floatBitsToUint(pv.w);
+}
+#endif
+
+#ifdef K_SCATTER_AGENTS
+void main() {
+	uint i = gidx();
+	if (past_hwm(i) || pc.tick == 0xffffffffu) return;
+	Agent a = agents[i];
+	if ((a.flags & F_ALIVE) == 0u) return;
+	a.reg = NO_BUCKET;
+	tmp_agents[perm[i]] = a;
+}
+#endif
+
+// 4) after the copy-back: live agents are [0, N). Kill the tail, rebuild the free stack.
+#ifdef K_SORT_TAIL
+void main() {
+	uint i = gidx();
+	if (i >= uint(CAPACITY) || pc.tick == 0xffffffffu) return;
+	uint n = uint(counters[6]);
+	if (i >= n) {
+		agents[i].flags = 0u;
+		damage[i] = 0u;
+	}
+	gift[i] = 0u; // indices changed: pending gifts are dropped
+	if (i < uint(CAPACITY) - n) free_stack[i] = uint(CAPACITY) - 1u - i;
+	if (i == 0u) {
+		counters[0] = CAPACITY - int(n);
+		counters[1] = 0;
+		counters[10] = counters[11];
+	}
+}
+#endif
+
+// 5) the grid for the next tick is rebuilt with the new indices (then REGISTER).
+#ifdef K_CLEAR_GRID_W
+void main() {
+	uint b = gidx();
+	if (b == 0u) counters[4] = counters[6];
+	if (b < uint(NB) && pc.tick != 0xffffffffu) count_w[b] = 0;
+}
+#endif
+
+// =============================================================================
+// 3D explorer
+// =============================================================================
+
+// Pose shown between ticks: from the pose before the agent's last move to the
+// current one. t is the time since the agent's THINK chunk ran, in ticks (0..1).
+vec2 smooth_pose(uint i, Agent a, out float heading) {
+	uint chunks = max(player.chunks, 1u);
+	uint chunk = min(i / ((uint(CAPACITY) + chunks - 1u) / chunks), chunks - 1u);
+	float t = fract(player.phase - float(chunk) / float(chunks));
+	vec4 pv = prev[i];
+	vec2 d = tdelta(pv.xy, a.pos);
+	if (dot(d, d) > 1.0) { // newborn, teleported or stale: no interpolation
+		heading = a.heading;
+		return a.pos;
+	}
+	float dh = mod(a.heading - pv.z + PI, 2.0 * PI) - PI;
+	heading = pv.z + dh * t;
+	return wrap_pos(pv.xy + d * t);
+}
+
+// Start of a tick: make the player visible to agents (added to grid R, which the
+// sort never reads) and execute the pending command.
+#ifdef K_PLAYER
+void main() {
+	if (gidx() != 0u) return;
+	if (player.presence != 0u) {
+		// Register in every bucket within PLAYER_RANGE so agents there can notice us.
+		int r = int(ceil(PLAYER_RANGE / float(BUCKET)));
+		ivec2 b0 = bucket_coord(player.pos);
+		uvec4 e = uvec4(PLAYER_ID, pack_pos(player.pos), player.presence_pheno, pack_ew(10.0, player.speed, 0u));
+		for (int by = -r; by <= r; by++) {
+			for (int bx = -r; bx <= r; bx++) {
+				uint b = bucket_at(b0 + ivec2(bx, by));
+				int k = atomicAdd(count_r[b], 1);
+				if (k < SLOTS) slot_r[b * SLOTS + uint(k)] = e;
+			}
+		}
+	}
+	if (player.cmd == 0u || player.cmd_tick != pc.tick) return;
+	uint t = player.target;
+	bool valid = t < uint(CAPACITY) && (agents[t].flags & F_ALIVE) != 0u
+			&& length(tdelta(agents[t].pos, player.target_pos)) < 8.0 * M2C + 1.0;
+	if (player.cmd == CMD_KILL && valid) {
+		agents[t].energy = -1.0; // dies (and leaves carrion) in THINK
+	} else if (player.cmd == CMD_FEED && valid) {
+		agents[t].energy += 4.0;
+	} else if (player.cmd == CMD_SOW) {
+		// Sow 24 young grass and flower plants within 8 m of the player.
+		uint rs = pcg(pc.tick * 97u + pc.seed);
+		for (int n = 0; n < 24; n++) {
+			float ang = rnd(rs) * 2.0 * PI;
+			vec2 p = player.pos + vec2(cos(ang), sin(ang)) * sqrt(rnd(rs)) * 8.0 * M2C;
+			float st = rnd(rs) < 0.5 ? 0.1 : 0.33;
+			vec4 A = vec4(st, 0.8, 0.0, rnd(rs));
+			vec4 B = vec4(0.3, 0.2, rnd(rs), 0.3);
+			plant_germinate(p, pack4(A), pack4(B), true, rs);
+		}
+	} else if (player.cmd == CMD_TRACK) {
+		counters[10] = valid ? int(t) : -1;
+	} else if (player.cmd == CMD_UNTRACK) {
+		counters[10] = -1;
+	}
+}
+#endif
+
+// Selective breeding: clone the target (with mutation) into free slots.
+#ifdef K_SPAWN
+void main() {
+	uint t = gidx();
+	if (player.cmd != CMD_SPAWN || player.cmd_tick != pc.tick || t >= player.spawn_n) return;
+	uint p = player.target;
+	if (p >= uint(CAPACITY)) return;
+	Agent pa = agents[p];
+	if ((pa.flags & F_ALIVE) == 0u || length(tdelta(pa.pos, player.target_pos)) > 8.0 * M2C + 1.0) return;
+	int k = atomicAdd(counters[1], 1);
+	int free_n = counters[0];
+	if (k >= free_n) return;
+	uint slot = free_stack[free_n - 1 - k];
+	uint rs = pcg(t * 7717u + pc.tick * 31u + pc.seed * 977u);
+	inherit(slot, p, -1, rs);
+	uint nn = (pa.flags & F_NN) != 0u ? 1u : 0u;
+	float ang = rnd(rs) * 2.0 * PI;
+	vec2 cp = wrap_pos(pa.pos + vec2(cos(ang), sin(ang)) * (1.0 + rnd(rs) * 3.0) * M2C);
+	Agent ch;
+	ch.pos = fert[cell_of(cp)] < 0.0 ? pa.pos : cp;
+	ch.heading = rnd(rs) * 2.0 * PI;
+	ch.energy = genes[slot * NG + G_REPRO] * 0.6;
+	ch.age = 0.0;
+	ch.flags = pa.flags & (F_ALIVE | F_NN);
+	ch.pheno = pheno_of(slot, nn);
+	ch.memory = 0.0;
+	ch.generation = pa.generation + 1u;
+	ch.action = A_WANDER;
+	ch.speed = 0.0;
+	ch.reg = NO_BUCKET;
+	ch.uid = pcg(slot * 2654435761u ^ pc.tick * 40503u ^ pc.seed * 89u) | 1u;
+	ch.parent_uid = pa.uid;
+	ch.home = pack_pos(ch.pos);
+	ch.food = NO_PLACE;
+	gift[slot] = 0u;
+	agents[slot] = ch;
+	prev[slot] = vec4(ch.pos, ch.heading, 0.0);
+	carry[slot] = uvec4(0u);
+	damage[slot] = 0u;
+	atomicMax(counters[4], int(slot) + 1);
+	atomicAdd(counters[2], 1);
+}
+#endif
+
+#ifdef K_VIS_RESET
+void main() {
+	if (gidx() != 0u || pc.tick == 0xffffffffu) return;
+	counters[12] = 0;
+	rb[0] = 0u;
+}
+#endif
+
+// Agents around the player -> MultiMesh instances (+ a short list for picking).
+#ifdef K_NEARBY
+void main() {
+	uint i = gidx();
+	if (past_hwm(i) || pc.tick == 0xffffffffu) return;
+	Agent a = agents[i];
+	if ((a.flags & F_ALIVE) == 0u) return;
+	float heading;
+	vec2 p = smooth_pose(i, a, heading);
+	vec2 f = vec2(cos(heading), sin(heading));
+	vec2 d = tdelta(player.pos, p);
+	float dd = dot(d, d);
+	float vr = player.vis_radius * M2C;
+	if (dd > vr * vr) return;
+	vec2 wp = (player.pos + d) * CELL; // metres, unwrapped around the player
+	float y = height_at(p);
+	float s = 0.35 + ph_size(a.pheno) * 0.45;
+	bool selected = i == player.target || int(i) == counters[10];
+	uint k = uint(atomicAdd(counters[12], 1));
+	if (k < uint(MAX_VIS)) {
+		uint o = k * 20u;
+		// Rows of the basis (x = (-fz, 0, fx), y = up, z = -forward) scaled by s, then origin.
+		inst[o + 0u] = -f.y * s; inst[o + 1u] = 0.0; inst[o + 2u] = -f.x * s; inst[o + 3u] = wp.x;
+		inst[o + 4u] = 0.0; inst[o + 5u] = s; inst[o + 6u] = 0.0; inst[o + 7u] = y;
+		inst[o + 8u] = f.x * s; inst[o + 9u] = 0.0; inst[o + 10u] = -f.y * s; inst[o + 11u] = wp.y;
+		vec3 col = agent_color(a, i);
+		inst[o + 12u] = col.r; inst[o + 13u] = col.g; inst[o + 14u] = col.b; inst[o + 15u] = 1.0;
+		inst[o + 16u] = ph_diet(a.pheno);
+		inst[o + 17u] = float(a.action);
+		inst[o + 18u] = a.speed;
+		inst[o + 19u] = ((a.flags & F_NN) != 0u ? 1.0 : 0.0) + (selected ? 2.0 : 0.0);
+	}
+	float nr = player.near_radius * M2C;
+	if (dd < nr * nr) {
+		uint n = atomicAdd(rb[0], 1u);
+		if (n < uint(MAX_NEAR)) {
+			uint o = 64u + n * 8u;
+			rb[o] = i;
+			rb[o + 1u] = floatBitsToUint(wp.x);
+			rb[o + 2u] = floatBitsToUint(y);
+			rb[o + 3u] = floatBitsToUint(wp.y);
+			rb[o + 4u] = floatBitsToUint(s);
+			rb[o + 5u] = a.pheno;
+			rb[o + 6u] = a.flags;
+			rb[o + 7u] = a.action;
+		}
+	}
+}
+#endif
+
+// Unused instances collapse to a zero-size transform.
+#ifdef K_CLEAR_INSTANCES
+void main() {
+	uint k = gidx();
+	if (k >= uint(MAX_VIS) || int(k) < min(counters[12], MAX_VIS)) return;
+	for (uint j = 0u; j < 12u; j++) inst[k * 20u + j] = 0.0;
+}
+#endif
+
+// Copy the aimed (or tracked) agent into the readback buffer.
+#ifdef K_INSPECT
+void main() {
+	if (gidx() != 0u || pc.tick == 0xffffffffu) return;
+	rb[3] = uint(counters[10]);
+	rb[62] = uint(min(counters[12], MAX_VIS));
+	for (int f = 0; f < 4; f++) rb[56 + f] = uint(min(counters[23 + f], MAX_PVIS));
+	uint t = player.inspect_tracked != 0u ? uint(counters[10]) : player.target;
+	bool ok = t < uint(CAPACITY) && (agents[t].flags & F_ALIVE) != 0u;
+	if (ok && player.inspect_tracked == 0u) ok = length(tdelta(agents[t].pos, player.target_pos)) < 4.0;
+	rb[2] = ok ? t : 0xffffffffu;
+	if (!ok) return;
+	Agent a = agents[t];
+	float heading;
+	vec2 sp = smooth_pose(t, a, heading);
+	rb[4] = floatBitsToUint(sp.x);
+	rb[5] = floatBitsToUint(sp.y);
+	rb[6] = floatBitsToUint(heading);
+	rb[7] = floatBitsToUint(a.energy);
+	rb[8] = floatBitsToUint(a.age);
+	rb[9] = a.flags;
+	rb[10] = a.pheno;
+	rb[11] = floatBitsToUint(a.memory);
+	rb[12] = a.generation;
+	rb[13] = a.action;
+	rb[14] = floatBitsToUint(a.speed);
+	rb[15] = floatBitsToUint(height_at(sp));
+	for (uint q = 0u; q < uint(NG); q++) rb[16u + q] = floatBitsToUint(genes[t * NG + q]); // 16..32
+}
+#endif
+
+// =============================================================================
+// Plants
+// =============================================================================
+
+#ifdef K_INIT_PLANTS
+void main() {
+	uint k = gidx();
+	if (k >= uint(PCAP)) return;
+	uint n0 = min(uint(PINIT), uint(PCAP));
+	if (k == 0u) {
+		counters[16] = PCAP - int(n0);
+		counters[17] = 0;
+		counters[18] = 0;
+		counters[19] = 0;
+		counters[20] = int(n0);
+		counters[22] = 0;
+	}
+	if (k >= n0) {
+		pfree[uint(PCAP) - 1u - k] = k;
+		plant_a[k] = uvec4(0u);
+		plant_b[k] = uvec4(0u);
+		return;
+	}
+	uint rs = pcg(k * 2246822519u + pc.seed * 7u + 3u);
+	// A random land spot, denser on fertile ground.
+	vec2 p = vec2(0.0);
+	float f = -1.0;
+	for (int t = 0; t < 32; t++) {
+		p = vec2(rnd(rs), rnd(rs)) * float(WORLD);
+		f = fert[cell_of(p)];
+		if (f > 0.0 && rnd(rs) < f + 0.2) break;
+	}
+	if (f <= 0.0) { // no land found: stays dead (the first plant sort frees the slot)
+		plant_a[k] = uvec4(0u);
+		plant_b[k] = uvec4(0u);
+		return;
+	}
+	// Lineages and growth forms occupy regions: forests on lush ground.
+	vec2 uv = p / float(WORLD);
+	uint salt = pc.seed * 7919u;
+	float st = clamp(fbm(uv, 5, salt + 12000u) * 1.8 - 0.55 + (f - 0.5) * 0.5 + (rnd(rs) - 0.5) * 0.3, 0.0, 1.0);
+	float hue = fract(fbm(uv, 3, salt + 9000u) * 2.5 + gauss(rs) * 0.02);
+	vec4 A = vec4(st, 0.45 + 0.2 * rnd(rs), 0.12 * rnd(rs), hue);
+	vec4 B = vec4(0.2 + 0.5 * rnd(rs), clamp(fbm(uv, 4, salt + 13000u) * 2.0 - 0.5, 0.0, 1.0),
+			fract(hue * 1.7 + 0.1 * gauss(rs)), 0.2 + 0.3 * rnd(rs));
+	float bmax = p_bmax(st, f);
+	float bio = bmax * mix(0.3, 0.9, rnd(rs));
+	uint age_u = uint(rnd(rs) * p_lifespan(st) * 0.6 / float(PSTRIDE));
+	plant_a[k] = uvec4(pack_pos(p), uint(int(bio * PS)), pack4(A), pack4(B));
+	plant_b[k] = uvec4(age_u | (packHalf2x16(vec2(bmax * 0.2, 0.0)) << 16), 0u, 0u,
+			p_state(P_ALIVE, p_layer_of(st, p_height(st, bio / bmax)), 0u, 0u));
+}
+#endif
+
+// Growth, light competition, flowering, wind pollination, reproduction and death
+// for 1/PSTRIDE of the plants (a contiguous chunk, dt = PSTRIDE ticks).
+#ifdef K_PLANT_TICK
+void main() {
+	uint chunk = (uint(PCAP) + PSTRIDE - 1u) / PSTRIDE;
+	uint t = gidx();
+	if (t >= chunk || pc.tick == 0xffffffffu) return;
+	uint k = t + (pc.tick % PSTRIDE) * chunk;
+	if (k >= uint(PCAP) || k >= uint(counters[20])) return;
+	uvec4 pa = plant_a[k];
+	uvec4 pb = plant_b[k];
+	uint sb = pb.w;
+	if ((sb & P_ALIVE) == 0u) return;
+	uint rs = pcg(k * 747796405u + pc.tick * 2891336453u + pc.seed);
+	vec4 A = unpack4(pa.z), B = unpack4(pa.w);
+	vec2 pos = unpack_pos(pa.x);
+	uint c = cell_of(pos);
+	float f = max(fert[c], 0.02);
+	float dt = float(PSTRIDE);
+	float st = A.x;
+	float bio = p_biomass(pa);
+	uint age_u = (pb.x & 0xffffu) + 1u;
+	float age = float(age_u) * dt;
+	float reserve = unpackHalf2x16(pb.x >> 16).x;
+	float bmax = p_bmax(st, f);
+	uint layer = p_layer(sb);
+	uint contrib = p_contrib(sb);
+
+	// Energy budget. Every m2 of land gets pc.sun_energy per tick. The crown takes
+	// what reaches its layer through the canopy above, shared out when its layer is
+	// over-full, and small plants are also limited by their leaf mass (growth
+	// gene). Respiration is paid on the living biomass (fast growers respire more,
+	// wood less). The net goes to roots and shoots, up to the form's size.
+	float light = p_light(c, layer);
+	float crowd = float(cover[c * 3u + layer]) / 1000.0;
+	float y = float(c / uint(WORLD)) / float(WORLD);
+	float season = max(1.0 + pc.season_strength * sin(2.0 * PI * (float(pc.tick) / pc.season_length + y)), 0.0);
+	float cr0 = p_crown(st, bio / bmax);
+	float sun = dt * pc.sun_energy * season * light * PI * cr0 * cr0 / max(crowd, 1.0);
+	float rgr = pc.plant_growth * (0.4 + 1.2 * A.y) * (1.0 - 0.6 * A.z) * (1.4 - st);
+	float gross = min(sun, dt * rgr * (bio + 0.02));
+	float net = gross - dt * 0.006 * bio * (0.6 + 0.8 * A.y) * (1.15 - st);
+	if (net >= 0.0) {
+		float to_root = net * B.w * 0.5;
+		float shoot = min(net - to_root, max(bmax - bio, 0.0));
+		bio += shoot;
+		reserve = min(reserve + net - shoot, bmax * 0.5); // surplus is stored
+	} else { // starving: live on the roots, then on the shoots
+		float r = min(reserve, -net);
+		reserve -= r;
+		bio += net + r;
+	}
+	// GPU work of this update, paid in energy at the end (units ~ ns).
+	float work = 3.0;
+	// Resprout from the roots after being grazed down.
+	if (bio < 0.25 * bmax && reserve > 0.0) {
+		float r = min(reserve, dt * 0.01 * bmax);
+		reserve -= r;
+		bio += r;
+	}
+
+	// Death: old age, or nothing left above or below ground.
+	if (age > p_lifespan(st) || (bio <= 0.002 && reserve <= 0.002)) {
+		if (contrib > 0u) atomicAdd(cover[c * 3u + layer], -int(contrib));
+		plant_a[k].y = 0u;
+		plant_b[k].w = 0u;
+		plists[atomicAdd(counters[22], 1)] = k;
+		atomicAdd(counters[19], 1);
+		return;
+	}
+
+	float fill = bio / bmax;
+	bool mature = age > p_maturity(st) && fill > 0.5;
+	// Each lineage flowers in its own part of the season (phase gene).
+	bool flowering = mature && sin(2.0 * PI * (float(pc.tick) / pc.season_length + y - B.z)) > 0.3;
+	uint flags = P_ALIVE | (sb & P_POLLINATED) | (flowering ? P_FLOWERING : 0u);
+	uint fruit = p_fruit(sb);
+	uvec2 donor = pb.yz;
+
+	// Wind pollination by a compatible neighbour flowering at the same time.
+	// Showy flowers mostly rely on animals instead.
+	bool showy = st >= FORM_FLOWER && st < FORM_BUSH;
+	if (flowering && (flags & P_POLLINATED) == 0u && rnd(rs) < (showy ? 0.15 : 1.0)) {
+		ivec2 c0 = ivec2(floor(pos - 0.5));
+		for (int dy = 0; dy <= 1 && (flags & P_POLLINATED) == 0u; dy++) {
+			for (int dx = 0; dx <= 1 && (flags & P_POLLINATED) == 0u; dx++) {
+				uvec2 r = pcell[cell_at(c0 + ivec2(dx, dy))];
+				uint end = r.x + min(r.y, 16u);
+				for (uint j = r.x; j < end; j++) {
+					work += 0.2;
+					if (j == k) continue;
+					if ((plant_b[j].w & (P_ALIVE | P_FLOWERING)) != (P_ALIVE | P_FLOWERING)) continue;
+					uvec4 q = plant_a[j];
+					if (length(tdelta(pos, unpack_pos(q.x))) * CELL > 15.0) continue;
+					if (p_dist(A, unpack4(q.z)) >= pc.mate_distance * 2.0) continue;
+					donor = q.zw;
+					flags |= P_POLLINATED;
+					break;
+				}
+			}
+		}
+	}
+
+	// Reproduction: mature plants in bloom spend a quarter of their biomass on
+	// seeds (carried by the wind) or fruit (eaten and carried by animals).
+	if (flowering && fill > 0.6 && rnd(rs) < dt * 0.02) {
+		float spend = 0.25 * bio;
+		bio -= spend;
+		bool pollinated = (flags & P_POLLINATED) != 0u;
+		float seed_cost = 0.03 + 0.3 * B.x;
+		if (B.y > 0.5) {
+			fruit = min(fruit + uint(spend / (seed_cost + 0.05)), 15u);
+		} else {
+			int n = min(int(spend / seed_cost), 4);
+			for (int sd = 0; sd < n; sd++) {
+				if (!pollinated && rnd(rs) > 0.35) continue; // self-pollinated seeds rarely work
+				uvec2 child = plant_offspring(pa.zw, donor, pollinated, rs);
+				float dist = (2.0 + 30.0 * (1.0 - B.x)) * rnd(rs); // small seeds fly further
+				float ang = rnd(rs) * 2.0 * PI;
+				plant_germinate(pos + vec2(cos(ang), sin(ang)) * dist * M2C, child.x, child.y, false, rs);
+				work += 1.0;
+			}
+			flags &= ~P_POLLINATED;
+		}
+	}
+
+	// Grasses (and, more slowly, flowers) also spread clonally (tillers, runners):
+	// a new plant next to the parent, started with the biomass the parent puts
+	// into it. No pollen needed, so they hold open ground where partners are scarce.
+	float clonal = st < FORM_FLOWER ? 0.012 : (st < FORM_BUSH ? 0.004 : 0.0);
+	if (clonal > 0.0 && age > p_maturity(st) && fill > 0.4 && rnd(rs) < dt * clonal) {
+		float ang = rnd(rs) * 2.0 * PI;
+		vec2 cp = wrap_pos(pos + vec2(cos(ang), sin(ang)) * (0.6 + 2.4 * rnd(rs)) * M2C);
+		uint cc = cell_of(cp);
+		float chance = p_light(cc, 0u) * clamp(1.4 - float(cover[cc * 3u]) / 1000.0, 0.0, 1.0);
+		work += 1.0;
+		if (fert[cc] > 0.0 && rnd(rs) < chance) {
+			uvec2 child = plant_offspring(pa.zw, pa.zw, false, rs);
+			float spend = 0.3 * bio;
+			if (plant_place(cp, child.x, child.y, spend)) bio -= spend;
+		}
+	}
+
+	// Pay for the GPU work, and report the energy flows.
+	float compute = pc.compute_cost * work;
+	bio = max(bio - compute, 0.0);
+	flow_add(27, gross, 10.0);
+	flow_add(28, compute, 1000.0);
+
+	// Update what our crown adds to the canopy map.
+	float h = p_height(st, bio / bmax);
+	float cr = p_crown(st, bio / bmax);
+	uint ncontrib = uint(clamp(PI * cr * cr / (CELL * CELL) * 1000.0, 0.0, 65535.0));
+	uint nlayer = p_layer_of(st, h);
+	if (nlayer != layer) {
+		if (contrib > 0u) atomicAdd(cover[c * 3u + layer], -int(contrib));
+		atomicAdd(cover[c * 3u + nlayer], int(ncontrib));
+	} else if (ncontrib != contrib) {
+		atomicAdd(cover[c * 3u + layer], int(ncontrib) - int(contrib));
+	}
+	plant_a[k].y = uint(int(max(bio, 0.0) * PS));
+	plant_b[k] = uvec4(min(age_u, 65535u) | (packHalf2x16(vec2(reserve, 0.0)) << 16), donor,
+			p_state(flags, nlayer, fruit, ncontrib));
+}
+#endif
+
+// Plant free-stack bookkeeping (same scheme as the animals).
+#ifdef K_PLANT_FINALIZE
+void main() {
+	uint t = gidx();
+	if (t >= uint(counters[22]) || pc.tick == 0xffffffffu) return;
+	int top = counters[16] - min(counters[17], counters[16]);
+	pfree[top + int(t)] = plists[t];
+}
+#endif
+
+#ifdef K_PLANT_COMMIT
+void main() {
+	if (gidx() != 0u || pc.tick == 0xffffffffu) return;
+	counters[16] = counters[16] - min(counters[17], counters[16]) + counters[22];
+	counters[17] = 0;
+	counters[22] = 0;
+}
+#endif
+
+// ---- Plant sort: counting sort of the plants by cell -> the per-cell index ----
+#ifdef K_P_CLEAR_INDEX
+void main() {
+	uint c = gidx();
+	if (c < uint(WORLD * WORLD) && pc.tick != 0xffffffffu) pcount[c] = 0u;
+}
+#endif
+
+#ifdef K_P_COUNT
+void main() {
+	uint k = gidx();
+	if (k >= uint(PCAP) || k >= uint(counters[20]) || pc.tick == 0xffffffffu) return;
+	if ((plant_b[k].w & P_ALIVE) == 0u) return;
+	pperm[k] = atomicAdd(pcount[cell_of(unpack_pos(plant_a[k].x))], 1u); // rank within the cell
+}
+#endif
+
+#ifdef K_P_DEST
+void main() {
+	uint k = gidx();
+	if (k >= uint(PCAP) || k >= uint(counters[20]) || pc.tick == 0xffffffffu) return;
+	if ((plant_b[k].w & P_ALIVE) == 0u) return;
+	pperm[k] += offsets[cell_of(unpack_pos(plant_a[k].x))];
+}
+#endif
+
+#if defined(K_P_SCATTER_A) || defined(K_P_SCATTER_B)
+void main() {
+	uint k = gidx();
+	if (k >= uint(PCAP) || k >= uint(counters[20]) || pc.tick == 0xffffffffu) return;
+	if ((plant_b[k].w & P_ALIVE) == 0u) return;
+#ifdef K_P_SCATTER_A
+	uvec4 v = plant_a[k];
+#else
+	uvec4 v = plant_b[k];
+#endif
+	uint j = pperm[k] * 4u;
+	tmp[j] = v.x;
+	tmp[j + 1u] = v.y;
+	tmp[j + 2u] = v.z;
+	tmp[j + 3u] = v.w;
+}
+#endif
+
+// Copy the sorted plants back from tmp (a compute pass, so the barriers between
+// dispatches order it; only [0, N) holds sorted plants, the tail is cleared below).
+#if defined(K_P_COPY_A) || defined(K_P_COPY_B)
+void main() {
+	uint k = gidx();
+	if (k >= uint(counters[21]) || k >= uint(PCAP) || pc.tick == 0xffffffffu) return;
+	uvec4 v = uvec4(tmp[k * 4u], tmp[k * 4u + 1u], tmp[k * 4u + 2u], tmp[k * 4u + 3u]);
+#ifdef K_P_COPY_A
+	plant_a[k] = v;
+#else
+	plant_b[k] = v;
+#endif
+}
+#endif
+
+// After the copy-back: live plants are [0, N) sorted by cell. Kill the tail and
+// rebuild the free stack.
+#ifdef K_P_TAIL
+void main() {
+	uint k = gidx();
+	if (k >= uint(PCAP) || pc.tick == 0xffffffffu) return;
+	uint n = uint(counters[21]);
+	if (k >= n) {
+		plant_a[k].y = 0u;
+		plant_b[k].w = 0u;
+	}
+	if (k < uint(PCAP) - n) pfree[k] = uint(PCAP) - 1u - k;
+	if (k == 0u) {
+		counters[16] = PCAP - int(n);
+		counters[17] = 0;
+		counters[20] = int(n);
+	}
+}
+#endif
+
+// Rebuild the canopy map from the plants' stored contributions (after loading).
+#ifdef K_P_COVER_ADD
+void main() {
+	uint k = gidx();
+	if (k >= uint(PCAP) || k >= uint(counters[20]) || pc.tick == 0xffffffffu) return;
+	uint sb = plant_b[k].w;
+	if ((sb & P_ALIVE) == 0u || p_contrib(sb) == 0u) return;
+	atomicAdd(cover[cell_of(unpack_pos(plant_a[k].x)) * 3u + p_layer(sb)], int(p_contrib(sb)));
+}
+#endif
+
+// ---- 3D: plants around the player -> one MultiMesh per form ----
+#ifdef K_P_VIS_RESET
+void main() {
+	uint f = gidx();
+	if (f < 4u && pc.tick != 0xffffffffu) counters[23 + f] = 0;
+}
+#endif
+
+void write_plant_instance(uint form, uint k, vec3 x, vec3 z, float sh, vec3 o, vec3 col, vec4 custom) {
+	float v[20] = float[20](x.x, 0.0, z.x, o.x, 0.0, sh, 0.0, o.y, x.z, 0.0, z.z, o.z,
+			col.r, col.g, col.b, 1.0, custom.x, custom.y, custom.z, custom.w);
+	uint b = k * 20u;
+	for (uint w = 0u; w < 20u; w++) {
+		if (form == 0u) pinst0[b + w] = v[w];
+		else if (form == 1u) pinst1[b + w] = v[w];
+		else if (form == 2u) pinst2[b + w] = v[w];
+		else pinst3[b + w] = v[w];
+	}
+}
+
+// One thread per cell in a square around the player; it draws that cell's plants.
+#ifdef K_P_NEARBY
+void main() {
+	int R = int(ceil(PLANT_VIEW * M2C));
+	int S = 2 * R + 1;
+	uint t = gidx();
+	if (t >= uint(S * S) || pc.tick == 0xffffffffu) return;
+	ivec2 cc = ivec2(floor(player.pos)) + ivec2(int(t % uint(S)), int(t / uint(S))) - R;
+	uvec2 r = pcell[cell_at(cc)];
+	uint end = r.x + min(r.y, 64u);
+	for (uint j = r.x; j < end; j++) {
+		uvec4 q = plant_a[j];
+		uint qs = plant_b[j].w;
+		if ((qs & P_ALIVE) == 0u) continue;
+		vec2 pp = unpack_pos(q.x);
+		vec2 d = tdelta(player.pos, pp);
+		float dist = length(d) * CELL;
+		vec4 A = unpack4(q.z);
+		float st = A.x;
+		uint form = st < FORM_FLOWER ? 0u : (st < FORM_BUSH ? 1u : (st < FORM_TREE ? 2u : 3u));
+		float range = form == 0u ? 70.0 : (form == 1u ? 90.0 : (form == 2u ? 120.0 : PLANT_VIEW));
+		if (dist > range) continue;
+		uint k = uint(atomicAdd(counters[23 + int(form)], 1));
+		if (k >= uint(MAX_PVIS)) continue;
+		float fill = clamp(p_biomass(q) / p_bmax(st, max(fert[cell_of(pp)], 0.05)), 0.02, 1.0);
+		// Model sizes: grass 0.5 m, flowers 0.6 m, bushes 1.2 m, trees 7.5 m tall.
+		float base_h = form == 0u ? 0.5 : (form == 1u ? 0.6 : (form == 2u ? 1.2 : 7.5));
+		float base_r = form == 0u ? 1.0 : (form == 1u ? 1.0 : (form == 2u ? 1.3 : 2.0));
+		float sh = p_height(st, fill) / base_h;
+		float sw = p_crown(st, fill) / base_r;
+		float yaw = float(pcg(q.x) & 1023u) / 1023.0 * 2.0 * PI; // fixed per position
+		vec3 x = vec3(cos(yaw), 0.0, -sin(yaw)) * sw;
+		vec3 z = vec3(sin(yaw), 0.0, cos(yaw)) * sw;
+		vec3 o = vec3((player.pos + d).x * CELL, height_at(pp), (player.pos + d).y * CELL);
+		vec4 custom = vec4((qs & P_FLOWERING) != 0u ? 1.0 : 0.0, float(p_fruit(qs)) / 15.0,
+				form == 3u && A.w > 0.5 ? 1.0 : 0.0, fract(0.72 + A.w * 0.5));
+		write_plant_instance(form, k, x, z, sh, o, plant_leaf(A), custom);
+	}
+}
+#endif
+
+// Unused plant instances collapse to a zero-size transform.
+#ifdef K_P_CLEAR_INST
+void main() {
+	uint t = gidx();
+	uint form = t / uint(MAX_PVIS);
+	uint k = t % uint(MAX_PVIS);
+	if (form >= 4u || pc.tick == 0xffffffffu) return;
+	if (int(k) < min(counters[23 + int(form)], MAX_PVIS)) return;
+	write_plant_instance(form, k, vec3(0.0), vec3(0.0), 0.0, vec3(0.0), vec3(0.0), vec4(0.0));
+}
+#endif

@@ -1,0 +1,4 @@
+baseline {}
+  seed 1: {"score": 2.805, "present": ["plants", "creepers"], "lost": [], "entropy": 0.559, "bodyplan": 0.156, "cv": 0.938, "mobile_end": 4, "sessile_end": 274768, "tick_end": 7856, "seed": 1, "secs": 14}
+  seed 2: {"score": 2.982, "present": ["plants", "creepers"], "lost": [], "entropy": 0.596, "bodyplan": 0.17, "cv": 0.892, "mobile_end": 5, "sessile_end": 263200, "tick_end": 7856, "seed": 2, "secs": 13}
+best: 2.894 {}
