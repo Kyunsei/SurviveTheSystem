@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cbiu6unnnit5k"]
+
+[ext_resource type="Script" uid="uid://dafcr24stslbg" path="res://Z_TEST/test_native_ext.gd" id="1"]
+
+[node name="TestNativeExt" type="Node" unique_id=540011652]
+script = ExtResource("1")

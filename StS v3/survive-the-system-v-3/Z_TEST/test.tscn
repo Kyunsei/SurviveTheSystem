@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://p4loc2gf1byq"]
+
+[ext_resource type="Script" uid="uid://bg8hsqynr40wy" path="res://Z_TEST/test.gd" id="1_37kl0"]
+[ext_resource type="Script" uid="uid://bes04t56po8a1" path="res://Z_TEST/gpu_bench.gd" id="2_6uqi0"]
+[ext_resource type="Script" uid="uid://dafcr24stslbg" path="res://Z_TEST/test_native_ext.gd" id="3_ppyta"]
+
+[node name="Node2D" type="Node2D" unique_id=701606542]
+script = ExtResource("1_37kl0")
+
+[node name="Label" type="RichTextLabel" parent="." unique_id=1173783878]
+offset_top = 70.0
+offset_right = 398.0
+offset_bottom = 647.0
+
+[node name="Button" type="Button" parent="." unique_id=1754159497]
+offset_left = 31.0
+offset_top = 16.0
+offset_right = 70.0
+offset_bottom = 47.0
+text = "Run in GDSCIRPT"
+
+[node name="GPU" type="Node" parent="." unique_id=474314095]
+script = ExtResource("2_6uqi0")
+
+[node name="Label2" type="RichTextLabel" parent="GPU" unique_id=605566775]
+offset_left = 770.0
+offset_top = 69.0
+offset_right = 1168.0
+offset_bottom = 646.0
+
+[node name="Button" type="Button" parent="GPU" unique_id=1888646494]
+offset_left = 956.0
+offset_top = 24.0
+offset_right = 1033.0
+offset_bottom = 55.0
+text = "Run GPU"
+
+[node name="Cplus" type="Node" parent="." unique_id=1613316619]
+script = ExtResource("3_ppyta")
+
+[node name="Label2" type="RichTextLabel" parent="Cplus" unique_id=1096622813]
+offset_left = 434.0
+offset_top = 69.0
+offset_right = 832.0
+offset_bottom = 646.0
+
+[node name="Button" type="Button" parent="Cplus" unique_id=1782075368]
+offset_left = 463.0
+offset_top = 25.0
+offset_right = 558.0
+offset_bottom = 56.0
+text = "RUN in C++"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="GPU/Button" to="GPU" method="_on_button_pressed"]
+[connection signal="pressed" from="Cplus/Button" to="Cplus" method="_on_button_pressed"]

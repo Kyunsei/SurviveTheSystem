@@ -215,6 +215,9 @@ func _world_thread(delta):
 		update_world(delta)
 		world_done_semaphore.post()
 
+#############Multithread new version?##################
+
+
 		
 #############SINGLE THREAD#######################
 

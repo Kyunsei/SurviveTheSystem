@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://31g2mu57els4"]
+
+[ext_resource type="Script" uid="uid://bes04t56po8a1" path="res://Z_TEST/gpu_bench.gd" id="1_1uahc"]
+
+[node name="Node" type="Node" unique_id=1584908426]
+script = ExtResource("1_1uahc")

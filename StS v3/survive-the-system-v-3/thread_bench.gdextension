@@ -1,0 +1,17 @@
+[configuration]
+
+entry_symbol = "threadbench_library_init"
+compatibility_minimum = "4.2"
+reloadable = true
+
+[libraries]
+
+windows.editor.x86_64 = "res://gdextension_thread_bench/bin/libthreadbench.windows.template_debug.x86_64.dll"
+windows.debug.x86_64 = "res://gdextension_thread_bench/bin/libthreadbench.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://gdextension_thread_bench/bin/libthreadbench.windows.template_release.x86_64.dll"
+linux.editor.x86_64 = "res://gdextension_thread_bench/bin/libthreadbench.linux.template_debug.x86_64.so"
+linux.debug.x86_64 = "res://gdextension_thread_bench/bin/libthreadbench.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://gdextension_thread_bench/bin/libthreadbench.linux.template_release.x86_64.so"
+macos.editor = "res://gdextension_thread_bench/bin/libthreadbench.macos.template_debug.framework"
+macos.debug = "res://gdextension_thread_bench/bin/libthreadbench.macos.template_debug.framework"
+macos.release = "res://gdextension_thread_bench/bin/libthreadbench.macos.template_release.framework"
