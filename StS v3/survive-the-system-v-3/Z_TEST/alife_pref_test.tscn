@@ -104,42 +104,57 @@ text = "nStart Life"
 
 [node name="AI_onOFt" type="CheckButton" parent="simulation_UI/Alife" unique_id=1407208386]
 layout_mode = 0
-offset_left = 77.0
-offset_top = 193.0
-offset_right = 121.0
-offset_bottom = 217.0
+offset_left = 109.0
+offset_top = 205.0
+offset_right = 153.0
+offset_bottom = 229.0
 button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/AI_onOFt" unique_id=1761428302]
 layout_mode = 0
-offset_left = -62.0
-offset_top = -1.0
-offset_right = 5.0
-offset_bottom = 22.0
+offset_left = -85.0
+offset_top = -2.0
+offset_right = -18.0
+offset_bottom = 21.0
 text = "Utility AI"
+
+[node name="duplication" type="CheckButton" parent="simulation_UI/Alife" unique_id=837876564]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 182.0
+offset_right = 154.0
+offset_bottom = 206.0
+button_pressed = true
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/duplication" unique_id=1713346598]
+layout_mode = 0
+offset_left = -86.0
+offset_right = 3.0
+offset_bottom = 23.0
+text = "Duplication"
 
 [node name="Bin_ONOFF" type="CheckButton" parent="simulation_UI/Alife" unique_id=528177472]
 layout_mode = 0
-offset_left = 188.0
-offset_top = 192.0
-offset_right = 232.0
-offset_bottom = 216.0
+offset_left = 109.0
+offset_top = 227.0
+offset_right = 153.0
+offset_bottom = 251.0
 button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/Bin_ONOFF" unique_id=235717023]
 layout_mode = 0
-offset_left = -62.0
+offset_left = -84.0
 offset_top = -1.0
-offset_right = 5.0
+offset_right = -17.0
 offset_bottom = 22.0
 text = "Bins"
 
 [node name="Binsize" type="LineEdit" parent="simulation_UI/Alife" unique_id=1387974493]
 layout_mode = 0
-offset_left = 163.0
-offset_top = 217.0
-offset_right = 231.5
-offset_bottom = 248.0
+offset_left = 228.0
+offset_top = 222.0
+offset_right = 296.5
+offset_bottom = 253.0
 placeholder_text = "10"
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/Binsize" unique_id=47742862]
@@ -183,21 +198,58 @@ offset_bottom = 222.0
 theme_override_font_sizes/font_size = 24
 text = "Physics System"
 
-[node name="world_size" type="LineEdit" parent="simulation_UI/World" unique_id=1894068379]
+[node name="Label" type="Label" parent="simulation_UI/World" unique_id=656318523]
 layout_mode = 0
-offset_left = 186.0
-offset_top = 115.0
-offset_right = 254.5
-offset_bottom = 146.0
+offset_left = 13.0
+offset_top = 139.0
+offset_right = 146.0
+offset_bottom = 162.0
+text = "World Size"
+
+[node name="world_x" type="LineEdit" parent="simulation_UI/World/Label" unique_id=1657746108]
+layout_mode = 0
+offset_left = 91.0
+offset_top = -2.0
+offset_right = 159.5
+offset_bottom = 33.0
+placeholder_text = "1100"
+
+[node name="Label" type="Label" parent="simulation_UI/World/Label/world_x" unique_id=899705006]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="simulation_UI/World/Label" unique_id=1286475457]
+layout_mode = 0
+offset_left = 165.0
+offset_top = -2.0
+offset_right = 233.5
+offset_bottom = 33.0
 placeholder_text = "20"
 
-[node name="Label" type="Label" parent="simulation_UI/World/world_size" unique_id=656318523]
+[node name="Label" type="Label" parent="simulation_UI/World/Label/world_y" unique_id=2083883795]
 layout_mode = 0
-offset_left = -141.0
-offset_top = 3.0
-offset_right = -8.0
-offset_bottom = 26.0
-text = "World Size"
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="simulation_UI/World/Label" unique_id=269084611]
+layout_mode = 0
+offset_left = 240.0
+offset_top = -2.0
+offset_right = 308.5
+offset_bottom = 33.0
+placeholder_text = "640"
+
+[node name="Label" type="Label" parent="simulation_UI/World/Label/world_z" unique_id=1822019927]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
 visible = false
@@ -379,7 +431,6 @@ text = "Alife"
 [node name="Button_2" type="Button" parent="simulation_UI/Panel/HBoxContainer" unique_id=1560961543]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-disabled = true
 toggle_mode = true
 text = "World"
 
@@ -399,9 +450,12 @@ text = "Hide Interface"
 [connection signal="text_submitted" from="simulation_UI/Alife/maxLife" to="." method="_on_max_life_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/Alife/nstartLife" to="." method="_on_nstart_life_text_submitted"]
 [connection signal="toggled" from="simulation_UI/Alife/AI_onOFt" to="." method="_on_ai_on_o_ft_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/duplication" to="." method="_on_duplication_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Bin_ONOFF" to="." method="_on_bin_onoff_toggled"]
 [connection signal="text_submitted" from="simulation_UI/Alife/Binsize" to="." method="_on_binsize_text_submitted"]
-[connection signal="text_submitted" from="simulation_UI/World/world_size" to="." method="_on_world_size_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/Label/world_x" to="." method="_on_world_x_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/Label/world_y" to="." method="_on_world_y_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/Label/world_z" to="." method="_on_world_z_text_submitted"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonVisualisation" to="." method="_on_button_visualisation_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonBinVisualisation2" to="." method="_on_button_bin_visualisation_2_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonFlowVisualisation3" to="." method="_on_button_visualisation_toggled"]

@@ -111,6 +111,24 @@ func position_conversion(pos):
 	return newpos
 
 
+func update_all3():
+	
+	var t0 := Time.get_ticks_usec()
+	init()
+	var i :=0
+	for posit in alifemanager.cell_start:
+		var t : Transform2D
+		var pos = Vector2(posit.x,posit.z)	*	bin_size	
+
+		t = Transform2D(0.0,pos)
+		#print(pos,posit)			
+		multimesh.set_instance_transform_2d(i,t)
+		var a = clamp(alifemanager.bin_ids_array[posit].size()/5,0.2,.5)
+		multimesh.set_instance_color(i, Color(0.043, 0.586, 0.699, a)) 	
+		i += 1
+
+		
+	multimesh.visible_instance_count = i
 
 func update_all():
 	

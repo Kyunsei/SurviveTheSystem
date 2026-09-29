@@ -5,12 +5,14 @@ var n_start_life =1000 # 100
 var running = false
 var multithread = false
 var _accum := 1.
+var world: World
 
 func init():
+	world = $World
 	$Visual/MultiMeshInstance2D.init()
-	$AlifeManager.init()
+	$AlifeManager.init(world)
 	for i in n_start_life:
-		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),0)
+		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(550,0,320))+Vector3(550,0,320),randf_range(0.0,5.0),0)
 	'for i in n_start_life:
 		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),1)
 	for i in n_start_life:
@@ -33,9 +35,11 @@ func _process(delta: float) -> void:
 				_accum = 0.0
 				display_general_perf()
 				diplay_alife_perf()
-			if Engine.get_frames_per_second() < 10:
-				simulation_speed = 0
-				$simulation_UI/speed.text = "0"
+			if Engine.get_frames_per_second() < 30:
+				$AlifeManager.duplicate_on = false
+				$simulation_UI/Alife/duplication.button_pressed = false
+				#simulation_speed = 0
+				#$simulation_UI/speed.text = "0"
 			
 	
 
@@ -56,13 +60,13 @@ func run_simulation(delta):
 		#	$AlifeManager.run_simulation(delta,simulation_speed)
 
 	else:
-		if $AlifeManager.AI_on:
-			$AlifeManager.run_simulation_multithread(delta,simulation_speed)
-		else:
-			$AlifeManager.run_simulation_multithread2(delta,simulation_speed)
+		#if $AlifeManager.AI_on:
+		$AlifeManager.run_simulation_multithread(delta,simulation_speed)
+		#else:
+		#	$AlifeManager.run_simulation_multithread2(delta,simulation_speed)
 
 func display_general_perf() -> void:
-			%Label.text = "Simulation stop when reaching <10 FPS \n"
+			%Label.text = "Duplication stop when reaching <30 FPS \n"
 			%Label.text += "\nFPS: " + str(Engine.get_frames_per_second())
 			%Label.text += "\nAlife_system:  %2d" % ($AlifeManager.main_usec/1000.0)
 			%Label.text += "\nnLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
@@ -129,10 +133,6 @@ func _on_run_cpp_pressed() -> void:
 	pass # Replace with function body.
 
 
-func _on_world_size_text_submitted(new_text: String) -> void:
-	var value = float(new_text)
-	$World.size = Vector3(value,value,value)
-
 
 
 
@@ -177,7 +177,8 @@ func _on_ai_on_o_ft_toggled(toggled_on: bool) -> void:
 
 
 func _on_binsize_text_submitted(new_text: String) -> void:
-	$AlifeManager.bin_size = float(new_text)
+	$AlifeManager.cell_size = float(new_text)
+	$AlifeManager.init_GRID($World.size)
 	#$AlifeManager.set_bin
 
 
@@ -215,3 +216,22 @@ func _on_button_3_toggled(toggled_on: bool) -> void:
 
 		$simulation_UI/Panel/HBoxContainer/Button_1.button_pressed = false
 		$simulation_UI/Panel/HBoxContainer/Button_2.button_pressed = false
+
+
+func _on_duplication_toggled(toggled_on: bool) -> void:
+	$AlifeManager.duplicate_on = toggled_on
+
+
+func _on_world_y_text_submitted(new_text: String) -> void:
+	$World.size.y = float(new_text)
+	$AlifeManager.init_GRID($World.size)
+
+
+func _on_world_z_text_submitted(new_text: String) -> void:
+	$World.size.z = float(new_text)
+	$AlifeManager.init_GRID($World.size)
+
+
+func _on_world_x_text_submitted(new_text: String) -> void:
+	$World.size.x = float(new_text)
+	$AlifeManager.init_GRID($World.size)
