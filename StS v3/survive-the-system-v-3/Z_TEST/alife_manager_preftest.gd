@@ -210,7 +210,7 @@ func validate_grid(position_array: PackedVector3Array) -> void:
 	print("GRID: ", GRID_W, " x ", GRID_H, " x ", GRID_D, "   NUM_CELLS = ", NUM_CELLS)
 
 
-func run_simulation(delta, sim_speed):
+func run_simulation(delta: float, sim_speed: float):
 	bin_update_usec = 0.0
 	bin_action_usec = 0.0 
 	bin_screen_usec = 0.0
@@ -226,8 +226,8 @@ func run_simulation(delta, sim_speed):
 		build_grid(position_array)
 		bin_update_usec =  Time.get_ticks_usec() - bin_t0
 		for i in active_alife_array.size():
-
 			bin_t0 = Time.get_ticks_usec()
+
 			var pos_i := position_array[i]
 			var c := current_cell_id[i]
 
@@ -254,10 +254,6 @@ func run_simulation(delta, sim_speed):
 						if pos_i.distance_squared_to(sorted_pos[s]) < 100:# RADIUS_SQ:
 							cc += 1
 			bin_screen_usec +=  Time.get_ticks_usec() - bin_t0
-
-
-	
-
 										
 			var bin_t1 = Time.get_ticks_usec()
 			if cc >= 10  and cc <20:
@@ -333,13 +329,13 @@ func run_simulation(delta, sim_speed):
 	if !AI_on:
 		#var bounds_max := Vector3(GRID_W, GRID_H, GRID_D) * cell_size
 		for i in active_alife_array.size():
-			current_energy_array[i] += (1) * delta * sim_speed #* active_alife_array[i]
+			current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
 			if current_energy_array[i] >= 5:
 				if duplicate_on:
 					temp_spawn_id.append(i)
 				current_energy_array[i] -= 5
 							
-			current_energy_array[i] += -0.5 * delta * sim_speed #* active_alife_array[i]
+			current_energy_array[i] += -0.5 *  0.16 * 1 #* active_alife_array[i]
 					#WRAP or CLAMP
 			#if !wrap : 
 			#position_array[i] = position_array[i].clamp(Vector3.ZERO, bounds_max)
@@ -357,7 +353,7 @@ func run_simulation(delta, sim_speed):
 	total_time += 1
 	main_usec = Time.get_ticks_usec() - t0
 
-func run_plant_simulation(delta, sim_speed)	:
+func run_plant_simulation(delta: float, sim_speed: float)	:
 	var n := _jitter.size()
 	var temp_spawn_id : PackedInt32Array
 	var t0 := Time.get_ticks_usec()
@@ -410,7 +406,7 @@ func run_simulation_multithread(delta, sim_speed):
 	total_time += 1
 	main_usec = Time.get_ticks_usec() - t0
 
-func run_simulation_multithread2(delta, sim_speed):
+func run_simulation_multithread2(delta: float, sim_speed: float):
 	mouse_target =  Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
 	gid = WorkerThreadPool.add_group_task(doChunk, chunk_count, chunk_count, true)	
 	var t0 := Time.get_ticks_usec()
