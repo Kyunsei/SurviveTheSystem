@@ -11,7 +11,7 @@ extends Node2D
 #TODO optimise AI
 
 ##Simulation par
-var maxLife = 8000 # 0
+var maxLife = 0 # 0
 var time := 0.0
 var dt := 0.0#.32
 var time_counter := 1
@@ -215,32 +215,18 @@ func run_simulation(delta, sim_speed):
 	bin_action_usec = 0.0 
 	bin_screen_usec = 0.0
 	main_usec = 0.0
-	uai_usec = 0.0
-	
+	uai_usec = 0.0	
 	var t0 := Time.get_ticks_usec()
 	var j := _jhead	
 	var n := _jitter.size()
-	var dir : Vector3
 	var temp_spawn_id : PackedInt32Array
 	
-	#AI
-	mouse_target =  Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
-	var full := 0.0
-	var hungry := 0.0
-	var target_far := 0.0
-	var target_close  := 0.0
-	var best_action := 0
-	
-	var bin_t0 = Time.get_ticks_usec()
 	if bin_on:
+		var bin_t0 = Time.get_ticks_usec()
 		build_grid(position_array)
-	bin_update_usec =  Time.get_ticks_usec() - bin_t0
-	
-	
-	for i in active_alife_array.size():
-		
-		#TODO bin things
-		if bin_on:
+		bin_update_usec =  Time.get_ticks_usec() - bin_t0
+		for i in active_alife_array.size():
+
 			bin_t0 = Time.get_ticks_usec()
 			var pos_i := position_array[i]
 			var c := current_cell_id[i]
@@ -284,9 +270,18 @@ func run_simulation(delta, sim_speed):
 				color_array[i]= Color(0.75, 0.78, 0.187, 1.0)
 
 			bin_action_usec +=  Time.get_ticks_usec() - bin_t1
-		
-		
-		if AI_on:
+	if AI_on:
+		var bounds_max := Vector3(GRID_W, GRID_H, GRID_D) * cell_size
+		mouse_target =  Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
+		var full := 0.0
+		var hungry := 0.0
+		var target_far := 0.0
+		var target_close  := 0.0
+		var best_action := 0
+		var dir : Vector3
+
+		for i in active_alife_array.size():
+
 			var uai_t0 = Time.get_ticks_usec()
 			var pi := position_array[i]
 			var ei := current_energy_array[i]
@@ -316,7 +311,7 @@ func run_simulation(delta, sim_speed):
 			match best_action:
 				Action.EAT:
 					current_energy_array[i] += (1) * delta * sim_speed #* active_alife_array[i]
-					position_array[i] += _jitter[j]  
+					pi += _jitter[j]  
 					j += 1
 					if j >= n:
 						j = 0
@@ -328,49 +323,73 @@ func run_simulation(delta, sim_speed):
 				
 				Action.MOVE:
 					dir = diff.normalized() * sp_Action_weight[species_id[i]]
-					position_array[i] += dir * 2
+					pi += dir * 2
+			current_energy_array[i] += -0.5 * delta * sim_speed #* active_alife_array[i]
+			#WRAP or CLAMP
+			#if !wrap : 
+			position_array[i] = pi.clamp(Vector3.ZERO, bounds_max)
+
 			uai_usec +=  Time.get_ticks_usec() - uai_t0
-		else:
+	if !AI_on:
+		#var bounds_max := Vector3(GRID_W, GRID_H, GRID_D) * cell_size
+		for i in active_alife_array.size():
 			current_energy_array[i] += (1) * delta * sim_speed #* active_alife_array[i]
 			if current_energy_array[i] >= 5:
 				if duplicate_on:
 					temp_spawn_id.append(i)
 				current_energy_array[i] -= 5
-			
-				
-		current_energy_array[i] += -0.5 * delta * sim_speed #* active_alife_array[i]
-				#WRAP or CLAMP
-		#if !wrap : 
-		position_array[i].x = clamp(position_array[i].x, 0.0 , GRID_W*cell_size)
-		position_array[i].y = clamp(position_array[i].y, 0.0 , GRID_H*cell_size)
-		position_array[i].z = clamp(position_array[i].z, 0.0 , GRID_D*cell_size)
+							
+			current_energy_array[i] += -0.5 * delta * sim_speed #* active_alife_array[i]
+					#WRAP or CLAMP
+			#if !wrap : 
+			#position_array[i] = position_array[i].clamp(Vector3.ZERO, bounds_max)
 
-		
-		
-		if flow_on:
-			pass
-			'if flowbin_dic.has(current_bin_id[i]):
-				flowbin_dic[current_bin_id[i]] += 1
-			else:
-				flowbin_dic[current_bin_id[i]] = 1'
-
-	
-
-	
 	_jhead = j
+	
 	if duplicate_on:
 		for i in temp_spawn_id:
 			Build_New_Life(pick_random_position(Vector3(15,0,15)) + position_array[i],0.0, species_id[i],color_array[i],)
 
-	
-	if flow_on:
-		flow_diffusion()
-
+	'if flow_on:
+		flow_diffusion()'
 
 	time += delta
 	total_time += 1
 	main_usec = Time.get_ticks_usec() - t0
+
+func run_plant_simulation(delta, sim_speed)	:
+	var n := _jitter.size()
+	var temp_spawn_id : PackedInt32Array
+	var t0 := Time.get_ticks_usec()
+	var j := _jhead	
+	for i in entity_count:
+		current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
+		#position_array[i] +=  _jitter[j] #* amp
+		#j+= 1
+		#if j>= n:
+		#	j= 0
+		if current_energy_array[i] > 5:
+			if duplicate_on:
+				temp_spawn_id.append(i)		
+			#Build_New_Life(pick_random_position(Vector3(5,0,5) + position_array[i]))
+			current_energy_array[i] -= 5
+		current_energy_array[i] -= 0.5 * 0.16 * 1 #* active_alife_array[i]
+
+	#	position_array[i].x = clamp(position_array[i].x, 0.0 , GRID_W*cell_size)
+	#	position_array[i].y = clamp(position_array[i].y, 0.0 , GRID_H*cell_size)
+	#	position_array[i].z = clamp(position_array[i].z, 0.0 , GRID_D*cell_size)
+
+		
+	_jhead = j
 	
+	if duplicate_on:
+		for i in temp_spawn_id:
+			Build_New_Life(pick_random_position(Vector3(15,0,15)) + position_array[i],0.0, species_id[i],color_array[i],)
+
+	time += delta
+	total_time += 1
+	main_usec = Time.get_ticks_usec() - t0
+
 
 func run_simulation_multithread(delta, sim_speed):
 	var bin_t0 = Time.get_ticks_usec()
@@ -390,7 +409,7 @@ func run_simulation_multithread(delta, sim_speed):
 	time += delta
 	total_time += 1
 	main_usec = Time.get_ticks_usec() - t0
-'
+
 func run_simulation_multithread2(delta, sim_speed):
 	mouse_target =  Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
 	gid = WorkerThreadPool.add_group_task(doChunk, chunk_count, chunk_count, true)	
@@ -403,7 +422,7 @@ func run_simulation_multithread2(delta, sim_speed):
 
 	time += delta
 	total_time += 1
-	main_usec = Time.get_ticks_usec() - t0'
+	main_usec = Time.get_ticks_usec() - t0
 	
 
 
@@ -431,14 +450,11 @@ func run_chunk_simulation(chunk: int) -> void:
 	
 	
 	
-	for i in range(from, to):
-		pi = position_array[i]
-		ei = current_energy_array[i]
-		diff = pi-mouse_target
-		dist = diff.length()
+	
 		
 		#homeostasis 
-		if bin_on:
+	if bin_on:
+		for i in range(from, to):
 			#var bin_t0 = Time.get_ticks_usec()
 			var pos_i := position_array[i]
 			var c := current_cell_id[i]
@@ -478,10 +494,13 @@ func run_chunk_simulation(chunk: int) -> void:
 				color_array[i]= Color(0.75, 0.78, 0.187, 1.0)
 			#bin_action_usec +=  Time.get_ticks_usec() - bin_t1
 
-
-
-		if AI_on:
-			current_energy_array[i] -= 0.5* 0.016 * 1
+	if AI_on:
+		var bounds_max := Vector3(GRID_W, GRID_H, GRID_D) * cell_size
+		for i in range(from, to):
+			pi = position_array[i]
+			ei = current_energy_array[i]
+			diff = pi-mouse_target
+			dist = diff.length()
 
 		#Consideration
 			full =clampf(current_energy_array[i] / 5.0, 0.0, 1.0)
@@ -519,17 +538,23 @@ func run_chunk_simulation(chunk: int) -> void:
 				Action.MOVE:
 					dir =  diff.normalized()
 					position_array[i] += dir * 2
-		else:
-			current_energy_array[i] += (1-0.5) * 0.16 * 1 * active_alife_array[i]
+			current_energy_array[i] -= 0.5* 0.016 * 1
+			position_array[i] = pi.clamp(Vector3.ZERO, bounds_max)
+			
+			
+	else:
+		var bounds_max := Vector3(GRID_W, GRID_H, GRID_D) * cell_size
+		for i in range(from, to):
+			current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
 			if current_energy_array[i] > 5:
 				if duplicate_on:
 					local_pending_spawn_id.append(i)		
 				current_energy_array[i] -= 5	
+			current_energy_array[i] += -0.5 * 0.16 * 1 #* active_alife_array[i]
+
 		#WRAP or CLAMP
 		#if !wrap : 
-		position_array[i].x = clamp(position_array[i].x, 0.0 , GRID_W*cell_size)
-		position_array[i].y = clamp(position_array[i].y, 0.0 , GRID_H*cell_size)
-		position_array[i].z = clamp(position_array[i].z, 0.0 , GRID_D*cell_size)
+			#position_array[i] = position_array[i].clamp(Vector3.ZERO, bounds_max)
 
 	
 	if duplicate_on:
@@ -540,38 +565,46 @@ func run_chunk_simulation(chunk: int) -> void:
 		
 	chunk_usec[chunk] = Time.get_ticks_usec() - t0
 	chunk_tid[chunk] = OS.get_thread_caller_id()	
-'
+
 func doChunk(chunk: int) -> void:
-	var n := _jitter.size()
+	#var n := _jitter.size()
 	var local_pending_spawn_id : PackedInt32Array
 	var t0 := Time.get_ticks_usec()
 	var from := chunk * chunk_size
 	var to := mini(from + chunk_size, entity_count)
 	
 	#var amp := drift_speed * delta
-	var j := (from + total_time) % n
+	#var j := (from + total_time) % n
 	for i in range(from, to):
-		current_energy_array[i] += (1-0.5) * 0.16 * 1 * active_alife_array[i]
-		position_array[i] +=  _jitter[j] #* amp
-		j+= 1
-		if j>= n:
-			j= 0
+		current_energy_array[i] += 1 * 0.16 * 1 #* active_alife_array[i]
+		#position_array[i] +=  _jitter[j] #* amp
+		#j+= 1
+		#if j>= n:
+		#	j= 0
 		#current_energy_array[i] -= 0.5 * 0.16 * 1 * active_alife_array[i]
 		if current_energy_array[i] > 5:
-			local_pending_spawn_id.append(i)		
+			if duplicate_on:
+
+				local_pending_spawn_id.append(i)		
 			#Build_New_Life(pick_random_position(Vector3(5,0,5) + position_array[i]))
 			current_energy_array[i] -= 5
+		current_energy_array[i] += -0.5 * 0.16 #* 1 * active_alife_array[i]
+
 	#_jhead = j
+	#	position_array[i].x = clamp(position_array[i].x, 0.0 , GRID_W*cell_size)
+	#	position_array[i].y = clamp(position_array[i].y, 0.0 , GRID_H*cell_size)
+	#	position_array[i].z = clamp(position_array[i].z, 0.0 , GRID_D*cell_size)
 
 		#spA.update(self, i, 0.16, 1)
 
-	mutex.lock()
-	for i in local_pending_spawn_id:
-		pending_spawn_id.append(i)
-	mutex.unlock()
+	if duplicate_on:
+		mutex.lock()
+		for i in local_pending_spawn_id:
+			pending_spawn_id.append(i)
+		mutex.unlock()
 	
 	chunk_usec[chunk] = Time.get_ticks_usec() - t0
-	chunk_tid[chunk] = OS.get_thread_caller_id()'	
+	chunk_tid[chunk] = OS.get_thread_caller_id()
 	
 	
 

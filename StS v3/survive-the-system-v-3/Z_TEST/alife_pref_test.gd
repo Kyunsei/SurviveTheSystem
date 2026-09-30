@@ -1,7 +1,7 @@
 extends Node2D
 
 var simulation_speed = 1
-var n_start_life =1000 # 100
+var n_start_life =500000 # 100
 var running = false
 var multithread = false
 var _accum := 1.
@@ -20,6 +20,7 @@ func init():
 
 	$AlifeManager.setup()
 	$Visual/MultiMeshInstance2D.setup() #this was for buffer
+	#await get_tree().create_timer(1.0).timeout
 	running = true
 	
 
@@ -51,19 +52,20 @@ func run_visualisation():
 	if $Visual/MultiMesh_BIN.activated:
 		$Visual/MultiMesh_BIN.update_all()
 
-
+var plant_only := false
 func run_simulation(delta):
 	if !multithread:
 		#if $AlifeManager.AI_on:
-		$AlifeManager.run_simulation(delta,simulation_speed)
-		#else:
-		#	$AlifeManager.run_simulation(delta,simulation_speed)
+		if plant_only:
+			$AlifeManager.run_plant_simulation(delta,simulation_speed)
+		else:
+			$AlifeManager.run_simulation(delta,simulation_speed)
 
 	else:
-		#if $AlifeManager.AI_on:
-		$AlifeManager.run_simulation_multithread(delta,simulation_speed)
-		#else:
-		#	$AlifeManager.run_simulation_multithread2(delta,simulation_speed)
+		if !plant_only:
+			$AlifeManager.run_simulation_multithread(delta,simulation_speed)
+		else:
+			$AlifeManager.run_simulation_multithread2(delta,simulation_speed)
 
 func display_general_perf() -> void:
 			%Label.text = "Duplication stop when reaching <30 FPS \n"
@@ -235,3 +237,7 @@ func _on_world_z_text_submitted(new_text: String) -> void:
 func _on_world_x_text_submitted(new_text: String) -> void:
 	$World.size.x = float(new_text)
 	$AlifeManager.init_GRID($World.size)
+
+
+func _on_plant_on_toggled(toggled_on: bool) -> void:
+	plant_only = toggled_on

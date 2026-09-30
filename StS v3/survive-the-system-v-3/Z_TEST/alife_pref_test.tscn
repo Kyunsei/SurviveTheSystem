@@ -50,7 +50,6 @@ layout_mode = 3
 anchors_preset = 0
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
-visible = false
 anchors_preset = 0
 offset_top = 4.0
 offset_right = 40.0
@@ -148,6 +147,21 @@ offset_top = -1.0
 offset_right = -17.0
 offset_bottom = 22.0
 text = "Bins"
+
+[node name="Plant_on" type="CheckButton" parent="simulation_UI/Alife" unique_id=302973259]
+layout_mode = 0
+offset_left = 110.0
+offset_top = 249.0
+offset_right = 154.0
+offset_bottom = 273.0
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Plant_on" unique_id=1747171162]
+layout_mode = 0
+offset_left = -84.0
+offset_top = -1.0
+offset_right = -17.0
+offset_bottom = 22.0
+text = "Plant only"
 
 [node name="Binsize" type="LineEdit" parent="simulation_UI/Alife" unique_id=1387974493]
 layout_mode = 0
@@ -452,6 +466,7 @@ text = "Hide Interface"
 [connection signal="toggled" from="simulation_UI/Alife/AI_onOFt" to="." method="_on_ai_on_o_ft_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/duplication" to="." method="_on_duplication_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Bin_ONOFF" to="." method="_on_bin_onoff_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/Plant_on" to="." method="_on_plant_on_toggled"]
 [connection signal="text_submitted" from="simulation_UI/Alife/Binsize" to="." method="_on_binsize_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/World/Label/world_x" to="." method="_on_world_x_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/World/Label/world_y" to="." method="_on_world_y_text_submitted"]
