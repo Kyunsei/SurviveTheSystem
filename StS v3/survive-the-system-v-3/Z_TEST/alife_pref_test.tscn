@@ -50,6 +50,7 @@ layout_mode = 3
 anchors_preset = 0
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
+visible = false
 anchors_preset = 0
 offset_top = 4.0
 offset_right = 40.0

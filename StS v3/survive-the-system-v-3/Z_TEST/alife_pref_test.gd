@@ -1,7 +1,7 @@
 extends Node2D
 
 var simulation_speed = 1
-var n_start_life =500000 # 100
+var n_start_life =1000 # 100
 var running = false
 var multithread = false
 var _accum := 1.

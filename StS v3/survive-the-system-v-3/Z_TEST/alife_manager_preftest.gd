@@ -216,7 +216,7 @@ func run_simulation(delta: float, sim_speed: float):
 	bin_screen_usec = 0.0
 	main_usec = 0.0
 	uai_usec = 0.0	
-	var t0 := Time.get_ticks_usec()
+	var t00 := Time.get_ticks_usec()
 	var j := _jhead	
 	var n := _jitter.size()
 	var temp_spawn_id : PackedInt32Array
@@ -351,7 +351,7 @@ func run_simulation(delta: float, sim_speed: float):
 
 	time += delta
 	total_time += 1
-	main_usec = Time.get_ticks_usec() - t0
+	main_usec = Time.get_ticks_usec() - t00
 
 func run_plant_simulation(delta: float, sim_speed: float)	:
 	var n := _jitter.size()
@@ -521,7 +521,7 @@ func run_chunk_simulation(chunk: int) -> void:
 			match best_action:
 				Action.EAT:
 					current_energy_array[i] += (1) * 0.016 * 1 #* active_alife_array[i]
-					position_array[i] += _jitter[j] 
+					pi += _jitter[j] 
 					j += 1
 					if j >= n:
 						j = 0
@@ -533,8 +533,8 @@ func run_chunk_simulation(chunk: int) -> void:
 				
 				Action.MOVE:
 					dir =  diff.normalized()
-					position_array[i] += dir * 2
-			current_energy_array[i] -= 0.5* 0.016 * 1
+					pi += dir * 2
+			current_energy_array[i] -= 0.5* 0.016 * 1				
 			position_array[i] = pi.clamp(Vector3.ZERO, bounds_max)
 			
 			
