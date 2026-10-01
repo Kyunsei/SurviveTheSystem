@@ -46,11 +46,11 @@ func _ready() -> void:
 	#buff = multimesh.get_buffer()
 
 
-func init():
+func init(cell_size):
 	multimesh.visible_instance_count = 0
 	var quad = QuadMesh.new()
-	quad.size = Vector2(alifemanager.bin_size-1, alifemanager.bin_size-1)
-	bin_size = alifemanager.bin_size
+	quad.size = Vector2(cell_size-1, cell_size-1)
+	#bin_size = alifemanager.bin_size
 	multimesh.mesh = quad
 
 
@@ -111,42 +111,54 @@ func position_conversion(pos):
 	return newpos
 
 
-func update_all3():
-	
-	var t0 := Time.get_ticks_usec()
-	init()
-	var i :=0
-	for posit in alifemanager.cell_start:
-		var t : Transform2D
-		var pos = Vector2(posit.x,posit.z)	*	bin_size	
 
+
+func update_all2(value_array, W:int,H:int,D:int,cell_size:float):
+	var t0 := Time.get_ticks_usec()
+	init(cell_size)
+	var cc:= 0
+	var ii:= 0
+
+	for i in value_array:
+		var cx := cc % W
+		@warning_ignore("integer_division")
+		var cy := (cc / W) % H
+		@warning_ignore("integer_division")
+		var cz := cc / (W*H)
+		cc+=1
+		
+		if cy >0 : #only 2D now
+			continue
+			
+		var t : Transform2D
+		var pos = Vector2(cx,cz)*	cell_size	
+		
+		#print(pos)
 		t = Transform2D(0.0,pos)
 		#print(pos,posit)			
 		multimesh.set_instance_transform_2d(i,t)
-		var a = clamp(alifemanager.bin_ids_array[posit].size()/5,0.2,.5)
-		multimesh.set_instance_color(i, Color(0.043, 0.586, 0.699, a)) 	
-		i += 1
-
+		#var a = clamp(alifemanager.bin_ids_array[posit].size()/5,0.2,.5)
+		multimesh.set_instance_color(ii, Color(0.043, 0.586, 0.699, 1)) 	
+		ii+=1
 		
-	multimesh.visible_instance_count = i
-
-func update_all():
-	
-	var t0 := Time.get_ticks_usec()
-	init()
-	var i :=0
-	for posit in alifemanager.bin_ids_array:
-		var t : Transform2D
-		var pos = Vector2(posit.x,posit.z)	*	bin_size	
-
-		t = Transform2D(0.0,pos)
-		#print(pos,posit)			
-		multimesh.set_instance_transform_2d(i,t)
-		var a = clamp(alifemanager.bin_ids_array[posit].size()/5,0.2,.5)
-		multimesh.set_instance_color(i, Color(0.043, 0.586, 0.699, a)) 	
-		i += 1
-
-		
-	multimesh.visible_instance_count = i
-		
+	multimesh.visible_instance_count = ii
 	update_all_usec = Time.get_ticks_usec() - t0 #work because calle din second
+
+
+func update_all(value_array, W: int, H: int, D: int, cell_size: float,col:Color) -> void:
+	var t0 := Time.get_ticks_usec()
+	init(cell_size)
+	var ii := 0
+
+	for cz in D:
+		for cx in W:
+			var c := cx + W * H * cz          # y = 0 layer
+			var v = clamp(value_array[c] ,0.25,.8)         # the cell's value, if needed
+			var pos := Vector2(cx, cz) * cell_size
+			col.a =v
+			multimesh.set_instance_transform_2d(ii, Transform2D(0.0, pos))
+			multimesh.set_instance_color(ii, col)
+			ii += 1
+
+	multimesh.visible_instance_count = ii
+	update_all_usec = Time.get_ticks_usec() - t0

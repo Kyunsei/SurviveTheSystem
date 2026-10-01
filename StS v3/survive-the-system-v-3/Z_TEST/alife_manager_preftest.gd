@@ -17,10 +17,11 @@ var dt := 0.0#.32
 var time_counter := 1
 var total_time : = 0
 
+#cross reference
+var world: World
 
 #ECS STATS
 var position_array : PackedVector3Array
-
 var current_energy_array : PackedFloat64Array
 var active_alife_array : PackedInt32Array  #To reuse some 
 var free_indices : Array =[]
@@ -28,10 +29,6 @@ var entity_count : int
 var active_entity_count : int
 var species_id : PackedInt32Array
 var color_array : PackedColorArray
-
-
-
-
 
 #### Duplicate
 var duplicate_on := true
@@ -57,7 +54,7 @@ var mouse_target : Vector3
 
 ### ALIFE GRID - agent - agent close detection
 
-#old?
+#old? CHECK THSI ONE?
 var LifeBin_array : Array[PackedInt32Array]  #HERE CAN BE COOL TO SEE IF REORDERING MATTERS
 
 var bin_on = true
@@ -127,7 +124,7 @@ func _ready() -> void:
 	for k in JITTER_COUNT:
 		_jitter[k] = Vector3(randf_range(-1.0,1.0),0,randf_range(-1.0,1.0))
 
-func init(world):
+func init(worldd):
 	#time
 	total_time = 0
 	entity_count = 0
@@ -155,7 +152,10 @@ func init(world):
 	#FLOW not yet there
 	flowbin_dic.clear()	
 	
+	##WORLD
+	world = worldd
 	init_GRID(world.size)
+	
 
 
 func init_GRID(world_size):
@@ -176,38 +176,7 @@ func setup():  #FOR multhithread redimension
 	chunk_usec.resize(chunk_count)
 	chunk_tid.resize(chunk_count)
 
-func validate_grid(position_array: PackedVector3Array) -> void:
-	var n := position_array.size()
-	if cell_start[NUM_CELLS] != n:
-		push_error("prefix sum wrong: last = %d, n = %d" % [cell_start[NUM_CELLS], n])
 
-	# every cell's range should hold only particles of that cell
-	for c in NUM_CELLS:
-		for s in range(cell_start[c], cell_start[c + 1]):
-			var i := cell_items[s]
-			if current_cell_id[i] != c:
-				push_error("particle %d stored in cell %d but belongs to %d" % [i, c, current_cell_id[i]])
-			if sorted_pos[s] != position_array[i]:
-				push_error("sorted_pos out of sync at %d" % s)
-
-	# grid count vs brute force for particle 0
-	var p := position_array[0]
-	var brute := 0
-	for k in n:
-		if p.distance_squared_to(position_array[k]) < 64:
-			brute += 1
-	print("brute force count for particle 0: ", brute)	
-	var c0 := current_cell_id[0]
-	print("particle_cell[0] = ", c0, "   current_cell_id[0] = ", current_cell_id[0])
-	print("own cell range: ", cell_start[c0], " -> ", cell_start[c0 + 1])
-
-	var cx := c0 % GRID_W
-	var cy := (c0 / GRID_W) % GRID_H
-	var cz := c0 / GRID_WH
-	print("decoded: ", Vector3i(cx, cy, cz),
-		"   re-encoded: ", cx + GRID_W * (cy + GRID_H * cz))
-	print("GRID_WH = ", GRID_WH, "   GRID_W * GRID_H = ", GRID_W * GRID_H)
-	print("GRID: ", GRID_W, " x ", GRID_H, " x ", GRID_D, "   NUM_CELLS = ", NUM_CELLS)
 
 
 func run_simulation(delta: float, sim_speed: float):
@@ -220,6 +189,12 @@ func run_simulation(delta: float, sim_speed: float):
 	var j := _jhead	
 	var n := _jitter.size()
 	var temp_spawn_id : PackedInt32Array
+	var temp_remove_id : PackedInt32Array
+	#SUN
+	world.build_sun_grid(position_array)
+	#print(Time.get_ticks_usec()- t00)
+	world.distribute_sun(current_energy_array, active_alife_array)
+
 	
 	if bin_on:
 		var bin_t0 = Time.get_ticks_usec()
@@ -329,13 +304,18 @@ func run_simulation(delta: float, sim_speed: float):
 	if !AI_on:
 		#var bounds_max := Vector3(GRID_W, GRID_H, GRID_D) * cell_size
 		for i in active_alife_array.size():
-			current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
+			if active_alife_array[i] == 0:
+				continue
+			#current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
+			current_energy_array[i] += -0.5 *  0.16 * 1 #* active_alife_array[i]
+
 			if current_energy_array[i] >= 5:
 				if duplicate_on:
 					temp_spawn_id.append(i)
 				current_energy_array[i] -= 5
-							
-			current_energy_array[i] += -0.5 *  0.16 * 1 #* active_alife_array[i]
+
+			if current_energy_array[i] < 0 :
+				temp_remove_id.append(i)
 					#WRAP or CLAMP
 			#if !wrap : 
 			#position_array[i] = position_array[i].clamp(Vector3.ZERO, bounds_max)
@@ -346,6 +326,8 @@ func run_simulation(delta: float, sim_speed: float):
 		for i in temp_spawn_id:
 			Build_New_Life(pick_random_position(Vector3(15,0,15)) + position_array[i],0.0, species_id[i],color_array[i],)
 
+	for i in temp_remove_id:
+		Remove_Life(i)
 	'if flow_on:
 		flow_diffusion()'
 
@@ -675,6 +657,7 @@ func Build_New_Life(pos: Vector3, e: float, sp : int, col := Color(0.159, 0.555,
 
 
 func Remove_Life(i):
+	active_alife_array[i]= 0
 	free_indices.append(i)
 	active_entity_count -= 1
 	pending_multimesh_erase_id.append(i)

@@ -9,6 +9,8 @@ var world: World
 
 func init():
 	world = $World
+	world.init()
+
 	$Visual/MultiMeshInstance2D.init()
 	$AlifeManager.init(world)
 	for i in n_start_life:
@@ -48,12 +50,15 @@ var c := 0
 func run_visualisation():
 	if $Visual/MultiMeshInstance2D.activated:
 		$Visual/MultiMeshInstance2D.draw_new_instance($AlifeManager.pending_multimesh_drawn_id)
+		$Visual/MultiMeshInstance2D.erase_instance($AlifeManager.pending_multimesh_erase_id)
+
 		$Visual/MultiMeshInstance2D.update_all_sequentially()
 	if $Visual/MultiMesh_BIN.activated:
-		$Visual/MultiMesh_BIN.update_all()
+		$Visual/MultiMesh_BIN.update_all($World.SUN_GRID,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
 
 var plant_only := false
 func run_simulation(delta):
+	$World.update()
 	if !multithread:
 		#if $AlifeManager.AI_on:
 		if plant_only:
@@ -189,7 +194,7 @@ func _on_bin_onoff_toggled(toggled_on: bool) -> void:
 
 
 func _on_button_bin_visualisation_2_toggled(toggled_on: bool) -> void:
-	$Visual/MultiMesh_BIN.init()
+	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
 	$Visual/MultiMesh_BIN.activated = toggled_on
 		
 
@@ -226,16 +231,19 @@ func _on_duplication_toggled(toggled_on: bool) -> void:
 
 func _on_world_y_text_submitted(new_text: String) -> void:
 	$World.size.y = float(new_text)
+	$World.init()
 	$AlifeManager.init_GRID($World.size)
 
 
 func _on_world_z_text_submitted(new_text: String) -> void:
 	$World.size.z = float(new_text)
+	$World.init()
 	$AlifeManager.init_GRID($World.size)
 
 
 func _on_world_x_text_submitted(new_text: String) -> void:
 	$World.size.x = float(new_text)
+	$World.init()
 	$AlifeManager.init_GRID($World.size)
 
 

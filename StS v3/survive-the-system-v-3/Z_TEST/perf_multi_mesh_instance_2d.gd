@@ -151,6 +151,10 @@ func position_conversion(pos):
 	var newpos = (Vector2(pos.x, pos.z) / world_extent) * panel_size + panel_size / 2
 	return newpos
 
+func erase_instance(idx_arr: PackedInt32Array):
+	for i in idx_arr:
+		multimesh.set_instance_color(i, Color(0.488, 0.077, 0.15, 1.0)) 	
+
 
 func draw_new_instance(idx_arr: PackedInt32Array):
 	var t0 := Time.get_ticks_usec()
@@ -166,9 +170,11 @@ func draw_new_instance(idx_arr: PackedInt32Array):
 		multimesh.set_instance_transform_2d(i,t)
 		#print(i)
 		
-		multimesh.set_instance_color(i, alifemanager.color_array[i]) 	
-	
-		c+=1	
+		#multimesh.set_instance_color(i, alifemanager.color_array[i]) 	
+		multimesh.set_instance_color(i, Color(0.313, 0.66, 0.403, 1.0)) 	
+
+		if i > c:
+			c+=1	
 
 	multimesh.visible_instance_count = c
 	idx_arr.clear()
@@ -222,6 +228,8 @@ func update_array(from: int, to: int):
 
 	var t : Transform2D
 	for i in range(from,to):
+		if alifemanager.active_alife_array[i] == 0:
+				continue
 		pos = alifemanager.position_array[i]#position_conversion(posit)
 		pos2d = Vector2(pos.x,pos.z)			
 		'elif manager.Species_array[c] == AlifeRegistry.SPECIES_ID.SPIDERCRAB:
@@ -233,7 +241,9 @@ func update_array(from: int, to: int):
 		t = Transform2D(1.0,pos2d)
 		#print(pos,posit)			
 		multimesh.set_instance_transform_2d(i,t)
-		multimesh.set_instance_color(i, alifemanager.color_array[i]) 	
+		multimesh.set_instance_color(i, Color(0.313, 0.66, 0.403, 1.0)) 	
+
+		#multimesh.set_instance_color(i, alifemanager.color_array[i]) 	
 
 		
 		i+=1	
