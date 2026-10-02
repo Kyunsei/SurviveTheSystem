@@ -269,12 +269,15 @@ func _on_sunenergy_text_submitted(new_text: String) -> void:
 
 func _on_sun_x_text_submitted(new_text: String) -> void:
 	$World.SUN_cell_size.x = float(new_text)
+	$World.init_SUN_GRID()
 
 func _on_sun_y_text_submitted(new_text: String) -> void:
 	$World.SUN_cell_size.y = float(new_text)
+	$World.init_SUN_GRID()
 
 func _on_sun_z_text_submitted(new_text: String) -> void:
 	$World.SUN_cell_size.z = float(new_text)
+	$World.init_SUN_GRID()
 
 
 func _on_remove_on_toggled(toggled_on: bool) -> void:

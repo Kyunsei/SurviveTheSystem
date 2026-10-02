@@ -25,6 +25,8 @@ var world: World
 var position_array : PackedVector3Array
 var current_energy_array : PackedFloat64Array
 var active_alife_array : PackedInt32Array  #To reuse some 
+var alive_array : PackedInt32Array
+
 var free_indices : Array =[]
 var entity_count : int
 var active_entity_count : int
@@ -136,6 +138,7 @@ func init(worldd):
 	position_array = [] 
 	current_energy_array = [] 
 	active_alife_array = []   #To reuse some 
+	alive_array = []
 	free_indices = [] 
 	pending_multimesh_drawn_id = []
 	pending_multimesh_erase_id = []
@@ -183,6 +186,7 @@ func setup():  #FOR multhithread redimension
 
 
 func run_simulation(delta: float, sim_speed: float):
+
 	bin_update_usec = 0.0
 	bin_action_usec = 0.0 
 	bin_screen_usec = 0.0
@@ -305,7 +309,9 @@ func run_simulation(delta: float, sim_speed: float):
 		for i in active_alife_array.size():
 			if active_alife_array[i] == 0:
 				continue
-			
+			if alive_array[i] == 0:
+				continue
+				
 			if !world.SUN_on:
 				current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
 			
@@ -316,7 +322,8 @@ func run_simulation(delta: float, sim_speed: float):
 				current_energy_array[i] -= 5
 
 			if current_energy_array[i] < 0 :
-				temp_remove_id.append(i)
+				alive_array[i] = 0
+				#temp_remove_id.append(i)
 			
 			#WRAP or CLAMP
 			#if !wrap : 
@@ -327,9 +334,10 @@ func run_simulation(delta: float, sim_speed: float):
 	if duplicate_on:
 		for i in temp_spawn_id:
 			Build_New_Life(pick_random_position(Vector3(15,0,15)) + position_array[i],0.0, species_id[i],color_array[i],)
-
-	for i in temp_remove_id:
-		Remove_Life(i)
+	if remove_on:
+		for i in alive_array.size():
+			if alive_array[i] == 0:
+				Remove_Life(i)
 	'if flow_on:
 		flow_diffusion()'
 
@@ -637,6 +645,7 @@ func Build_New_Life(pos: Vector3, e: float, sp : int, col := Color(0.159, 0.555,
 		current_action.append(0)
 		species_id.append(sp)
 		color_array.append(col)
+		alive_array.append(1) 
 		#current_bin_id.append(get_binID(pos,bin_size,world.size))
 
 		#update_bin_array(i)
@@ -651,6 +660,7 @@ func Build_New_Life(pos: Vector3, e: float, sp : int, col := Color(0.159, 0.555,
 		current_action[i] = 0
 		species_id[i] = sp
 		color_array[i]=col
+		alive_array[i] = 1
 		#current_bin_id[i] = get_binID(pos,bin_size,world.size)
 		#update_bin_array(i)
 
@@ -659,9 +669,10 @@ func Build_New_Life(pos: Vector3, e: float, sp : int, col := Color(0.159, 0.555,
 
 
 func Remove_Life(i):
+	if active_alife_array[i]== 1:
+
 	#TEMP : REMOVE =DEAD need to have two searate to see corps vs dispaear
-	active_alife_array[i]= 0
-	if remove_on:
+		active_alife_array[i]= 0
 		free_indices.append(i)
 		active_entity_count -= 1
 		pending_multimesh_erase_id.append(i)

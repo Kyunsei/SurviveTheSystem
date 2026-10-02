@@ -95,11 +95,11 @@ func build_sun_grid(position_array: PackedVector3Array) -> void:
 		sorted_pos[w] = position_array[i]
 		write_pos[c] = w + 1
 
-func distribute_sun(energy_array,alive_array):
+func distribute_sun(energy_array,alive_array,active_array):
 	for i in SUN_GRID.size():
 		for s in range(cell_start[i], cell_start[i+1]):
 			var idx :=  cell_items[s]
-			if alive_array[idx] == 1:		
+			if alive_array[idx] == 1 and active_array[idx] == 1:		
 				energy_array[idx] += SUN_GRID[i] * 1 * 0.16
 				#print(SUN_GRID[i])
 				SUN_GRID[i] = 0
@@ -115,7 +115,7 @@ func run_world_simulation(alifemanager: AlifeManager, delta,simulation_speed):
 		var ts0 := Time.get_ticks_usec()
 		build_sun_grid(alifemanager.position_array)
 		SUN_GRID.fill(SUN_energy)
-		distribute_sun(alifemanager.current_energy_array,alifemanager.active_alife_array)
+		distribute_sun(alifemanager.current_energy_array,alifemanager.alive_array,alifemanager.active_alife_array)
 		sun_usec = Time.get_ticks_usec()-ts0
 	
 	main_world_usec = Time.get_ticks_usec()-t0

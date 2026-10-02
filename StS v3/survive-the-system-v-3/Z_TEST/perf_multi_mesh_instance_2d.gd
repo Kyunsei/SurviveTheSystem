@@ -151,8 +151,13 @@ func position_conversion(pos):
 	return newpos
 
 func erase_instance(idx_arr: PackedInt32Array):
+	var inactive_pos := Vector3(-10,0,-10)
+	var inactive_pos2D := Vector2(-100,-100)
 	for i in idx_arr:
-		multimesh.set_instance_color(i, Color(0.488, 0.077, 0.15, 1.0)) 	
+		var t := Transform2D(1.0, inactive_pos2D)
+		multimesh.set_instance_transform_2d(i,t)
+		multimesh.set_instance_color(i, Color(0.131, 0.007, 0.019, 1.0)) 	
+		
 	idx_arr.clear()
 
 
@@ -211,13 +216,15 @@ func update_array(from: int, to: int):
 				)'
 		t = Transform2D(1.0,pos2d)
 		#print(pos,posit)			
-		multimesh.set_instance_transform_2d(i,t)
-		if alifemanager.active_alife_array[i] == 0:
-			multimesh.set_instance_color(i, Color(0.488, 0.077, 0.15, .2))
-			#multimesh.set_instance_color(i, Color(0.894, 0.372, 0.496, 1.0))'
- 	
-		else:
-			multimesh.set_instance_color(i, Color(0.313, 0.66, 0.403, 1.0))
+		if alifemanager.active_alife_array[i] ==1:
+			multimesh.set_instance_transform_2d(i,t)
+
+			if alifemanager.alive_array[i] == 0:
+				multimesh.set_instance_color(i, Color(0.488, 0.077, 0.15, .2))
+				#multimesh.set_instance_color(i, Color(0.894, 0.372, 0.496, 1.0))'
+	 	
+			else:
+				multimesh.set_instance_color(i, Color(0.313, 0.66, 0.403, 1.0))
 
 
  	
