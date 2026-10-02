@@ -104,6 +104,9 @@ var chunk_count: int
 var chunk_size: int
 var mutex := Mutex.new()
 
+var spawn_per_chunk : Array[PackedInt32Array] = []
+var remove_per_chunk : Array[PackedInt32Array] = []
+
 #############################
 #for perf of multithread
 var chunk_usec: PackedInt64Array
@@ -163,6 +166,8 @@ func init(worldd):
 	init_GRID(world.size)
 	
 
+	
+
 
 func init_GRID(world_size):
 	var dims := Vector3i((world_size / cell_size).ceil())
@@ -176,11 +181,7 @@ func init_GRID(world_size):
 	write_pos.resize(NUM_CELLS)
 
 
-func setup():  #FOR multhithread redimension
-	@warning_ignore("integer_division")
-	chunk_size = (entity_count + chunk_count - 1) / chunk_count  # ceil
-	chunk_usec.resize(chunk_count)
-	chunk_tid.resize(chunk_count)
+
 
 
 
@@ -336,7 +337,7 @@ func run_simulation(delta: float, sim_speed: float):
 			Build_New_Life(pick_random_position(Vector3(15,0,15)) + position_array[i],0.0, species_id[i],color_array[i],)
 	if remove_on:
 		for i in alive_array.size():
-			if alive_array[i] == 0:
+			if alive_array[i] == 0 and active_alife_array[i] == 1:
 				Remove_Life(i)
 	'if flow_on:
 		flow_diffusion()'
@@ -380,14 +381,26 @@ func run_plant_simulation(delta: float, sim_speed: float)	:
 
 
 func run_simulation_multithread(delta, sim_speed):
+	
 	var bin_t0 = Time.get_ticks_usec()
 	if bin_on:
 		build_grid(position_array)
 	bin_update_usec =  Time.get_ticks_usec() - bin_t0
-	
+	var t0 := Time.get_ticks_usec()
+
+	'if entity_count == 0:
+		return
+	chunk_count = mini(nThread_max, entity_count)'
+	chunk_size = ceili(float(entity_count) / chunk_count) 
+	chunk_usec.resize(chunk_count)
+	chunk_tid.resize(chunk_count)
+	spawn_per_chunk.resize(chunk_count)
+	remove_per_chunk.resize(chunk_count)
+	for c in chunk_count:
+		spawn_per_chunk[c] = PackedInt32Array()
+		remove_per_chunk[c] = PackedInt32Array()
 	mouse_target =  Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
 	gid = WorkerThreadPool.add_group_task(run_chunk_simulation, chunk_count, chunk_count, true)	
-	var t0 := Time.get_ticks_usec()
 	if gid != -1:
 		WorkerThreadPool.wait_for_group_task_completion(gid)
 		gid = -1
@@ -416,31 +429,15 @@ func run_simulation_multithread2(delta: float, sim_speed: float):
 
 
 func run_chunk_simulation(chunk: int) -> void:
+	var _sun_on := world.SUN_on
 	var n := _jitter.size()
 	var local_pending_spawn_id : PackedInt32Array
+	var local_pending_remove_id : PackedInt32Array
 	var t0 := Time.get_ticks_usec()
 	var from := chunk * chunk_size
 	var to := mini(from + chunk_size, entity_count)
 	var j := (from + total_time) % n
-	#AI / ALIFE
-	var local_action_scores : PackedFloat32Array
-	local_action_scores.resize(ACTION_COUNT)
-	var full := 0.0
-	var hungry := 0.0
-	var target_far := 0.0
-	var target_close  := 0.0
-	var best_action := 0
-	var dir : Vector3
-	var pi : Vector3
-	var ei : float
-	var diff : Vector3
-	var dist : float
-	
-	
-	
-	
-		
-		#homeostasis 
+
 	if bin_on:
 		for i in range(from, to):
 			#var bin_t0 = Time.get_ticks_usec()
@@ -483,6 +480,19 @@ func run_chunk_simulation(chunk: int) -> void:
 			#bin_action_usec +=  Time.get_ticks_usec() - bin_t1
 
 	if AI_on:
+		#AI / ALIFE
+		var local_action_scores : PackedFloat32Array
+		local_action_scores.resize(ACTION_COUNT)
+		var full := 0.0
+		var hungry := 0.0
+		var target_far := 0.0
+		var target_close  := 0.0
+		var best_action := 0
+		var dir : Vector3
+		var pi : Vector3
+		var ei : float
+		var diff : Vector3
+		var dist : float
 		var bounds_max := Vector3(GRID_W, GRID_H, GRID_D) * cell_size
 		for i in range(from, to):
 			pi = position_array[i]
@@ -531,26 +541,48 @@ func run_chunk_simulation(chunk: int) -> void:
 			
 			
 	else:
-		var bounds_max := Vector3(GRID_W, GRID_H, GRID_D) * cell_size
 		for i in range(from, to):
-			current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
-			if current_energy_array[i] > 5:
-				if duplicate_on:
-					local_pending_spawn_id.append(i)		
-				current_energy_array[i] -= 5	
-			current_energy_array[i] += -0.5 * 0.16 * 1 #* active_alife_array[i]
-
-		#WRAP or CLAMP
-		#if !wrap : 
-			#position_array[i] = position_array[i].clamp(Vector3.ZERO, bounds_max)
-
+					var _energy:= current_energy_array[i]
+					if active_alife_array[i] == 0:
+						continue
+					if alive_array[i] == 0:
+						continue
+						
+					if !_sun_on:
+						_energy += (1) * 0.16 * 1 #* active_alife_array[i]
+					
+					_energy += -0.5 *  0.16 * 1 #* active_alife_array[i]
+					if _energy >= 5:
+						if duplicate_on:
+							local_pending_spawn_id.append(i)
+						_energy -= 5
+					if _energy < 0 :
+						alive_array[i] = 0
 	
+					current_energy_array[i] = _energy
+
 	if duplicate_on:
+		spawn_per_chunk[chunk] = local_pending_spawn_id
+	if remove_on:
+		for i in range(from, to):
+			if alive_array[i] == 0 and active_alife_array[i] == 1:
+				local_pending_remove_id.append(i)
+				
+		remove_per_chunk[chunk] = local_pending_remove_id	
+		
+	'if duplicate_on:
 		mutex.lock()
 		for i in local_pending_spawn_id:
 			pending_spawn_id.append(i)
 		mutex.unlock()
 		
+	if remove_on:
+		mutex.lock()
+		for i in local_pending_remove_id:
+			if alive_array[i] == 0 and active_alife_array[i] == 1:
+				pending_remove_id.append(i)
+		mutex.unlock()'
+	
 	chunk_usec[chunk] = Time.get_ticks_usec() - t0
 	chunk_tid[chunk] = OS.get_thread_caller_id()	
 
@@ -560,7 +592,7 @@ func doChunk(chunk: int) -> void:
 	var t0 := Time.get_ticks_usec()
 	var from := chunk * chunk_size
 	var to := mini(from + chunk_size, entity_count)
-	
+
 	#var amp := drift_speed * delta
 	#var j := (from + total_time) % n
 	for i in range(from, to):
@@ -618,10 +650,16 @@ func getChunk_perf():
 	
 func Build_and_remove_pendings():
 
+	for c in chunk_count:
+		pending_remove_id.append_array(remove_per_chunk[c])
+		pending_spawn_id.append_array(spawn_per_chunk[c])
+		
 	for i in pending_spawn_id:
 		Build_New_Life(pick_random_position(Vector3(15,0,15)) + position_array[i],0.0, species_id[i])
 	
-	setup()
+	for i in pending_remove_id:
+		Remove_Life(i)	
+
 	pending_spawn_id.clear()
 	pending_remove_id.clear()
 
@@ -669,7 +707,6 @@ func Build_New_Life(pos: Vector3, e: float, sp : int, col := Color(0.159, 0.555,
 
 
 func Remove_Life(i):
-	if active_alife_array[i]== 1:
 
 	#TEMP : REMOVE =DEAD need to have two searate to see corps vs dispaear
 		active_alife_array[i]= 0

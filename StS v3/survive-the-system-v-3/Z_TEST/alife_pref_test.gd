@@ -19,8 +19,8 @@ func init():
 		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),1)
 	for i in n_start_life:
 		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),2)'
-
-	$AlifeManager.setup()
+#	$AlifeManager.setup_chunk()
+	
 	$Visual/MultiMeshInstance2D.setup() #this was for buffer
 	if $Visual/MultiMeshInstance2D.activated:
 		$Visual/MultiMeshInstance2D.draw_new_instance($AlifeManager.pending_multimesh_drawn_id)

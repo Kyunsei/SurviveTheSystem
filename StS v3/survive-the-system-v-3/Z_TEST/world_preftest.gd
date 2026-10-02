@@ -99,10 +99,11 @@ func distribute_sun(energy_array,alive_array,active_array):
 	for i in SUN_GRID.size():
 		for s in range(cell_start[i], cell_start[i+1]):
 			var idx :=  cell_items[s]
-			if alive_array[idx] == 1 and active_array[idx] == 1:		
+			if alive_array[idx] == 1 and active_array[idx] == 1:	
 				energy_array[idx] += SUN_GRID[i] * 1 * 0.16
 				#print(SUN_GRID[i])
 				SUN_GRID[i] = 0
+
 
 #index deadcell/alive cell are mixed
 
