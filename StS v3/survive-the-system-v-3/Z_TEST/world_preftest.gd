@@ -1,6 +1,8 @@
 extends Node2D
 class_name World
 
+#TODO where sun is picked and where life are viusaly doesnt correspond
+
 var size : Vector3
 var default_size = Vector3(1100,20,640)
 # Called when the node enters the scene tree for the first time.
@@ -62,12 +64,13 @@ func build_sun_grid(position_array: PackedVector3Array) -> void:
 	# 1. Count particles per cell
 	for i in n:
 		var p := (position_array[i] - bin_origin) * inv
-		var cx := clampi(floori(p.x), 0, SUN_GRID_W - 1)
-		var cy := clampi(floori(p.y), 0, SUN_GRID_H - 1)
-		var cz := clampi(floori(p.z), 0, SUN_GRID_D - 1)
+		var cx := clampi(roundi(p.x), 0, SUN_GRID_W - 1)
+		var cy := clampi(roundi(p.y), 0, SUN_GRID_H - 1)
+		var cz := clampi(roundi(p.z), 0, SUN_GRID_D - 1)
 		var c := cx + SUN_GRID_W * (cy + SUN_GRID_H * cz)   # inline, no second division
 		current_cell_id[i] = c
 		cell_start[c + 1] += 1
+
 
 	# 2. Prefix sum -> start offset of each cell
 	for c in SUN_NUM_CELLS:
@@ -85,11 +88,13 @@ func build_sun_grid(position_array: PackedVector3Array) -> void:
 func distribute_sun(energy_array,alive_array):
 	for i in SUN_GRID.size():
 		for s in range(cell_start[i], cell_start[i+1]):
-			if alive_array[s] == 0:
-				continue
-			energy_array[s] += SUN_GRID[i] * 1 * 0.16
-			#print(SUN_GRID[i])
-			SUN_GRID[i] = 0
+			var idx :=  cell_items[s]
+			if alive_array[idx] == 1:		
+				energy_array[idx] += SUN_GRID[i] * 1 * 0.16
+				#print(SUN_GRID[i])
+				SUN_GRID[i] = 0
+
+#index deadcell/alive cell are mixed
 
 					
 

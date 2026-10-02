@@ -37,6 +37,7 @@ offset_bottom = 607.0
 
 [node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="Visual" unique_id=1157202202]
 script = ExtResource("6_elrxu")
+show_indices = false
 
 [node name="Panel" type="Panel" parent="Visual/MultiMeshInstance2D" unique_id=393807382]
 visible = false

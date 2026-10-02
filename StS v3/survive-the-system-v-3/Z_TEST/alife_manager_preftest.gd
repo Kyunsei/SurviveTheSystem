@@ -307,8 +307,8 @@ func run_simulation(delta: float, sim_speed: float):
 			if active_alife_array[i] == 0:
 				continue
 			#current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
+			
 			current_energy_array[i] += -0.5 *  0.16 * 1 #* active_alife_array[i]
-
 			if current_energy_array[i] >= 5:
 				if duplicate_on:
 					temp_spawn_id.append(i)
@@ -316,7 +316,8 @@ func run_simulation(delta: float, sim_speed: float):
 
 			if current_energy_array[i] < 0 :
 				temp_remove_id.append(i)
-					#WRAP or CLAMP
+			
+			#WRAP or CLAMP
 			#if !wrap : 
 			#position_array[i] = position_array[i].clamp(Vector3.ZERO, bounds_max)
 
@@ -688,9 +689,9 @@ func cell_id(cx: int, cy: int, cz: int) -> int:
 
 func get_binID(p: Vector3, bin_size: float, world_size: Vector3) -> int:
 	var dims := Vector3i((world_size / bin_size).ceil())
-	var cx := clampi(floori(p.x / bin_size), 0, dims.x - 1)
-	var cy := clampi(floori(p.y / bin_size), 0, dims.y - 1)
-	var cz := clampi(floori(p.z / bin_size), 0, dims.z - 1)
+	var cx := clampi(roundi(p.x / bin_size), 0, dims.x - 1)
+	var cy := clampi(roundi(p.y / bin_size), 0, dims.y - 1)
+	var cz := clampi(roundi(p.z / bin_size), 0, dims.z - 1)
 	return cx + dims.x * (cy + dims.y * cz)
 
 
@@ -706,9 +707,9 @@ func build_grid(position_array: PackedVector3Array) -> void:
 	# 1. Count particles per cell
 	for i in n:
 		var p := (position_array[i] - bin_origin) * inv
-		var cx := clampi(floori(p.x), 0, GRID_W - 1)
-		var cy := clampi(floori(p.y), 0, GRID_H - 1)
-		var cz := clampi(floori(p.z), 0, GRID_D - 1)
+		var cx := clampi(roundi(p.x), 0, GRID_W - 1)
+		var cy := clampi(roundi(p.y), 0, GRID_H - 1)
+		var cz := clampi(roundi(p.z), 0, GRID_D - 1)
 		var c := cx + GRID_W * (cy + GRID_H * cz)   # inline, no second division
 		current_cell_id[i] = c
 		cell_start[c + 1] += 1

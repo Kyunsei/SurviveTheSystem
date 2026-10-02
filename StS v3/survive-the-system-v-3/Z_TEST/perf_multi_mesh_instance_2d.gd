@@ -36,22 +36,21 @@ func _ready() -> void:
 	World = get_parent().get_parent().get_node("World")
 	panel_size = $Panel.size
 	
-	multimesh =  MultiMesh.new()
-	multimesh.transform_format = MultiMesh.TRANSFORM_2D
-	multimesh.mesh = make_triangle(4.0)
-	multimesh.use_colors = true
-	multimesh.instance_count = 10000000
-	#print(multimesh.buffer)
-	var quad = QuadMesh.new()
-	quad.size = Vector2(4, 4)
+	init()
 	#multimesh.mesh = quad
-	
+	if show_indices:
+		_draw()
 
 	
 	#buff = multimesh.get_buffer()
 
 
 func init():
+	multimesh =  MultiMesh.new()
+	multimesh.transform_format = MultiMesh.TRANSFORM_2D
+	multimesh.mesh = make_triangle(4.0)
+	multimesh.use_colors = true
+	multimesh.instance_count = 10000000
 	multimesh.visible_instance_count = 0
 
 
@@ -162,17 +161,16 @@ func draw_new_instance(idx_arr: PackedInt32Array):
 	var ii: int
 	var c = multimesh.visible_instance_count
 	for i in idx_arr:
-		
 		var posit = alifemanager.position_array[i]
 		var t : Transform2D
 		#var pos = position_conversion(posit)
 		var pos = Vector2(posit.x,posit.z)
 		t = Transform2D(1.0,pos)
 		#print(pos,posit)			
-		multimesh.set_instance_transform_2d(ii,t)
+		multimesh.set_instance_transform_2d(i,t)
 		#print(i)
 		
-		multimesh.set_instance_color(i, alifemanager.color_array[i]) 	
+		#multimesh.set_instance_color(i, alifemanager.color_array[i]) 	
 		multimesh.set_instance_color(i, Color(0.313, 0.66, 0.403, 1.0)) 	
 
 		ii = i+1
@@ -184,7 +182,6 @@ func draw_new_instance(idx_arr: PackedInt32Array):
 
 
 
-
 func update_all_sequentially() -> void:
 	var t0 := Time.get_ticks_usec()
 	var n: int = alifemanager.entity_count
@@ -193,7 +190,7 @@ func update_all_sequentially() -> void:
 	update_array(from, to)
 	c = (c + 1) % update_on_n_frame
 	update_all_usec = Time.get_ticks_usec() - t0
-
+	#_draw()
 	
 
 func update_array(from: int, to: int):
@@ -225,11 +222,17 @@ func update_array(from: int, to: int):
 
  	
 
-		#multimesh.set_instance_color(i, alifemanager.color_array[i]) 	
+@export var show_indices := true
+@export var label_offset := Vector2(0, 1.0)
+@export var font_size := 8
 
-		
-		#i+=1	
+var _labels: Array[Label3D] = []
 
-		#multimesh.visible_instance_count = i
-
-	#update_all_usec = Time.get_ticks_usec() - t0 
+func _draw() -> void:
+	if not show_indices or multimesh == null:
+		return
+	var font := ThemeDB.fallback_font
+	for i in multimesh.instance_count:
+		var p := multimesh.get_instance_transform_2d(i).origin + label_offset
+		draw_string_outline(font, p, str(i), HORIZONTAL_ALIGNMENT_CENTER, -1, font_size, 4, Color.BLACK)
+		draw_string(font, p, str(i), HORIZONTAL_ALIGNMENT_CENTER, -1, font_size, Color.WHITE)
