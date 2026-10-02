@@ -30,8 +30,15 @@ var alive_array : PackedInt32Array
 var free_indices : Array =[]
 var entity_count : int
 var active_entity_count : int
+
+
 var species_id : PackedInt32Array
 var color_array : PackedColorArray
+var current_life_state : PackedInt32Array
+var current_biomass : PackedFloat32Array
+var current_age : PackedInt32Array
+var current_size : PackedFloat32Array
+var grow_on := true
 
 #### Duplicate
 var duplicate_on := true
@@ -148,6 +155,10 @@ func init(worldd):
 	pending_spawn_id = []
 	pending_remove_id = []
 	color_array = []	
+	current_life_state= []
+	current_biomass= []
+	current_age= []
+	current_size= []
 	#multithread
 	chunk_count = clamp( nThread_max,1,OS.get_processor_count()) 
 	#AI
@@ -329,6 +340,20 @@ func run_simulation(delta: float, sim_speed: float):
 			#WRAP or CLAMP
 			#if !wrap : 
 			#position_array[i] = position_array[i].clamp(Vector3.ZERO, bounds_max)
+	if grow_on:
+		for i in active_alife_array.size():
+			var ei:= current_energy_array[i]
+			var cls := current_life_state[i]
+			if cls <3:
+				if ei > 3:
+					current_life_state[i] += 1
+					current_energy_array[i] -= 3
+					current_size[i]+= 0.25
+					current_biomass[i] += 2
+			current_age[i]+=1
+					
+					
+				
 
 	_jhead = j
 	
@@ -560,7 +585,17 @@ func run_chunk_simulation(chunk: int) -> void:
 						alive_array[i] = 0
 	
 					current_energy_array[i] = _energy
-
+	if grow_on:
+		for i in range(from, to):
+			var ei:= current_energy_array[i]
+			var cls := current_life_state[i]
+			if cls <3:
+				if ei > 3:
+					current_life_state[i] += 1
+					current_energy_array[i] -= 3
+					current_size[i]+= 0.25
+					current_biomass[i] += 2
+			current_age[i]+=1
 	if duplicate_on:
 		spawn_per_chunk[chunk] = local_pending_spawn_id
 	if remove_on:
@@ -641,8 +676,17 @@ func getChunk_perf():
 	multithread_efficiency = float(total) / maxf(1.0, float(main_usec))
 	nThreadused = threads.size() # OS.get_processor_count()
 	
-	
-	
+
+func Growth1(i):
+	if current_energy_array[i] > 5:
+		current_life_state[i] += 1
+		current_energy_array[i] -= 5	
+
+func Growth2(i):
+	if current_energy_array[i] > 2:
+		current_life_state[i] += 1
+		current_energy_array[i] -= 2
+
 ##########################################################################################
 ####ARRAY MANAGEMENT
 ##########################################################################################
@@ -685,7 +729,10 @@ func Build_New_Life(pos: Vector3, e: float, sp : int, col := Color(0.159, 0.555,
 		color_array.append(col)
 		alive_array.append(1) 
 		#current_bin_id.append(get_binID(pos,bin_size,world.size))
-
+		current_life_state.append(0)
+		current_biomass.append(0)
+		current_age.append(0)
+		current_size.append(1.0)
 		#update_bin_array(i)
 		entity_count += 1
 
@@ -701,6 +748,10 @@ func Build_New_Life(pos: Vector3, e: float, sp : int, col := Color(0.159, 0.555,
 		alive_array[i] = 1
 		#current_bin_id[i] = get_binID(pos,bin_size,world.size)
 		#update_bin_array(i)
+		current_life_state[i]=0
+		current_biomass[i]=0
+		current_age[i]=0
+		current_size[i]=1.0
 
 	active_entity_count += 1
 	pending_multimesh_drawn_id.append(i)

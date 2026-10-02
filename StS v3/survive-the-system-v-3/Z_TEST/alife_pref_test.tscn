@@ -61,12 +61,12 @@ layout_mode = 0
 offset_left = 15.0
 offset_top = 72.0
 offset_right = 310.0
-offset_bottom = 274.0
+offset_bottom = 355.0
 
 [node name="Label" type="RichTextLabel" parent="simulation_UI/Alife" unique_id=344910459]
 layout_mode = 0
 offset_left = 18.0
-offset_top = 287.0
+offset_top = 360.0
 offset_right = 299.0
 offset_bottom = 615.0
 
@@ -163,6 +163,22 @@ offset_top = -1.0
 offset_right = 6.0
 offset_bottom = 22.0
 text = "RemoveDead"
+
+[node name="Growth_on" type="CheckButton" parent="simulation_UI/Alife" unique_id=716179488]
+layout_mode = 0
+offset_left = 114.0
+offset_top = 270.0
+offset_right = 158.0
+offset_bottom = 294.0
+button_pressed = true
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Growth_on" unique_id=480979395]
+layout_mode = 0
+offset_left = -97.0
+offset_top = -1.0
+offset_right = 6.0
+offset_bottom = 22.0
+text = "Growth"
 
 [node name="Plant_on" type="CheckButton" parent="simulation_UI/Alife" unique_id=302973259]
 visible = false
@@ -580,6 +596,7 @@ text = "Hide Interface"
 [connection signal="toggled" from="simulation_UI/Alife/duplication" to="." method="_on_duplication_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Bin_ONOFF" to="." method="_on_bin_onoff_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Remove_ON" to="." method="_on_remove_on_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/Growth_on" to="." method="_on_growth_on_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Plant_on" to="." method="_on_plant_on_toggled"]
 [connection signal="text_submitted" from="simulation_UI/Alife/Binsize" to="." method="_on_binsize_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/World/WorldSize/world_x" to="." method="_on_world_x_text_submitted"]

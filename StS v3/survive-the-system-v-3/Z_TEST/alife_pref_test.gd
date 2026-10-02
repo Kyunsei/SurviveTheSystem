@@ -282,3 +282,7 @@ func _on_sun_z_text_submitted(new_text: String) -> void:
 
 func _on_remove_on_toggled(toggled_on: bool) -> void:
 	$AlifeManager.remove_on = toggled_on
+
+
+func _on_growth_on_toggled(toggled_on: bool) -> void:
+	$AlifeManager.grow_on = toggled_on

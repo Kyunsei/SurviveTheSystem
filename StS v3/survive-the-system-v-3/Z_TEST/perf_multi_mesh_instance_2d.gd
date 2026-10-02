@@ -4,7 +4,7 @@ extends MultiMeshInstance2D
 #ALL on GPU directly
 #Limit the number of update either by frame or in total
 
-var alifemanager
+var alifemanager: AlifeManager
 var World
 var activated = true
 
@@ -214,7 +214,9 @@ func update_array(from: int, to: int):
 					Vector2(0, 1.5),
 					pos
 				)'
-		t = Transform2D(1.0,pos2d)
+		# Transform2D(rotation, scale, skew, position)
+		var s := alifemanager.current_size[i]
+		t = Transform2D(0.0, Vector2(s, s), 0.0, pos2d)
 		#print(pos,posit)			
 		if alifemanager.active_alife_array[i] ==1:
 			multimesh.set_instance_transform_2d(i,t)
