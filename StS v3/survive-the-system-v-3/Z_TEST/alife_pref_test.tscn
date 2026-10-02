@@ -51,7 +51,6 @@ layout_mode = 3
 anchors_preset = 0
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
-visible = false
 anchors_preset = 0
 offset_top = 4.0
 offset_right = 40.0
@@ -109,7 +108,6 @@ offset_left = 109.0
 offset_top = 205.0
 offset_right = 153.0
 offset_bottom = 229.0
-button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/AI_onOFt" unique_id=1761428302]
 layout_mode = 0
@@ -148,9 +146,26 @@ offset_left = -84.0
 offset_top = -1.0
 offset_right = -17.0
 offset_bottom = 22.0
-text = "Bins"
+text = "GRID"
+
+[node name="Remove_ON" type="CheckButton" parent="simulation_UI/Alife" unique_id=1400993592]
+layout_mode = 0
+offset_left = 116.0
+offset_top = 249.0
+offset_right = 160.0
+offset_bottom = 273.0
+button_pressed = true
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Remove_ON" unique_id=75107309]
+layout_mode = 0
+offset_left = -97.0
+offset_top = -1.0
+offset_right = 6.0
+offset_bottom = 22.0
+text = "RemoveDead"
 
 [node name="Plant_on" type="CheckButton" parent="simulation_UI/Alife" unique_id=302973259]
+visible = false
 layout_mode = 0
 offset_left = 110.0
 offset_top = 249.0
@@ -207,14 +222,14 @@ text = "World System"
 
 [node name="Label5" type="Label" parent="simulation_UI/World" unique_id=1568733835]
 layout_mode = 0
-offset_left = 68.0
-offset_top = 188.0
-offset_right = 243.0
-offset_bottom = 222.0
+offset_left = 76.0
+offset_top = 297.0
+offset_right = 251.0
+offset_bottom = 331.0
 theme_override_font_sizes/font_size = 24
 text = "Physics System"
 
-[node name="Label" type="Label" parent="simulation_UI/World" unique_id=656318523]
+[node name="WorldSize" type="Label" parent="simulation_UI/World" unique_id=656318523]
 layout_mode = 0
 offset_left = 13.0
 offset_top = 139.0
@@ -222,7 +237,7 @@ offset_right = 146.0
 offset_bottom = 162.0
 text = "World Size"
 
-[node name="world_x" type="LineEdit" parent="simulation_UI/World/Label" unique_id=1657746108]
+[node name="world_x" type="LineEdit" parent="simulation_UI/World/WorldSize" unique_id=1657746108]
 layout_mode = 0
 offset_left = 91.0
 offset_top = -2.0
@@ -230,14 +245,14 @@ offset_right = 159.5
 offset_bottom = 33.0
 placeholder_text = "1100"
 
-[node name="Label" type="Label" parent="simulation_UI/World/Label/world_x" unique_id=899705006]
+[node name="Label" type="Label" parent="simulation_UI/World/WorldSize/world_x" unique_id=899705006]
 layout_mode = 0
 offset_left = 24.0
 offset_top = -23.0
 offset_right = 51.0
 text = "x"
 
-[node name="world_y" type="LineEdit" parent="simulation_UI/World/Label" unique_id=1286475457]
+[node name="world_y" type="LineEdit" parent="simulation_UI/World/WorldSize" unique_id=1286475457]
 layout_mode = 0
 offset_left = 165.0
 offset_top = -2.0
@@ -245,14 +260,14 @@ offset_right = 233.5
 offset_bottom = 33.0
 placeholder_text = "20"
 
-[node name="Label" type="Label" parent="simulation_UI/World/Label/world_y" unique_id=2083883795]
+[node name="Label" type="Label" parent="simulation_UI/World/WorldSize/world_y" unique_id=2083883795]
 layout_mode = 0
 offset_left = 24.0
 offset_top = -23.0
 offset_right = 51.0
 text = "y"
 
-[node name="world_z" type="LineEdit" parent="simulation_UI/World/Label" unique_id=269084611]
+[node name="world_z" type="LineEdit" parent="simulation_UI/World/WorldSize" unique_id=269084611]
 layout_mode = 0
 offset_left = 240.0
 offset_top = -2.0
@@ -260,12 +275,108 @@ offset_right = 308.5
 offset_bottom = 33.0
 placeholder_text = "640"
 
-[node name="Label" type="Label" parent="simulation_UI/World/Label/world_z" unique_id=1822019927]
+[node name="Label" type="Label" parent="simulation_UI/World/WorldSize/world_z" unique_id=1822019927]
 layout_mode = 0
 offset_left = 24.0
 offset_top = -23.0
 offset_right = 51.0
 text = "z"
+
+[node name="SUN" type="Control" parent="simulation_UI/World" unique_id=204636914]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SunSize" type="Label" parent="simulation_UI/World/SUN" unique_id=1265906670]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 220.0
+offset_right = 146.0
+offset_bottom = 243.0
+text = "SUN CELL"
+
+[node name="world_x" type="LineEdit" parent="simulation_UI/World/SUN/SunSize" unique_id=21929163]
+layout_mode = 0
+offset_left = 91.0
+offset_top = -6.0
+offset_right = 159.5
+offset_bottom = 29.0
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/SunSize/world_x" unique_id=228770285]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="simulation_UI/World/SUN/SunSize" unique_id=1014600538]
+layout_mode = 0
+offset_left = 165.0
+offset_top = -6.0
+offset_right = 233.5
+offset_bottom = 29.0
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/SunSize/world_y" unique_id=214062980]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="simulation_UI/World/SUN/SunSize" unique_id=1862386707]
+layout_mode = 0
+offset_left = 240.0
+offset_top = -6.0
+offset_right = 308.5
+offset_bottom = 29.0
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/SunSize/world_z" unique_id=369726637]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="SUNENERGY" type="LineEdit" parent="simulation_UI/World/SUN" unique_id=86925024]
+layout_mode = 0
+offset_left = 105.0
+offset_top = 260.0
+offset_right = 173.5
+offset_bottom = 291.0
+placeholder_text = "1"
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/SUNENERGY" unique_id=1502174874]
+layout_mode = 0
+offset_left = -95.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 27.0
+text = "SUN energy"
+
+[node name="CheckButton" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=624307597]
+layout_mode = 0
+offset_left = 268.0
+offset_top = 265.0
+offset_right = 312.0
+offset_bottom = 289.0
+button_pressed = true
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckButton" unique_id=1729958750]
+layout_mode = 0
+offset_left = -82.0
+offset_right = 3.0
+offset_bottom = 23.0
+text = "SUN on/off"
+
+[node name="Label" type="RichTextLabel" parent="simulation_UI/World" unique_id=201574479]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 344.0
+offset_right = 338.0
+offset_bottom = 637.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
 visible = false
@@ -468,11 +579,17 @@ text = "Hide Interface"
 [connection signal="toggled" from="simulation_UI/Alife/AI_onOFt" to="." method="_on_ai_on_o_ft_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/duplication" to="." method="_on_duplication_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Bin_ONOFF" to="." method="_on_bin_onoff_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/Remove_ON" to="." method="_on_remove_on_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Plant_on" to="." method="_on_plant_on_toggled"]
 [connection signal="text_submitted" from="simulation_UI/Alife/Binsize" to="." method="_on_binsize_text_submitted"]
-[connection signal="text_submitted" from="simulation_UI/World/Label/world_x" to="." method="_on_world_x_text_submitted"]
-[connection signal="text_submitted" from="simulation_UI/World/Label/world_y" to="." method="_on_world_y_text_submitted"]
-[connection signal="text_submitted" from="simulation_UI/World/Label/world_z" to="." method="_on_world_z_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/WorldSize/world_x" to="." method="_on_world_x_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/WorldSize/world_y" to="." method="_on_world_y_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/WorldSize/world_z" to="." method="_on_world_z_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/SUN/SunSize/world_x" to="." method="_on_sun_x_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/SUN/SunSize/world_y" to="." method="_on_sun_y_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/SUN/SunSize/world_z" to="." method="_on_sun_z_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/SUN/SUNENERGY" to="." method="_on_sunenergy_text_submitted"]
+[connection signal="toggled" from="simulation_UI/World/SUN/CheckButton" to="." method="_on_check_button_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonVisualisation" to="." method="_on_button_visualisation_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonBinVisualisation2" to="." method="_on_button_bin_visualisation_2_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonFlowVisualisation3" to="." method="_on_button_visualisation_toggled"]

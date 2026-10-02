@@ -7,8 +7,17 @@ var size : Vector3
 var default_size = Vector3(1100,20,640)
 # Called when the node enters the scene tree for the first time.
 
-var SUN_GRID : PackedInt32Array
-var SUN_cell_size := 10.0
+var main_world_usec := 0.0
+
+
+##SUN
+var sun_usec := 0.0
+var SUN_on := true
+var SUN_energy := 1.0
+var SUN_GRID : PackedFloat32Array
+#var SUN_cell_size := 10.0
+var SUN_cell_size := Vector3(10.0,20.0,10.0)
+
 var SUN_GRID_W : int          # cells along x
 var SUN_GRID_H : int          # cells along y
 var SUN_GRID_D : int          # cells along z
@@ -27,7 +36,6 @@ var sorted_pos := PackedVector3Array()
 
 
 
-var sun_msec := 0.0
 
 func _ready() -> void:
 	size = default_size
@@ -59,7 +67,9 @@ func build_sun_grid(position_array: PackedVector3Array) -> void:
 	cell_items.resize(n)
 	sorted_pos.resize(n)
 	cell_start.fill(0)
-	var inv := 1.0 / SUN_cell_size
+	#var inv := 1.0 / SUN_cell_size
+	var inv := Vector3.ONE / SUN_cell_size   # (1/x, 1/y, 1/z)
+
 
 	# 1. Count particles per cell
 	for i in n:
@@ -96,8 +106,16 @@ func distribute_sun(energy_array,alive_array):
 
 #index deadcell/alive cell are mixed
 
-					
-
-
-func update():
-	SUN_GRID.fill(1)
+func run_world_simulation(alifemanager: AlifeManager, delta,simulation_speed):
+	sun_usec = 0.0
+	main_world_usec = 0.0
+	var t0 := Time.get_ticks_usec()
+	
+	if SUN_on:
+		var ts0 := Time.get_ticks_usec()
+		build_sun_grid(alifemanager.position_array)
+		SUN_GRID.fill(SUN_energy)
+		distribute_sun(alifemanager.current_energy_array,alifemanager.active_alife_array)
+		sun_usec = Time.get_ticks_usec()-ts0
+	
+	main_world_usec = Time.get_ticks_usec()-t0

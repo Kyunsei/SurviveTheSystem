@@ -1,4 +1,5 @@
 extends Node2D
+class_name AlifeManager
 
 #TODO make it close more easily? kindof fixed by stopping when FPS too low?
 #TODO wait thread?
@@ -35,13 +36,15 @@ var duplicate_on := true
 var pending_spawn_id : PackedInt32Array
 var pending_remove_id: PackedInt32Array
 
+#Reusing agent?
+var remove_on:= true
 
 ##RENDERING
 var pending_multimesh_drawn_id : PackedInt32Array
 var pending_multimesh_erase_id : PackedInt32Array
 
 #####AI THINGS¬¬¬¬¬
-var AI_on := true
+var AI_on := false
 var current_action :PackedByteArray
 var action_scores := PackedFloat32Array()  # allocated once, reused
 
@@ -190,10 +193,6 @@ func run_simulation(delta: float, sim_speed: float):
 	var n := _jitter.size()
 	var temp_spawn_id : PackedInt32Array
 	var temp_remove_id : PackedInt32Array
-	#SUN
-	world.build_sun_grid(position_array)
-	#print(Time.get_ticks_usec()- t00)
-	world.distribute_sun(current_energy_array, active_alife_array)
 
 	
 	if bin_on:
@@ -306,7 +305,9 @@ func run_simulation(delta: float, sim_speed: float):
 		for i in active_alife_array.size():
 			if active_alife_array[i] == 0:
 				continue
-			#current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
+			
+			if !world.SUN_on:
+				current_energy_array[i] += (1) * 0.16 * 1 #* active_alife_array[i]
 			
 			current_energy_array[i] += -0.5 *  0.16 * 1 #* active_alife_array[i]
 			if current_energy_array[i] >= 5:
@@ -660,9 +661,10 @@ func Build_New_Life(pos: Vector3, e: float, sp : int, col := Color(0.159, 0.555,
 func Remove_Life(i):
 	#TEMP : REMOVE =DEAD need to have two searate to see corps vs dispaear
 	active_alife_array[i]= 0
-	#free_indices.append(i)
-	#active_entity_count -= 1
-	#pending_multimesh_erase_id.append(i)
+	if remove_on:
+		free_indices.append(i)
+		active_entity_count -= 1
+		pending_multimesh_erase_id.append(i)
 
 func pick_random_position(rangee: Vector3)-> Vector3: # should be 3
 	var x = randf_range(-rangee.x,rangee.x)

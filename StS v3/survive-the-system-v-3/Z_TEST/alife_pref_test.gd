@@ -40,6 +40,7 @@ func _process(delta: float) -> void:
 				_accum = 0.0
 				display_general_perf()
 				diplay_alife_perf()
+				display_world_perf()
 			if Engine.get_frames_per_second() < 30:
 				$AlifeManager.duplicate_on = false
 				$simulation_UI/Alife/duplication.button_pressed = false
@@ -60,7 +61,7 @@ func run_visualisation():
 
 var plant_only := false
 func run_simulation(delta):
-	$World.update()
+	$World.run_world_simulation($AlifeManager, delta, simulation_speed)
 	if !multithread:
 		#if $AlifeManager.AI_on:
 		if plant_only:
@@ -74,11 +75,19 @@ func run_simulation(delta):
 		else:
 			$AlifeManager.run_simulation_multithread2(delta,simulation_speed)
 
+func display_world_perf():
+	$simulation_UI/World/Label.text = "nLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
+	$simulation_UI/World/Label.text += "\n\nfunction \t msec  "
+	$simulation_UI/World/Label.text += "\nmain_loop \t  %2d" % ($World.main_world_usec/1000.0)
+	$simulation_UI/World/Label.text += "\nSUN \t  %2d" % ($World.sun_usec/1000.0)
+
+
 func display_general_perf() -> void:
 			%Label.text = "Duplication stop when reaching <30 FPS \n"
 			%Label.text += "\nFPS: " + str(Engine.get_frames_per_second())
 			%Label.text += "\nAlife_system:  %2d" % ($AlifeManager.main_usec/1000.0)
-			%Label.text += "\nnLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
+			%Label.text += "\nWorld_system:  %2d" % ($World.main_world_usec/1000.0)
+			%Label.text += "\n\nnLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
 			#$Label.text += "\nEfficiency: %2d" % $AlifeManager.multithread_efficiency
 			%Label.text += "\n\nRendering part \n \n"
 			%Label.text += "\ndraw new msec: %2d" % ($Visual/MultiMeshInstance2D.draw_new_usec/1000.0)
@@ -103,7 +112,6 @@ func diplay_alife_perf() -> void:
 
 func display_perf() -> void:
 	if simulation_speed > 0 :
-	
 			%Label.text = "Simulation stop when reaching <10 FPS \n"
 			%Label.text += "\nFPS: " + str(Engine.get_frames_per_second())
 			%Label.text += "\nmsec:  %2d" % ($AlifeManager.main_usec/1000.0)
@@ -251,3 +259,23 @@ func _on_world_x_text_submitted(new_text: String) -> void:
 
 func _on_plant_on_toggled(toggled_on: bool) -> void:
 	plant_only = toggled_on
+
+
+func _on_check_button_toggled(toggled_on: bool) -> void:
+	$World.SUN_on = toggled_on
+	
+func _on_sunenergy_text_submitted(new_text: String) -> void:
+	$World.SUN_energy = float(new_text)
+
+func _on_sun_x_text_submitted(new_text: String) -> void:
+	$World.SUN_cell_size.x = float(new_text)
+
+func _on_sun_y_text_submitted(new_text: String) -> void:
+	$World.SUN_cell_size.y = float(new_text)
+
+func _on_sun_z_text_submitted(new_text: String) -> void:
+	$World.SUN_cell_size.z = float(new_text)
+
+
+func _on_remove_on_toggled(toggled_on: bool) -> void:
+	$AlifeManager.remove_on = toggled_on

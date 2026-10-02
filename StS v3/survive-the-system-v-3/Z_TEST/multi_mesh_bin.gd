@@ -49,7 +49,7 @@ func _ready() -> void:
 func init(cell_size):
 	multimesh.visible_instance_count = 0
 	var quad = QuadMesh.new()
-	quad.size = Vector2(cell_size-1, cell_size-1)
+	quad.size = Vector2(cell_size.x-1, cell_size.z-1)
 	#bin_size = alifemanager.bin_size
 	multimesh.mesh = quad
 
@@ -145,7 +145,7 @@ func update_all2(value_array, W:int,H:int,D:int,cell_size:float):
 	update_all_usec = Time.get_ticks_usec() - t0 #work because calle din second
 
 
-func update_all(value_array, W: int, H: int, D: int, cell_size: float,col:Color) -> void:
+func update_all(value_array, W: int, H: int, D: int, cell_size: Vector3,col:Color) -> void:
 	var t0 := Time.get_ticks_usec()
 	init(cell_size)
 	var ii := 0
@@ -154,7 +154,7 @@ func update_all(value_array, W: int, H: int, D: int, cell_size: float,col:Color)
 		for cx in W:
 			var c := cx + W * H * cz          # y = 0 layer
 			var v = clamp(value_array[c] ,0.25,.8)         # the cell's value, if needed
-			var pos := Vector2(cx, cz) * cell_size
+			var pos := Vector2(cx, cz) * Vector2(cell_size.x, cell_size.z)
 			col.a =v
 			multimesh.set_instance_transform_2d(ii, Transform2D(0.0, pos))
 			multimesh.set_instance_color(ii, col)
