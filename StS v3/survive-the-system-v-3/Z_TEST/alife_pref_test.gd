@@ -22,6 +22,8 @@ func init():
 
 	$AlifeManager.setup()
 	$Visual/MultiMeshInstance2D.setup() #this was for buffer
+	if $Visual/MultiMeshInstance2D.activated:
+		$Visual/MultiMeshInstance2D.draw_new_instance($AlifeManager.pending_multimesh_drawn_id)
 	#await get_tree().create_timer(1.0).timeout
 	running = true
 	

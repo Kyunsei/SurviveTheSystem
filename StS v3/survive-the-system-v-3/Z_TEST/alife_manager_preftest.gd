@@ -657,10 +657,11 @@ func Build_New_Life(pos: Vector3, e: float, sp : int, col := Color(0.159, 0.555,
 
 
 func Remove_Life(i):
+	#TEMP : REMOVE =DEAD need to have two searate to see corps vs dispaear
 	active_alife_array[i]= 0
-	free_indices.append(i)
-	active_entity_count -= 1
-	pending_multimesh_erase_id.append(i)
+	#free_indices.append(i)
+	#active_entity_count -= 1
+	#pending_multimesh_erase_id.append(i)
 
 func pick_random_position(rangee: Vector3)-> Vector3: # should be 3
 	var x = randf_range(-rangee.x,rangee.x)
