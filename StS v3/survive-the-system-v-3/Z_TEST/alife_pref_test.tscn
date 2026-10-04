@@ -11,12 +11,6 @@
 [node name="SimulationManager" type="Node2D" unique_id=364310058]
 script = ExtResource("1_wb3fy")
 
-[node name="World" type="Node2D" parent="." unique_id=1970063248]
-script = ExtResource("2_w27ml")
-
-[node name="AlifeManager" type="Node2D" parent="." unique_id=1182617890]
-script = ExtResource("3_ywrax")
-
 [node name="Visual" type="Node2D" parent="." unique_id=393155582]
 script = ExtResource("4_hlgly")
 
@@ -43,12 +37,17 @@ offset_bottom = 607.0
 [node name="Shader_MultiMeshInstance2D2" type="MultiMeshInstance2D" parent="Visual" unique_id=1617969115]
 script = ExtResource("6_eaag7")
 
+[node name="World" type="Node2D" parent="." unique_id=1970063248]
+script = ExtResource("2_w27ml")
+
+[node name="AlifeManager" type="Node2D" parent="." unique_id=1182617890]
+script = ExtResource("3_ywrax")
+
 [node name="simulation_UI" type="Control" parent="." unique_id=733662234]
 layout_mode = 3
 anchors_preset = 0
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
-visible = false
 anchors_preset = 0
 offset_top = 4.0
 offset_right = 40.0
@@ -59,7 +58,7 @@ layout_mode = 0
 offset_left = 15.0
 offset_top = 72.0
 offset_right = 310.0
-offset_bottom = 355.0
+offset_bottom = 374.0
 
 [node name="Label" type="RichTextLabel" parent="simulation_UI/Alife" unique_id=344910459]
 layout_mode = 0
@@ -90,7 +89,7 @@ offset_left = 166.0
 offset_top = 145.0
 offset_right = 234.5
 offset_bottom = 176.0
-placeholder_text = "100"
+placeholder_text = "10"
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/nstartLife" unique_id=1914887259]
 layout_mode = 0
@@ -102,10 +101,10 @@ text = "nStart Life"
 
 [node name="AI_onOFt" type="CheckButton" parent="simulation_UI/Alife" unique_id=1407208386]
 layout_mode = 0
-offset_left = 109.0
-offset_top = 205.0
-offset_right = 153.0
-offset_bottom = 229.0
+offset_left = 113.0
+offset_top = 281.0
+offset_right = 157.0
+offset_bottom = 305.0
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/AI_onOFt" unique_id=1761428302]
 layout_mode = 0
@@ -117,10 +116,10 @@ text = "Utility AI"
 
 [node name="duplication" type="CheckButton" parent="simulation_UI/Alife" unique_id=837876564]
 layout_mode = 0
-offset_left = 110.0
-offset_top = 182.0
-offset_right = 154.0
-offset_bottom = 206.0
+offset_left = 113.0
+offset_top = 228.0
+offset_right = 157.0
+offset_bottom = 252.0
 button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/duplication" unique_id=1713346598]
@@ -130,12 +129,27 @@ offset_right = 3.0
 offset_bottom = 23.0
 text = "Duplication"
 
+[node name="Photosynthesis" type="CheckButton" parent="simulation_UI/Alife" unique_id=2145691805]
+layout_mode = 0
+offset_left = 113.0
+offset_top = 250.0
+offset_right = 157.0
+offset_bottom = 274.0
+button_pressed = true
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Photosynthesis" unique_id=361963002]
+layout_mode = 0
+offset_left = -86.0
+offset_right = 3.0
+offset_bottom = 23.0
+text = "Photosynth."
+
 [node name="Bin_ONOFF" type="CheckButton" parent="simulation_UI/Alife" unique_id=528177472]
 layout_mode = 0
-offset_left = 109.0
-offset_top = 227.0
-offset_right = 153.0
-offset_bottom = 251.0
+offset_left = 113.0
+offset_top = 303.0
+offset_right = 157.0
+offset_bottom = 327.0
 button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/Bin_ONOFF" unique_id=235717023]
@@ -148,10 +162,10 @@ text = "GRID"
 
 [node name="Remove_ON" type="CheckButton" parent="simulation_UI/Alife" unique_id=1400993592]
 layout_mode = 0
-offset_left = 116.0
-offset_top = 249.0
-offset_right = 160.0
-offset_bottom = 273.0
+offset_left = 120.0
+offset_top = 325.0
+offset_right = 164.0
+offset_bottom = 349.0
 button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/Remove_ON" unique_id=75107309]
@@ -164,10 +178,10 @@ text = "RemoveDead"
 
 [node name="Growth_on" type="CheckButton" parent="simulation_UI/Alife" unique_id=716179488]
 layout_mode = 0
-offset_left = 114.0
-offset_top = 270.0
-offset_right = 158.0
-offset_bottom = 294.0
+offset_left = 118.0
+offset_top = 346.0
+offset_right = 162.0
+offset_bottom = 370.0
 button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/Growth_on" unique_id=480979395]
@@ -179,6 +193,7 @@ offset_bottom = 22.0
 text = "Growth"
 
 [node name="Multispecies" type="CheckButton" parent="simulation_UI/Alife" unique_id=1756384413]
+visible = false
 layout_mode = 0
 offset_left = 114.0
 offset_top = 291.0
@@ -212,10 +227,10 @@ text = "Plant only"
 
 [node name="Binsize" type="LineEdit" parent="simulation_UI/Alife" unique_id=1387974493]
 layout_mode = 0
-offset_left = 228.0
-offset_top = 222.0
-offset_right = 296.5
-offset_bottom = 253.0
+offset_left = 231.0
+offset_top = 296.0
+offset_right = 299.5
+offset_bottom = 327.0
 placeholder_text = "10"
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/Binsize" unique_id=47742862]
@@ -228,18 +243,18 @@ text = "Bin Size"
 
 [node name="n_species" type="LineEdit" parent="simulation_UI/Alife" unique_id=1967071614]
 layout_mode = 0
-offset_left = 229.0
-offset_top = 285.0
-offset_right = 297.5
-offset_bottom = 316.0
-placeholder_text = "10"
+offset_left = 163.0
+offset_top = 184.0
+offset_right = 231.5
+offset_bottom = 215.0
+placeholder_text = "2"
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/n_species" unique_id=1670038536]
 layout_mode = 0
-offset_left = -72.0
-offset_top = 5.0
-offset_right = -1.0
-offset_bottom = 28.0
+offset_left = -132.0
+offset_top = 2.0
+offset_right = -61.0
+offset_bottom = 25.0
 text = "n species"
 
 [node name="Label2" type="Label" parent="simulation_UI/Alife" unique_id=807737720]
@@ -425,6 +440,7 @@ offset_right = 338.0
 offset_bottom = 637.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
+visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -521,6 +537,7 @@ offset_right = 1133.0
 offset_bottom = 637.0
 
 [node name="speed" type="LineEdit" parent="simulation_UI" unique_id=1605889294]
+visible = false
 layout_mode = 0
 offset_left = 617.0
 offset_top = 103.0
@@ -538,47 +555,48 @@ text = "simulation speed"
 
 [node name="RunGDScript" type="Button" parent="simulation_UI" unique_id=617219037]
 layout_mode = 0
-offset_left = 423.0
+offset_left = 405.0
 offset_top = 62.0
-offset_right = 534.0
+offset_right = 516.0
 offset_bottom = 93.0
 text = "Run GDScript"
 
 [node name="RunGPU" type="Button" parent="simulation_UI" unique_id=1318344758]
 layout_mode = 0
-offset_left = 658.0
-offset_top = 63.0
-offset_right = 769.0
-offset_bottom = 94.0
+offset_left = 678.0
+offset_top = 36.0
+offset_right = 789.0
+offset_bottom = 67.0
 disabled = true
 text = "Run GPU"
 
 [node name="RunCpp" type="Button" parent="simulation_UI" unique_id=1409697113]
 layout_mode = 0
-offset_left = 540.0
-offset_top = 63.0
-offset_right = 651.0
-offset_bottom = 94.0
+offset_left = 554.0
+offset_top = 36.0
+offset_right = 665.0
+offset_bottom = 67.0
 disabled = true
 text = "Run C++"
 
 [node name="nThreads" type="LineEdit" parent="simulation_UI" unique_id=1190334601]
 layout_mode = 0
-offset_left = 608.0
-offset_top = 23.0
-offset_right = 676.5
-offset_bottom = 54.0
+offset_left = 465.0
+offset_top = 24.0
+offset_right = 533.5
+offset_bottom = 55.0
 placeholder_text = "8"
 
 [node name="Label3" type="Label" parent="simulation_UI/nThreads" unique_id=1983668022]
 layout_mode = 0
-offset_left = -86.0
-offset_top = 5.0
-offset_right = 14.0
-offset_bottom = 28.0
+offset_left = -77.0
+offset_top = 4.0
+offset_right = 23.0
+offset_bottom = 27.0
 text = "nthreads"
 
 [node name="CheckBox" type="CheckBox" parent="simulation_UI/nThreads" unique_id=602669552]
+visible = false
 layout_mode = 1
 anchors_preset = -1
 anchor_bottom = 0.5
@@ -630,6 +648,7 @@ text = "Hide Interface"
 [connection signal="text_submitted" from="simulation_UI/Alife/nstartLife" to="." method="_on_nstart_life_text_submitted"]
 [connection signal="toggled" from="simulation_UI/Alife/AI_onOFt" to="." method="_on_ai_on_o_ft_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/duplication" to="." method="_on_duplication_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/Photosynthesis" to="." method="_on_photosynthesis_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Bin_ONOFF" to="." method="_on_bin_onoff_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Remove_ON" to="." method="_on_remove_on_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Growth_on" to="." method="_on_growth_on_toggled"]

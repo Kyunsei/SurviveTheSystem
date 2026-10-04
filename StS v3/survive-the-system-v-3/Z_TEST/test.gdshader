@@ -10,11 +10,11 @@ varying flat float v_state;
 void vertex() {
     // Which pixel in data_texture belongs to this instance
     ivec2 px = ivec2(INSTANCE_ID % tex_width, INSTANCE_ID / tex_width);
-    vec4 d = texelFetch(agent_data, px, 0);   // x, y, size, state
+    vec4 d = texelFetch(agent_data, px, 0);   // x, y, active, dead/alive
     v_state = d.w;
 
-    if (d.w < 0.5) {
-        VERTEX = VERTEX + d.xy;//vec2(0.0);                   // FREE slot: collapse it, nothing gets drawn
+    if (d.z < 0.5) {
+        VERTEX = vec2(0.0);                   // FREE slot: collapse it, nothing gets drawn
     } else {
         //VERTEX = VERTEX * d.z + d.xy;         // scale by size, then move to position
 		VERTEX = VERTEX + d.xy;         }
@@ -22,5 +22,5 @@ void vertex() {
 
 void fragment() {
     vec4 base = texture(TEXTURE, UV);         // white if the mesh has no texture
-    COLOR = base * (v_state > 1.5 ? corpse_color : alive_color);
+    COLOR = base * (v_state < 0.5 ? corpse_color : alive_color);
 }

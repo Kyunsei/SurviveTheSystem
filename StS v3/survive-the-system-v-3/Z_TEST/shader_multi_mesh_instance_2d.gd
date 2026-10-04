@@ -80,7 +80,7 @@ func _resize(new_cap: int) -> void:
 		tex.set_image(img)
 
 	# 3. MultiMesh: changing instance_count resets the buffer, so set identity again
-	multimesh.instance_count = capacity #HERE CAN CAUSE BUG 
+	multimesh.instance_count = capacity 
 	multimesh.buffer = _identity(capacity)
 
 func _identity(n: int) -> PackedFloat32Array:
@@ -89,10 +89,3 @@ func _identity(n: int) -> PackedFloat32Array:
 		b.append_array(b)                    # doubles each step: fast
 	b.resize(n * 8)
 	return b
-
-	'var b := PackedFloat32Array()
-	b.resize(capacity * 8) 
-	for i in capacity: #Not much sure about htis part
-		b[i * 8] = 1.0          # x axis . x
-		b[i * 8 + 5] = 1.0      # y axis . y
-	return b '  

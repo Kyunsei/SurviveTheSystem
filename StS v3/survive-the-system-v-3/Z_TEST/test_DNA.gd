@@ -32,6 +32,7 @@ var active_entity_count : int
 #ECS STATS
 var position_array : PackedVector3Array
 var current_energy_array : PackedFloat64Array
+
 var active_alife_array : PackedInt32Array  #To reuse some 
 var alive_array : PackedInt32Array
 
@@ -40,10 +41,8 @@ var current_life_state : PackedInt32Array
 var current_biomass : PackedFloat32Array
 var current_age : PackedInt32Array
 var current_size : PackedFloat32Array
-var grow_on := true
 
 #### Duplicate
-var duplicate_on := true
 var pending_spawn_id : PackedInt32Array
 var pending_remove_id: PackedInt32Array
 var pending_update_id: PackedInt32Array #check if in use
@@ -227,10 +226,14 @@ func set_chunk(n:int):
 
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void:
 	var dup_on := alifemanager.duplicate_on
-	var visu_on := alifemanager.visualisation_on
+	#var visu_on := alifemanager.visualisation_on
+	var photo_on := alifemanager.photosynthesis_on
+	var remove_on := alifemanager.remove_on
+	var grow_on := alifemanager.grow_on
 	var local_pending_spawn_id : PackedInt32Array
-
-	if true:
+	var local_pending_remove_id: PackedInt32Array
+	
+	if !photo_on:
 		for i in range(start, end):
 			var _energy:= current_energy_array[i]
 			if active_alife_array[i] == 0:
@@ -238,8 +241,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			if alive_array[i] == 0:
 				continue			
 			#if !_sun_on:
-			_energy += (1) * 0.16 * 1 #* active_alife_array[i]	
+			_energy += (1) * 0.16 * 1  #active_alife_array[i]	
 			_energy += -0.5 *  0.16 * 1 #* active_alife_array[i]
+			current_age[i] += 1
 			if _energy >= 5:
 				if dup_on:
 					local_pending_spawn_id.append(i)
@@ -247,183 +251,49 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			if _energy < 0 :
 				alive_array[i] = 0
 
-			current_energy_array[i] = _energy
+			current_energy_array[i] = _energy											
+	if photo_on:
+		for i in range(start, end):
+			var _energy:= current_energy_array[i]
+			if active_alife_array[i] == 0:
+				continue
+			if alive_array[i] == 0:
+				continue			
 
-	if dup_on:
-		spawn_per_chunk[local_id] = local_pending_spawn_id
-	
-	
-	
-func run_chunk_simulation2(chunk: int) -> void:
-	var _sun_on := world.SUN_on
-	var n := _jitter.size()
-	var local_pending_spawn_id : PackedInt32Array
-	var local_pending_remove_id : PackedInt32Array
-	var t0 := Time.get_ticks_usec()
-	var from := chunk * chunk_size
-	var to := mini(from + chunk_size, entity_count)
-	var j := (from + total_time) % n
+			_energy += -0.5 *  0.16 * 1 #* active_alife_array[i]
+			current_age[i] += 1
 
-	'if bin_on:
-		for i in range(from, to):
-			#var bin_t0 = Time.get_ticks_usec()
-			var pos_i := position_array[i]
-			var c := current_cell_id[i]
+			if _energy >= 5:
+				if dup_on:
+					local_pending_spawn_id.append(i)
+				_energy -= 5
+			if _energy < 0 :
+				alive_array[i] = 0
 
-			# decode cell (matches cx + W * (cy + H * cz))
-			var cx := c % GRID_W
-			var cy := (c / GRID_W) % GRID_H
-			var cz := c / GRID_WH
-
-			# clamp the 3x3x3 neighbourhood to the grid
-			var x0 := maxi(cx - 1, 0)
-			var x1 := mini(cx + 1, GRID_W - 1)
-			var y0 := maxi(cy - 1, 0)
-			var y1 := mini(cy + 1, GRID_H - 1)
-			var z0 := maxi(cz - 1, 0)
-			var z1 := mini(cz + 1, GRID_D - 1)
-
-			var cc := 0
-			for nz in range(z0, z1 + 1):
-				for ny in range(y0, y1 + 1):
-					var row := GRID_W * (ny + GRID_H * nz)
-					# x0..x1 cells are contiguous -> one range for all three
-					for s in range(cell_start[row + x0], cell_start[row + x1 + 1]):
-						
-						if pos_i.distance_squared_to(sorted_pos[s]) < 100:# RADIUS_SQ:
-							cc += 1
-			#bin_screen_usec +=  Time.get_ticks_usec() - bin_t0
-										
-			#var bin_t1 = Time.get_ticks_usec()
-			if cc >= 10  and cc <20:
-				color_array[i]= Color(0.13, 0.192, 0.516, 1.0)
-			elif cc >= 20:
-					color_array[i]= Color(0.434, 0.076, 0.137, 1.0)
-			else:
-				color_array[i]= Color(0.239, 0.545, 0.358, 1.0)
-			if i == 0 :
-				color_array[i]= Color(0.75, 0.78, 0.187, 1.0)
-			#bin_action_usec +=  Time.get_ticks_usec() - bin_t1'
-
-	'if AI_on:
-		#AI / ALIFE
-		var local_action_scores : PackedFloat32Array
-		local_action_scores.resize(ACTION_COUNT)
-		var full := 0.0
-		var hungry := 0.0
-		var target_far := 0.0
-		var target_close  := 0.0
-		var best_action := 0
-		var dir : Vector3
-		var pi : Vector3
-		var ei : float
-		var diff : Vector3
-		var dist : float
-		var bounds_max := Vector3(GRID_W, GRID_H, GRID_D) * cell_size
-		for i in range(from, to):
-			pi = position_array[i]
-			ei = current_energy_array[i]
-			diff = pi-mouse_target
-			dist = diff.length()
-
-		#Consideration
-			full =clampf(current_energy_array[i] / 5.0, 0.0, 1.0)
-			hungry = 1- full
-			target_far =  clampf(dist / 1000, 0.0, 1.0)
-			target_close = (1- target_far)*0.1
-
-			#action scores
-			local_action_scores[Action.MOVE] = target_close #* full
-			local_action_scores[Action.EAT] = target_far * hungry
-			local_action_scores[Action.DUPLICATE] = target_far * full
-			#local_action_scores[current_action[i]] *= MOMENTUM
-
-			#choose best
-			best_action = 0
-			for a in range(1, ACTION_COUNT):
-				if local_action_scores[a] > local_action_scores[best_action]:
-					best_action = a
-			current_action[i] = best_action
-			
-			#DO ACTION
-			match best_action:
-				Action.EAT:
-					current_energy_array[i] += (1) * 0.016 * 1 #* active_alife_array[i]
-					pi += _jitter[j] 
-					j += 1
-					if j >= n:
-						j = 0
-					
-				Action.DUPLICATE:
-					if duplicate_on:
-						local_pending_spawn_id.append(i)
-					current_energy_array[i] -= 5
-				
-				Action.MOVE:
-					dir =  diff.normalized()
-					pi += dir * 2
-			current_energy_array[i] -= 0.5* 0.016 * 1				
-			position_array[i] = pi.clamp(Vector3.ZERO, bounds_max)'
-			
-			
-	#else:
-	if true:
-		for i in range(from, to):
-					var _energy:= current_energy_array[i]
-					if active_alife_array[i] == 0:
-						continue
-					if alive_array[i] == 0:
-						continue
-						
-					if !_sun_on:
-						_energy += (1) * 0.16 * 1 #* active_alife_array[i]
-					
-					_energy += -0.5 *  0.16 * 1 #* active_alife_array[i]
-					if _energy >= 5:
-						if duplicate_on:
-							local_pending_spawn_id.append(i)
-						_energy -= 5
-					if _energy < 0 :
-						alive_array[i] = 0
-	
-					current_energy_array[i] = _energy
+			current_energy_array[i] = _energy	
 	if grow_on:
-		for i in range(from, to):
+		for i in range(start, end):
 			var ei:= current_energy_array[i]
 			var cls := current_life_state[i]
 			if cls <3:
 				if ei > 3:
 					current_life_state[i] += 1
 					current_energy_array[i] -= 3
-					current_size[i]+= 0.25
+					current_size[i]+= growth_rate
 					current_biomass[i] += 2
-			current_age[i]+=1
-	if duplicate_on:
-		spawn_per_chunk[chunk] = local_pending_spawn_id
-	'if remove_on:
-		for i in range(from, to):
+			#current_age[i]+=1
+	if dup_on:
+		spawn_per_chunk[local_id] = local_pending_spawn_id
+	if remove_on:
+		for i in range(start, end):
 			if alive_array[i] == 0 and active_alife_array[i] == 1:
 				local_pending_remove_id.append(i)
 				
-		remove_per_chunk[chunk] = local_pending_remove_id'	
-		
-	'if duplicate_on:
-		mutex.lock()
-		for i in local_pending_spawn_id:
-			pending_spawn_id.append(i)
-		mutex.unlock()
-		
-	if remove_on:
-		mutex.lock()
-		for i in local_pending_remove_id:
-			if alive_array[i] == 0 and active_alife_array[i] == 1:
-				pending_remove_id.append(i)
-		mutex.unlock()'
+		remove_per_chunk[local_id] = local_pending_remove_id
 	
-	chunk_usec[chunk] = Time.get_ticks_usec() - t0
-	chunk_tid[chunk] = OS.get_thread_caller_id()	
+	
 
-''
+
 ####################RENDERING#################################################
 ################################################################################
 
@@ -441,6 +311,9 @@ func write_rendering_buffer_in_chunk(start: int, end: int,local_id:int) -> void:
 				continue'
 			r_data[o]     = p.x #* dt     # x
 			r_data[o + 1] = p.z # * dt     # y
+			r_data[o + 2] = active_alife_array[i]
+			r_data[o + 3] = alive_array[i]
+
 		#r_data_per_chunk[local_id] = r_data
 
 func update_renderer():
@@ -524,8 +397,6 @@ func Remove_Life(i):
 
 
 
-
-
 ##########################################################################################
 ####ARRAY MANAGEMENT
 ##########################################################################################
@@ -575,13 +446,6 @@ func _ready() -> void:
 	cell_start.resize(NUM_CELLS + 1)
 	write_pos.resize(NUM_CELLS)'
 
-
-
-
-
-
-	
-	
 
 func getChunk_perf():
 	var threads := {}
@@ -673,8 +537,7 @@ func getChunk_perf():
 	current_bin_id[i] = bin_id'
 
 
-func flow_diffusion():
-	pass
+
 
 
 'func get_index_in_bin_around(bin_array,i,radius):

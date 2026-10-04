@@ -22,6 +22,14 @@ var total_time : = 0
 #cross reference
 var world: World
 
+var photosynthesis_on:= true
+
+var global_position_array : PackedVector3Array
+var global_species_offset:PackedInt32Array
+
+
+
+
 #ECS STATS
 var position_array : PackedVector3Array
 var current_energy_array : PackedFloat64Array
@@ -196,6 +204,9 @@ func init(worldd):
 	init_GRID(world.size)
 	init_species(world,self)
 	
+	global_position_array = []
+	global_species_offset = []
+	
 			
 func init_species(worldd:World,alifem:AlifeManager):
 	if switch:
@@ -288,11 +299,21 @@ func wait_simulation() -> void:
 		gid = -1
 
 func update_alife()-> void:
-	for s in species_array:
-		s.Build_and_remove_pendings()
-
-
-	
+	global_position_array.clear()
+	global_species_offset.resize(species_array.size() + 1)
+	var total := 0
+ 
+	for i in species_array.size():
+		var sp:= species_array[i]
+		sp.Build_and_remove_pendings()
+		
+	if world.SUN_on or bin_on: 
+		for i in species_array.size():
+			var sp:= species_array[i]
+			global_species_offset[i] = total
+			global_position_array.append_array(sp.position_array)
+			total += sp.entity_count
+		global_species_offset[species_array.size()] = total
 
 #########################################################################################
 ######################OLD SCRIPT BELOW###################################################

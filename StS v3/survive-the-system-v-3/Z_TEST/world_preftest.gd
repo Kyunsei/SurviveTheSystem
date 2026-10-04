@@ -32,7 +32,9 @@ var cell_items := PackedInt32Array()     # size = alife count
 var current_cell_id := PackedInt32Array()  # size = alife count
 var sorted_pos := PackedVector3Array()
 
-
+var build_usec := 0.0
+var fill_usec := 0.0
+var distribute_usec := 0.0
 
 
 
@@ -61,7 +63,7 @@ func init_SUN_GRID():
 	write_pos.resize(SUN_NUM_CELLS)
 	SUN_GRID.resize(SUN_NUM_CELLS)
 
-func build_sun_grid(position_array: PackedVector3Array) -> void:
+func build_sun_grid2(position_array: PackedVector3Array) -> void:
 	var n := position_array.size()
 	current_cell_id.resize(n)
 	cell_items.resize(n)
@@ -95,7 +97,42 @@ func build_sun_grid(position_array: PackedVector3Array) -> void:
 		sorted_pos[w] = position_array[i]
 		write_pos[c] = w + 1
 
-func distribute_sun(energy_array,alive_array,active_array):
+func build_sun_grid(global_position_array: PackedVector3Array) -> void:
+	var n := global_position_array.size()
+	current_cell_id.resize(n)
+	cell_items.resize(n)
+	sorted_pos.resize(n)
+	cell_start.fill(0)
+	#var inv := 1.0 / SUN_cell_size
+	var inv := Vector3.ONE / SUN_cell_size   # (1/x, 1/y, 1/z)
+
+
+	# 1. Count particles per cell
+	for i in n:
+		var p := (global_position_array[i] - bin_origin) * inv
+		var cx := clampi(roundi(p.x), 0, SUN_GRID_W - 1)
+		var cy := clampi(roundi(p.y), 0, SUN_GRID_H - 1)
+		var cz := clampi(roundi(p.z), 0, SUN_GRID_D - 1)
+		var c := cx + SUN_GRID_W * (cy + SUN_GRID_H * cz)   # inline, no second division
+		current_cell_id[i] = c
+		cell_start[c + 1] += 1
+
+
+	# 2. Prefix sum -> start offset of each cell
+	for c in SUN_NUM_CELLS:
+		cell_start[c + 1] += cell_start[c]
+		write_pos[c] = cell_start[c]
+
+	# 3. Scatter indices and positions into sorted order
+	for i in n:
+		var c := current_cell_id[i]
+		var w := write_pos[c]
+		cell_items[w] = i
+		sorted_pos[w] = global_position_array[i]
+		write_pos[c] = w + 1
+
+
+func distribute_sun_old(energy_array,alive_array,active_array):
 	for i in SUN_GRID.size():
 		for s in range(cell_start[i], cell_start[i+1]):
 			var idx :=  cell_items[s]
@@ -104,6 +141,29 @@ func distribute_sun(energy_array,alive_array,active_array):
 				#print(SUN_GRID[i])
 				SUN_GRID[i] = 0
 
+func distribute_sun(alifem:AlifeManager):
+	var sp_offset := alifem.global_species_offset
+	var sp_array := alifem.species_array
+	for i in SUN_GRID.size():
+		var max_age := -1
+		var age := 0
+		var target_id : Vector2i #species, local id
+
+		for s in range(cell_start[i], cell_start[i+1]):
+			var gi :=  cell_items[s] 
+			var si := sp_offset.bsearch(gi, false) - 1	
+			var local_index := gi - sp_offset[si]
+			var sp := sp_array[si]
+			if sp.alive_array[local_index] == 1 and sp.active_alife_array[local_index] == 1:
+				age = sp.current_age[local_index]
+				if age > max_age:
+					max_age = age
+					target_id = Vector2(si,local_index)
+				
+		
+		if target_id:
+			sp_array[target_id.x].current_energy_array[target_id.y] += SUN_GRID[i] * 1 * 0.16
+			SUN_GRID[i] = 0
 
 
 #index deadcell/alive cell are mixed
@@ -111,15 +171,21 @@ func distribute_sun(energy_array,alive_array,active_array):
 func run_world_simulation(alifemanager: AlifeManager, delta,simulation_speed):
 	sun_usec = 0.0
 	main_world_usec = 0.0
+	build_usec = 0.0	
+	fill_usec = 0.0
+	distribute_usec = 0.0
 	var t0 := Time.get_ticks_usec()
 	
 	if SUN_on:
 		var ts0 := Time.get_ticks_usec()
-		build_sun_grid(alifemanager.position_array)
+		build_sun_grid(alifemanager.global_position_array)
+		build_usec = Time.get_ticks_usec() - ts0
 		SUN_GRID.fill(SUN_energy)
+		fill_usec = Time.get_ticks_usec() - (ts0 + build_usec)
 		#sun_first_come(Vector3i(3,1,3),alifemanager)
-		sun_first_come_disk(1.0,alifemanager)
-		#distribute_sun(alifemanager.current_energy_array,alifemanager.alive_array,alifemanager.active_alife_array)
+		#TODO -> sun_first_come_disk(1.0,alifemanager)
+		distribute_sun(alifemanager)
+		distribute_usec = Time.get_ticks_usec() - (ts0 + build_usec + fill_usec)
 		sun_usec = Time.get_ticks_usec()-ts0
 	
 	main_world_usec = Time.get_ticks_usec()-t0

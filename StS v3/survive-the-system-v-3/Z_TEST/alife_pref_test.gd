@@ -125,7 +125,12 @@ func display_world_perf():
 	$simulation_UI/World/Label.text = "nLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
 	$simulation_UI/World/Label.text += "\n\nfunction \t msec  "
 	$simulation_UI/World/Label.text += "\nmain_loop \t  %2d" % ($World.main_world_usec/1000.0)
-	$simulation_UI/World/Label.text += "\nSUN \t  %2d" % ($World.sun_usec/1000.0)
+	$simulation_UI/World/Label.text += "\nSUN_total \t  %2d" % ($World.sun_usec/1000.0)
+	$simulation_UI/World/Label.text += "\nSUN_build \t  %2d" % ($World.build_usec/1000.0)
+	$simulation_UI/World/Label.text += "\nSUN_fill \t  %2d" % ($World.fill_usec/1000.0)
+	$simulation_UI/World/Label.text += "\nSUN_distribute \t  %2d" % ($World.distribute_usec/1000.0)
+
+
 
 func display_rendering_perf():
 	$simulation_UI/Rendering/Label.text = "\n\nfunction \t msec  "
@@ -143,12 +148,8 @@ func display_general_perf() -> void:
 			%Label.text += "\nWorld_system:  %2d" % ($World.main_world_usec/1000.0)
 			%Label.text += "\nRendering_system:  %2d" % ($Visual.main_visu_usec/1000.0)
 
-			
 			%Label.text += "\n\nnLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
-			#$Label.text += "\nEfficiency: %2d" % $AlifeManager.multithread_efficiency
-			%Label.text += "\n\nRendering part \n \n"
-			%Label.text += "\ndraw new msec: %2d" % ($Visual/MultiMeshInstance2D.draw_new_usec/1000.0)
-			%Label.text += "\nUpdate all msec: %2d" % ($Visual/MultiMeshInstance2D.update_all_usec/1000.0)
+
 func diplay_alife_perf() -> void:
 	if simulation_speed > 0 :
 		'_accum += delta
@@ -364,3 +365,7 @@ func _on_multispecies_toggled(toggled_on: bool) -> void:
 
 func _on_n_species_text_submitted(new_text: String) -> void:
 	$AlifeManager.n_species = int(new_text)
+
+
+func _on_photosynthesis_toggled(toggled_on: bool) -> void:
+	$AlifeManager.photosynthesis_on = toggled_on

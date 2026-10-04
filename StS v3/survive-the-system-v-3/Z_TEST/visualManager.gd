@@ -34,6 +34,10 @@ func init(worldd,alifm):
 
 
 func run_visualisation():
+	update_usec = 0
+	main_visu_usec = 0
+	write_usec = 0
+	
 	var t0 := Time.get_ticks_usec()
 	start_write_rendering_buffer()
 	wait_rendering_buffer()
