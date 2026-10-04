@@ -58,7 +58,6 @@ func init():
 			$Grass_Manager2.World = World
 			$Grass_Manager2.Init()
 
-
 			$beast_manager.World = World
 			for i in range(500):
 				var pos = get_random_worldpos()

@@ -419,6 +419,7 @@ offset_right = 338.0
 offset_bottom = 637.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
+visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -498,13 +499,6 @@ offset_top = 6.0
 offset_right = -11.0
 offset_bottom = 29.0
 text = "Update_on_x_frame"
-
-[node name="Label" type="RichTextLabel" parent="simulation_UI/Rendering" unique_id=841541968]
-layout_mode = 0
-offset_left = 17.0
-offset_top = 324.0
-offset_right = 294.0
-offset_bottom = 645.0
 
 [node name="Label" type="RichTextLabel" parent="simulation_UI" unique_id=1345646950]
 unique_name_in_owner = true

@@ -1,11 +1,12 @@
 extends Node2D
 class_name AlifeManager
 
-#TODO make it close more easily? kindof fixed by stopping when FPS too low?
+#THIS SCRIPT MANAGE THE DIFFERENT ALIFE SPECIES and connect them together and with other simulation element [player/world/rendering]
+#A bit similar to the one above (SimulationManager) but more focus on Alife
+
 #TODO wait thread?
 #TODO fix chunk number/order or make it random?
 #TODO simulation time in threads?
-#TODO optimise array extension and pending array? maybe more efficient code way -> check claude idea
 #TODO sensing alife x alife : wolrd partioning + flow?
 #TODO think for Species modularity & perforrmance: add different species
 #TODO add physics collision/gravity?
@@ -49,6 +50,7 @@ var pending_remove_id: PackedInt32Array
 var remove_on:= true
 
 ##RENDERING
+var visualisation_on := true
 var pending_multimesh_drawn_id : PackedInt32Array
 var pending_multimesh_erase_id : PackedInt32Array
 
@@ -96,8 +98,7 @@ var flowbin_dic : Dictionary
 #var current_bin_id : Array[Vector3i]
  
 
-###Species?
-var spA : SPECIES_TEST_A
+
 
 #Randomness
 const JITTER_COUNT := 4096
@@ -106,9 +107,15 @@ var _jhead: int = 0
 
 ###multithread things
 var gid := -1
+var jobs: Array = []     # each entry: [species, chunk_index]
+
 var nThread_max := 8#1
 var chunk_count: int
 var chunk_size: int
+#TODO adjust these number to see performance difference!
+const MIN_CHUNK := 256      # never smaller: avoids overhead
+const MAX_CHUNK := 8192     # never bigger: keeps balance
+const JOBS_PER_THREAD := 4
 var mutex := Mutex.new()
 
 var spawn_per_chunk : Array[PackedInt32Array] = []
@@ -124,21 +131,33 @@ var	multithread_efficiency := 0.
 var	nThreadused := 0
 
 #### main loop track perf
-var main_usec = 0
-var uai_usec = 0
-var bin_screen_usec = 0
-var bin_action_usec = 0
-var bin_update_usec = 0
+var main_usec = 0.
+var uai_usec = 0.
+var bin_screen_usec = 0.
+var bin_action_usec = 0.
+var bin_update_usec = 0.
+var multithread_usec = 0.
+var merge_usec = 0.
 
 
 #############################################################################################
 ##############################################################################################
 
+
+var switch := true
+var species_array : Array[TESTDNA]
+var n_species :=2
+
+
+
+
 func _ready() -> void:
+	#TODO check how noise is working in different species now... and look to seed it?
 	_jitter.resize(JITTER_COUNT)
 	for k in JITTER_COUNT:
 		_jitter[k] = Vector3(randf_range(-1.0,1.0),0,randf_range(-1.0,1.0))
 
+	
 func init(worldd):
 	#time
 	total_time = 0
@@ -175,12 +194,25 @@ func init(worldd):
 	##WORLD
 	world = worldd
 	init_GRID(world.size)
+	init_species(world,self)
 	
+			
+func init_species(worldd:World,alifem:AlifeManager):
+	if switch:
+		for c in get_children():
+			c.queue_free()
+		species_array.resize(n_species)
+		for s in n_species:
+			species_array[s] = TESTDNA.new()
+			species_array[s].colour = Color(randf(),randf(),randf())
+			species_array[s].init(worldd,alifem)
 
+			if s == 1:
+				species_array[s].growth_rate = 1		
 	
-
-
 func init_GRID(world_size):
+	#THIS IS the grid of close agent-agent interaction, where cell_size > range of detection
+	
 	var dims := Vector3i((world_size / cell_size).ceil())
 	GRID_W = dims.x         # cells along x
 	GRID_H = dims.y       # cells along y
@@ -191,20 +223,92 @@ func init_GRID(world_size):
 	cell_start.resize(NUM_CELLS + 1)
 	write_pos.resize(NUM_CELLS)
 
+func compute_chunk(total:int) -> int:
+	var threads := OS.get_processor_count()
+	threads = clamp( nThread_max,1,OS.get_processor_count()) 
+	@warning_ignore("integer_division")
+	var chunk := total / (threads * JOBS_PER_THREAD)
+	return clampi(chunk, MIN_CHUNK, MAX_CHUNK)
+
+
+func run_simulation2(delta: float, sim_speed: float):
+	var t00 := Time.get_ticks_usec()
+	#if sim speed or delta is changed or anything thread is using. safer to change it before start or after wait!
+	
+	if bin_on:
+		var bin_t0 = Time.get_ticks_usec()
+		build_grid(position_array)
+		bin_update_usec =  Time.get_ticks_usec() - bin_t0
+	
+	var t0 := Time.get_ticks_usec()
+
+	start_simulation(delta,sim_speed)
+	wait_simulation()
+	multithread_usec = Time.get_ticks_usec() - t0
+	var t2 := Time.get_ticks_usec()
+	update_alife()
+	merge_usec = Time.get_ticks_usec() -t2
+	main_usec = Time.get_ticks_usec() - t00
+
+	#MERGE
 
 
 
+func start_simulation(delta: float, sim_speed: float):
+	dt = delta * sim_speed #TOBE USED LATER	
+	#update 
+	var m := get_viewport().get_mouse_position()
+	var mouse := Vector3(m.x, 0.0, m.y)
+	entity_count = 0
+	for s in species_array:
+		entity_count += s.entity_count
+		s.mouse_target =  mouse
 
+	#setup thread/chunk/jobs
+	jobs.clear()
+	chunk_size = compute_chunk(entity_count) #need full entity count to work
+	for s in species_array:
+		var local_id:= 0
+		var n: int = s.entity_count
+		for start in range(0, n, chunk_size):
+			jobs.append([s, start, mini(start + chunk_size, n),local_id])
+			local_id += 1
+		s.set_chunk(local_id)
+	
+	#run working group	
+	gid = -1	
+	if jobs.size() > 0:
+		#gid = WorkerThreadPool.add_group_task(run_chunk, jobs.size(), -1, true, "species_update")
+		gid = WorkerThreadPool.add_group_task(run_chunk, jobs.size(), nThread_max, true, "species_update")
+
+func run_chunk(k: int) -> void:
+	var job = jobs[k]
+	job[0].run_chunk_simulation(job[1], job[2],job[3], dt)
+
+func wait_simulation() -> void:
+	if gid != -1:
+		WorkerThreadPool.wait_for_group_task_completion(gid)
+		gid = -1
+
+func update_alife()-> void:
+	for s in species_array:
+		s.Build_and_remove_pendings()
+
+
+	
+
+#########################################################################################
+######################OLD SCRIPT BELOW###################################################
+#########################################################################################
 
 
 func run_simulation(delta: float, sim_speed: float):
-
+	var t00 := Time.get_ticks_usec()
 	bin_update_usec = 0.0
 	bin_action_usec = 0.0 
 	bin_screen_usec = 0.0
 	main_usec = 0.0
 	uai_usec = 0.0	
-	var t00 := Time.get_ticks_usec()
 	var j := _jhead	
 	var n := _jitter.size()
 	var temp_spawn_id : PackedInt32Array
@@ -451,8 +555,6 @@ func run_simulation_multithread2(delta: float, sim_speed: float):
 	main_usec = Time.get_ticks_usec() - t0
 	
 
-
-
 func run_chunk_simulation(chunk: int) -> void:
 	var _sun_on := world.SUN_on
 	var n := _jitter.size()
@@ -661,8 +763,6 @@ func doChunk(chunk: int) -> void:
 	chunk_usec[chunk] = Time.get_ticks_usec() - t0
 	chunk_tid[chunk] = OS.get_thread_caller_id()
 	
-	
-
 func getChunk_perf():
 	var threads := {}
 	var total := 0
@@ -676,16 +776,6 @@ func getChunk_perf():
 	multithread_efficiency = float(total) / maxf(1.0, float(main_usec))
 	nThreadused = threads.size() # OS.get_processor_count()
 	
-
-func Growth1(i):
-	if current_energy_array[i] > 5:
-		current_life_state[i] += 1
-		current_energy_array[i] -= 5	
-
-func Growth2(i):
-	if current_energy_array[i] > 2:
-		current_life_state[i] += 1
-		current_energy_array[i] -= 2
 
 ##########################################################################################
 ####ARRAY MANAGEMENT
@@ -788,17 +878,8 @@ func cell_id(cx: int, cy: int, cz: int) -> int:
 	return cx + GRID_W * (cy + GRID_H * cz)
 
 
-func get_binID(p: Vector3, bin_size: float, world_size: Vector3) -> int:
-	var dims := Vector3i((world_size / bin_size).ceil())
-	var cx := clampi(roundi(p.x / bin_size), 0, dims.x - 1)
-	var cy := clampi(roundi(p.y / bin_size), 0, dims.y - 1)
-	var cz := clampi(roundi(p.z / bin_size), 0, dims.z - 1)
-	return cx + dims.x * (cy + dims.y * cz)
-
-
-
-func build_grid(position_array: PackedVector3Array) -> void:
-	var n := position_array.size()
+func build_grid(position_arrayy: PackedVector3Array) -> void:
+	var n := position_arrayy.size()
 	current_cell_id.resize(n)
 	cell_items.resize(n)
 	sorted_pos.resize(n)
@@ -807,7 +888,7 @@ func build_grid(position_array: PackedVector3Array) -> void:
 
 	# 1. Count particles per cell
 	for i in n:
-		var p := (position_array[i] - bin_origin) * inv
+		var p := (position_arrayy[i] - bin_origin) * inv
 		var cx := clampi(roundi(p.x), 0, GRID_W - 1)
 		var cy := clampi(roundi(p.y), 0, GRID_H - 1)
 		var cz := clampi(roundi(p.z), 0, GRID_D - 1)
@@ -825,99 +906,8 @@ func build_grid(position_array: PackedVector3Array) -> void:
 		var c := current_cell_id[i]
 		var w := write_pos[c]
 		cell_items[w] = i
-		sorted_pos[w] = position_array[i]
+		sorted_pos[w] = position_arrayy[i]
 		write_pos[c] = w + 1
-	
-'func update_bin_array(i, world):
-	var bin_id := get_binID(position_array[i], bin_size, world.size)
-	if current_bin_id[i] == bin_id:
-		return
-	if not bin_ids_array.has(bin_id):
-		bin_ids_array[bin_id] = []
-	bin_ids_array[bin_id].append(i)
-	if bin_ids_array.has(current_bin_id[i]):
-		bin_ids_array[current_bin_id[i]].erase(i)
-	current_bin_id[i] = bin_id'
-
-'func update_bin_array(i):
-	var bin_id := get_binID(position_array[i], bin_size, world_size)
-	if current_bin_id[i] == bin_id:
-		return
-	if not LifeBin_array.has(bin_id):
-		bin_ids_array[bin_id] = []
-	bin_ids_array[bin_id].append(i)
-	if bin_ids_array.has(current_bin_id[i]):
-		bin_ids_array[current_bin_id[i]].erase(i)
-	current_bin_id[i] = bin_id'
-
 
 func flow_diffusion():
 	pass
-
-
-'func get_index_in_bin_around(bin_array,i,radius):
-	var bin_index = binID_array[i]
-	var result : PackedInt32Array
-	var GRID_WIDTH: int =  int(World.World_Size.x/ World.bin_size.x)
-	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
-
-	var row = bin_index / GRID_WIDTH
-	var col = bin_index % GRID_WIDTH
-	for dy in range(-radius, radius + 1):
-		for dx in range(-radius, radius + 1):
-			var nx = col + dx
-			var ny = row + dy
-			# Edge clamp — skip cells outside grid bounds
-			if nx < 0 or nx >= GRID_WIDTH:
-				continue
-			if ny < 0 or ny >= GRID_HEIGHT:
-				continue
-
-			var neighbor_bin = ny * GRID_WIDTH + nx
-
-			# Append all agent indices stored in that bin
-			if bin_array[neighbor_bin]:
-				var agents_in_bin: PackedInt32Array = bin_array[neighbor_bin]
-				for agent_idx in agents_in_bin:
-					result.append(agent_idx)
-	return result'
-'func get_real_current_bin(i):
-	var w_pos = World.get_PositionInGrid(position_array[i],World.bin_size)
-	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)	
-	return new_bin_ID'
-
-'func put_in_world_bin(i):
-	var bin_ID = binID_array[i]
-	var w_pos = World.get_PositionInGrid(position_array[i],World.bin_size)
-	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
-	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-	if new_bin_ID < 0 or new_bin_ID >= World.bin_array.size():
-		#print("life out of world")
-		remove_from_world_bin(i)
-		return
-	if bin_ID != new_bin_ID:
-		remove_from_world_bin(i)
-		binID_array[i] = new_bin_ID
-		#g["bin_ID"] = new_bin_ID
-	if World.bin_array[new_bin_ID] == null:
-		World.bin_array[new_bin_ID] = [i]
-		#World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
-		#species_world_array[Species_array[i]][new_bin_ID] += 1
-		sum_species_world_array[Species_array[i]][new_bin_ID] += 1
-	else:	
-		World.bin_array[new_bin_ID].append(i) 
-		#World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
-		#species_world_array[Species_array[i]][new_bin_ID] += 1
-		sum_species_world_array[Species_array[i]][new_bin_ID] += 1
-
-	#binID_array[i] = new_bin_ID'
-
-'func remove_from_world_bin(i):
-
-	if binID_array[i] >= 0:
-		if World.bin_array[binID_array[i]].has(i):
-			World.bin_array[binID_array[i]].erase(i)
-			#World.bin_sum_array[Species_array[i]][binID_array[i]] -= 1
-			sum_species_world_array[Species_array[i]][binID_array[i]] -= 1
-			#field_world_array[Species_array[i]][binID_array[i]] -= 1
-			binID_array[i] = -1'

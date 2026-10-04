@@ -1,12 +1,16 @@
 extends MultiMeshInstance2D
+class_name RenderingALife2D
 
 #TODO to improve update at all frame 
 #ALL on GPU directly
 #Limit the number of update either by frame or in total
 
-var alifemanager: AlifeManager
-var World
+var alifemanager#: AlifeManager
+var species #:TESTDNA
+var world: World
 var activated = true
+
+var mulitmesh2D_array : Array[MultiMeshInstance2D]
 
 #Sequentially update
 var update_on_n_frame := 4
@@ -23,35 +27,26 @@ var update_time = 1
 var update_time_value = 1
 
 #buffer WIP
-const STRIDE := 12 #for 2D buffer + color
 var buff := PackedFloat32Array()
 #var angles: PackedFloat32Array
 
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	print(Performance.get_monitor(Performance.RENDER_BUFFER_MEM_USED))
-	print(Performance.get_monitor(Performance.MEMORY_STATIC))
-	print(Performance.get_monitor(Performance.OBJECT_COUNT))
-	alifemanager = get_parent().get_parent().get_node("AlifeManager")
-	World = get_parent().get_parent().get_node("World")
-	panel_size = $Panel.size
-	
-	init()
-	#multimesh.mesh = quad
-	if show_indices:
-		_draw()
-
-	
-	#buff = multimesh.get_buffer()
 
 
-func init():
+#TODO mesh number scale with real entity number? also move on compute shader?
+func init(alifemanagerr, worldd:World):
+	alifemanager = alifemanagerr #REMOVE when fully shifted
+	species = alifemanagerr
+	world = worldd
 	multimesh =  MultiMesh.new()
 	multimesh.transform_format = MultiMesh.TRANSFORM_2D
 	multimesh.mesh = make_triangle(4.0)
 	multimesh.use_colors = true
-	multimesh.instance_count = 10000000
+	multimesh.instance_count =  100000
 	multimesh.visible_instance_count = 0
+	ensure_capacity(100000)#    
+	var w := 10000.0   # world size; make sure it covers every possible position
+	multimesh.custom_aabb = AABB(Vector3(-w, -w, -1.0), Vector3(2.0 * w, 2.0 * w, 2.0))
+
 
 
 func build_quad_mesh():
@@ -146,7 +141,7 @@ func update_all_buffer():
 
 
 func position_conversion(pos):
-	var world_extent = Vector2(World.size.x, World.size.z)
+	var world_extent = Vector2(world.size.x, world.size.z)
 	var newpos = (Vector2(pos.x, pos.z) / world_extent) * panel_size + panel_size / 2
 	return newpos
 
@@ -176,8 +171,8 @@ func draw_new_instance(idx_arr: PackedInt32Array):
 		#print(i)
 		
 		#multimesh.set_instance_color(i, alifemanager.color_array[i]) 	
-		multimesh.set_instance_color(i, Color(0.313, 0.66, 0.403, 1.0)) 	
-
+		var col = alifemanager.color_array[i] #Color(0.313, 0.66, 0.403, 1.0)
+		multimesh.set_instance_color(i, col)
 		ii = i+1
 		if ii > c:
 			c+=1	
@@ -188,17 +183,18 @@ func draw_new_instance(idx_arr: PackedInt32Array):
 
 
 func update_all_sequentially() -> void:
-	var t0 := Time.get_ticks_usec()
-	var n: int = alifemanager.entity_count
-	var from := n * c / update_on_n_frame
-	var to := n * (c + 1) / update_on_n_frame    # multiply first, then divide
-	update_array(from, to)
-	c = (c + 1) % update_on_n_frame
-	update_all_usec = Time.get_ticks_usec() - t0
-	#_draw()
+	
+	
+		var t0 := Time.get_ticks_usec()
+		var n: int = alifemanager.entity_count
+		var from := n * c / update_on_n_frame
+		var to := n * (c + 1) / update_on_n_frame    # multiply first, then divide
+		update_array(from, to,alifemanager)
+		c = (c + 1) % update_on_n_frame
+		update_all_usec = Time.get_ticks_usec() - t0
 	
 
-func update_array(from: int, to: int):
+func update_array(from: int, to: int, alifemanager):
 	#var t0 := Time.get_ticks_usec()
 	var pos: Vector3
 	var pos2d: Vector2
@@ -215,7 +211,7 @@ func update_array(from: int, to: int):
 					pos
 				)'
 		# Transform2D(rotation, scale, skew, position)
-		var s := alifemanager.current_size[i]
+		var s = alifemanager.current_size[i]
 		t = Transform2D(0.0, Vector2(s, s), 0.0, pos2d)
 		#print(pos,posit)			
 		if alifemanager.active_alife_array[i] ==1:
@@ -226,22 +222,27 @@ func update_array(from: int, to: int):
 				#multimesh.set_instance_color(i, Color(0.894, 0.372, 0.496, 1.0))'
 	 	
 			else:
-				multimesh.set_instance_color(i, Color(0.313, 0.66, 0.403, 1.0))
+				var col = alifemanager.color_array[i] #Color(0.313, 0.66, 0.403, 1.0)
+				multimesh.set_instance_color(i, col)
 
 
- 	
+ 	#################################################
+	
+	
+	# rendering script
+const STRIDE := 12
+const CORPSE_COLOR := Color(0.488, 0.077, 0.15, 0.2)
+var buf := PackedFloat32Array()
 
-@export var show_indices := true
-@export var label_offset := Vector2(0, 1.0)
-@export var font_size := 8
+func ensure_capacity(n: int) -> void:
+	'if multimesh.instance_count >= n:
+		return'
+	var cap := maxi(n, multimesh.instance_count * 2)   # grow by 2x to avoid frequent resizes
+	multimesh.instance_count = cap                     # note: this resets the instances
+	buf.resize(cap * STRIDE)
+	buf.fill(0.0)                                      # scale 0 = hidden
 
-var _labels: Array[Label3D] = []
-
-func _draw() -> void:
-	if not show_indices or multimesh == null:
-		return
-	var font := ThemeDB.fallback_font
-	for i in multimesh.instance_count:
-		var p := multimesh.get_instance_transform_2d(i).origin + label_offset
-		draw_string_outline(font, p, str(i), HORIZONTAL_ALIGNMENT_CENTER, -1, font_size, 4, Color.BLACK)
-		draw_string(font, p, str(i), HORIZONTAL_ALIGNMENT_CENTER, -1, font_size, Color.WHITE)
+func rebuild_buffer() -> void:
+	buf = species.rendering_buffer
+	RenderingServer.multimesh_set_buffer(multimesh.get_rid(), buf)
+	multimesh.visible_instance_count = species.entity_count
