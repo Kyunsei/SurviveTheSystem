@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://cdpo8tg7quyy6" path="res://Z_TEST/alife_pref_test.gd" id="1_wb3fy"]
 [ext_resource type="Script" uid="uid://dqbicb0y1jbkl" path="res://Z_TEST/world_preftest.gd" id="2_w27ml"]
 [ext_resource type="Script" uid="uid://4mjcv3fkgess" path="res://Z_TEST/alife_manager_preftest.gd" id="3_ywrax"]
+[ext_resource type="Script" uid="uid://bnllghtmmewck" path="res://Z_TEST/visualManager.gd" id="4_hlgly"]
+[ext_resource type="Script" uid="uid://b3n5s07q1ed8e" path="res://Z_TEST/shader_multi_mesh_instance_2d.gd" id="6_eaag7"]
 [ext_resource type="Script" uid="uid://bgvg8hximiht2" path="res://Z_TEST/perf_multi_mesh_instance_2d.gd" id="6_elrxu"]
 [ext_resource type="Script" uid="uid://cs3dmhyjbqk1u" path="res://Z_TEST/multi_mesh_bin.gd" id="7_elrxu"]
 
@@ -16,6 +18,7 @@ script = ExtResource("2_w27ml")
 script = ExtResource("3_ywrax")
 
 [node name="Visual" type="Node2D" parent="." unique_id=393155582]
+script = ExtResource("4_hlgly")
 
 [node name="MultiMesh_BIN" type="MultiMeshInstance2D" parent="Visual" unique_id=1021534949]
 script = ExtResource("7_elrxu")
@@ -36,6 +39,9 @@ offset_left = 249.0
 offset_top = 113.0
 offset_right = 848.0
 offset_bottom = 607.0
+
+[node name="Shader_MultiMeshInstance2D2" type="MultiMeshInstance2D" parent="Visual" unique_id=1617969115]
+script = ExtResource("6_eaag7")
 
 [node name="simulation_UI" type="Control" parent="." unique_id=733662234]
 layout_mode = 3

@@ -230,18 +230,15 @@ func compute_chunk(total:int) -> int:
 	var chunk := total / (threads * JOBS_PER_THREAD)
 	return clampi(chunk, MIN_CHUNK, MAX_CHUNK)
 
-
+#NEED RENAME THIS FUNCTION
 func run_simulation2(delta: float, sim_speed: float):
 	var t00 := Time.get_ticks_usec()
 	#if sim speed or delta is changed or anything thread is using. safer to change it before start or after wait!
-	
 	if bin_on:
 		var bin_t0 = Time.get_ticks_usec()
 		build_grid(position_array)
 		bin_update_usec =  Time.get_ticks_usec() - bin_t0
-	
 	var t0 := Time.get_ticks_usec()
-
 	start_simulation(delta,sim_speed)
 	wait_simulation()
 	multithread_usec = Time.get_ticks_usec() - t0

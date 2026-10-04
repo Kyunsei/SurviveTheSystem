@@ -20,7 +20,8 @@ func init():
 	world = $World
 	world.init()
 	$AlifeManager.init(world)
-	$Visual/MultiMeshInstance2D.init($AlifeManager,world)
+	$Visual.init(world,$AlifeManager)
+	$Visual/MultiMeshInstance2D.init($AlifeManager,world) #OLD
 
 
 	if $AlifeManager.switch:
@@ -39,11 +40,11 @@ func init():
 	for i in n_start_life:
 		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),2)'
 #	$AlifeManager.setup_chunk()
-	
-	$Visual/MultiMeshInstance2D.setup() #this was for buffer
-	if $Visual/MultiMeshInstance2D.activated:
-		$Visual/MultiMeshInstance2D.draw_new_instance($AlifeManager.pending_multimesh_drawn_id)
-	#await get_tree().create_timer(1.0).timeout
+	if !$AlifeManager.switch:
+		$Visual/MultiMeshInstance2D.setup() #this was for buffer
+		if $Visual/MultiMeshInstance2D.activated:
+			$Visual/MultiMeshInstance2D.draw_new_instance($AlifeManager.pending_multimesh_drawn_id)
+		#await get_tree().create_timer(1.0).timeout
 	running = true
 	
 
@@ -71,23 +72,31 @@ func _process(delta: float) -> void:
 
 var c := 0
 func run_visualisation():
+
 	visu_erase_usec = 0.0
 	visu_draw_usec = 0.0
 	visu_update_usec = 0.0
 	var t:= Time.get_ticks_usec()
 	if $Visual/MultiMeshInstance2D.activated:
 		if $AlifeManager.switch:
-			for s in $AlifeManager.species_array:
+			$Visual.run_visualisation()
+			'for s in $AlifeManager.species_array:
+				pass
+				$Visual.dosomething()
 				var t1:= Time.get_ticks_usec()
-				s.rendering.rebuild_buffer()
-				's.rendering.draw_new_instance(s.pending_multimesh_drawn_id)
+				#s.rendering.rebuild_buffer()
+				s.start_rendering_update()
+				s.wait_rendering()
+				s.update_renderer()'
+				
+				#s.renderer.upload(s.entity_count)
+			's.rendering.draw_new_instance(s.pending_multimesh_drawn_id)
 				visu_draw_usec += Time.get_ticks_usec()-t1
 				t1= Time.get_ticks_usec()
 				s.rendering.erase_instance(s.pending_multimesh_erase_id)
 				visu_erase_usec += Time.get_ticks_usec()-t1
 				t1= Time.get_ticks_usec()
 				s.rendering.update_all_sequentially()'
-				visu_update_usec += Time.get_ticks_usec()-t1
 
 
 		
@@ -102,7 +111,6 @@ func run_visualisation():
 	
 var plant_only := false
 func run_simulation(delta):
-
 	$World.run_world_simulation($AlifeManager, delta, simulation_speed)
 	if $AlifeManager.switch:
 		$AlifeManager.run_simulation2(delta,simulation_speed)
@@ -121,19 +129,19 @@ func display_world_perf():
 
 func display_rendering_perf():
 	$simulation_UI/Rendering/Label.text = "\n\nfunction \t msec  "
-	$simulation_UI/Rendering/Label.text += "\nmain \t  %2d" % (visu_usec/1000.0)
-	$simulation_UI/Rendering/Label.text += "\ndraw\t  %2d" % (visu_draw_usec/1000.0)
-	$simulation_UI/Rendering/Label.text += "\nupdate\t  %2d" % (visu_update_usec/1000.0)
-	$simulation_UI/Rendering/Label.text += "\nerase\t  %2d" % (visu_erase_usec/1000.0)
+	$simulation_UI/Rendering/Label.text += "\nmain \t  %2d" % ($Visual.main_visu_usec/1000.0)
+	$simulation_UI/Rendering/Label.text += "\nwrite_buffer\t  %2d" % ($Visual.write_usec/1000.0)
+	$simulation_UI/Rendering/Label.text += "\nupdate\t  %2d" % ($Visual.update_usec/1000.0)
+	#$simulation_UI/Rendering/Label.text += "\nerase\t  %2d" % (visu_erase_usec/1000.0)
 
-
+	
 
 func display_general_perf() -> void:
 			%Label.text = "Duplication stop when reaching <30 FPS \n"
 			%Label.text += "\nFPS: " + str(Engine.get_frames_per_second())
 			%Label.text += "\nAlife_system:  %2d" % ($AlifeManager.main_usec/1000.0)
 			%Label.text += "\nWorld_system:  %2d" % ($World.main_world_usec/1000.0)
-			%Label.text += "\nRendering_system:  %2d" % (visu_usec/1000.0)
+			%Label.text += "\nRendering_system:  %2d" % ($Visual.main_visu_usec/1000.0)
 
 			
 			%Label.text += "\n\nnLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
@@ -267,6 +275,8 @@ func _on_button_1_toggled(toggled_on: bool) -> void:
 	#$simulation_UI/World.visible = false
 	#$simulation_UI/Rendering.visible = false
 	if toggled_on:
+		$simulation_UI/World.visible = false
+		$simulation_UI/Rendering.visible = false
 		$simulation_UI/Panel/HBoxContainer/Button_3.button_pressed = false
 		$simulation_UI/Panel/HBoxContainer/Button_2.button_pressed = false
 
@@ -275,6 +285,8 @@ func _on_button_2_toggled(toggled_on: bool) -> void:
 	#$simulation_UI/Alife.visible = false
 	#$simulation_UI/Rendering.visible = false
 	if toggled_on:
+		$simulation_UI/Alife.visible = false
+		$simulation_UI/Rendering.visible = false
 		$simulation_UI/Panel/HBoxContainer/Button_1.button_pressed = false
 		$simulation_UI/Panel/HBoxContainer/Button_3.button_pressed = false
 
@@ -283,7 +295,8 @@ func _on_button_3_toggled(toggled_on: bool) -> void:
 		#$simulation_UI/World.visible = false
 		#$simulation_UI/Alife.visible = false
 	if toggled_on:
-
+		$simulation_UI/Alife.visible = false
+		$simulation_UI/World.visible = false
 		$simulation_UI/Panel/HBoxContainer/Button_1.button_pressed = false
 		$simulation_UI/Panel/HBoxContainer/Button_2.button_pressed = false
 

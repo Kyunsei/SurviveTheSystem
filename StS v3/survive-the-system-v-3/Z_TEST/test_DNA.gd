@@ -54,9 +54,14 @@ var pending_multimesh_drawn_id : PackedInt32Array
 var pending_multimesh_erase_id : PackedInt32Array
 var pending_multimesh_update_id : PackedInt32Array #check if in use
 
-var rendering : RenderingALife2D
-var rendering_buffer : PackedFloat32Array
-const STRIDE := 12  #buffer + colors
+var renderer : AlifeRenderer2D
+var gid_r : int
+var rendering_data : PackedFloat32Array
+var r_data_per_chunk : Array[PackedFloat32Array] = []
+var writting_rendering_buffer_usec:= 0.0
+
+#var rendering_buffer : PackedFloat32Array
+#const STRIDE := 12  #buffer + colors
 
 #####AI THINGS¬¬¬¬¬
 var AI_on := false
@@ -177,46 +182,30 @@ func init(worldd,alifm):
 	#init_GRID(world.size)
 	
 	##Rendering
-	init_rendering()
-	rendering_buffer.resize(rendering.multimesh.instance_count * STRIDE)
+	init_renderer()
+	#rendering_buffer.resize(rendering.multimesh.instance_count * STRIDE)
 
-func init_rendering():
-	rendering = RenderingALife2D.new()
-	rendering.init(self,world)
+func init_renderer():
+	renderer = AlifeRenderer2D.new()
+#	renderer.init()
+	renderer.setup( 0, world.size, colour)
+	alifemanager.add_child.call_deferred(renderer)
+	rendering_data.clear()
+	#r.setup(s.capacity, 10000.0, s.colour)
+
+
+	
+	#rendering = RenderingALife2D.new()
+	#rendering.init(self,world)
 	#multimesh.species = self
 	#species_array[s].rendering = mm
-	alifemanager.add_child.call_deferred(rendering)
-
-func start_update(delta:float, sim_speed:float, alifemanager:AlifeManager):
-	'var bin_t0 = Time.get_ticks_usec()
-	if alifemanager.bin_on:
-		build_grid(position_array)
-	bin_update_usec =  Time.get_ticks_usec() - bin_t0'
-	var t0 := Time.get_ticks_usec()
-	'if entity_count == 0:
-		return
-	chunk_count = mini(nThread_max, entity_count)'
-	
-	for c in chunk_count:
-		spawn_per_chunk[c] = PackedInt32Array()
-		remove_per_chunk[c] = PackedInt32Array()
-	#mouse_target =  Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
-	gid = WorkerThreadPool.add_group_task(run_chunk_simulation, chunk_count, chunk_count, true)	
-	if gid != -1:
-		WorkerThreadPool.wait_for_group_task_completion(gid)
-		gid = -1
-		Build_and_remove_pendings()
-		getChunk_perf()
-
-	#time += delta
-	#total_time += 1
-	main_usec = Time.get_ticks_usec() - t0
 
 
-func send_value():
-	#TODO
-	#retrun array and other? probably stored in dic and alifemanger retrieve them itself..
-	pass
+
+
+
+
+
 
 
 ####MULTITHREAD
@@ -228,8 +217,12 @@ func set_chunk(n:int):
 	spawn_per_chunk.resize(n)
 	remove_per_chunk.resize(n)
 	update_per_chunk.resize(n)	
+	#REndering
+	r_data_per_chunk.resize(n)
 	for i in n:
 		spawn_per_chunk[i] = []   # clear the previous frame's results
+		remove_per_chunk[i] = []
+		r_data_per_chunk[i] = []
 	
 
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void:
@@ -237,54 +230,29 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 	var visu_on := alifemanager.visualisation_on
 	var local_pending_spawn_id : PackedInt32Array
 
-	for i in range(start, end):
-		var _energy:= current_energy_array[i]
-		if active_alife_array[i] == 0:
-			continue
-		if alive_array[i] == 0:
-			continue			
-		#if !_sun_on:
-		_energy += (1) * 0.16 * 1 #* active_alife_array[i]	
-		_energy += -0.5 *  0.16 * 1 #* active_alife_array[i]
-		if _energy >= 5:
-			if dup_on:
-				local_pending_spawn_id.append(i)
-			_energy -= 5
-		if _energy < 0 :
-			alive_array[i] = 0
+	if true:
+		for i in range(start, end):
+			var _energy:= current_energy_array[i]
+			if active_alife_array[i] == 0:
+				continue
+			if alive_array[i] == 0:
+				continue			
+			#if !_sun_on:
+			_energy += (1) * 0.16 * 1 #* active_alife_array[i]	
+			_energy += -0.5 *  0.16 * 1 #* active_alife_array[i]
+			if _energy >= 5:
+				if dup_on:
+					local_pending_spawn_id.append(i)
+				_energy -= 5
+			if _energy < 0 :
+				alive_array[i] = 0
 
-		current_energy_array[i] = _energy
+			current_energy_array[i] = _energy
 
 	if dup_on:
 		spawn_per_chunk[local_id] = local_pending_spawn_id
 	
-	if visu_on:
-		var pos: PackedVector3Array = position_array
-		var size: PackedFloat32Array = current_size
-		var alive: PackedInt32Array = alive_array
-		var active: PackedInt32Array = active_alife_array
-		var col: PackedColorArray = color_array
-		for i in range(start, end):  #SPLIT HERE
-			var o := i * STRIDE
-			var st := active [i]
-			if st == 0:
-				rendering_buffer[o] = 0.0
-				rendering_buffer[o + 5] = 0.0          # scale 0: invisible
-				continue
-			var s: float = size[i]
-			var p: Vector3 = pos[i]
-			rendering_buffer[o]     = s
-			rendering_buffer[o + 3] = p.x
-			rendering_buffer[o + 5] = s
-			rendering_buffer[o + 7] = p.z
-			var c: Color = col[i] if alive[i] == 1 else CORPSE_COLOR
-			rendering_buffer[o + 8]  = c.r
-			rendering_buffer[o + 9]  = c.g
-			rendering_buffer[o + 10] = c.b
-			rendering_buffer[o + 11] = c.a		
-
-#	RenderingServer.multimesh_set_buffer(multimesh.get_rid(), buf)
-#	multimesh.visible_instance_count = n
+	
 	
 func run_chunk_simulation2(chunk: int) -> void:
 	var _sun_on := world.SUN_on
@@ -455,6 +423,34 @@ func run_chunk_simulation2(chunk: int) -> void:
 	chunk_usec[chunk] = Time.get_ticks_usec() - t0
 	chunk_tid[chunk] = OS.get_thread_caller_id()	
 
+''
+####################RENDERING#################################################
+################################################################################
+
+
+func write_rendering_buffer_in_chunk(start: int, end: int,local_id:int) -> void:
+	var visu_on := alifemanager.visualisation_on #Can be set before probably
+	var r_data:= renderer.data # PackedFloat32Array
+	#r_data.resize((end-start)*4)
+	if visu_on:
+		#var r_data:= renderer.data
+		for i in range(start, end):
+			var p:= position_array[i]
+			var o := i * 4 #need to match STRIDE of renderer
+			'if renderer.data[o + 3] != active_alife_array[i]:
+				continue'
+			r_data[o]     = p.x #* dt     # x
+			r_data[o + 1] = p.z # * dt     # y
+		#r_data_per_chunk[local_id] = r_data
+
+func update_renderer():
+	#for c in r_data_per_chunk.size():
+	#	rendering_data.append_array(r_data_per_chunk[c]) #NOT IN GOOD ORDER?? yes becuas elocal ID?
+	#renderer.data = rendering_data
+	renderer.upload(entity_count)
+	#rendering_data.clear()
+	
+	
 
 ##########################################################################
 
@@ -469,6 +465,8 @@ func Build_and_remove_pendings():
 	
 	for i in pending_remove_id:
 		Remove_Life(i)	
+
+	#renderer.ensure_capacity(entity_count)
 
 	pending_spawn_id.clear()
 	pending_remove_id.clear()
