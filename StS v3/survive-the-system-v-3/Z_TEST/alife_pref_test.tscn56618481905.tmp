@@ -4,7 +4,6 @@
 [ext_resource type="Script" uid="uid://dqbicb0y1jbkl" path="res://Z_TEST/world_preftest.gd" id="2_w27ml"]
 [ext_resource type="Script" uid="uid://4mjcv3fkgess" path="res://Z_TEST/alife_manager_preftest.gd" id="3_ywrax"]
 [ext_resource type="Script" uid="uid://bnllghtmmewck" path="res://Z_TEST/visualManager.gd" id="4_hlgly"]
-[ext_resource type="Script" uid="uid://cxe6qj5km8dxb" path="res://Z_TEST/camera_3d.gd" id="6_b3dws"]
 [ext_resource type="Script" uid="uid://b3n5s07q1ed8e" path="res://Z_TEST/shader_multi_mesh_instance_2d.gd" id="6_eaag7"]
 [ext_resource type="Script" uid="uid://bgvg8hximiht2" path="res://Z_TEST/perf_multi_mesh_instance_2d.gd" id="6_elrxu"]
 [ext_resource type="Script" uid="uid://cs3dmhyjbqk1u" path="res://Z_TEST/multi_mesh_bin.gd" id="7_elrxu"]
@@ -35,10 +34,7 @@ offset_top = 113.0
 offset_right = 848.0
 offset_bottom = 607.0
 
-[node name="Rendering2D" type="Node2D" parent="Visual" unique_id=1852430157]
-
 [node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="Visual" unique_id=1157202202]
-visible = false
 script = ExtResource("6_elrxu")
 
 [node name="Panel" type="Panel" parent="Visual/MultiMeshInstance2D" unique_id=393807382]
@@ -49,26 +45,10 @@ offset_right = 848.0
 offset_bottom = 607.0
 
 [node name="Shader_MultiMeshInstance2D2" type="MultiMeshInstance2D" parent="Visual" unique_id=1617969115]
-visible = false
 script = ExtResource("6_eaag7")
 
 [node name="Camera2D" type="Camera2D" parent="Visual" unique_id=1670601973]
 position = Vector2(576, 323)
-
-[node name="Camera3D" type="Camera3D" parent="Visual" unique_id=1506139562]
-transform = Transform3D(1, 0, 0, 0, 0.13512763, 0.9908282, 0, -0.9908282, 0.13512763, 14.060491, 171.71745, 8)
-script = ExtResource("6_b3dws")
-
-[node name="Rendering3D" type="Node3D" parent="Visual" unique_id=837410298]
-
-[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="Visual/Rendering3D" unique_id=441928113]
-multimesh = SubResource("MultiMesh_b3dws")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Visual/Rendering3D" unique_id=1599913796]
-mesh = SubResource("PlaneMesh_ivjr1")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Visual/Rendering3D" unique_id=1604701695]
-transform = Transform3D(1, 0, 0, 0, 0.50000006, 0.8660255, 0, -0.8660255, 0.50000006, 0, 4, 0)
 
 [node name="World" type="Node2D" parent="." unique_id=1970063248]
 script = ExtResource("2_w27ml")
@@ -676,6 +656,20 @@ offset_top = 607.0
 offset_right = 645.0
 offset_bottom = 638.0
 text = "Hide Interface"
+
+[node name="Rendering3D" type="Node3D" parent="." unique_id=837410298]
+
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="Rendering3D" unique_id=441928113]
+multimesh = SubResource("MultiMesh_b3dws")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Rendering3D" unique_id=1599913796]
+mesh = SubResource("PlaneMesh_ivjr1")
+
+[node name="Camera3D" type="Camera3D" parent="Rendering3D" unique_id=1506139562]
+transform = Transform3D(1, 0, 0, 0, 0.9659259, 0.25881907, 0, -0.25881907, 0.9659258, 0, 3, 8)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Rendering3D" unique_id=1604701695]
+transform = Transform3D(1, 0, 0, 0, 0.50000006, 0.8660255, 0, -0.8660255, 0.50000006, 0, 4, 0)
 
 [connection signal="text_submitted" from="simulation_UI/Alife/maxLife" to="." method="_on_max_life_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/Alife/nstartLife" to="." method="_on_nstart_life_text_submitted"]

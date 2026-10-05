@@ -53,11 +53,14 @@ var pending_multimesh_drawn_id : PackedInt32Array
 var pending_multimesh_erase_id : PackedInt32Array
 var pending_multimesh_update_id : PackedInt32Array #check if in use
 
-var renderer : AlifeRenderer2D
-var gid_r : int
+var renderer2D : AlifeRenderer2D
+var renderer3D : AlifeRenderer3D
+var rend_data : AlifeRenderingData
+
+'var gid_r : int
 var rendering_data : PackedFloat32Array
 var r_data_per_chunk : Array[PackedFloat32Array] = []
-var writting_rendering_buffer_usec:= 0.0
+var writting_rendering_buffer_usec:= 0.0'
 
 #var rendering_buffer : PackedFloat32Array
 #const STRIDE := 12  #buffer + colors
@@ -181,16 +184,10 @@ func init(worldd,alifm):
 	#init_GRID(world.size)
 	
 	##Rendering
-	init_renderer()
+	#rend_data = AlifeRenderingData.new()
 	#rendering_buffer.resize(rendering.multimesh.instance_count * STRIDE)
 
-func init_renderer():
-	renderer = AlifeRenderer2D.new()
-#	renderer.init()
-	renderer.setup( 0, world.size, colour)
-	alifemanager.add_child.call_deferred(renderer)
-	rendering_data.clear()
-	#r.setup(s.capacity, 10000.0, s.colour)
+
 
 
 	
@@ -217,11 +214,11 @@ func set_chunk(n:int):
 	remove_per_chunk.resize(n)
 	update_per_chunk.resize(n)	
 	#REndering
-	r_data_per_chunk.resize(n)
+	#r_data_per_chunk.resize(n)
 	for i in n:
 		spawn_per_chunk[i] = []   # clear the previous frame's results
 		remove_per_chunk[i] = []
-		r_data_per_chunk[i] = []
+		#r_data_per_chunk[i] = []
 	
 
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void:
@@ -298,9 +295,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 ################################################################################
 
 
-func write_rendering_buffer_in_chunk(start: int, end: int,local_id:int) -> void:
+func write_rendering_buffer_in_chunk(start: int, end: int) -> void:
 	var visu_on := alifemanager.visualisation_on #Can be set before probably
-	var r_data:= renderer.data # PackedFloat32Array
+	var r_data:= rend_data.data
 	#r_data.resize((end-start)*4)
 	if visu_on:
 		#var r_data:= renderer.data
@@ -313,15 +310,14 @@ func write_rendering_buffer_in_chunk(start: int, end: int,local_id:int) -> void:
 			r_data[o + 1] = p.z # * dt     # y
 			r_data[o + 2] = active_alife_array[i]
 			r_data[o + 3] = alive_array[i]
-
 		#r_data_per_chunk[local_id] = r_data
 
-func update_renderer():
+'func update_renderer():
 	#for c in r_data_per_chunk.size():
 	#	rendering_data.append_array(r_data_per_chunk[c]) #NOT IN GOOD ORDER?? yes becuas elocal ID?
 	#renderer.data = rendering_data
-	renderer.upload(entity_count)
-	#rendering_data.clear()
+	renderer2D.upload(entity_count)
+	#rendering_data.clear()'
 	
 	
 

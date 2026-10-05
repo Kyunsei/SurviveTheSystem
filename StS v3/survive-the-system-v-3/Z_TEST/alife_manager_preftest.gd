@@ -206,6 +206,7 @@ func init(worldd):
 	
 	global_position_array = []
 	global_species_offset = []
+
 	
 			
 func init_species(worldd:World,alifem:AlifeManager):
@@ -220,6 +221,8 @@ func init_species(worldd:World,alifem:AlifeManager):
 
 			if s == 1:
 				species_array[s].growth_rate = 1		
+
+
 	
 func init_GRID(world_size):
 	#THIS IS the grid of close agent-agent interaction, where cell_size > range of detection

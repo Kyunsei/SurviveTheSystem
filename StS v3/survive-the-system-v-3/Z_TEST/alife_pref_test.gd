@@ -26,9 +26,8 @@ func init():
 
 	if $AlifeManager.switch:
 		for sp in $AlifeManager.species_array:
-			var col := Color(randf(),randf(),randf())
 			for i in n_start_life:
-				sp.Build_New_Life(sp.pick_random_position(Vector3(550,0,320))+Vector3(550,0,320),randf_range(0.0,5.0),col)
+				sp.Build_New_Life(sp.pick_random_position(Vector3(550,0,320))+Vector3(550,0,320),randf_range(0.0,5.0))
 	
 	else:
 		for i in n_start_life:
@@ -76,6 +75,9 @@ func run_visualisation():
 	visu_erase_usec = 0.0
 	visu_draw_usec = 0.0
 	visu_update_usec = 0.0
+	$Visual.update_usec = 0
+	$Visual.main_visu_usec = 0
+	$Visual.write_usec = 0
 	var t:= Time.get_ticks_usec()
 	if $Visual/MultiMeshInstance2D.activated:
 		if $AlifeManager.switch:
@@ -188,8 +190,7 @@ func display_perf() -> void:
 			%Label.text += "draw new msec: %2d" % ($Visual/MultiMeshInstance2D.draw_new_usec/1000.0)
 			%Label.text += "\nUpdate all msec: %2d" % ($Visual/MultiMeshInstance2D.update_all_usec/1000.0)
 
-
-
+ 
 
 func _on_speed_text_submitted(new_text: String) -> void:
 	simulation_speed = float(new_text)
