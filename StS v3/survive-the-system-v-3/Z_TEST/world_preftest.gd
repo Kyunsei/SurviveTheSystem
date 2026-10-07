@@ -251,8 +251,7 @@ func run_world_simulation(alifemanager: AlifeManager, delta,simulation_speed):
 		#distribute_sun(alifemanager)
 		distribute_usec = Time.get_ticks_usec() - (ts0 + build_usec + fill_usec)
 		sun_usec = Time.get_ticks_usec()-ts0
-	else:
-		SUN_GRID.fill(0.0)
+
 
 	
 	main_world_usec = Time.get_ticks_usec()-t0

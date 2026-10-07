@@ -141,10 +141,10 @@ text = "Duplication"
 
 [node name="Photosynthesis" type="CheckButton" parent="simulation_UI/Alife" unique_id=2145691805]
 layout_mode = 0
-offset_left = 112.0
-offset_top = 257.0
-offset_right = 156.0
-offset_bottom = 281.0
+offset_left = 113.0
+offset_top = 250.0
+offset_right = 157.0
+offset_bottom = 274.0
 button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/Photosynthesis" unique_id=361963002]
@@ -156,29 +156,13 @@ text = "Photosynth."
 
 [node name="photo_range" type="LineEdit" parent="simulation_UI/Alife" unique_id=1931824635]
 layout_mode = 0
-offset_left = 218.0
-offset_top = 253.0
-offset_right = 286.5
-offset_bottom = 284.0
-placeholder_text = "0"
+offset_left = 219.0
+offset_top = 246.0
+offset_right = 287.5
+offset_bottom = 277.0
+placeholder_text = "1"
 
 [node name="Label" type="Label" parent="simulation_UI/Alife/photo_range" unique_id=1578056458]
-layout_mode = 0
-offset_left = -56.0
-offset_top = 3.0
-offset_right = 33.0
-offset_bottom = 26.0
-text = "Range"
-
-[node name="dup_range" type="LineEdit" parent="simulation_UI/Alife" unique_id=462657378]
-layout_mode = 0
-offset_left = 218.0
-offset_top = 223.0
-offset_right = 286.5
-offset_bottom = 254.0
-placeholder_text = "15"
-
-[node name="Label" type="Label" parent="simulation_UI/Alife/dup_range" unique_id=1395095617]
 layout_mode = 0
 offset_left = -56.0
 offset_top = 3.0
@@ -668,7 +652,6 @@ text = "Rendering"
 [connection signal="toggled" from="simulation_UI/Alife/duplication" to="." method="_on_duplication_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Photosynthesis" to="." method="_on_photosynthesis_toggled"]
 [connection signal="text_submitted" from="simulation_UI/Alife/photo_range" to="." method="_on_photo_range_text_submitted"]
-[connection signal="text_submitted" from="simulation_UI/Alife/dup_range" to="." method="_on_dup_range_text_submitted"]
 [connection signal="toggled" from="simulation_UI/Alife/Bin_ONOFF" to="." method="_on_bin_onoff_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Remove_ON" to="." method="_on_remove_on_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Growth_on" to="." method="_on_growth_on_toggled"]

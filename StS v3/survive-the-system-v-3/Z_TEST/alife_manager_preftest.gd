@@ -23,6 +23,8 @@ var total_time : = 0
 var world: World
 
 var photosynthesis_on:= true
+var photo_range := 0
+var duplication_range := 15
 
 var global_position_array : PackedVector3Array
 var global_species_offset:PackedInt32Array
@@ -48,6 +50,8 @@ var current_biomass : PackedFloat32Array
 var current_age : PackedInt32Array
 var current_size : PackedFloat32Array
 var grow_on := true
+
+var homeostasis_on := true
 
 #### Duplicate
 var duplicate_on := true
@@ -222,6 +226,11 @@ func init_species(worldd:World,alifem:AlifeManager):
 		for s in n_species:
 			species_array[s] = TESTDNA.new()
 			species_array[s].colour = Color(randf(),randf(),randf())
+			if s == 0:
+				species_array[s].photo_range = photo_range
+			else:
+				species_array[s].photo_range = s
+
 			species_array[s].init(worldd,alifem)
 
 			if s == 1:

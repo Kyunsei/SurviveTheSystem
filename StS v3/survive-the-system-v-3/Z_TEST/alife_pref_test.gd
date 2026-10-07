@@ -369,3 +369,15 @@ func _on_n_species_text_submitted(new_text: String) -> void:
 
 func _on_photosynthesis_toggled(toggled_on: bool) -> void:
 	$AlifeManager.photosynthesis_on = toggled_on
+
+
+func _on_photo_range_text_submitted(new_text: String) -> void:
+	$AlifeManager.photo_range = float(new_text)
+
+
+func _on_homeo_on_toggled(toggled_on: bool) -> void:
+	$AlifeManager.homeostasis_on = toggled_on
+
+
+func _on_dup_range_text_submitted(new_text: String) -> void:
+	$AlifeManager.duplication_range = float(new_text)
