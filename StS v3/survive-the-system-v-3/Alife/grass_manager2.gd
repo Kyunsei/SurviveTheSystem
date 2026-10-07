@@ -248,17 +248,24 @@ func update_world(delta):
 	#if GlobalSimulationParameter.SimulationStarted  == true: # and isInit == false:
 		#var oldv = 0
 		#if GlobalSimulationParameter.simulation_speed > 0:
+			var t1 := 0.0
+			var t2 := 0.0
+			var t3 := 0.0
+
+
 			var ss = Time.get_ticks_msec() 
 			if World:
 				World.add_value_in_each_tile(World.light_array,World.light_flux_in,0,World.light_max_value) #should be moved sommewhere else?
-			#var ss = Time.get_ticks_msec() 
+				t1 = Time.get_ticks_msec()  -ss
 				update_field()
-			#print( Time.get_ticks_msec() - ss)
-			#ss =  Time.get_ticks_msec() 
+				t2 =  Time.get_ticks_msec() -(ss+t1)
 				LightSystem_to_plant(delta)
-			#print( Time.get_ticks_msec() - ss)
+				t3 = Time.get_ticks_msec() -(ss+t1+t2)
 			#print("/////////////////")
 			FPS_World = Time.get_ticks_msec() - ss
+			
+			print( "World Update at %d entities \n fill: %d \n Update: %d \n distribute %d \n total: %d" %[entity_count,t1,t2,t3,FPS_World] )
+
 
 
 func _thread_loop():

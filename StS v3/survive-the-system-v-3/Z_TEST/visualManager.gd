@@ -1,4 +1,7 @@
 extends Node2D
+
+var activated := true
+
 var r_gid := -1
 var jobs: Array = []     # each entry: [species, chunk_index]
 
@@ -23,6 +26,8 @@ var alifemanager: AlifeManager
 var write_usec:= 0.0
 var update_usec:= 0.0
 var main_visu_usec:= 0.0
+
+#TODO bug reinit doesnt make old thing disapear
 	
 func init(worldd,alifm):
 	
@@ -34,6 +39,10 @@ func init(worldd,alifm):
 	init_renderer()
 
 func init_renderer():
+	for c in $Rendering2D.get_children():
+		c.queue_free()
+	for c in $Rendering3D.get_children():
+		c.queue_free()
 	for s in alifemanager.species_array:
 		s.rend_data = AlifeRenderingData.new()
 		s.rend_data.resize(s.entity_count)

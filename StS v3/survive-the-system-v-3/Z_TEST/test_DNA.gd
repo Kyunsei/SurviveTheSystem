@@ -42,6 +42,8 @@ var current_biomass : PackedFloat32Array
 var current_age : PackedInt32Array
 var current_size : PackedFloat32Array
 
+var current_worldpos_cell_id : PackedInt32Array
+
 #### Duplicate
 var pending_spawn_id : PackedInt32Array
 var pending_remove_id: PackedInt32Array
@@ -119,7 +121,7 @@ var mutex := Mutex.new()
 var spawn_per_chunk : Array[PackedInt32Array] = []
 var remove_per_chunk : Array[PackedInt32Array] = []
 var update_per_chunk : Array[PackedInt32Array] = [] #NEED TO check if needed
-
+var photo_rate_per_chunk : Array[PackedFloat32Array] = []
 
 #Perf Measurmnt #TODO
 var chunk_usec: PackedInt64Array
@@ -155,6 +157,7 @@ func init(worldd,alifm):
 	current_energy_array = [] 
 	active_alife_array = []   #To reuse some 
 	alive_array = []
+	current_worldpos_cell_id = []
 	
 	pending_multimesh_drawn_id = []
 	pending_multimesh_update_id = []
@@ -213,15 +216,18 @@ func set_chunk(n:int):
 	spawn_per_chunk.resize(n)
 	remove_per_chunk.resize(n)
 	update_per_chunk.resize(n)	
+	photo_rate_per_chunk.resize(n)
 	#REndering
 	#r_data_per_chunk.resize(n)
 	for i in n:
 		spawn_per_chunk[i] = []   # clear the previous frame's results
 		remove_per_chunk[i] = []
+		photo_rate_per_chunk[i] = []
 		#r_data_per_chunk[i] = []
 	
 
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void:
+	dt = 0.16 * 1 #TODO
 	var dup_on := alifemanager.duplicate_on
 	#var visu_on := alifemanager.visualisation_on
 	var photo_on := alifemanager.photosynthesis_on
@@ -232,43 +238,41 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 	
 	if !photo_on:
 		for i in range(start, end):
-			var _energy:= current_energy_array[i]
 			if active_alife_array[i] == 0:
 				continue
 			if alive_array[i] == 0:
-				continue			
-			#if !_sun_on:
-			_energy += (1) * 0.16 * 1  #active_alife_array[i]	
-			_energy += -0.5 *  0.16 * 1 #* active_alife_array[i]
-			current_age[i] += 1
-			if _energy >= 5:
-				if dup_on:
-					local_pending_spawn_id.append(i)
-				_energy -= 5
-			if _energy < 0 :
-				alive_array[i] = 0
-
-			current_energy_array[i] = _energy											
+				continue	
+			var _energy:= current_energy_array[i]
+			if _energy < 5:		
+				current_energy_array[i] += (1) * dt											
 	if photo_on:
+		var global_photo_rate := alifemanager.current_global_photosynthesis_rate
+		var sun_grid := world.SUN_GRID 
+		var photo_rate := 1.0
 		for i in range(start, end):
-			var _energy:= current_energy_array[i]
 			if active_alife_array[i] == 0:
 				continue
 			if alive_array[i] == 0:
-				continue			
+				continue		
+			var _energy:= current_energy_array[i]
+			if _energy < 5:
+				var sun_c := current_worldpos_cell_id[i]
+				var total := global_photo_rate[sun_c]
+				current_energy_array[i] += ( sun_grid[sun_c] * photo_rate *  dt) /   maxf(total, photo_rate) 
+				#local_photo_rate[sun_c] += photo_rate  
 
-			_energy += -0.5 *  0.16 * 1 #* active_alife_array[i]
+	if true:
+		for i in range(start, end):
+			current_energy_array[i] += -0.5 *  dt #* active_alife_array[i]
 			current_age[i] += 1
-
-			if _energy >= 5:
-				if dup_on:
-					local_pending_spawn_id.append(i)
-				_energy -= 5
-			if _energy < 0 :
+			if current_energy_array[i] < 0 :
 				alive_array[i] = 0
+		#photo_rate_per_chunk[local_id] = local_photo_rate
+			
 
-			current_energy_array[i] = _energy	
+				
 	if grow_on:
+		
 		for i in range(start, end):
 			var ei:= current_energy_array[i]
 			var cls := current_life_state[i]
@@ -280,6 +284,13 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 					current_biomass[i] += 2
 			#current_age[i]+=1
 	if dup_on:
+		for i in range(start, end):
+			var _energy:= current_energy_array[i]
+			if _energy >= 5:
+				local_pending_spawn_id.append(i)
+				_energy -= 5
+			current_energy_array[i] = _energy
+
 		spawn_per_chunk[local_id] = local_pending_spawn_id
 	if remove_on:
 		for i in range(start, end):
@@ -336,10 +347,26 @@ func Build_and_remove_pendings():
 		Remove_Life(i)	
 
 	#renderer.ensure_capacity(entity_count)
+	if alifemanager.photosynthesis_on:
+		for i in pending_spawn_id:
+			var c := current_worldpos_cell_id[i]
+			alifemanager.current_global_photosynthesis_rate[c] += 1.0
+		for i in pending_remove_id:
+			var c := current_worldpos_cell_id[i]
+			alifemanager.current_global_photosynthesis_rate[c] -= 1.0
 
 	pending_spawn_id.clear()
 	pending_remove_id.clear()
 
+
+'func update_world_interaction_grid() -> void:
+	#TODO thsi can be optimised
+	var totals := alifemanager.current_global_photosynthesis_rate   # size SUN_NUM_CELLS, allocated once
+	var n := alive_array.size()
+	for i in n:
+		if alive_array[i] == 1 and active_alife_array[i] == 1:
+			totals[current_worldpos_cell_id[i]] += 1.0 #photo_rate'
+			
 
 func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.0)):
 
@@ -359,9 +386,9 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_biomass.append(0)
 		current_age.append(0)
 		current_size.append(1.0)
+		current_worldpos_cell_id.append(get_world_cell_id(pos,world))
 		#update_bin_array(i)
 		entity_count += 1
-
 
 		
 	else:
@@ -372,6 +399,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		#species_id[i] = sp
 		color_array[i]=col
 		alive_array[i] = 1
+		current_worldpos_cell_id[i] = get_world_cell_id(pos,world)
 		#current_bin_id[i] = get_binID(pos,bin_size,world.size)
 		#update_bin_array(i)
 		current_life_state[i]=0
@@ -393,6 +421,14 @@ func Remove_Life(i):
 
 
 
+func get_world_cell_id(pos: Vector3,worldd:World)-> int :
+		var inv := Vector3.ONE / worldd.SUN_cell_size   # (1/x, 1/y, 1/z)
+		var p := (pos - worldd.bin_origin) * inv
+		var cx := clampi(roundi(p.x), 0, worldd.SUN_GRID_W - 1)
+		var cy := clampi(roundi(p.y), 0, worldd.SUN_GRID_H - 1)
+		var cz := clampi(roundi(p.z), 0, worldd.SUN_GRID_D - 1)
+		var c := cx + worldd.SUN_GRID_W * (cy + worldd.SUN_GRID_H * cz)   # inline, no second division
+		return c
 ##########################################################################################
 ####ARRAY MANAGEMENT
 ##########################################################################################

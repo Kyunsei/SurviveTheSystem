@@ -9,7 +9,7 @@ func setup(agent_data: AlifeRenderingData, world_size: Vector3, color: Color) ->
 	var mesh := SphereMesh.new()
 	mesh.radial_segments = 6                         # keep it low-poly: there are 1M of them
 	mesh.rings = 3
-	mesh.radius = 0.5
+	mesh.radius = 1.5
 	mesh.height = 1.0
 	mm.mesh = mesh
 	mm.custom_aabb = AABB(-world_size, world_size * 2.0) #STILL NEED TO CHECK THIS

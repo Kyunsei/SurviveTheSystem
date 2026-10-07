@@ -21,29 +21,28 @@ func init():
 	world.init()
 	$AlifeManager.init(world)
 	$Visual.init(world,$AlifeManager)
-	$Visual/MultiMeshInstance2D.init($AlifeManager,world) #OLD
+#	$Visual/MultiMeshInstance2D.init($AlifeManager,world) #OLD
 
 
-	if $AlifeManager.switch:
-		for sp in $AlifeManager.species_array:
-			for i in n_start_life:
-				sp.Build_New_Life(sp.pick_random_position(Vector3(550,0,320))+Vector3(550,0,320),randf_range(0.0,5.0))
-	
-	else:
+	#if $AlifeManager.switch:
+	for sp in $AlifeManager.species_array:
 		for i in n_start_life:
-			$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(550,0,320))+Vector3(550,0,320),randf_range(0.0,5.0),0)
+			sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2))+Vector3(world.size.x/2,0,world.size.z/2),randf_range(0.0,5.0))
 
+	'else:
+		for i in n_start_life:
+			$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(550,0,320))+Vector3(550,0,320),randf_range(0.0,5.0),0)'
 	
 	'for i in n_start_life:
 		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),1)
 	for i in n_start_life:
 		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),2)'
 #	$AlifeManager.setup_chunk()
-	if !$AlifeManager.switch:
+	'if !$AlifeManager.switch:
 		$Visual/MultiMeshInstance2D.setup() #this was for buffer
 		if $Visual/MultiMeshInstance2D.activated:
 			$Visual/MultiMeshInstance2D.draw_new_instance($AlifeManager.pending_multimesh_drawn_id)
-		#await get_tree().create_timer(1.0).timeout
+		#await get_tree().create_timer(1.0).timeout'
 	running = true
 	
 
@@ -79,7 +78,7 @@ func run_visualisation():
 	$Visual.main_visu_usec = 0
 	$Visual.write_usec = 0
 	var t:= Time.get_ticks_usec()
-	if $Visual/MultiMeshInstance2D.activated:
+	if $Visual.activated:
 		if $AlifeManager.switch:
 			$Visual.run_visualisation()
 			'for s in $AlifeManager.species_array:
@@ -109,6 +108,8 @@ func run_visualisation():
 			$Visual/MultiMeshInstance2D.update_all_sequentially()
 	if $Visual/MultiMesh_BIN.activated:
 		$Visual/MultiMesh_BIN.update_all($World.SUN_GRID,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
+		$Visual/MultiMesh_BIN.update_all($AlifeManager.current_global_photosynthesis_rate,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
+
 	visu_usec = Time.get_ticks_usec() - t
 	
 var plant_only := false
@@ -235,21 +236,19 @@ func _on_max_life_text_submitted(new_text: String) -> void:
 func _on_button_u_ishow_pressed() -> void:
 	if $simulation_UI.visible:
 		$simulation_UI.hide()
-		$ButtonUIshow.text = "Show Interface"
+		$CanvasLayer/ButtonUIshow.text = "Show Interface"
 	else:
 		$simulation_UI.show()
-		$ButtonUIshow.text = "Hide Interface"
+		$CanvasLayer/ButtonUIshow.text = "Hide Interface"
 
 
 func _on_button_visualisation_toggled(toggled_on: bool) -> void:
-	$Visual/MultiMeshInstance2D.activated = toggled_on
+	$Visual.activated = toggled_on
 	if toggled_on:
-		$Visual/MultiMeshInstance2D.show()
+		$Visual.show()
 	else:
-		$Visual/MultiMeshInstance2D.hide()
+		$Visual.hide()
 
-func _on_update_frame_text_submitted(new_text: String) -> void:
-	$Visual/MultiMeshInstance2D.update_on_n_frame = int(new_text)
 
 
 func _on_ai_on_o_ft_toggled(toggled_on: bool) -> void:

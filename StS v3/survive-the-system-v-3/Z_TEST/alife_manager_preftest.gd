@@ -27,8 +27,8 @@ var photosynthesis_on:= true
 var global_position_array : PackedVector3Array
 var global_species_offset:PackedInt32Array
 
-
-
+var previous_global_photosynthesis_rate : PackedFloat32Array
+var current_global_photosynthesis_rate : PackedFloat32Array
 
 #ECS STATS
 var position_array : PackedVector3Array
@@ -206,6 +206,11 @@ func init(worldd):
 	
 	global_position_array = []
 	global_species_offset = []
+	previous_global_photosynthesis_rate.clear()
+	previous_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
+
+	current_global_photosynthesis_rate.clear()
+	current_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
 
 	
 			
@@ -310,13 +315,24 @@ func update_alife()-> void:
 		var sp:= species_array[i]
 		sp.Build_and_remove_pendings()
 		
-	if world.SUN_on or bin_on: 
+	if  bin_on: 
 		for i in species_array.size():
 			var sp:= species_array[i]
 			global_species_offset[i] = total
 			global_position_array.append_array(sp.position_array)
 			total += sp.entity_count
 		global_species_offset[species_array.size()] = total
+
+	#CURRENT GLOBAL PHOTO IS UPDATED in build and remove... dont need change anymore isnt?
+	'if photosynthesis_on:
+		for i in species_array.size():
+			var sp:= species_array[i]
+			sp.update_world_interaction_grid() #will change current_global_photosynthesis_rate
+		var prev_rate := previous_global_photosynthesis_rate
+		previous_global_photosynthesis_rate = current_global_photosynthesis_rate
+		current_global_photosynthesis_rate = prev_rate
+		current_global_photosynthesis_rate.fill(0)'
+
 
 #########################################################################################
 ######################OLD SCRIPT BELOW###################################################

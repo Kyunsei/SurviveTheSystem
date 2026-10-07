@@ -23,8 +23,9 @@ func setup(agent_data: AlifeRenderingData, world_size: Vector3, color: Color) ->
 	quad.size = Vector2(4, 4)       # base size; the shader multiplies by the agent's size
 	mm.mesh = quad
 	#NEED TO TEST HERE TODO
-	#mm.custom_aabb = AABB(Vector3(-world_size, -world_size, -1.0),
-	#					Vector3(world_size * 2.0, world_size * 2.0, 2.0))
+	#mm.custom_aabb = AABB(-world_size, world_size * 2.0) #STILL NEED TO CHECK THIS
+	mm.custom_aabb = AABB(Vector3(-world_size.x, -world_size.z, -1.0), 
+		Vector3(2.0 *world_size.x, 2.0 * world_size.z, 2.0))
 	multimesh = mm
 
 	# --- Material ---

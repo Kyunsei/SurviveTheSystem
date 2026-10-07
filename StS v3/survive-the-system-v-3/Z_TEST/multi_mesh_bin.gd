@@ -153,7 +153,8 @@ func update_all(value_array, W: int, H: int, D: int, cell_size: Vector3,col:Colo
 	for cz in D:
 		for cx in W:
 			var c := cx + W * H * cz          # y = 0 layer
-			var v = clamp(value_array[c] ,0.25,.8)         # the cell's value, if needed
+			var v = clamp(value_array[c]/2 ,0.25,.8)  
+			#var v = lerp(0.25,0.8,value_array[c])       # the cell's value, if needed
 			var pos := Vector2(cx, cz) * Vector2(cell_size.x, cell_size.z)
 			col.a =v
 			multimesh.set_instance_transform_2d(ii, Transform2D(0.0, pos))
