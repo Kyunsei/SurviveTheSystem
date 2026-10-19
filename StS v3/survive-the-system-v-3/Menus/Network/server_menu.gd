@@ -111,7 +111,7 @@ func on_disconnection(id):
 func _input(event: InputEvent) -> void:
 	if multiplayer.multiplayer_peer and multiplayer.is_server():
 		if event is InputEventKey and event.pressed and not event.echo:
-			if event.keycode == 35:
+			if event.keycode == 35 or event.keycode == KEY_DOLLAR:
 				visible = not visible
 				if visible:
 					var p = get_parent().get_parent().get_node("Alife manager").get_node(str(1))

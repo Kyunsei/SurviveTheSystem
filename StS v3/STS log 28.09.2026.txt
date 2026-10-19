@@ -1,0 +1,62 @@
+GameDev Log, STS 3, Reprise après ~ 9mois, ETA /// 28 septembre 2026
+
+1) Combien de temps de dev ? dead line ?
+
+Fin novembre 2026 (30 novembre)
+- 2mois
+
+2) Objectifs ?
+ 2 catégories objectives
+--> Direction du projet
+	Faire que l'ecosystème dynamique fonctionne  
+		(Idée kyun : maybe add time limit into timeloop)
+	More interactions avec ecosystem
+	Travail sur la DA / Juiciness/ QoL
+	Boucle de gameplay/histoire
+
+--> Concrètement
+
+	1)Peaufiner le projet, QOL
+	2)Rajouter ce qui manque / corriger ce qui fonctionne pas
+
+3) Qui ?
+	Kyun + Izva
+	3eme personne pour DA et Audio ? ou l'un ou l'autre des deux ?
+		--> Sound Steven
+
+4) Listing des choses à faire, prioriser !
+	1- Optimisation des performances de la simulation, multithreading GPU
+	2- Ajouter les sons
+	3- Client/serveur retirer les pertes de performances (qui cause les pertes de framerates sur le serveur side/joueur)
+	4- Nettoyer le code, spécifiquement, les doublons ancien, nouveau !!! ça rend illisible et incompréhensible
+	5- Retravailler l'histoire et la DA.
+	6- Améliorer les combats (PvE > PvP)
+	7- Incrémentalité des acquisitions /des upgrade/gameplay loop --_> pour kyun : équilibre et vitesses d'acquisition des objets/ des 	upgrades dans le cadre du development du joueur par rapport au monde
+	8- Retravailler/repenser le crabe + Retravailler/repenser plante VS animale
+	9- Fluidifier les mouvements, animation + physique/ressentie (mouvement + saut)
+	10- améliorer le network, position
+	11- Revoir les interfaces
+
+	- Faire un mini robot qui auto farm si tu l'alimentes.
+	- Rajouter des biomes.
+	- Rajouter un cristal rare (Alternate ending?)
+	- Crafter des espèces.
+	- référence biblique, repenser changer. 
+	
+
+2eme temps :
+	- correction des bugs
+	- Juiciness
+	- Ajouter easterEgg (Dont starve, rain world, tournesol qui peut manger des ressources, ...)
+
+
+KYUN : Ce que je peux faire
+- les sons + request sounds
+- designer un système de combat et le coder. Projet à part? Restriction : l'ennemi, doit utiliser un système utility AI
+- Nettoyer un peu le code.
+- fluidifier les mouvements.
+- changer référence biblique
+- Rajouter easterEgg
+
+IZVA : Ce que je peux faire
+
