@@ -283,7 +283,7 @@ func run_world_simulation(alifemanager: AlifeManager, delta,simulation_speed):
 		#distribute_sun(alifemanager)
 		distribute_usec = Time.get_ticks_usec() - (ts0 + build_usec + fill_usec)
 		if SUN_diffusion_on:
-			alifemanager.current_global_photosynthesis_rate = diffuse(alifemanager.current_global_photosynthesis_rate)
+			alifemanager.current_global_photosynthesis_ratediffuse(alifemanager.current_global_photosynthesis_rate)
 		sun_usec = Time.get_ticks_usec()-ts0
 
 

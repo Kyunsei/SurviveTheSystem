@@ -9,5 +9,7 @@ grid_w = 200
 grid_h = 1
 grid_d = 200
 
-[node name="Node" type="Node" parent="." unique_id=1745874176]
+[node name="Node" type="Control" parent="." unique_id=1964684153]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("2_7sdxk")
