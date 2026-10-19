@@ -1,7 +1,8 @@
 extends Node2D
 class_name World
 
-#TODO where sun is picked and where life are viusaly doesnt correspond
+
+var  SUN_diffusion_on := false
 
 var size : Vector3
 var default_size = Vector3(240*5,20,240*5)
@@ -67,6 +68,37 @@ func init_SUN_GRID():
 	SUN_GRID.resize(SUN_NUM_CELLS)
 	SUN_GRID_ids.resize(SUN_NUM_CELLS)
 	init_sun_buffers() 
+
+
+var _next :  PackedFloat32Array
+func diffuse(field: PackedFloat32Array, rate: float = 0.5) -> PackedFloat32Array:
+	var w :=  SUN_GRID_W
+	var h :=  SUN_GRID_H
+	var d :=  SUN_GRID_D
+
+	if _next.size() != field.size():
+		_next.resize(field.size())
+	var plane := w * h
+	for z in d:
+		var zi := z * plane
+		for y in h:
+			var row := zi + y * w
+			for x in w:
+				var i := row + x
+				var s := 0.0
+				var c := 0
+				if x > 0:     s += field[i - 1];     c += 1
+				if x < w - 1: s += field[i + 1];     c += 1
+				if y > 0:     s += field[i - w];     c += 1
+				if y < h - 1: s += field[i + w];     c += 1
+				if z > 0:     s += field[i - plane]; c += 1
+				if z < d - 1: s += field[i + plane]; c += 1
+				var v := field[i]
+				_next[i] = v + (s / c - v) * rate
+	# swap so the caller gets the new field without copying
+	var out := _next
+	_next = field
+	return out
 
 func build_sun_grid2(position_array: PackedVector3Array) -> void:
 	var n := position_array.size()
@@ -250,6 +282,8 @@ func run_world_simulation(alifemanager: AlifeManager, delta,simulation_speed):
 		#TODO -> sun_first_come_disk(1.0,alifemanager)
 		#distribute_sun(alifemanager)
 		distribute_usec = Time.get_ticks_usec() - (ts0 + build_usec + fill_usec)
+		if SUN_diffusion_on:
+			alifemanager.current_global_photosynthesis_rate = diffuse(alifemanager.current_global_photosynthesis_rate)
 		sun_usec = Time.get_ticks_usec()-ts0
 
 

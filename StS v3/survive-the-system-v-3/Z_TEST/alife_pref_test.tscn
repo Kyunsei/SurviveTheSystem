@@ -37,7 +37,7 @@ script = ExtResource("6_b3dws")
 [node name="Rendering3D" type="Node3D" parent="Visual" unique_id=837410298]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Visual" unique_id=156406406]
-transform = Transform3D(1, 0, 0, 0, 0.962654, -0.27073482, 0, 0.27073482, 0.962654, 0, 303.60178, 0)
+transform = Transform3D(1, 0, 0, 0, -0.83403033, 0.5517186, 0, -0.5517186, -0.83403033, 0, 250.0354, 0)
 
 [node name="World" type="Node2D" parent="." unique_id=1970063248]
 script = ExtResource("2_w27ml")
@@ -57,6 +57,7 @@ text = "Hide Interface"
 [node name="simulation_UI" type="CanvasLayer" parent="." unique_id=438579712]
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_top = 4.0
@@ -341,6 +342,7 @@ theme_override_font_sizes/font_size = 24
 text = "World System"
 
 [node name="Label5" type="Label" parent="simulation_UI/World" unique_id=1568733835]
+visible = false
 layout_mode = 0
 offset_left = 76.0
 offset_top = 297.0
@@ -409,10 +411,10 @@ offset_bottom = 40.0
 
 [node name="SunSize" type="Label" parent="simulation_UI/World/SUN" unique_id=1265906670]
 layout_mode = 0
-offset_left = 13.0
-offset_top = 220.0
-offset_right = 146.0
-offset_bottom = 243.0
+offset_left = 20.0
+offset_top = 228.0
+offset_right = 153.0
+offset_bottom = 251.0
 text = "SUN CELL"
 
 [node name="world_x" type="LineEdit" parent="simulation_UI/World/SUN/SunSize" unique_id=21929163]
@@ -460,12 +462,28 @@ offset_top = -23.0
 offset_right = 51.0
 text = "z"
 
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/SunSize" unique_id=1328894710]
+layout_mode = 0
+offset_left = -8.0
+offset_top = 68.0
+offset_right = 46.0
+offset_bottom = 91.0
+text = "STAMP"
+
+[node name="Label2" type="Label" parent="simulation_UI/World/SUN/SunSize" unique_id=1540387033]
+layout_mode = 0
+offset_left = -5.0
+offset_top = 129.0
+offset_right = 49.0
+offset_bottom = 152.0
+text = "V	ALUE"
+
 [node name="SUNENERGY" type="LineEdit" parent="simulation_UI/World/SUN" unique_id=86925024]
 layout_mode = 0
-offset_left = 105.0
-offset_top = 260.0
-offset_right = 173.5
-offset_bottom = 291.0
+offset_left = 112.0
+offset_top = 265.0
+offset_right = 180.5
+offset_bottom = 296.0
 placeholder_text = "1"
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/SUNENERGY" unique_id=1502174874]
@@ -478,10 +496,10 @@ text = "SUN energy"
 
 [node name="CheckButton" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=624307597]
 layout_mode = 0
-offset_left = 268.0
-offset_top = 265.0
-offset_right = 312.0
-offset_bottom = 289.0
+offset_left = 95.0
+offset_top = 184.0
+offset_right = 139.0
+offset_bottom = 208.0
 button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckButton" unique_id=1729958750]
@@ -491,15 +509,100 @@ offset_right = 3.0
 offset_bottom = 23.0
 text = "SUN on/off"
 
+[node name="CheckDiffusion" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=187737691]
+layout_mode = 0
+offset_left = 121.0
+offset_top = 317.0
+offset_right = 165.0
+offset_bottom = 341.0
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckDiffusion" unique_id=1537114792]
+layout_mode = 0
+offset_left = -109.0
+offset_top = -1.0
+offset_right = 4.0
+offset_bottom = 22.0
+text = "GRID Diffusion"
+
+[node name="CheckPrefixSum" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=1572957995]
+layout_mode = 0
+offset_left = 107.0
+offset_top = 337.0
+offset_right = 151.0
+offset_bottom = 361.0
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckPrefixSum" unique_id=314996947]
+layout_mode = 0
+offset_left = -82.0
+offset_right = 3.0
+offset_bottom = 23.0
+text = "PrefixSum"
+
+[node name="CheckStamp" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=542727545]
+layout_mode = 0
+offset_left = 261.0
+offset_top = 337.0
+offset_right = 305.0
+offset_bottom = 361.0
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckStamp" unique_id=2046536450]
+layout_mode = 0
+offset_left = -92.0
+offset_right = 1.0
+offset_bottom = 23.0
+text = "GRID Stamp"
+
+[node name="fullrangeOn" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=881973113]
+layout_mode = 0
+offset_left = 246.0
+offset_top = 376.0
+offset_right = 290.0
+offset_bottom = 400.0
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/fullrangeOn" unique_id=894613444]
+layout_mode = 0
+offset_left = -212.0
+offset_right = -6.0
+offset_bottom = 23.0
+text = "Agent Full Range absorbed"
+
+[node name="fullrangeOn2" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=656353303]
+layout_mode = 0
+offset_left = 246.0
+offset_top = 397.0
+offset_right = 290.0
+offset_bottom = 421.0
+
+[node name="Label" type="Label" parent="simulation_UI/World/SUN/fullrangeOn2" unique_id=520352483]
+layout_mode = 0
+offset_left = -212.0
+offset_right = -6.0
+offset_bottom = 23.0
+text = "GRID Full Range absorbed"
+
+[node name="CheckStampAgent" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=1982008679]
+layout_mode = 0
+offset_left = 261.0
+offset_top = 315.0
+offset_right = 305.0
+offset_bottom = 339.0
+
+[node name="Label2" type="Label" parent="simulation_UI/World/SUN/CheckStampAgent" unique_id=772506039]
+layout_mode = 0
+offset_left = -96.0
+offset_top = -1.0
+offset_right = 3.0
+offset_bottom = 22.0
+text = "Agent Stamp"
+
 [node name="Label" type="RichTextLabel" parent="simulation_UI/World" unique_id=201574479]
 layout_mode = 0
 offset_left = 10.0
-offset_top = 344.0
+offset_top = 427.0
 offset_right = 338.0
 offset_bottom = 637.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -531,16 +634,7 @@ offset_right = 249.0
 offset_bottom = 210.0
 toggle_mode = true
 button_pressed = true
-text = "TurnOff/On Visualisation"
-
-[node name="ButtonBinVisualisation2" type="Button" parent="simulation_UI/Rendering" unique_id=1523120692]
-layout_mode = 0
-offset_left = 48.0
-offset_top = 218.0
-offset_right = 249.0
-offset_bottom = 249.0
-toggle_mode = true
-text = "Off/On Bin Visualisation"
+text = "ALife"
 
 [node name="ButtonFlowVisualisation3" type="Button" parent="simulation_UI/Rendering" unique_id=849010180]
 layout_mode = 0
@@ -558,6 +652,39 @@ offset_left = 17.0
 offset_top = 324.0
 offset_right = 294.0
 offset_bottom = 645.0
+
+[node name="Sun" type="Control" parent="simulation_UI/Rendering" unique_id=834435136]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Stamp" type="Button" parent="simulation_UI/Rendering/Sun" unique_id=1523120692]
+layout_mode = 0
+offset_left = 127.0
+offset_top = 218.0
+offset_right = 185.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "Stamp"
+
+[node name="Flux" type="Button" parent="simulation_UI/Rendering/Sun" unique_id=1440237982]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 218.0
+offset_right = 123.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "Flux
+"
+
+[node name="Value" type="Button" parent="simulation_UI/Rendering/Sun" unique_id=1102702507]
+layout_mode = 0
+offset_left = 187.0
+offset_top = 218.0
+offset_right = 249.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "Value"
 
 [node name="Label" type="RichTextLabel" parent="simulation_UI" unique_id=1345646950]
 unique_name_in_owner = true
@@ -588,6 +715,16 @@ offset_top = 62.0
 offset_right = 516.0
 offset_bottom = 93.0
 text = "Run GDScript"
+
+[node name="Label" type="Label" parent="simulation_UI/RunGDScript" unique_id=1596186498]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.36
+anchor_bottom = 0.74200004
+offset_left = -57.0
+offset_top = 34.0
+offset_right = 341.04
+offset_bottom = 33.998
 
 [node name="RunGPU" type="Button" parent="simulation_UI" unique_id=1318344758]
 offset_left = 678.0
@@ -685,9 +822,17 @@ text = "Rendering"
 [connection signal="text_submitted" from="simulation_UI/World/SUN/SunSize/world_z" to="." method="_on_sun_z_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/World/SUN/SUNENERGY" to="." method="_on_sunenergy_text_submitted"]
 [connection signal="toggled" from="simulation_UI/World/SUN/CheckButton" to="." method="_on_check_button_toggled"]
+[connection signal="toggled" from="simulation_UI/World/SUN/CheckDiffusion" to="." method="_on_check_diffusion_toggled"]
+[connection signal="toggled" from="simulation_UI/World/SUN/CheckPrefixSum" to="." method="_on_check_button_toggled"]
+[connection signal="toggled" from="simulation_UI/World/SUN/CheckStamp" to="." method="_on_check_button_toggled"]
+[connection signal="toggled" from="simulation_UI/World/SUN/fullrangeOn" to="." method="_on_fullrange_on_toggled"]
+[connection signal="toggled" from="simulation_UI/World/SUN/fullrangeOn2" to="." method="_on_fullrange_on_2_toggled"]
+[connection signal="toggled" from="simulation_UI/World/SUN/CheckStampAgent" to="." method="_on_check_stamp_agent_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonVisualisation" to="." method="_on_button_visualisation_toggled"]
-[connection signal="toggled" from="simulation_UI/Rendering/ButtonBinVisualisation2" to="." method="_on_button_bin_visualisation_2_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonFlowVisualisation3" to="." method="_on_button_visualisation_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/Sun/Stamp" to="." method="_on_stamp_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/Sun/Flux" to="." method="_on_flux_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/Sun/Value" to="." method="_on_value_toggled"]
 [connection signal="text_submitted" from="simulation_UI/speed" to="." method="_on_speed_text_submitted"]
 [connection signal="pressed" from="simulation_UI/RunGDScript" to="." method="_on_run_gd_script_pressed"]
 [connection signal="pressed" from="simulation_UI/RunGPU" to="." method="_on_run_gpu_pressed"]

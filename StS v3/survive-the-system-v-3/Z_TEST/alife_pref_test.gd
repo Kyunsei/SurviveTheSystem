@@ -25,10 +25,18 @@ func init():
 
 
 	#if $AlifeManager.switch:
+	var tt := Time.get_ticks_usec() 
+
 	for sp in $AlifeManager.species_array:
 		for i in n_start_life:
 			sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2))+Vector3(world.size.x/2,0,world.size.z/2),randf_range(0.0,5.0))
 
+	var t := (Time.get_ticks_usec() - tt)/1000.0
+	var e = n_start_life * $AlifeManager.species_array.size()
+	var et = float(t)/float(e)
+	$simulation_UI/RunGDScript/Label.text = "added " + str(e) + " entities for " +str(t) +"ms,  by enties is " +str(et)
+	#print("added %d entities for %f ms,  by enties is %f" % [e, t,et])
+	
 	'else:
 		for i in n_start_life:
 			$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(550,0,320))+Vector3(550,0,320),randf_range(0.0,5.0),0)'
@@ -106,8 +114,10 @@ func run_visualisation():
 			$Visual/MultiMeshInstance2D.erase_instance($AlifeManager.pending_multimesh_erase_id)
 
 			$Visual/MultiMeshInstance2D.update_all_sequentially()
-	if $Visual/MultiMesh_BIN.activated:
+			
+	if visu_sun_flow_on:
 		$Visual/MultiMesh_BIN.update_all($World.SUN_GRID,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
+	if visu_sun_stamp_on:	
 		$Visual/MultiMesh_BIN.update_all($AlifeManager.current_global_photosynthesis_rate,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
 
 	visu_usec = Time.get_ticks_usec() - t
@@ -126,6 +136,8 @@ func run_simulation(delta):
 
 func display_world_perf():
 	$simulation_UI/World/Label.text = "nLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
+	$simulation_UI/World/Label.text += "\nSUN grid size: %d " % $World.SUN_NUM_CELLS
+
 	$simulation_UI/World/Label.text += "\n\nfunction \t msec  "
 	$simulation_UI/World/Label.text += "\nmain_loop \t  %2d" % ($World.main_world_usec/1000.0)
 	$simulation_UI/World/Label.text += "\nSUN_total \t  %2d" % ($World.sun_usec/1000.0)
@@ -265,9 +277,7 @@ func _on_bin_onoff_toggled(toggled_on: bool) -> void:
 	$AlifeManager.bin_on = toggled_on
 
 
-func _on_button_bin_visualisation_2_toggled(toggled_on: bool) -> void:
-	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
-	$Visual/MultiMesh_BIN.activated = toggled_on
+
 		
 
 
@@ -381,3 +391,39 @@ func _on_homeo_on_toggled(toggled_on: bool) -> void:
 
 func _on_dup_range_text_submitted(new_text: String) -> void:
 	$AlifeManager.duplication_range = float(new_text)
+
+
+func _on_check_diffusion_toggled(toggled_on: bool) -> void:
+	$World.SUN_diffusion_on = toggled_on
+
+
+func _on_check_stamp_agent_toggled(toggled_on: bool) -> void:
+	$AlifeManager.agent_photo_stamp_on = toggled_on
+
+
+func _on_fullrange_on_toggled(toggled_on: bool) -> void:
+	$AlifeManager.agent_calculated_photo_value = toggled_on
+
+
+func _on_fullrange_on_2_toggled(toggled_on: bool) -> void:
+	$AlifeManager.grid_calculated_photo_value = toggled_on
+
+
+var visu_sun_flow_on:= false
+var visu_sun_stamp_on:= false
+var visu_sun_value_on:= false
+
+
+func _on_stamp_toggled(toggled_on: bool) -> void:
+	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
+	visu_sun_stamp_on = toggled_on
+
+
+func _on_flux_toggled(toggled_on: bool) -> void:
+	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
+	visu_sun_flow_on = toggled_on
+
+
+func _on_value_toggled(toggled_on: bool) -> void:
+	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
+	visu_sun_value_on = toggled_on

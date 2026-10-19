@@ -763,6 +763,7 @@ func Build_New_Grass(i:int,pos: Vector3, sp:int):
 			binID_array.append(get_worldbin_index(pos))	
 		else:
 			binID_array.append(-1)
+
 		light_index_array.append(get_lightIndex(i))
 		current_finite_state_array.append(0)
 		put_in_light_bin(i)

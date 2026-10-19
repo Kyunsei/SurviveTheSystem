@@ -23,14 +23,21 @@ var total_time : = 0
 var world: World
 
 var photosynthesis_on:= true
+var agent_photo_stamp_on := false
 var photo_range := 0
 var duplication_range := 15
+var agent_calculated_photo_value := false
+var grid_calculated_photo_value := false
+
+
 
 var global_position_array : PackedVector3Array
 var global_species_offset:PackedInt32Array
 
 var previous_global_photosynthesis_rate : PackedFloat32Array
 var current_global_photosynthesis_rate : PackedFloat32Array
+var diffuse_global_photosynthesis_rate : PackedFloat32Array
+
 
 #ECS STATS
 var position_array : PackedVector3Array
@@ -216,7 +223,9 @@ func init(worldd):
 	current_global_photosynthesis_rate.clear()
 	current_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
 
-	
+	diffuse_global_photosynthesis_rate.clear()
+	diffuse_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
+		
 			
 func init_species(worldd:World,alifem:AlifeManager):
 	if switch:
@@ -229,7 +238,7 @@ func init_species(worldd:World,alifem:AlifeManager):
 			if s == 0:
 				species_array[s].photo_range = photo_range
 			else:
-				species_array[s].photo_range = s
+				species_array[s].photo_range = randi_range(0,2)
 
 			species_array[s].init(worldd,alifem)
 
@@ -258,7 +267,7 @@ func compute_chunk(total:int) -> int:
 	var chunk := total / (threads * JOBS_PER_THREAD)
 	return clampi(chunk, MIN_CHUNK, MAX_CHUNK)
 
-#NEED RENAME THIS FUNCTION
+#NEED RENAME THIS FUNCTION. the pne used now
 func run_simulation2(delta: float, sim_speed: float):
 	var t00 := Time.get_ticks_usec()
 	#if sim speed or delta is changed or anything thread is using. safer to change it before start or after wait!
@@ -267,6 +276,11 @@ func run_simulation2(delta: float, sim_speed: float):
 		build_grid(position_array)
 		bin_update_usec =  Time.get_ticks_usec() - bin_t0
 	var t0 := Time.get_ticks_usec()
+	#if photosynthesis_on:
+		#print(current_global_photosynthesis_rate[species_array[0].current_worldpos_cell_id[0]+1])
+		#diffuse_global_photosynthesis_rate = diffuse(current_global_photosynthesis_rate)
+		#print(diffuse_global_photosynthesis_rate[species_array[0].current_worldpos_cell_id[0]+1])
+	#print( Time.get_ticks_usec() - t0)
 	start_simulation(delta,sim_speed)
 	wait_simulation()
 	multithread_usec = Time.get_ticks_usec() - t0
@@ -319,11 +333,14 @@ func update_alife()-> void:
 	global_position_array.clear()
 	global_species_offset.resize(species_array.size() + 1)
 	var total := 0
- 
+
+	
 	for i in species_array.size():
 		var sp:= species_array[i]
 		sp.Build_and_remove_pendings()
-		
+	
+
+	
 	if  bin_on: 
 		for i in species_array.size():
 			var sp:= species_array[i]
@@ -341,7 +358,38 @@ func update_alife()-> void:
 		previous_global_photosynthesis_rate = current_global_photosynthesis_rate
 		current_global_photosynthesis_rate = prev_rate
 		current_global_photosynthesis_rate.fill(0)'
+######################TEST
 
+var _next := PackedFloat32Array()
+'
+func diffuse(field: PackedFloat32Array, w: int = 2000, h: int =1, d: int = 2000, rate: float = 0.5) -> PackedFloat32Array:
+	w =  world.SUN_GRID_W
+	h =  world.SUN_GRID_H
+	d =  world.SUN_GRID_D
+
+	if _next.size() != field.size():
+		_next.resize(field.size())
+	var plane := w * h
+	for z in d:
+		var zi := z * plane
+		for y in h:
+			var row := zi + y * w
+			for x in w:
+				var i := row + x
+				var s := 0.0
+				var c := 0
+				if x > 0:     s += field[i - 1];     c += 1
+				if x < w - 1: s += field[i + 1];     c += 1
+				if y > 0:     s += field[i - w];     c += 1
+				if y < h - 1: s += field[i + w];     c += 1
+				if z > 0:     s += field[i - plane]; c += 1
+				if z < d - 1: s += field[i + plane]; c += 1
+				var v := field[i]
+				_next[i] = v + (s / c - v) * rate
+	# swap so the caller gets the new field without copying
+	var out := _next
+	_next = field
+	return out'
 
 #########################################################################################
 ######################OLD SCRIPT BELOW###################################################
