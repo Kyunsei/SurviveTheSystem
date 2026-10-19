@@ -1,4 +1,6 @@
 extends Node3D
+##debug logic
+var SUN_diffusion_on := false
 
 #WORLD SETUP
 var World_Size = Vector3(240,1,240) ###Prtotype one!!!!

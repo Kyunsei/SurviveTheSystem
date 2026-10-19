@@ -1,3 +1,15 @@
 [gd_scene format=3 uid="uid://cwaee8brpiqb"]
 
-[node name="Node2D" type="Node2D" unique_id=396295680]
+[ext_resource type="Script" uid="uid://kpvdsqsowp3g" path="res://Z_TEST/photo_test.gd" id="1_jem63"]
+[ext_resource type="Script" uid="uid://br82fahykhojq" path="res://Z_TEST/node2.gd" id="2_7sdxk"]
+
+[node name="Node2D" type="Node2D" unique_id=1055589]
+script = ExtResource("1_jem63")
+grid_w = 200
+grid_h = 1
+grid_d = 200
+
+[node name="Node" type="Control" parent="." unique_id=1964684153]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("2_7sdxk")

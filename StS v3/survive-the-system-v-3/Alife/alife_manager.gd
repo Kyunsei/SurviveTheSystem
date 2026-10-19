@@ -58,11 +58,15 @@ func init():
 			$Grass_Manager2.World = World
 			$Grass_Manager2.Init()
 
-
 			$beast_manager.World = World
+			for i in range(500):
+				var pos = get_random_worldpos()
+				if GlobalSimulationParameter.DEBUG_grass_sim == 0:
+					$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.GRASS)
+				else:
+					$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.TREE)
 
-
-			for i in range(20):
+			'for i in range(20):
 				var pos = get_random_worldpos()
 				#$Grass_Manager.ask_for_spawn_new_grass(pos,Alifedata.enum_speciesID.TREE)
 				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.BERRY)
@@ -134,7 +138,7 @@ func init():
 			for i in range(2):
 				var pos = get_random_worldpos()
 				#$beast_manager.spawn_new_beast(pos,Alifedata.enum_speciesID.SHEEP)
-				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.SNAILCAT)
+				$Grass_Manager2.Spawn_New_Grass(pos,AlifeRegistry.SPECIES_ID.SNAILCAT)'
 			simulationReady.emit()
 func get_random_worldpos():
 	var x = randf_range(-World.World_Size.x/2,World.World_Size.x/2)
@@ -151,6 +155,7 @@ func update_life_count():
 			GlobalSimulationParameter.life_numbers[sp].append(current_life_count_by_species[sp])
 
 func _process(delta: float) -> void:
+#func _physics_process(delta: float) -> void:
 
 	if GlobalSimulationParameter.SimulationStarted: 
 		if multiplayer.is_server():

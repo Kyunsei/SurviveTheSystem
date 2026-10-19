@@ -1,23 +1,56 @@
 extends Node2D
 
 var simulation_speed = 1
-var n_start_life =1000 # 100
+var n_start_life =10 # 100
 var running = false
 var multithread = false
 var _accum := 1.
+var world: World
+
+#perf measure
+var visu_usec := 0.0
+var visu_draw_usec := 0.0
+var visu_update_usec := 0.0
+var visu_erase_usec := 0.0
+	
 
 func init():
-	$Visual/MultiMeshInstance2D.init()
-	$AlifeManager.init()
-	for i in n_start_life:
-		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),0)
+	for mm in $AlifeManager.get_children():
+		mm.queue_free()
+	world = $World
+	world.init()
+	$AlifeManager.init(world)
+	$Visual.init(world,$AlifeManager)
+#	$Visual/MultiMeshInstance2D.init($AlifeManager,world) #OLD
+
+
+	#if $AlifeManager.switch:
+	var tt := Time.get_ticks_usec() 
+
+	for sp in $AlifeManager.species_array:
+		for i in n_start_life:
+			sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2))+Vector3(world.size.x/2,0,world.size.z/2),randf_range(0.0,5.0))
+
+	var t := (Time.get_ticks_usec() - tt)/1000.0
+	var e = n_start_life * $AlifeManager.species_array.size()
+	var et = float(t)/float(e)
+	$simulation_UI/RunGDScript/Label.text = "added " + str(e) + " entities for " +str(t) +"ms,  by enties is " +str(et)
+	#print("added %d entities for %f ms,  by enties is %f" % [e, t,et])
+	
+	'else:
+		for i in n_start_life:
+			$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(550,0,320))+Vector3(550,0,320),randf_range(0.0,5.0),0)'
+	
 	'for i in n_start_life:
 		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),1)
 	for i in n_start_life:
 		$AlifeManager.Build_New_Life($AlifeManager.pick_random_position(Vector3(600,0,400))+Vector3(600,0,400),randf_range(0.0,5.0),2)'
-
-	$AlifeManager.setup()
-	$Visual/MultiMeshInstance2D.setup() #this was for buffer
+#	$AlifeManager.setup_chunk()
+	'if !$AlifeManager.switch:
+		$Visual/MultiMeshInstance2D.setup() #this was for buffer
+		if $Visual/MultiMeshInstance2D.activated:
+			$Visual/MultiMeshInstance2D.draw_new_instance($AlifeManager.pending_multimesh_drawn_id)
+		#await get_tree().create_timer(1.0).timeout'
 	running = true
 	
 
@@ -33,43 +66,105 @@ func _process(delta: float) -> void:
 				_accum = 0.0
 				display_general_perf()
 				diplay_alife_perf()
-			if Engine.get_frames_per_second() < 10:
-				simulation_speed = 0
-				$simulation_UI/speed.text = "0"
+				display_world_perf()
+				display_rendering_perf()
+			if Engine.get_frames_per_second() < 30:
+				$AlifeManager.duplicate_on = false
+				$simulation_UI/Alife/duplication.button_pressed = false
+				#simulation_speed = 0
+				#$simulation_UI/speed.text = "0"
 			
 	
 
 var c := 0
 func run_visualisation():
-	if $Visual/MultiMeshInstance2D.activated:
-		$Visual/MultiMeshInstance2D.draw_new_instance($AlifeManager.pending_multimesh_drawn_id)
-		$Visual/MultiMeshInstance2D.update_all_sequentially()
-	if $Visual/MultiMesh_BIN.activated:
-		$Visual/MultiMesh_BIN.update_all()
+
+	visu_erase_usec = 0.0
+	visu_draw_usec = 0.0
+	visu_update_usec = 0.0
+	$Visual.update_usec = 0
+	$Visual.main_visu_usec = 0
+	$Visual.write_usec = 0
+	var t:= Time.get_ticks_usec()
+	if $Visual.activated:
+		if $AlifeManager.switch:
+			$Visual.run_visualisation()
+			'for s in $AlifeManager.species_array:
+				pass
+				$Visual.dosomething()
+				var t1:= Time.get_ticks_usec()
+				#s.rendering.rebuild_buffer()
+				s.start_rendering_update()
+				s.wait_rendering()
+				s.update_renderer()'
+				
+				#s.renderer.upload(s.entity_count)
+			's.rendering.draw_new_instance(s.pending_multimesh_drawn_id)
+				visu_draw_usec += Time.get_ticks_usec()-t1
+				t1= Time.get_ticks_usec()
+				s.rendering.erase_instance(s.pending_multimesh_erase_id)
+				visu_erase_usec += Time.get_ticks_usec()-t1
+				t1= Time.get_ticks_usec()
+				s.rendering.update_all_sequentially()'
 
 
-func run_simulation(delta):
-	if !multithread:
-		#if $AlifeManager.AI_on:
-		$AlifeManager.run_simulation(delta,simulation_speed)
-		#else:
-		#	$AlifeManager.run_simulation(delta,simulation_speed)
-
-	else:
-		if $AlifeManager.AI_on:
-			$AlifeManager.run_simulation_multithread(delta,simulation_speed)
+		
 		else:
-			$AlifeManager.run_simulation_multithread2(delta,simulation_speed)
+			$Visual/MultiMeshInstance2D.draw_new_instance($AlifeManager.pending_multimesh_drawn_id)
+			$Visual/MultiMeshInstance2D.erase_instance($AlifeManager.pending_multimesh_erase_id)
+
+			$Visual/MultiMeshInstance2D.update_all_sequentially()
+			
+	if visu_sun_flow_on:
+		$Visual/MultiMesh_BIN.update_all($World.SUN_GRID,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
+	if visu_sun_stamp_on:	
+		$Visual/MultiMesh_BIN.update_all($AlifeManager.current_global_photosynthesis_rate,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
+
+	visu_usec = Time.get_ticks_usec() - t
+	
+var plant_only := false
+func run_simulation(delta):
+	$World.run_world_simulation($AlifeManager, delta, simulation_speed)
+	if $AlifeManager.switch:
+		$AlifeManager.run_simulation2(delta,simulation_speed)
+	else:
+		if !multithread:
+			$AlifeManager.run_simulation(delta,simulation_speed)
+
+		else:
+			$AlifeManager.run_simulation_multithread(delta,simulation_speed)
+
+func display_world_perf():
+	$simulation_UI/World/Label.text = "nLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
+	$simulation_UI/World/Label.text += "\nSUN grid size: %d " % $World.SUN_NUM_CELLS
+
+	$simulation_UI/World/Label.text += "\n\nfunction \t msec  "
+	$simulation_UI/World/Label.text += "\nmain_loop \t  %2d" % ($World.main_world_usec/1000.0)
+	$simulation_UI/World/Label.text += "\nSUN_total \t  %2d" % ($World.sun_usec/1000.0)
+	$simulation_UI/World/Label.text += "\nSUN_build \t  %2d" % ($World.build_usec/1000.0)
+	$simulation_UI/World/Label.text += "\nSUN_fill \t  %2d" % ($World.fill_usec/1000.0)
+	$simulation_UI/World/Label.text += "\nSUN_distribute \t  %2d" % ($World.distribute_usec/1000.0)
+
+
+
+func display_rendering_perf():
+	$simulation_UI/Rendering/Label.text = "\n\nfunction \t msec  "
+	$simulation_UI/Rendering/Label.text += "\nmain \t  %2d" % ($Visual.main_visu_usec/1000.0)
+	$simulation_UI/Rendering/Label.text += "\nwrite_buffer\t  %2d" % ($Visual.write_usec/1000.0)
+	$simulation_UI/Rendering/Label.text += "\nupdate\t  %2d" % ($Visual.update_usec/1000.0)
+	#$simulation_UI/Rendering/Label.text += "\nerase\t  %2d" % (visu_erase_usec/1000.0)
+
+	
 
 func display_general_perf() -> void:
-			%Label.text = "Simulation stop when reaching <10 FPS \n"
+			%Label.text = "Duplication stop when reaching <30 FPS \n"
 			%Label.text += "\nFPS: " + str(Engine.get_frames_per_second())
 			%Label.text += "\nAlife_system:  %2d" % ($AlifeManager.main_usec/1000.0)
-			%Label.text += "\nnLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
-			#$Label.text += "\nEfficiency: %2d" % $AlifeManager.multithread_efficiency
-			%Label.text += "\n\nRendering part \n \n"
-			%Label.text += "\ndraw new msec: %2d" % ($Visual/MultiMeshInstance2D.draw_new_usec/1000.0)
-			%Label.text += "\nUpdate all msec: %2d" % ($Visual/MultiMeshInstance2D.update_all_usec/1000.0)
+			%Label.text += "\nWorld_system:  %2d" % ($World.main_world_usec/1000.0)
+			%Label.text += "\nRendering_system:  %2d" % ($Visual.main_visu_usec/1000.0)
+
+			%Label.text += "\n\nnLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
+
 func diplay_alife_perf() -> void:
 	if simulation_speed > 0 :
 		'_accum += delta
@@ -78,7 +173,11 @@ func diplay_alife_perf() -> void:
 		$simulation_UI/Alife/Label.text = "nLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
 		$simulation_UI/Alife/Label.text += "\n\nfunction \t msec  "
 		$simulation_UI/Alife/Label.text += "\nmain_loop \t  %2d" % ($AlifeManager.main_usec/1000.0)
-		$simulation_UI/Alife/Label.text += "\nUtility_AI \t  %2d" % ($AlifeManager.uai_usec/1000.0)
+		$simulation_UI/Alife/Label.text += "\nmultithread \t  %2d" % ($AlifeManager.multithread_usec/1000.0)
+		$simulation_UI/Alife/Label.text += "\nmerge \t  %2d" % ($AlifeManager.merge_usec/1000.0)
+		
+		
+		$simulation_UI/Alife/Label.text += "\n\nUtility_AI \t  %2d" % ($AlifeManager.uai_usec/1000.0)
 		$simulation_UI/Alife/Label.text += "\nbin_screen \t  %2d" % ($AlifeManager.bin_screen_usec/1000.0)
 		$simulation_UI/Alife/Label.text += "\nbin_action \t  %2d" % ($AlifeManager.bin_action_usec/1000.0)
 		$simulation_UI/Alife/Label.text += "\nbin_update \t  %2d" % ($AlifeManager.bin_update_usec/1000.0)
@@ -90,7 +189,6 @@ func diplay_alife_perf() -> void:
 
 func display_perf() -> void:
 	if simulation_speed > 0 :
-	
 			%Label.text = "Simulation stop when reaching <10 FPS \n"
 			%Label.text += "\nFPS: " + str(Engine.get_frames_per_second())
 			%Label.text += "\nmsec:  %2d" % ($AlifeManager.main_usec/1000.0)
@@ -105,8 +203,7 @@ func display_perf() -> void:
 			%Label.text += "draw new msec: %2d" % ($Visual/MultiMeshInstance2D.draw_new_usec/1000.0)
 			%Label.text += "\nUpdate all msec: %2d" % ($Visual/MultiMeshInstance2D.update_all_usec/1000.0)
 
-
-
+ 
 
 func _on_speed_text_submitted(new_text: String) -> void:
 	simulation_speed = float(new_text)
@@ -128,10 +225,6 @@ func _on_run_gpu_pressed() -> void:
 func _on_run_cpp_pressed() -> void:
 	pass # Replace with function body.
 
-
-func _on_world_size_text_submitted(new_text: String) -> void:
-	var value = float(new_text)
-	$World.size = Vector3(value,value,value)
 
 
 
@@ -155,21 +248,19 @@ func _on_max_life_text_submitted(new_text: String) -> void:
 func _on_button_u_ishow_pressed() -> void:
 	if $simulation_UI.visible:
 		$simulation_UI.hide()
-		$ButtonUIshow.text = "Show Interface"
+		$CanvasLayer/ButtonUIshow.text = "Show Interface"
 	else:
 		$simulation_UI.show()
-		$ButtonUIshow.text = "Hide Interface"
+		$CanvasLayer/ButtonUIshow.text = "Hide Interface"
 
 
 func _on_button_visualisation_toggled(toggled_on: bool) -> void:
-	$Visual/MultiMeshInstance2D.activated = toggled_on
+	$Visual.activated = toggled_on
 	if toggled_on:
-		$Visual/MultiMeshInstance2D.show()
+		$Visual.show()
 	else:
-		$Visual/MultiMeshInstance2D.hide()
+		$Visual.hide()
 
-func _on_update_frame_text_submitted(new_text: String) -> void:
-	$Visual/MultiMeshInstance2D.update_on_n_frame = int(new_text)
 
 
 func _on_ai_on_o_ft_toggled(toggled_on: bool) -> void:
@@ -177,7 +268,8 @@ func _on_ai_on_o_ft_toggled(toggled_on: bool) -> void:
 
 
 func _on_binsize_text_submitted(new_text: String) -> void:
-	$AlifeManager.bin_size = float(new_text)
+	$AlifeManager.cell_size = float(new_text)
+	$AlifeManager.init_GRID($World.size)
 	#$AlifeManager.set_bin
 
 
@@ -185,9 +277,7 @@ func _on_bin_onoff_toggled(toggled_on: bool) -> void:
 	$AlifeManager.bin_on = toggled_on
 
 
-func _on_button_bin_visualisation_2_toggled(toggled_on: bool) -> void:
-	$Visual/MultiMesh_BIN.init()
-	$Visual/MultiMesh_BIN.activated = toggled_on
+
 		
 
 
@@ -196,6 +286,8 @@ func _on_button_1_toggled(toggled_on: bool) -> void:
 	#$simulation_UI/World.visible = false
 	#$simulation_UI/Rendering.visible = false
 	if toggled_on:
+		$simulation_UI/World.visible = false
+		$simulation_UI/Rendering.visible = false
 		$simulation_UI/Panel/HBoxContainer/Button_3.button_pressed = false
 		$simulation_UI/Panel/HBoxContainer/Button_2.button_pressed = false
 
@@ -204,6 +296,8 @@ func _on_button_2_toggled(toggled_on: bool) -> void:
 	#$simulation_UI/Alife.visible = false
 	#$simulation_UI/Rendering.visible = false
 	if toggled_on:
+		$simulation_UI/Alife.visible = false
+		$simulation_UI/Rendering.visible = false
 		$simulation_UI/Panel/HBoxContainer/Button_1.button_pressed = false
 		$simulation_UI/Panel/HBoxContainer/Button_3.button_pressed = false
 
@@ -212,6 +306,124 @@ func _on_button_3_toggled(toggled_on: bool) -> void:
 		#$simulation_UI/World.visible = false
 		#$simulation_UI/Alife.visible = false
 	if toggled_on:
-
+		$simulation_UI/Alife.visible = false
+		$simulation_UI/World.visible = false
 		$simulation_UI/Panel/HBoxContainer/Button_1.button_pressed = false
 		$simulation_UI/Panel/HBoxContainer/Button_2.button_pressed = false
+
+
+func _on_duplication_toggled(toggled_on: bool) -> void:
+	$AlifeManager.duplicate_on = toggled_on
+
+
+func _on_world_y_text_submitted(new_text: String) -> void:
+	$World.size.y = float(new_text)
+	$World.init()
+	$AlifeManager.init_GRID($World.size)
+
+
+func _on_world_z_text_submitted(new_text: String) -> void:
+	$World.size.z = float(new_text)
+	$World.init()
+	$AlifeManager.init_GRID($World.size)
+
+
+func _on_world_x_text_submitted(new_text: String) -> void:
+	$World.size.x = float(new_text)
+	$World.init()
+	$AlifeManager.init_GRID($World.size)
+
+
+func _on_plant_on_toggled(toggled_on: bool) -> void:
+	plant_only = toggled_on
+
+
+func _on_check_button_toggled(toggled_on: bool) -> void:
+	$World.SUN_on = toggled_on
+	
+func _on_sunenergy_text_submitted(new_text: String) -> void:
+	$World.SUN_energy = float(new_text)
+
+func _on_sun_x_text_submitted(new_text: String) -> void:
+	$World.SUN_cell_size.x = float(new_text)
+	$World.init_SUN_GRID()
+
+func _on_sun_y_text_submitted(new_text: String) -> void:
+	$World.SUN_cell_size.y = float(new_text)
+	$World.init_SUN_GRID()
+
+func _on_sun_z_text_submitted(new_text: String) -> void:
+	$World.SUN_cell_size.z = float(new_text)
+	$World.init_SUN_GRID()
+
+
+func _on_remove_on_toggled(toggled_on: bool) -> void:
+	$AlifeManager.remove_on = toggled_on
+
+
+func _on_growth_on_toggled(toggled_on: bool) -> void:
+	$AlifeManager.grow_on = toggled_on
+
+
+func _on_multispecies_toggled(toggled_on: bool) -> void:
+	simulation_speed = 0
+	$simulation_UI/speed.text = "0"
+	$AlifeManager.switch = toggled_on
+	#init()
+	#$AlifeManager.init(world)
+
+
+func _on_n_species_text_submitted(new_text: String) -> void:
+	$AlifeManager.n_species = int(new_text)
+
+
+func _on_photosynthesis_toggled(toggled_on: bool) -> void:
+	$AlifeManager.photosynthesis_on = toggled_on
+
+
+func _on_photo_range_text_submitted(new_text: String) -> void:
+	$AlifeManager.photo_range = float(new_text)
+
+
+func _on_homeo_on_toggled(toggled_on: bool) -> void:
+	$AlifeManager.homeostasis_on = toggled_on
+
+
+func _on_dup_range_text_submitted(new_text: String) -> void:
+	$AlifeManager.duplication_range = float(new_text)
+
+
+func _on_check_diffusion_toggled(toggled_on: bool) -> void:
+	$World.SUN_diffusion_on = toggled_on
+
+
+func _on_check_stamp_agent_toggled(toggled_on: bool) -> void:
+	$AlifeManager.agent_photo_stamp_on = toggled_on
+
+
+func _on_fullrange_on_toggled(toggled_on: bool) -> void:
+	$AlifeManager.agent_calculated_photo_value = toggled_on
+
+
+func _on_fullrange_on_2_toggled(toggled_on: bool) -> void:
+	$AlifeManager.grid_calculated_photo_value = toggled_on
+
+
+var visu_sun_flow_on:= false
+var visu_sun_stamp_on:= false
+var visu_sun_value_on:= false
+
+
+func _on_stamp_toggled(toggled_on: bool) -> void:
+	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
+	visu_sun_stamp_on = toggled_on
+
+
+func _on_flux_toggled(toggled_on: bool) -> void:
+	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
+	visu_sun_flow_on = toggled_on
+
+
+func _on_value_toggled(toggled_on: bool) -> void:
+	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
+	visu_sun_value_on = toggled_on

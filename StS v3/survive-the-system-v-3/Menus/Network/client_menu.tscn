@@ -218,6 +218,14 @@ offset_right = 1051.0
 offset_bottom = 495.0
 text = "Test Dev"
 
+[node name="Button2" type="Button" parent="." unique_id=2009365395]
+layout_mode = 0
+offset_left = 890.0
+offset_top = 501.0
+offset_right = 1049.0
+offset_bottom = 579.0
+text = "Test Dev"
+
 [connection signal="pressed" from="HBoxContainer/Button_localconnect" to="." method="_on_button_localconnect_pressed"]
 [connection signal="pressed" from="HBoxContainer/Button_onlineconnect" to="." method="_on_button_onlineconnect_pressed"]
 [connection signal="pressed" from="HBoxContainer/Button_onlineconnect2" to="." method="_on_button_onlineconnect_2_pressed"]
@@ -233,3 +241,4 @@ text = "Test Dev"
 [connection signal="pressed" from="buttonPanel/ButtonCredits" to="." method="_on_button_credits_pressed"]
 [connection signal="pressed" from="buttonPanel/Quit" to="." method="_on_button_quit_pressed"]
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]

@@ -12,6 +12,7 @@ const REPEATS := 3
 var _base_data: PackedFloat32Array
 var label_text = ""
 
+
 func run_simulation() -> void:
 	print("OS.get_processor_count() = %d\n" % OS.get_processor_count())
 	label_text = "OS.get_processor_count() = %d\n" % OS.get_processor_count()
