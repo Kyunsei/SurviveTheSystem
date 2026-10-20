@@ -427,3 +427,7 @@ func _on_flux_toggled(toggled_on: bool) -> void:
 func _on_value_toggled(toggled_on: bool) -> void:
 	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
 	visu_sun_value_on = toggled_on
+
+
+func _on_photo_rate_text_submitted(new_text: String) -> void:
+	$AlifeManager.photo_absorption_rate = float(new_text)

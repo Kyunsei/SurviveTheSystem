@@ -267,7 +267,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 
 		var global_photo_rate := alifemanager.current_global_photosynthesis_rate
 		var sun_grid := world.SUN_GRID 
-		var photo_rate := 1.0
+		var photo_rate = alifemanager.photo_absorption_rate
 		for i in range(start, end):
 			#var t := Time.get_ticks_usec()
 			if active_alife_array[i] == 0:

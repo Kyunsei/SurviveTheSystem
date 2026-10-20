@@ -8,6 +8,13 @@
 [ext_resource type="Script" uid="uid://cxe6qj5km8dxb" path="res://Z_TEST/camera_3d.gd" id="6_b3dws"]
 [ext_resource type="Script" uid="uid://cs3dmhyjbqk1u" path="res://Z_TEST/multi_mesh_bin.gd" id="7_elrxu"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hlgly"]
+albedo_color = Color(0.68307734, 0.6830774, 0.68307734, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_eg1w5"]
+material = SubResource("StandardMaterial3D_hlgly")
+size = Vector2(2000, 2000)
+
 [node name="SimulationManager" type="Node2D" unique_id=364310058]
 script = ExtResource("1_wb3fy")
 
@@ -34,6 +41,10 @@ script = ExtResource("4_elrxu")
 transform = Transform3D(1, 0, 0, 0, 0.13512763, 0.9908282, 0, -0.9908282, 0.13512763, 14.060491, 171.71745, 8)
 script = ExtResource("6_b3dws")
 
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Visual" unique_id=1786253232]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1000, 0, 1000)
+mesh = SubResource("PlaneMesh_eg1w5")
+
 [node name="Rendering3D" type="Node3D" parent="Visual" unique_id=837410298]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Visual" unique_id=156406406]
@@ -57,7 +68,6 @@ text = "Hide Interface"
 [node name="simulation_UI" type="CanvasLayer" parent="." unique_id=438579712]
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_top = 4.0
@@ -170,6 +180,22 @@ offset_top = 3.0
 offset_right = 33.0
 offset_bottom = 26.0
 text = "Range"
+
+[node name="photo_rate" type="LineEdit" parent="simulation_UI/Alife" unique_id=659035776]
+layout_mode = 0
+offset_left = 351.0
+offset_top = 253.0
+offset_right = 419.5
+offset_bottom = 284.0
+placeholder_text = "0"
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/photo_rate" unique_id=1605997704]
+layout_mode = 0
+offset_left = -56.0
+offset_top = 3.0
+offset_right = 33.0
+offset_bottom = 26.0
+text = "Rate"
 
 [node name="dup_range" type="LineEdit" parent="simulation_UI/Alife" unique_id=462657378]
 layout_mode = 0
@@ -524,26 +550,13 @@ offset_right = 4.0
 offset_bottom = 22.0
 text = "GRID Diffusion"
 
-[node name="CheckPrefixSum" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=1572957995]
-layout_mode = 0
-offset_left = 107.0
-offset_top = 337.0
-offset_right = 151.0
-offset_bottom = 361.0
-
-[node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckPrefixSum" unique_id=314996947]
-layout_mode = 0
-offset_left = -82.0
-offset_right = 3.0
-offset_bottom = 23.0
-text = "PrefixSum"
-
 [node name="CheckStamp" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=542727545]
 layout_mode = 0
 offset_left = 261.0
 offset_top = 337.0
 offset_right = 305.0
 offset_bottom = 361.0
+disabled = true
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckStamp" unique_id=2046536450]
 layout_mode = 0
@@ -572,6 +585,7 @@ offset_left = 246.0
 offset_top = 397.0
 offset_right = 290.0
 offset_bottom = 421.0
+disabled = true
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/fullrangeOn2" unique_id=520352483]
 layout_mode = 0
@@ -603,6 +617,7 @@ offset_right = 338.0
 offset_bottom = 637.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -805,6 +820,7 @@ text = "Rendering"
 [connection signal="toggled" from="simulation_UI/Alife/duplication" to="." method="_on_duplication_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Photosynthesis" to="." method="_on_photosynthesis_toggled"]
 [connection signal="text_submitted" from="simulation_UI/Alife/photo_range" to="." method="_on_photo_range_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Alife/photo_rate" to="." method="_on_photo_rate_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/Alife/dup_range" to="." method="_on_dup_range_text_submitted"]
 [connection signal="toggled" from="simulation_UI/Alife/Bin_ONOFF" to="." method="_on_bin_onoff_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Remove_ON" to="." method="_on_remove_on_toggled"]
@@ -823,7 +839,6 @@ text = "Rendering"
 [connection signal="text_submitted" from="simulation_UI/World/SUN/SUNENERGY" to="." method="_on_sunenergy_text_submitted"]
 [connection signal="toggled" from="simulation_UI/World/SUN/CheckButton" to="." method="_on_check_button_toggled"]
 [connection signal="toggled" from="simulation_UI/World/SUN/CheckDiffusion" to="." method="_on_check_diffusion_toggled"]
-[connection signal="toggled" from="simulation_UI/World/SUN/CheckPrefixSum" to="." method="_on_check_button_toggled"]
 [connection signal="toggled" from="simulation_UI/World/SUN/CheckStamp" to="." method="_on_check_button_toggled"]
 [connection signal="toggled" from="simulation_UI/World/SUN/fullrangeOn" to="." method="_on_fullrange_on_toggled"]
 [connection signal="toggled" from="simulation_UI/World/SUN/fullrangeOn2" to="." method="_on_fullrange_on_2_toggled"]

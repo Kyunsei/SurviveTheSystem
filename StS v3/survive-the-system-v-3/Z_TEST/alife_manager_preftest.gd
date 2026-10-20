@@ -34,6 +34,8 @@ var grid_calculated_photo_value := false
 var global_position_array : PackedVector3Array
 var global_species_offset:PackedInt32Array
 
+
+var photo_absorption_rate := 1.0
 var previous_global_photosynthesis_rate : PackedFloat32Array
 var current_global_photosynthesis_rate : PackedFloat32Array
 var diffuse_global_photosynthesis_rate : PackedFloat32Array
