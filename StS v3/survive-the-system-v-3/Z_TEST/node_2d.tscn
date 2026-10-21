@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://kpvdsqsowp3g" path="res://Z_TEST/photo_test.gd" id="1_jem63"]
 [ext_resource type="Script" uid="uid://br82fahykhojq" path="res://Z_TEST/node2.gd" id="2_7sdxk"]
+[ext_resource type="Script" uid="uid://cr5us8in7nw12" path="res://Z_TEST/node_2.gd" id="3_qab20"]
 
 [node name="Node2D" type="Node2D" unique_id=1055589]
 script = ExtResource("1_jem63")
@@ -13,3 +14,6 @@ grid_d = 200
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("2_7sdxk")
+
+[node name="Node2" type="Node2D" parent="." unique_id=2054821191]
+script = ExtResource("3_qab20")

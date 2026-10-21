@@ -70,6 +70,7 @@ var rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
+	return
 	if target is RichTextLabel:
 		rich = target
 	elif target is Label:

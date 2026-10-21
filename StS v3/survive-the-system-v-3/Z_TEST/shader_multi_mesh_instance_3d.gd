@@ -9,7 +9,7 @@ var billboard := true
 var billboard_y_only := false
 
 
-func setup(agent_data: AlifeRenderingData, world_size: Vector3, color: Color) -> void:
+func setup(agent_data: AlifeRenderingData, sprite:Texture2D, world_size: Vector3, color: Color) -> void:
 	assert(agent_data.tex != null, "AgentData.resize() must be called before renderer setup")
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D     # 12 floats per instance
@@ -21,9 +21,8 @@ func setup(agent_data: AlifeRenderingData, world_size: Vector3, color: Color) ->
 	mesh.radius = 1.5
 	mesh.height = 1.0'
 	
-	sprite = preload("res://Alife/Plant/Grass/grass.png") #TODO
+	#sprite = preload("res://Alife/Plant/Grass/grass.png") #TODO
 	var frame_px := sprite.get_size() / Vector2(hframes, vframes)
- 
 	var quad := QuadMesh.new()
 	quad.size = frame_px * pixel_size
 	# Put the pivot at the sprite's feet instead of its centre

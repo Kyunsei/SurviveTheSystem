@@ -72,14 +72,36 @@ text = "Help"
 
 [node name="ButtonStart" type="Button" parent="." unique_id=174135312]
 layout_mode = 0
-offset_left = 505.0
-offset_top = 323.0
-offset_right = 672.0
-offset_bottom = 386.0
+offset_left = 404.0
+offset_top = 324.0
+offset_right = 571.0
+offset_bottom = 387.0
 theme_override_font_sizes/font_size = 40
 text = "Host"
 
 [node name="Label" type="Label" parent="ButtonStart" unique_id=1416514268]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.120000005
+anchor_bottom = 0.18300001
+offset_left = -129.0
+offset_top = 76.0
+offset_right = 276.96
+offset_bottom = 119.471
+theme_override_font_sizes/font_size = 40
+horizontal_alignment = 1
+
+[node name="ButtonStart2" type="Button" parent="." unique_id=1203769753]
+layout_mode = 0
+offset_left = 597.0
+offset_top = 324.0
+offset_right = 764.0
+offset_bottom = 387.0
+theme_override_font_sizes/font_size = 40
+disabled = true
+text = "Host v2"
+
+[node name="Label" type="Label" parent="ButtonStart2" unique_id=1478606620]
 layout_mode = 1
 anchors_preset = -1
 anchor_right = 0.120000005
@@ -182,5 +204,6 @@ texture = ExtResource("2_6mtfq")
 [connection signal="text_changed" from="Port" to="." method="_on_port_text_changed"]
 [connection signal="pressed" from="Port/ButtonHelp" to="." method="_on_button_help_pressed"]
 [connection signal="pressed" from="ButtonStart" to="." method="_on_button_start_pressed"]
+[connection signal="pressed" from="ButtonStart2" to="." method="_on_button_start_pressed"]
 [connection signal="pressed" from="Return" to="." method="_on_return_pressed"]
 [connection signal="pressed" from="Panel/Button" to="." method="_on_button_pressed"]

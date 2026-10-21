@@ -8,9 +8,10 @@ class_name AlifeManager
 #TODO fix chunk number/order or make it random?
 #TODO simulation time in threads?
 #TODO sensing alife x alife : wolrd partioning + flow?
-#TODO think for Species modularity & perforrmance: add different species
 #TODO add physics collision/gravity?
 #TODO optimise AI
+#TODO border Gestion
+#TODO optimisation element grid vs agent?
 
 ##Simulation par
 var maxLife = 0 # 0
@@ -228,8 +229,24 @@ func init(worldd):
 	diffuse_global_photosynthesis_rate.clear()
 	diffuse_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
 		
-			
+
 func init_species(worldd:World,alifem:AlifeManager):
+	if switch:
+		for c in get_children():
+			c.queue_free()
+		species_array.resize(2)
+		species_array[0] = TESTDNA.new()
+		species_array[0].colour = Color(randf(),randf(),randf())
+		species_array[1] = TREE_DNA.new()
+		species_array[1].colour = Color(randf(),randf(),randf())
+		species_array[1].photo_range = 2
+
+		for s in n_species:
+			species_array[s].init(worldd,alifem)
+
+
+		
+func init_species2(worldd:World,alifem:AlifeManager):
 	if switch:
 		for c in get_children():
 			c.queue_free()

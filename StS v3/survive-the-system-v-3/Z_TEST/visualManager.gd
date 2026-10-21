@@ -52,7 +52,7 @@ func init_renderer():
 		$Rendering2D.add_child.call_deferred(s.renderer2D)
 
 		s.renderer3D = AlifeRenderer3D.new()
-		s.renderer3D.setup( s.rend_data, world.size, s.colour)
+		s.renderer3D.setup( s.rend_data,s.sprite, world.size, s.colour)
 		$Rendering3D.add_child.call_deferred(s.renderer3D)
 
 '

@@ -7,13 +7,14 @@
 [ext_resource type="Script" uid="uid://bnllghtmmewck" path="res://Z_TEST/visualManager.gd" id="4_hlgly"]
 [ext_resource type="Script" uid="uid://cxe6qj5km8dxb" path="res://Z_TEST/camera_3d.gd" id="6_b3dws"]
 [ext_resource type="Script" uid="uid://cs3dmhyjbqk1u" path="res://Z_TEST/multi_mesh_bin.gd" id="7_elrxu"]
+[ext_resource type="Script" uid="uid://c55y17n4jx3rq" path="res://Z_TEST/interaction_player.gd" id="8_elrxu"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hlgly"]
 albedo_color = Color(0.68307734, 0.6830774, 0.68307734, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_eg1w5"]
 material = SubResource("StandardMaterial3D_hlgly")
-size = Vector2(2000, 2000)
+size = Vector2(1000, 1000)
 
 [node name="SimulationManager" type="Node2D" unique_id=364310058]
 script = ExtResource("1_wb3fy")
@@ -38,11 +39,11 @@ position = Vector2(576, 323)
 script = ExtResource("4_elrxu")
 
 [node name="Camera3D" type="Camera3D" parent="Visual" unique_id=1506139562]
-transform = Transform3D(1, 0, 0, 0, 0.13512763, 0.9908282, 0, -0.9908282, 0.13512763, 14.060491, 171.71745, 8)
+transform = Transform3D(1, 0, 0, 0, 0.13512763, 0.9908282, 0, -0.9908282, 0.13512763, 268.07706, 171.71745, -12.025177)
 script = ExtResource("6_b3dws")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Visual" unique_id=1786253232]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1000, 0, 1000)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 500, 0, 500)
 mesh = SubResource("PlaneMesh_eg1w5")
 
 [node name="Rendering3D" type="Node3D" parent="Visual" unique_id=837410298]
@@ -55,6 +56,9 @@ script = ExtResource("2_w27ml")
 
 [node name="AlifeManager" type="Node2D" parent="." unique_id=1182617890]
 script = ExtResource("3_ywrax")
+
+[node name="Interaction_Player" type="Node" parent="." unique_id=2140981912]
+script = ExtResource("8_elrxu")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=704968778]
 
