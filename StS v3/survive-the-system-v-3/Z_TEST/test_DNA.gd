@@ -320,7 +320,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			var ei:= current_energy_array[i]
 			var cls := current_life_state[i]
 			current_age[i] += 1
-			if cls <3:
+			if cls <2:
 				if ei > 3:
 					current_life_state[i] += 1
 					current_energy_array[i] -= 3
@@ -370,7 +370,7 @@ func write_rendering_buffer_in_chunk(start: int, end: int) -> void:
 			r_data[o]     = p.x #* dt     # x
 			r_data[o + 1] = p.z # * dt     # y
 			r_data[o + 2] = active_alife_array[i]
-			r_data[o + 3] = alive_array[i]
+			r_data[o + 3] = current_life_state[i]
 		#r_data_per_chunk[local_id] = r_data
 
 'func update_renderer():
@@ -421,7 +421,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		color_array.append(col)
 		alive_array.append(1) 
 		#current_bin_id.append(get_binID(pos,bin_size,world.size))
-		current_life_state.append(0)
+		current_life_state.append(1)
 		current_biomass.append(0)
 		current_age.append(0)
 		current_size.append(1.0)
@@ -442,7 +442,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_worldpos_cell_id[i] = get_world_cell_id(pos,world)
 		#current_bin_id[i] = get_binID(pos,bin_size,world.size)
 		#update_bin_array(i)
-		current_life_state[i]=0
+		current_life_state[i]=1
 		current_biomass[i]=0
 		current_age[i]=0
 		current_size[i]=1.0

@@ -47,9 +47,13 @@ func move():
 			position = cam.unproject_position(world_pos) + Vector2(10, -10)	
 
 func _on_button_close_pressed() -> void:
+	species.renderer3D.material_override.set_shader_parameter("selected_id", -1)
+
 	queue_free()
 
 
 func _on_button_pressed() -> void:
+	species.renderer3D.material_override.set_shader_parameter("selected_id", -1)
+
 	species.Remove_Life(index)  #Probably pending list is better #TODO
 	queue_free()

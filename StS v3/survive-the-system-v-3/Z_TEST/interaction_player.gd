@@ -1,7 +1,6 @@
 extends Node
 
 #TODO when grid off doesnt work bc global position doesnt exist
-#TODO Outline when over or selected
 
 var alifemanager  :AlifeManager
 var use_grid := false
@@ -43,6 +42,8 @@ func display_target_info():
 	var ui_i = alife_ui_instance.instantiate()
 	layer.add_child(ui_i)
 	ui_i.setup(alifemanager.species_array[sp_i],local_idx)
+	#alifemanager.species_array[sp_i].renderer3D.selected_id =  local_idx
+	alifemanager.species_array[sp_i].renderer3D.material_override.set_shader_parameter("selected_id", local_idx)
 
 
 

@@ -7,6 +7,7 @@ var vframes := 1
 var pixel_size := 0.01  # world units per pixel, same idea as Sprite3D
 var billboard := true
 var billboard_y_only := false
+var selected_id := -1
 
 
 func setup(agent_data: AlifeRenderingData, sprite:Texture2D, world_size: Vector3, color: Color) -> void:
@@ -41,6 +42,7 @@ func setup(agent_data: AlifeRenderingData, sprite:Texture2D, world_size: Vector3
 	mat.set_shader_parameter("sprite_texture", sprite)
 	mat.set_shader_parameter("billboard", billboard)
 	mat.set_shader_parameter("billboard_y_only", billboard_y_only)
+	mat.set_shader_parameter("selected_id", selected_id)
 
 	#mat.set_shader_parameter("hframes", hframes)
 	#mat.set_shader_parameter("vframes", vframes)
