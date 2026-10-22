@@ -8,9 +8,17 @@ extends Camera2D
 
 var _target_zoom := 1.0
 
+var start_pos : Vector2
+
+func init()-> void:
+	_target_zoom = 1
+	position = start_pos
+
+	
 func _ready() -> void:
 	_target_zoom = zoom.x
-
+	start_pos = position
+	
 func _process(delta: float) -> void:
 	# Keyboard pan (arrows via ui_*, plus WASD)
 	var dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")

@@ -22,6 +22,11 @@ func _ready() -> void:
 	far = max_distance * 4.0
 	_apply()
 
+func init():
+
+	far = max_distance * 4.0
+	_apply()
+	#position.y = 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not current:

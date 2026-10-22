@@ -257,9 +257,13 @@ func _on_button_u_ishow_pressed() -> void:
 func _on_button_visualisation_toggled(toggled_on: bool) -> void:
 	$Visual.activated = toggled_on
 	if toggled_on:
-		$Visual.show()
+		$Visual/Rendering2D.show()
+		$Visual/Rendering3D.show()
+
 	else:
-		$Visual.hide()
+		#$Visual.hide()
+		$Visual/Rendering2D.hide()
+		$Visual/Rendering3D.hide()
 
 
 

@@ -62,6 +62,7 @@ var renderer3D : AlifeRenderer3D
 var rend_data : AlifeRenderingData
 
 var sprite := preload("res://Alife/Plant/Grass/grass.png")
+var name := "Test Species"
 
 'var gid_r : int
 var rendering_data : PackedFloat32Array

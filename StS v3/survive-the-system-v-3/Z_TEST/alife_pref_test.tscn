@@ -44,6 +44,7 @@ script = ExtResource("6_b3dws")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Visual" unique_id=1786253232]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 500, 0, 500)
+visible = false
 mesh = SubResource("PlaneMesh_eg1w5")
 
 [node name="Rendering3D" type="Node3D" parent="Visual" unique_id=837410298]
@@ -72,6 +73,7 @@ text = "Hide Interface"
 [node name="simulation_UI" type="CanvasLayer" parent="." unique_id=438579712]
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_top = 4.0
@@ -82,7 +84,7 @@ offset_bottom = 44.0
 layout_mode = 0
 offset_left = 15.0
 offset_top = 72.0
-offset_right = 310.0
+offset_right = 426.0
 offset_bottom = 394.0
 
 [node name="Label" type="RichTextLabel" parent="simulation_UI/Alife" unique_id=344910459]
@@ -621,7 +623,6 @@ offset_right = 338.0
 offset_bottom = 637.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -707,10 +708,11 @@ text = "Value"
 
 [node name="Label" type="RichTextLabel" parent="simulation_UI" unique_id=1345646950]
 unique_name_in_owner = true
-offset_left = 815.0
+offset_left = 849.0
 offset_top = 14.0
 offset_right = 1133.0
 offset_bottom = 637.0
+mouse_filter = 2
 
 [node name="speed" type="LineEdit" parent="simulation_UI" unique_id=1605889294]
 visible = false
@@ -729,10 +731,10 @@ offset_bottom = 26.0
 text = "simulation speed"
 
 [node name="RunGDScript" type="Button" parent="simulation_UI" unique_id=617219037]
-offset_left = 405.0
-offset_top = 62.0
-offset_right = 516.0
-offset_bottom = 93.0
+offset_left = 455.0
+offset_top = 53.0
+offset_right = 566.0
+offset_bottom = 84.0
 text = "Run GDScript"
 
 [node name="Label" type="Label" parent="simulation_UI/RunGDScript" unique_id=1596186498]
@@ -746,26 +748,26 @@ offset_right = 341.04
 offset_bottom = 33.998
 
 [node name="RunGPU" type="Button" parent="simulation_UI" unique_id=1318344758]
-offset_left = 678.0
-offset_top = 36.0
-offset_right = 789.0
-offset_bottom = 67.0
+offset_left = 728.0
+offset_top = 27.0
+offset_right = 839.0
+offset_bottom = 58.0
 disabled = true
 text = "Run GPU"
 
 [node name="RunCpp" type="Button" parent="simulation_UI" unique_id=1409697113]
-offset_left = 554.0
-offset_top = 36.0
-offset_right = 665.0
-offset_bottom = 67.0
+offset_left = 604.0
+offset_top = 27.0
+offset_right = 715.0
+offset_bottom = 58.0
 disabled = true
 text = "Run C++"
 
 [node name="nThreads" type="LineEdit" parent="simulation_UI" unique_id=1190334601]
-offset_left = 465.0
-offset_top = 24.0
-offset_right = 533.5
-offset_bottom = 55.0
+offset_left = 515.0
+offset_top = 15.0
+offset_right = 583.5
+offset_bottom = 46.0
 placeholder_text = "8"
 
 [node name="Label3" type="Label" parent="simulation_UI/nThreads" unique_id=1983668022]
@@ -789,7 +791,7 @@ offset_bottom = 12.5
 [node name="Panel" type="Panel" parent="simulation_UI" unique_id=1556430556]
 offset_left = 12.0
 offset_top = 9.0
-offset_right = 312.0
+offset_right = 425.0
 offset_bottom = 69.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="simulation_UI/Panel" unique_id=1624320700]

@@ -37,6 +37,11 @@ func init(worldd,alifm):
 	world = worldd
 	alifemanager = alifm
 	init_renderer()
+	
+	set_3d(false)
+	#get_viewport().set_input_as_handled()
+
+
 
 func init_renderer():
 	for c in $Rendering2D.get_children():
@@ -149,8 +154,6 @@ func compute_chunk(total:int) -> int:
 
 var is_3d := false
 
-func _ready() -> void:
-	set_3d(false)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_TAB:
@@ -163,6 +166,11 @@ func set_3d(on: bool) -> void:
 	view3d.visible = on
 	cam2d.enabled = not on
 	cam3d.current = on
+	if on:
+		cam3d.init()
+	else:
+		cam2d.init()
+	
 
 	if on and world:
 		cam3d.frame_world(Vector2(0, 0), Vector2(world.size.x, world.size.z))
