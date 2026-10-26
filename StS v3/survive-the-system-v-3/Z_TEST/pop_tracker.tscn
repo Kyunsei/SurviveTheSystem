@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://b4mvcnusn8a7h"]
+
+[ext_resource type="Script" uid="uid://b242qjssgmiee" path="res://Z_TEST/pop_tracker.gd" id="1_rsbpb"]
+[ext_resource type="Script" uid="uid://bwqdiloamdhnh" path="res://Z_TEST/graph.gd" id="2_gfkjx"]
+
+[node name="PopTracker" type="Control" unique_id=1880471351]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_rsbpb")
+
+[node name="Panel" type="Panel" parent="." unique_id=946060048]
+layout_mode = 0
+offset_right = 361.0
+offset_bottom = 326.0
+
+[node name="ColorRect" type="ColorRect" parent="Panel" unique_id=449902468]
+layout_mode = 0
+offset_left = 36.000004
+offset_top = 60.0
+offset_right = 339.0
+offset_bottom = 290.0
+color = Color(0.4928, 0.56, 0.52415997, 1)
+script = ExtResource("2_gfkjx")
+
+[node name="X" type="Label" parent="Panel" unique_id=129247480]
+layout_mode = 0
+offset_left = 163.0
+offset_top = 296.0
+offset_right = 219.0
+offset_bottom = 319.0
+text = "Label X"
+
+[node name="Y" type="Label" parent="Panel" unique_id=249998989]
+layout_mode = 0
+offset_left = 8.000002
+offset_top = 207.0
+offset_right = 64.0
+offset_bottom = 230.0
+rotation = -1.5707964
+text = "Label Y"
+
+[node name="MenuButton" type="MenuButton" parent="Panel" unique_id=592743918]
+layout_mode = 0
+offset_left = 86.0
+offset_top = 11.0
+offset_right = 151.0
+offset_bottom = 42.0
+text = "Choose"
+item_count = 2
+popup/item_0/text = "test"
+popup/item_0/id = 0
+popup/item_1/text = "test2"
+popup/item_1/id = 1
+
+[node name="CheckBox" type="CheckBox" parent="." unique_id=2146512772]
+layout_mode = 0
+offset_left = 280.0
+offset_top = 26.0
+offset_right = 304.0
+offset_bottom = 50.0
+
+[node name="Label" type="Label" parent="CheckBox" unique_id=286209476]
+layout_mode = 0
+offset_left = -28.0
+offset_top = -19.0
+offset_right = 67.0
+offset_bottom = 4.0
+text = "Color Track?"

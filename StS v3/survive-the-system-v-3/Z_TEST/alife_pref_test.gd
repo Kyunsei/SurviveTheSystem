@@ -21,6 +21,7 @@ func init():
 	world.init()
 	$AlifeManager.init(world)
 	$Visual.init(world,$AlifeManager)
+	$simulation_UI/PopTracker.init($AlifeManager)
 #	$Visual/MultiMeshInstance2D.init($AlifeManager,world) #OLD
 
 
@@ -68,6 +69,8 @@ func _process(delta: float) -> void:
 				diplay_alife_perf()
 				display_world_perf()
 				display_rendering_perf()
+				$simulation_UI/PopTracker.update()
+
 			if Engine.get_frames_per_second() < 30:
 				$AlifeManager.duplicate_on = false
 				$simulation_UI/Alife/duplication.button_pressed = false

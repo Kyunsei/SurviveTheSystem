@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://cxe6qj5km8dxb" path="res://Z_TEST/camera_3d.gd" id="6_b3dws"]
 [ext_resource type="Script" uid="uid://cs3dmhyjbqk1u" path="res://Z_TEST/multi_mesh_bin.gd" id="7_elrxu"]
 [ext_resource type="Script" uid="uid://c55y17n4jx3rq" path="res://Z_TEST/interaction_player.gd" id="8_elrxu"]
+[ext_resource type="PackedScene" uid="uid://b4mvcnusn8a7h" path="res://Z_TEST/pop_tracker.tscn" id="9_b3dws"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hlgly"]
 albedo_color = Color(0.68307734, 0.6830774, 0.68307734, 1)
@@ -73,7 +74,6 @@ text = "Hide Interface"
 [node name="simulation_UI" type="CanvasLayer" parent="." unique_id=438579712]
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_top = 4.0
@@ -366,10 +366,10 @@ offset_bottom = 40.0
 
 [node name="Label4" type="Label" parent="simulation_UI/World" unique_id=1350204628]
 layout_mode = 0
-offset_left = 68.0
-offset_top = 72.0
-offset_right = 227.0
-offset_bottom = 106.0
+offset_left = 91.0
+offset_top = 69.0
+offset_right = 250.0
+offset_bottom = 103.0
 theme_override_font_sizes/font_size = 24
 text = "World System"
 
@@ -385,10 +385,10 @@ text = "Physics System"
 
 [node name="WorldSize" type="Label" parent="simulation_UI/World" unique_id=656318523]
 layout_mode = 0
-offset_left = 13.0
-offset_top = 139.0
-offset_right = 146.0
-offset_bottom = 162.0
+offset_left = 23.0
+offset_top = 128.0
+offset_right = 156.0
+offset_bottom = 151.0
 text = "World Size"
 
 [node name="world_x" type="LineEdit" parent="simulation_UI/World/WorldSize" unique_id=1657746108]
@@ -443,10 +443,10 @@ offset_bottom = 40.0
 
 [node name="SunSize" type="Label" parent="simulation_UI/World/SUN" unique_id=1265906670]
 layout_mode = 0
-offset_left = 20.0
-offset_top = 228.0
-offset_right = 153.0
-offset_bottom = 251.0
+offset_left = 30.0
+offset_top = 217.0
+offset_right = 163.0
+offset_bottom = 240.0
 text = "SUN CELL"
 
 [node name="world_x" type="LineEdit" parent="simulation_UI/World/SUN/SunSize" unique_id=21929163]
@@ -512,10 +512,10 @@ text = "V	ALUE"
 
 [node name="SUNENERGY" type="LineEdit" parent="simulation_UI/World/SUN" unique_id=86925024]
 layout_mode = 0
-offset_left = 112.0
-offset_top = 265.0
-offset_right = 180.5
-offset_bottom = 296.0
+offset_left = 122.0
+offset_top = 254.0
+offset_right = 190.5
+offset_bottom = 285.0
 placeholder_text = "1"
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/SUNENERGY" unique_id=1502174874]
@@ -528,10 +528,10 @@ text = "SUN energy"
 
 [node name="CheckButton" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=624307597]
 layout_mode = 0
-offset_left = 95.0
-offset_top = 184.0
-offset_right = 139.0
-offset_bottom = 208.0
+offset_left = 105.0
+offset_top = 173.0
+offset_right = 149.0
+offset_bottom = 197.0
 button_pressed = true
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckButton" unique_id=1729958750]
@@ -543,25 +543,27 @@ text = "SUN on/off"
 
 [node name="CheckDiffusion" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=187737691]
 layout_mode = 0
-offset_left = 121.0
-offset_top = 317.0
-offset_right = 165.0
-offset_bottom = 341.0
+offset_left = 131.0
+offset_top = 306.0
+offset_right = 175.0
+offset_bottom = 330.0
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckDiffusion" unique_id=1537114792]
-layout_mode = 0
-offset_left = -109.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -0.51500005
+offset_left = -97.34
 offset_top = -1.0
 offset_right = 4.0
 offset_bottom = 22.0
-text = "GRID Diffusion"
+text = "Stamp Diffusion"
 
 [node name="CheckStamp" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=542727545]
 layout_mode = 0
-offset_left = 261.0
-offset_top = 337.0
-offset_right = 305.0
-offset_bottom = 361.0
+offset_left = 271.0
+offset_top = 326.0
+offset_right = 315.0
+offset_bottom = 350.0
 disabled = true
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/CheckStamp" unique_id=2046536450]
@@ -573,10 +575,10 @@ text = "GRID Stamp"
 
 [node name="fullrangeOn" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=881973113]
 layout_mode = 0
-offset_left = 246.0
-offset_top = 376.0
-offset_right = 290.0
-offset_bottom = 400.0
+offset_left = 256.0
+offset_top = 365.0
+offset_right = 300.0
+offset_bottom = 389.0
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/fullrangeOn" unique_id=894613444]
 layout_mode = 0
@@ -587,10 +589,10 @@ text = "Agent Full Range absorbed"
 
 [node name="fullrangeOn2" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=656353303]
 layout_mode = 0
-offset_left = 246.0
-offset_top = 397.0
-offset_right = 290.0
-offset_bottom = 421.0
+offset_left = 256.0
+offset_top = 386.0
+offset_right = 300.0
+offset_bottom = 410.0
 disabled = true
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/fullrangeOn2" unique_id=520352483]
@@ -602,10 +604,10 @@ text = "GRID Full Range absorbed"
 
 [node name="CheckStampAgent" type="CheckButton" parent="simulation_UI/World/SUN" unique_id=1982008679]
 layout_mode = 0
-offset_left = 261.0
-offset_top = 315.0
-offset_right = 305.0
-offset_bottom = 339.0
+offset_left = 271.0
+offset_top = 304.0
+offset_right = 315.0
+offset_bottom = 328.0
 
 [node name="Label2" type="Label" parent="simulation_UI/World/SUN/CheckStampAgent" unique_id=772506039]
 layout_mode = 0
@@ -615,14 +617,105 @@ offset_right = 3.0
 offset_bottom = 22.0
 text = "Agent Stamp"
 
+[node name="GRID" type="Control" parent="simulation_UI/World" unique_id=1956475243]
+anchors_preset = 0
+offset_left = 11.0
+offset_top = 236.0
+offset_right = 51.0
+offset_bottom = 276.0
+
+[node name="SunSize" type="Label" parent="simulation_UI/World/GRID" unique_id=251440564]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 248.0
+offset_right = 152.0
+offset_bottom = 271.0
+text = "GRID CELL"
+
+[node name="world_x" type="LineEdit" parent="simulation_UI/World/GRID/SunSize" unique_id=201385648]
+layout_mode = 0
+offset_left = 91.0
+offset_top = -6.0
+offset_right = 159.5
+offset_bottom = 29.0
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="simulation_UI/World/GRID/SunSize/world_x" unique_id=1965358083]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="simulation_UI/World/GRID/SunSize" unique_id=2106238534]
+layout_mode = 0
+offset_left = 165.0
+offset_top = -6.0
+offset_right = 233.5
+offset_bottom = 29.0
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="simulation_UI/World/GRID/SunSize/world_y" unique_id=1096202369]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="simulation_UI/World/GRID/SunSize" unique_id=35699347]
+layout_mode = 0
+offset_left = 240.0
+offset_top = -6.0
+offset_right = 308.5
+offset_bottom = 29.0
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="simulation_UI/World/GRID/SunSize/world_z" unique_id=376687195]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="CheckButton" type="CheckButton" parent="simulation_UI/World/GRID" unique_id=525435353]
+layout_mode = 0
+offset_left = 95.0
+offset_top = 184.0
+offset_right = 139.0
+offset_bottom = 208.0
+button_pressed = true
+
+[node name="Label" type="Label" parent="simulation_UI/World/GRID/CheckButton" unique_id=1015732447]
+layout_mode = 0
+offset_left = -82.0
+offset_right = 3.0
+offset_bottom = 23.0
+text = "GRID on/off"
+
+[node name="CheckDiffusion" type="CheckButton" parent="simulation_UI/World/GRID" unique_id=1385113943]
+layout_mode = 0
+offset_left = 122.0
+offset_top = 206.0
+offset_right = 166.0
+offset_bottom = 230.0
+
+[node name="Label" type="Label" parent="simulation_UI/World/GRID/CheckDiffusion" unique_id=1976086755]
+layout_mode = 0
+offset_left = -109.0
+offset_top = -1.0
+offset_right = 4.0
+offset_bottom = 22.0
+text = "GRID Diffusion"
+
 [node name="Label" type="RichTextLabel" parent="simulation_UI/World" unique_id=201574479]
 layout_mode = 0
 offset_left = 10.0
-offset_top = 427.0
+offset_top = 540.0
 offset_right = 338.0
 offset_bottom = 637.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -791,7 +884,7 @@ offset_bottom = 12.5
 [node name="Panel" type="Panel" parent="simulation_UI" unique_id=1556430556]
 offset_left = 12.0
 offset_top = 9.0
-offset_right = 425.0
+offset_right = 424.0
 offset_bottom = 69.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="simulation_UI/Panel" unique_id=1624320700]
@@ -818,6 +911,12 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 toggle_mode = true
 text = "Rendering"
+
+[node name="PopTracker" parent="simulation_UI" unique_id=1880471351 instance=ExtResource("9_b3dws")]
+offset_left = 797.0
+offset_top = 312.0
+offset_right = 797.0
+offset_bottom = 312.0
 
 [connection signal="pressed" from="CanvasLayer/ButtonUIshow" to="." method="_on_button_u_ishow_pressed"]
 [connection signal="text_submitted" from="simulation_UI/Alife/maxLife" to="." method="_on_max_life_text_submitted"]
@@ -849,6 +948,11 @@ text = "Rendering"
 [connection signal="toggled" from="simulation_UI/World/SUN/fullrangeOn" to="." method="_on_fullrange_on_toggled"]
 [connection signal="toggled" from="simulation_UI/World/SUN/fullrangeOn2" to="." method="_on_fullrange_on_2_toggled"]
 [connection signal="toggled" from="simulation_UI/World/SUN/CheckStampAgent" to="." method="_on_check_stamp_agent_toggled"]
+[connection signal="text_submitted" from="simulation_UI/World/GRID/SunSize/world_x" to="." method="_on_sun_x_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/GRID/SunSize/world_y" to="." method="_on_sun_y_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/GRID/SunSize/world_z" to="." method="_on_sun_z_text_submitted"]
+[connection signal="toggled" from="simulation_UI/World/GRID/CheckButton" to="." method="_on_check_button_toggled"]
+[connection signal="toggled" from="simulation_UI/World/GRID/CheckDiffusion" to="." method="_on_check_diffusion_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonVisualisation" to="." method="_on_button_visualisation_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/ButtonFlowVisualisation3" to="." method="_on_button_visualisation_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/Sun/Stamp" to="." method="_on_stamp_toggled"]

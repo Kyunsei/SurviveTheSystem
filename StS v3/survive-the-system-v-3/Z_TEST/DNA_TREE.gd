@@ -87,11 +87,11 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			var ei:= current_energy_array[i]
 			var cls := current_life_state[i]
 			current_age[i] += 1
-			if cls <20:
+			if cls <30:
 				if ei > 3:
 					current_life_state[i] += 1
 					current_energy_array[i] -= 3
-					current_size[i]+= growth_rate
+					current_size[i]+= 1.
 					current_biomass[i] += 2
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
 

@@ -113,6 +113,7 @@ const CORPSE_COLOR := Color(0.488, 0.077, 0.15, 0.2)
 
 
 var photo_range := 0
+var duplication_range := 15
 
 #Randomness
 const JITTER_COUNT := 4096
@@ -324,7 +325,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				if ei > 3:
 					current_life_state[i] += 1
 					current_energy_array[i] -= 3
-					current_size[i]+= growth_rate
+					current_size[i]+= 0.5 #growth_rate
 					current_biomass[i] += 2
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
 
@@ -354,7 +355,30 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 
 ####################RENDERING#################################################
 ################################################################################
+const STATE_BITS  := 2
+const ACTION_BITS := 4
+const SIZE_BITS   := 6
+const AGE_BITS    := 12        # total must be <= 24
 
+const ACTION_SHIFT := STATE_BITS                  # 2
+const SIZE_SHIFT   := ACTION_SHIFT + ACTION_BITS  # 6
+const AGE_SHIFT    := SIZE_SHIFT + SIZE_BITS      # 12
+
+const STATE_MASK  := (1 << STATE_BITS) - 1        # 3
+const ACTION_MASK := (1 << ACTION_BITS) - 1       # 15
+const SIZE_MASK   := (1 << SIZE_BITS) - 1         # 63
+const AGE_MASK    := (1 << AGE_BITS) - 1          # 4095
+
+const SIZE_MIN := 0.5
+const SIZE_MAX := 100.0
+
+func pack_agent(size: float, action: int, state: int, age: int) -> float:
+	var q := roundi(clampf(inverse_lerp(SIZE_MIN, SIZE_MAX, size), 0.0, 1.0) * SIZE_MASK)
+	var v := (clampi(state, 0, STATE_MASK)) \
+		| (clampi(action, 0, ACTION_MASK) << ACTION_SHIFT) \
+		| (q << SIZE_SHIFT) \
+		| (clampi(age, 0, AGE_MASK) << AGE_SHIFT)
+	return float(v)
 
 func write_rendering_buffer_in_chunk(start: int, end: int) -> void:
 	var visu_on := alifemanager.visualisation_on #Can be set before probably
@@ -370,7 +394,7 @@ func write_rendering_buffer_in_chunk(start: int, end: int) -> void:
 			r_data[o]     = p.x #* dt     # x
 			r_data[o + 1] = p.z # * dt     # y
 			r_data[o + 2] = active_alife_array[i]
-			r_data[o + 3] = current_life_state[i]
+			r_data[o + 3] = pack_agent(current_size[i],0,active_alife_array[i],current_life_state[i])# current_life_state[i]
 		#r_data_per_chunk[local_id] = r_data
 
 'func update_renderer():
@@ -390,7 +414,7 @@ func Build_and_remove_pendings():
 		pending_remove_id.append_array(remove_per_chunk[c])
 		pending_spawn_id.append_array(spawn_per_chunk[c])
 	
-	var d_range:= alifemanager.duplication_range
+	var d_range:= duplication_range
 	for i in pending_spawn_id:
 		Build_New_Life(pick_random_position(Vector3(d_range,0,d_range)) + position_array[i],0.0, color_array[i])
 	

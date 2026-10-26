@@ -253,16 +253,31 @@ func init_species2(worldd:World,alifem:AlifeManager):
 		species_array.resize(n_species)
 		for s in n_species:
 			species_array[s] = TESTDNA.new()
-			species_array[s].colour = Color(randf(),randf(),randf())
-			if s == 0:
-				species_array[s].photo_range = photo_range
-			else:
-				species_array[s].photo_range = randi_range(0,2)
-
+			#if s == 0:
+			#	species_array[s].photo_range = photo_range
+			#else:
+			species_array[s].photo_range = randi_range(0,2)
+			species_array[s].duplication_range  = 100 #randi_range(10,100)
 			species_array[s].init(worldd,alifem)
+			
+			if species_array[s].photo_range ==0:
+				species_array[s].colour = Color(0.249, 0.557, 0.463, 1.0)
+				species_array[s].duplication_range  = 10 #randi_range(10,100)
 
-			if s == 1:
-				species_array[s].growth_rate = 1		
+			if species_array[s].photo_range ==1:
+				species_array[s].duplication_range  = 50#randi_range(10,100)
+
+				species_array[s].colour = Color(0.425, 0.619, 0.937, 1.0)
+			if species_array[s].photo_range ==2:
+				species_array[s].duplication_range  = 100 #randi_range(10,100)
+
+				species_array[s].colour = Color(0.757, 0.234, 0.147, 1.0)
+
+			#species_array[s].colour = Color(randf(),randf(),randf())
+
+
+			#if s == 1:
+			#	species_array[s].growth_rate = 1		
 
 
 	

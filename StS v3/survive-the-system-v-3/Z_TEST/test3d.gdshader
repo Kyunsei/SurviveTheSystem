@@ -26,6 +26,14 @@ uniform int outline_px : hint_range(1, 8) = 1;
 
 varying float is_selected;
 
+const float SIZE_MIN = 0.5;
+const float SIZE_MAX = 100.0;
+varying	flat int state ;
+varying flat int action ;
+varying	float size  ;
+varying	flat int life_cycle;
+
+
 // Alpha of the sprite at uv, treating everything outside the sprite as empty.
 float sprite_alpha(vec2 uv) {
 	if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) {
@@ -40,7 +48,15 @@ void vertex() {
 	ivec2 px = ivec2(INSTANCE_ID % tex_width, INSTANCE_ID / tex_width);
 
 	vec4 d = texelFetch(agent_data, px, 0);   // x,y, z, state
-	v_state = d.w;
+	
+	int v = int(d.w + 0.5); //size,action,state,lifecycle compile in one int
+	state  = v & 3;
+	action = (v >> 2) & 15;
+	size   = mix(SIZE_MIN, SIZE_MAX, float((v >> 6) & 63) / 63.0);
+	life_cycle    = v >> 12;
+	
+	
+	//v_state = d.w;
 
 	// sprite frame from custom data
 	//float f = floor(INSTANCE_CUSTOM.r + 0.5);
@@ -64,7 +80,7 @@ void vertex() {
 			MODEL_MATRIX[3] + vec4(d.x, 0.0, d.y, 0.0));
 	MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
 	
-	VERTEX *= v_state;
+	VERTEX *= size;
 	
 	is_selected = (INSTANCE_ID == selected_id) ? 1.0 : 0.0;
 	if (is_selected > 0.5) {
@@ -77,11 +93,12 @@ void vertex() {
 
 
 void fragment() {
+
 	float a = sprite_alpha(UV);
 	vec4 tex = texture(sprite_texture, clamp(UV, 0.0, 1.0));
 
 	// Base sprite colour.
-	vec4 state_col = v_state < 0.5 ? corpse_color : alive_color;
+	vec4 state_col = state < 1 ? corpse_color : alive_color;
 	ALBEDO = tex.rgb * COLOR.rgb;   // * state_col.rgb  COLOR = per-instance tint
 	ALPHA = a * COLOR.a;
 

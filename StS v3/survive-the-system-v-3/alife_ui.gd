@@ -13,6 +13,9 @@ func display_info():
 	var text : String = ""
 	text = "Species: %s" % species.name
 	text += "\nIndex: %d" % index
+	text += "\nSpread Range: %d" % species.duplication_range
+	text += "\nPhoto Range: %d" % species.photo_range
+
 	text += "\nActif: %d" % species.active_alife_array[index]
 	text += "\nPosition: %v" % species.position_array[index]
 	text += "\nEnergy: %d" % species.current_energy_array[index]
