@@ -113,6 +113,11 @@ const CORPSE_COLOR := Color(0.488, 0.077, 0.15, 0.2)
 
 
 var photo_range := 0
+var photo_optimal_value = 1.0
+var photo_optimal_width = 0.2
+
+		
+		
 var duplication_range := 15
 
 #Randomness
@@ -268,10 +273,25 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				current_energy_array[i] += (1) * dt	
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
 	if photo_on:
+		'var ad := [0.0,1./4.,1./3.,1./2.,1.]
+		var arr := []
+		for v in ad:
+			var value2 =1* exp(-((v - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
+			arr.append(value2)
+		print(arr)'
 
+		'f(x) = a · e^(−(x − b)² / (2c²))
+
+		a = the height of the peak
+		b = the position of the centre of the peak
+		c = the width (how spread out the curve is)
+		e ≈ 2.718 (Euler’s number'
 		var global_photo_rate := alifemanager.current_global_photosynthesis_rate
 		var sun_grid := world.SUN_GRID 
 		var photo_rate = alifemanager.photo_absorption_rate
+
+
+		var value :=  0.0
 		for i in range(start, end):
 			#var t := Time.get_ticks_usec()
 			if active_alife_array[i] == 0:
@@ -287,7 +307,12 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				var ry := 0
 				var d:= global_photo_rate[sun_c]
 				if !agent_photo_calculate or r==0:
-					current_energy_array[i] += ( sun_grid[sun_c] * photo_rate *  dt) /   maxf(d, photo_rate) 
+					value =  sun_grid[sun_c] /   maxf(d, photo_rate) 
+					var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
+					#print("%f value and take %f , for %f optimal" %[value,value2, photo_optimal_value] )
+					current_energy_array[i] += value2 * dt
+					
+					#( sun_grid[sun_c] * photo_rate *  dt) /   maxf(d, photo_rate) 
 				else:
 						for off in offsets[r * (RY_MAX + 1) + ry]:
 								var cc := sun_c + off
