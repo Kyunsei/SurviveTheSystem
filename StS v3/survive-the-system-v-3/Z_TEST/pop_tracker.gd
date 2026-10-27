@@ -23,3 +23,7 @@ func update():
 	graph.data_set = pop_data_set
 	graph.queue_redraw()
 		
+
+
+func _on_check_box_toggled(toggled_on: bool) -> void:
+	$Panel/ColorRect.normalized = toggled_on

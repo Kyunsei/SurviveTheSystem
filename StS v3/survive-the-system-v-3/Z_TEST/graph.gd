@@ -1,6 +1,8 @@
 extends Control
 class_name Graph
 
+var normalized := false
+
 var data_set: Array[Array] = []
 var colors: Array[Color] = [
 	Color(0.9, 0.3, 0.3),
@@ -34,13 +36,20 @@ func _draw() -> void:
 		var arr: Array = data_set[n]
 		if arr.size() < 2:
 			continue
+		
+		if normalized:
+			max_value = arr.max()
+		#print(max_value)
 
 		var points := PackedVector2Array()
 		for i in arr.size():
 			var x := (i / float(arr.size() - 1)) * width
 			var y = height - (arr[i] / max_value) * height
 			points.append(Vector2(x, y))
+		
+		
 
+			
 		draw_polyline(points, colors[n % colors.size()], 2.0)
 
 func _notification(what: int) -> void:
