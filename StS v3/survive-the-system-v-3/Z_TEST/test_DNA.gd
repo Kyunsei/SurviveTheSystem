@@ -273,7 +273,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				current_energy_array[i] += (1) * dt	
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
 	if photo_on:
-		'var ad := [0.0,1./4.,1./3.,1./2.,1.]
+		'var ad := [0.0,1.0,2.0]
 		var arr := []
 		for v in ad:
 			var value2 =1* exp(-((v - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
@@ -307,6 +307,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				var ry := 0
 				var d:= global_photo_rate[sun_c]
 				if !agent_photo_calculate or r==0:
+					#value = d  #or stamp value
 					value =  sun_grid[sun_c] /   maxf(d, photo_rate) 
 					var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
 					#print("%f value and take %f , for %f optimal" %[value,value2, photo_optimal_value] )

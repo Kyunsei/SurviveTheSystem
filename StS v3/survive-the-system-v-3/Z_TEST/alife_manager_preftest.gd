@@ -263,14 +263,14 @@ func init_species(worldd:World,alifem:AlifeManager):
 			if species_array[s].photo_range ==0:
 				species_array[s].colour = Color(0.249, 0.557, 0.463, 1.0)
 				species_array[s].duplication_range  = 10 #randi_range(10,100)
-				species_array[s].photo_optimal_value  = 0.5 #randi_range(10,100)
+				species_array[s].photo_optimal_value  = 1#randi_range(10,100)
 
 
 			if species_array[s].photo_range ==1:
 				species_array[s].duplication_range  = 50#randi_range(10,100)
 
 				species_array[s].colour = Color(0.425, 0.619, 0.937, 1.0)
-				species_array[s].photo_optimal_value  = 1 #randi_range(10,100)
+				species_array[s].photo_optimal_value  = 0.5 #randi_range(10,100)
 
 			if species_array[s].photo_range ==2:
 				species_array[s].duplication_range  = 100 #randi_range(10,100)
