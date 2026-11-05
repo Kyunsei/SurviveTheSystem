@@ -783,9 +783,20 @@ func set_speardefense_state(state: bool):
 func speardefending():
 	pass
 
+const VACUUM_LOOP := preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_ItemSounds_02Vacuum1_loop.wav")
+const VACUUM_OFF:= preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_ItemSounds_03Vacuum1_off.wav")
+const VACUUM_ON := preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_ItemSounds_01Vacuum1_on.wav")
+
+const VACUUM2_LOOP := preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_ItemSounds_05Vacuum2_loop.wav")
+const VACUUM2_OFF:= preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_ItemSounds_06Vacuum2_off.wav")
+const VACUUM2_ON := preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_ItemSounds_04Vacuum2_on.wav")
+
+const TAKEITEM := preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_MenuSounds_Blip02.wav")
+
 @rpc("any_peer","call_local")
 func vacuum_activation():
 	vacuum_animation.rpc_id(int(name))
+
 
 @rpc("any_peer","call_local")
 func vacuum_activation2():
@@ -793,25 +804,51 @@ func vacuum_activation2():
 
 @rpc("any_peer","call_local")
 func vacuum_animation():
+	var sfx: AudioStreamPlayer3D = get_node_or_null("VacuumSound")
+	if sfx == null:
+		sfx = AudioStreamPlayer3D.new()
+		sfx.name = "VacuumSound"
+		sfx.bus = "SFX"
+		sfx.volume_db = linear_to_db(0.1)  # 50%
+
+		add_child(sfx)
+
 	if vacuum_turned_on == false:
+		sfx.stream = VACUUM_LOOP
 		$AnimationPlayer.play("vacuum_on_2")
 		set_vacuum_state.rpc_id(1, true) # tell server
 		vacuum_turned_on = true
 	else:
+		sfx.stream = VACUUM_OFF
 		$AnimationPlayer.play("init_pos_vacuum")
 		set_vacuum_state.rpc_id(1, false) # tell server
 		vacuum_turned_on = false
+	sfx.volume_db = linear_to_db(0.1)  # 50%
+	sfx.play()
+
+
 
 @rpc("any_peer","call_local")
 func vacuum_animation2():
+	var sfx: AudioStreamPlayer3D = get_node_or_null("VacuumSound")
+	if sfx == null:
+		sfx = AudioStreamPlayer3D.new()
+		sfx.name = "VacuumSound"
+		sfx.bus = "SFX"
+		add_child(sfx)
 	if vacuum_turned_on == false:
+		sfx.stream = VACUUM2_LOOP
 		$AnimationPlayer.play("gold_vac_2_on")
 		set_vacuum_state.rpc_id(1, true) # tell server
 		vacuum_turned_on = true
 	else:
+		sfx.stream = VACUUM2_OFF
+
 		$AnimationPlayer.play("init_pos_gold_vac")
 		set_vacuum_state.rpc_id(1, false) # tell server
 		vacuum_turned_on = false
+	sfx.volume_db = linear_to_db(0.1)  # 50%
+	sfx.play()
 
 @rpc("any_peer","call_local")
 func set_vacuum_state(state: bool):
@@ -819,6 +856,12 @@ func set_vacuum_state(state: bool):
 
 @rpc("any_peer","call_local")
 func vacuum_loop():
+	var sfx: AudioStreamPlayer3D = get_node_or_null("VacuumItemSound")
+	if sfx == null:
+		sfx = AudioStreamPlayer3D.new()
+		sfx.name = "VacuumItemSound"
+		sfx.bus = "SFX"
+		add_child(sfx)
 	var alife_manager = get_parent()
 	var targets = alife_manager.get_alife_in_area(vacuum_action_range.global_position,
 	 												vacuum_action_range.shape.size)
@@ -829,6 +872,8 @@ func vacuum_loop():
 					#print(t)
 					#alife_manager.interact(t,player)
 					if add_to_inventory(t):
+						sfx.stream = TAKEITEM
+						sfx.play()
 						remove_durability(0.33)
 						#print("added")
 						alife_manager.remove(t)	
@@ -837,6 +882,8 @@ func vacuum_loop():
 					return
 				if add_to_inventory(t):
 					remove_durability(0.33)
+					sfx.stream = TAKEITEM
+					sfx.play()
 					alife_manager.remove(t)	
 
 

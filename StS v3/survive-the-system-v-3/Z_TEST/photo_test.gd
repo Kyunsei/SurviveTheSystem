@@ -76,6 +76,7 @@ var _removed := 0
 
 
 func _ready() -> void:
+	$AudioStreamPlayer2D.play()
 	return
 	randomize()
 	_init_world()

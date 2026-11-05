@@ -68,6 +68,7 @@ func Update(manager, i, delta):
 
 
 
+
 func Hurt(manager,i,s,t,delta):
 	var target = manager.get_index_in_bin_around(manager.World.bin_array,i,1)
 	for ti in target:

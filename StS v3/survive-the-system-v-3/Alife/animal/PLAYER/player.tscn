@@ -2779,6 +2779,8 @@ mesh = SubResource("TorusMesh_gm5ve")
 [node name="Player_control" type="Node" parent="." unique_id=1336833191]
 script = ExtResource("1_31v8x")
 
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Player_control" unique_id=668249206]
+
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1350252593]
 replication_config = SubResource("SceneReplicationConfig_qrp1o")
 
