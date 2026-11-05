@@ -64,6 +64,10 @@ func change_bin(_manager,_i):
 		_manager.put_in_world_bin(_i)			
 
 
+const hurt_sound1 := preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_PlayerSounds_TakeDamage01.wav")
+const hurt_sound2 := preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_PlayerSounds_TakeDamage02.wav")
+const hurt_sound3 := preload("res://assets/Sounds/SurviveTheSystem_SDH_Sounds_PlayerSounds_TakeDamage03.wav")
+
 func Damage(_action,manager,i,_ii,value):
 	var dir = (manager.position_array[i] - manager.position_array[_ii]).normalized()
 	manager.current_health_array[_ii] -= value
