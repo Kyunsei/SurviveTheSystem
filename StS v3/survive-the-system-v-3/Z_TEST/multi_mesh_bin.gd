@@ -5,7 +5,7 @@ extends MultiMeshInstance2D
 #Limit the number of update either by frame or in total
 
 var alifemanager
-var World
+var world : World
 var activated = false
 
 #Sequentially update
@@ -22,6 +22,7 @@ var panel_size : Vector2
 var update_time = 1
 var update_time_value = 1
 
+var current_layer : int = 0
 
 ###
 var bin_size : float
@@ -29,7 +30,7 @@ var bin_size : float
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	alifemanager = get_parent().get_parent().get_node("AlifeManager")
-	World = get_parent().get_parent().get_node("World")
+	world = get_parent().get_parent().get_node("World")
 	panel_size = $Panel.size
 	
 	multimesh =  MultiMesh.new()
@@ -106,7 +107,7 @@ func build_triangle_mesh():
 
 
 func position_conversion(pos):
-	var world_extent = Vector2(World.size.x, World.size.z)
+	var world_extent = Vector2(world.size.x, world.size.z)
 	var newpos = (Vector2(pos.x, pos.z) / world_extent) * panel_size + panel_size / 2
 	return newpos
 
@@ -147,14 +148,19 @@ func update_all2(value_array, W:int,H:int,D:int,cell_size:float):
 
 func update_all(value_array, W: int, H: int, D: int, cell_size: Vector3,col:Color) -> void:
 	var t0 := Time.get_ticks_usec()
+	value_array[10] = 4
+	value_array[10 + W] = 4
 	init(cell_size)
 	var ii := 0
-
+	var cy := current_layer # to see by layer in y 
 	for cz in D:
 		for cx in W:
-			var c := cx + W * H * cz          # y = 0 layer
-			var v = clamp(value_array[c]/1. ,0.,1.)  
-	
+			#var cc := cx + W * current_layer * cz          # replace H by y = 0 layer
+			#var cc := cx + W * cy + D * cz   # inline, no second division
+			var cc := cx + W * (cy + H * cz)   # inline, no second division
+		
+			var v = clamp(value_array[cc]/4. ,0.,1.)  
+
 			#var v = lerp(0.25,0.8,value_array[c])       # the cell's value, if needed
 			var pos := Vector2(cx, cz) * Vector2(cell_size.x, cell_size.z)
 			col.a =v
@@ -164,3 +170,8 @@ func update_all(value_array, W: int, H: int, D: int, cell_size: Vector3,col:Colo
 
 	multimesh.visible_instance_count = ii
 	update_all_usec = Time.get_ticks_usec() - t0
+
+
+func _on_line_edit_layer_text_submitted(new_text: String) -> void:
+	current_layer = clamp(int(new_text),0,world.SUN_GRID_H-1)
+	print(current_layer)

@@ -40,7 +40,7 @@ var color_array : PackedColorArray
 var current_life_state : PackedInt32Array
 var current_biomass : PackedFloat32Array
 var current_age : PackedInt32Array
-var current_size : PackedFloat32Array
+var current_size : PackedVector3Array
 
 var current_worldpos_cell_id : PackedInt32Array
 
@@ -271,6 +271,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 
 		var global_photo_rate := alifemanager.current_global_photosynthesis_rate
 		var sun_grid := world.SUN_GRID 
+		var W := world.SUN_GRID_W
+		var H := world.SUN_GRID_H
+
 		var photo_rate = alifemanager.photo_absorption_rate
 		for i in range(start, end):
 			#var t := Time.get_ticks_usec()
@@ -281,14 +284,18 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			var _energy:= current_energy_array[i]
 			if _energy < 5:
 				var sun_c := current_worldpos_cell_id[i]
+				var sun_c_up := sun_c + W #WORK ONLY IF THERE IS A LAYER ABOVE
 				#var total := global_photo_rate[sun_c]
 				var r:= photo_range
 				var total := 0.0
 				var ry := 0
 				var d:= global_photo_rate[sun_c]
+				var d_up := global_photo_rate[sun_c_up]
 				if !agent_photo_calculate or r==0:
-					current_energy_array[i] += ( sun_grid[sun_c] * photo_rate *  dt) /   maxf(d, photo_rate) 
+					current_energy_array[i] += ( sun_grid[sun_c] * photo_rate *  dt) /   maxf(d_up, photo_rate) /   maxf(d, photo_rate) 
+				
 				else:
+					#TODO WITH SHADOW
 						for off in offsets[r * (RY_MAX + 1) + ry]:
 								var cc := sun_c + off
 								if cc >= global_photo_rate.size():
@@ -325,7 +332,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				if ei > 3:
 					current_life_state[i] += 1
 					current_energy_array[i] -= 3
-					current_size[i]+= 0.5 #growth_rate
+					current_size[i]*= 0.5 #growth_rate
 					current_biomass[i] += 2
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
 
@@ -394,7 +401,7 @@ func write_rendering_buffer_in_chunk(start: int, end: int) -> void:
 			r_data[o]     = p.x #* dt     # x
 			r_data[o + 1] = p.z # * dt     # y
 			r_data[o + 2] = active_alife_array[i]
-			r_data[o + 3] = pack_agent(current_size[i],0,active_alife_array[i],current_life_state[i])# current_life_state[i]
+			r_data[o + 3] = pack_agent(current_size[i].x,0,active_alife_array[i],current_life_state[i])# current_life_state[i]
 		#r_data_per_chunk[local_id] = r_data
 
 'func update_renderer():
@@ -448,7 +455,8 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_life_state.append(1)
 		current_biomass.append(0)
 		current_age.append(0)
-		current_size.append(1.0)
+		current_size.append(Vector3(1,1,1))
+
 		current_worldpos_cell_id.append(get_world_cell_id(pos,world))
 		current_cpu_cost.append(0)
 		#update_bin_array(i)
@@ -469,14 +477,23 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_life_state[i]=1
 		current_biomass[i]=0
 		current_age[i]=0
-		current_size[i]=1.0
+		current_size[i]=Vector3(1,1,1)
 		current_cpu_cost[i] = 0
 
 	active_entity_count += 1
 	if alifemanager.photosynthesis_on:
 			var r := photo_range
+			#var pos2 := pos
+			
+			#pos2.y += world.SUN_cell_size.y*1.5
+			#var c_up :=  get_world_cell_id(pos2,world)
 			var c := current_worldpos_cell_id[i]
+			#var c_calc := c +  world.SUN_GRID_W
+	
 			stamp(c,r,0,1.0)
+			#alifemanager.current_global_photosynthesis_rate[current_worldpos_cell_id[i]] += 1.0 #TEMP
+
+			
 	
 	pending_multimesh_drawn_id.append(i)
 
@@ -504,13 +521,16 @@ func Remove_Life(i):
 func stamp(c: int, r: int, ry: int, w: float) -> void:
 	#alifemanager.current_global_photosynthesis_rate[c] += w
 	#return
+	
+	var c_up := c  +  world.SUN_GRID_W
 	if !alifemanager.agent_photo_stamp_on:
 		alifemanager.current_global_photosynthesis_rate[c] += w
 		return
 	for off in offsets[r * (RY_MAX + 1) + ry]:
-		if c+ off >= alifemanager.current_global_photosynthesis_rate.size():
+		if c_up+ off >= alifemanager.current_global_photosynthesis_rate.size():
 			continue
-		alifemanager.current_global_photosynthesis_rate[c + off] += w
+		alifemanager.current_global_photosynthesis_rate[c_up + off] += w
+	alifemanager.current_global_photosynthesis_rate[c] += w
 
 
 func stamp2(c: int, r: int, w: float, ry: int = -1) -> void:
@@ -567,7 +587,6 @@ const RY_MAX := 3
 var offsets: Array[PackedInt32Array] = []   # index = r * (RY_MAX + 1) + ry
 
 func build_offsets() -> void:
-	print(world)
 	var W := world.SUN_GRID_W
 	var H := world.SUN_GRID_H
 	var D := world.SUN_GRID_D
@@ -582,7 +601,6 @@ func build_offsets() -> void:
 					for dx in range(-r, r + 1):
 						list.append(dx + dy * W + dz* PLANE)
 			offsets[r * (RY_MAX + 1) + ry] = list		
-		
 		
 ##########################################################################################
 ####ARRAY MANAGEMENT

@@ -91,7 +91,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				if ei > 3:
 					current_life_state[i] += 1
 					current_energy_array[i] -= 3
-					current_size[i]+= 1.
+					current_size[i]+= Vector3(1,1,1)
 					current_biomass[i] += 2
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
 

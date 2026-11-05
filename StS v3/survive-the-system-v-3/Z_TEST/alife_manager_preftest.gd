@@ -24,7 +24,7 @@ var total_time : = 0
 var world: World
 
 var photosynthesis_on:= true
-var agent_photo_stamp_on := false
+var agent_photo_stamp_on := true
 var photo_range := 0
 var duplication_range := 15
 var agent_calculated_photo_value := false
@@ -230,7 +230,7 @@ func init(worldd):
 	diffuse_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
 		
 
-func init_species(worldd:World,alifem:AlifeManager):
+func init_species2(worldd:World,alifem:AlifeManager):
 	if switch:
 		for c in get_children():
 			c.queue_free()
@@ -246,7 +246,7 @@ func init_species(worldd:World,alifem:AlifeManager):
 
 
 		
-func init_species2(worldd:World,alifem:AlifeManager):
+func init_species(worldd:World,alifem:AlifeManager):
 	if switch:
 		for c in get_children():
 			c.queue_free()

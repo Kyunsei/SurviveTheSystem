@@ -74,6 +74,7 @@ text = "Hide Interface"
 [node name="simulation_UI" type="CanvasLayer" parent="." unique_id=438579712]
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_top = 4.0
@@ -470,7 +471,7 @@ offset_left = 165.0
 offset_top = -6.0
 offset_right = 233.5
 offset_bottom = 29.0
-placeholder_text = "20"
+placeholder_text = "10"
 
 [node name="Label" type="Label" parent="simulation_UI/World/SUN/SunSize/world_y" unique_id=214062980]
 layout_mode = 0
@@ -608,6 +609,7 @@ offset_left = 271.0
 offset_top = 304.0
 offset_right = 315.0
 offset_bottom = 328.0
+button_pressed = true
 
 [node name="Label2" type="Label" parent="simulation_UI/World/SUN/CheckStampAgent" unique_id=772506039]
 layout_mode = 0
@@ -715,7 +717,6 @@ offset_right = 338.0
 offset_bottom = 637.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -752,9 +753,9 @@ text = "ALife"
 [node name="ButtonFlowVisualisation3" type="Button" parent="simulation_UI/Rendering" unique_id=849010180]
 layout_mode = 0
 offset_left = 46.0
-offset_top = 255.0
+offset_top = 253.0
 offset_right = 250.0
-offset_bottom = 286.0
+offset_bottom = 284.0
 disabled = true
 toggle_mode = true
 text = "Off/On Flow Visualisation"
@@ -798,6 +799,22 @@ offset_right = 249.0
 offset_bottom = 249.0
 toggle_mode = true
 text = "Value"
+
+[node name="LineEdit_layer" type="LineEdit" parent="simulation_UI/Rendering/Sun" unique_id=351985798]
+layout_mode = 0
+offset_left = 312.0
+offset_top = 217.0
+offset_right = 380.5
+offset_bottom = 248.0
+text = "0"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/Sun/LineEdit_layer" unique_id=1575654310]
+layout_mode = 0
+offset_left = -50.0
+offset_top = 3.0
+offset_right = -7.0
+offset_bottom = 26.0
+text = "Layer"
 
 [node name="Label" type="RichTextLabel" parent="simulation_UI" unique_id=1345646950]
 unique_name_in_owner = true
@@ -959,6 +976,7 @@ scale = Vector2(0.6, 0.6)
 [connection signal="toggled" from="simulation_UI/Rendering/Sun/Stamp" to="." method="_on_stamp_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/Sun/Flux" to="." method="_on_flux_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/Sun/Value" to="." method="_on_value_toggled"]
+[connection signal="text_submitted" from="simulation_UI/Rendering/Sun/LineEdit_layer" to="Visual/MultiMesh_BIN" method="_on_line_edit_layer_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/speed" to="." method="_on_speed_text_submitted"]
 [connection signal="pressed" from="simulation_UI/RunGDScript" to="." method="_on_run_gd_script_pressed"]
 [connection signal="pressed" from="simulation_UI/RunGPU" to="." method="_on_run_gpu_pressed"]

@@ -20,7 +20,7 @@ var SUN_GRID_ids : PackedInt32Array
 var SUN_GRID_ids_offset : PackedInt32Array
 
 #var SUN_cell_size := 10.0
-var SUN_cell_size := Vector3(5.0,20.0,5.0)
+var SUN_cell_size := Vector3(5.0,10.0,5.0)
 
 var SUN_GRID_W : int          # cells along x
 var SUN_GRID_H : int          # cells along y
