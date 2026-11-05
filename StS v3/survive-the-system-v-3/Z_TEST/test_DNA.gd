@@ -41,6 +41,7 @@ var current_life_state : PackedInt32Array
 var current_biomass : PackedFloat32Array
 var current_age : PackedInt32Array
 var current_size : PackedVector3Array
+var init_size := Vector3(1,1,1)
 
 var current_worldpos_cell_id : PackedInt32Array
 
@@ -273,7 +274,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				current_energy_array[i] += (1) * dt	
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
 	if photo_on:
-		'var ad := [0.0,1.0,2.0]
+		'var ad := [0.0,1.0/4,1.0/3,1.0/2,1.0]
 		var arr := []
 		for v in ad:
 			var value2 =1* exp(-((v - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
@@ -310,14 +311,13 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				var total := 0.0
 				var ry := 0
 				var d:= global_photo_rate[sun_c]
-				var d_up := global_photo_rate[sun_c_up]
+				var d_up := global_photo_rate[sun_c_up] +1
 				if !agent_photo_calculate or r==0:
-
 					#value = d  #or stamp value
-					value =  sun_grid[sun_c] /   maxf(d, photo_rate) 
+					value =  sun_grid[sun_c_up]  /   maxf(d_up, photo_rate) 
 					var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
 					#print("%f value and take %f , for %f optimal" %[value,value2, photo_optimal_value] )
-					current_energy_array[i] += value2 * dt
+					current_energy_array[i] += value2 /maxf(d, photo_rate) * dt
 					
 					#( sun_grid[sun_c] * photo_rate *  dt) /   maxf(d, photo_rate) 
 
@@ -341,7 +341,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			var _energy:= current_energy_array[i]
 
 			#var t := Time.get_ticks_usec()
-			_energy += -0.5  * dt # - (side * side - side) *dt #* active_alife_array[i]
+			_energy += -0.6  * dt # - (side * side - side) *dt #* active_alife_array[i]
 			if _energy < 0 :
 				alive_array[i] = 0
 			current_energy_array[i] = _energy
@@ -482,7 +482,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_life_state.append(1)
 		current_biomass.append(0)
 		current_age.append(0)
-		current_size.append(Vector3(1,1,1))
+		current_size.append(init_size)
 
 		current_worldpos_cell_id.append(get_world_cell_id(pos,world))
 		current_cpu_cost.append(0)
@@ -504,20 +504,21 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_life_state[i]=1
 		current_biomass[i]=0
 		current_age[i]=0
-		current_size[i]=Vector3(1,1,1)
+		current_size[i]=init_size
 		current_cpu_cost[i] = 0
 
 	active_entity_count += 1
 	if alifemanager.photosynthesis_on:
-			var r := photo_range
+			#var r := photo_range
 			#var pos2 := pos
 			
 			#pos2.y += world.SUN_cell_size.y*1.5
 			#var c_up :=  get_world_cell_id(pos2,world)
 			var c := current_worldpos_cell_id[i]
 			#var c_calc := c +  world.SUN_GRID_W
-	
-			stamp(c,r,0,1.0)
+			var height := int(init_size.y)-1
+			var r := int(init_size.x)-1
+			stamp(c,r,0,height,1.0)
 			#alifemanager.current_global_photosynthesis_rate[current_worldpos_cell_id[i]] += 1.0 #TEMP
 
 			
@@ -533,9 +534,12 @@ func Remove_Life(i):
 	active_entity_count -= 1
 	
 	if alifemanager.photosynthesis_on:
-			var r := photo_range
+			#var r := photo_range
 			var c := current_worldpos_cell_id[i]
-			stamp(c,r,0,-1.0)
+			var height := int(init_size.y)-1
+			var r := int(init_size.x)-1
+			stamp(c,r,0,height,-1.0)
+			#stamp(c,r,0,0,-1.0)
 	
 	
 	pending_multimesh_erase_id.append(i)
@@ -545,11 +549,11 @@ func Remove_Life(i):
 ####SUN/GRID MANAGEMENT
 ##########################################################################################
 
-func stamp(c: int, r: int, ry: int, w: float) -> void:
+func stamp(c: int, r: int, ry: int,layer:int, w: float) -> void:
 	#alifemanager.current_global_photosynthesis_rate[c] += w
 	#return
 	
-	var c_up := c  +  world.SUN_GRID_W
+	var c_up := c  +  world.SUN_GRID_W*layer
 	if !alifemanager.agent_photo_stamp_on:
 		alifemanager.current_global_photosynthesis_rate[c] += w
 		return
@@ -557,7 +561,9 @@ func stamp(c: int, r: int, ry: int, w: float) -> void:
 		if c_up+ off >= alifemanager.current_global_photosynthesis_rate.size():
 			continue
 		alifemanager.current_global_photosynthesis_rate[c_up + off] += w
-	alifemanager.current_global_photosynthesis_rate[c] += w
+	
+	if layer != 0:
+		alifemanager.current_global_photosynthesis_rate[c] += w
 
 
 func stamp2(c: int, r: int, w: float, ry: int = -1) -> void:
