@@ -40,7 +40,11 @@ var build_usec := 0.0
 var fill_usec := 0.0
 var distribute_usec := 0.0
 
+enum Border { WRAP, WALL }
 
+var border_type_x := Border.WRAP
+var border_type_y := Border.WALL
+var border_type_z := Border.WRAP
 
 
 func _ready() -> void:
@@ -50,6 +54,8 @@ func _ready() -> void:
 
 
 func init():
+	print(border_type_x)
+
 	init_SUN_GRID()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 

@@ -450,7 +450,8 @@ func Build_and_remove_pendings():
 	
 	var d_range:= duplication_range
 	for i in pending_spawn_id:
-		Build_New_Life(pick_random_position(Vector3(d_range,0,d_range)) + position_array[i],0.0, color_array[i])
+		var newpos := pick_random_position(Vector3(d_range,0,d_range),position_array[i])
+		Build_New_Life(newpos,0.0, color_array[i])
 	
 	for i in pending_remove_id:
 		Remove_Life(i)	
@@ -651,7 +652,9 @@ func find_free_index():
 
 
 
-func pick_random_position(rangee: Vector3)-> Vector3: # should be 3
+func pick_random_position2(rangee: Vector3,center: Vector3)-> Vector3: # should be 3
+
+
 	var x = randf_range(-rangee.x,rangee.x)
 	var z = randf_range(-rangee.z,rangee.z)
 	var y = randf_range(-rangee.y,rangee.y)
@@ -659,6 +662,22 @@ func pick_random_position(rangee: Vector3)-> Vector3: # should be 3
 	return Vector3(x,y,z)
 
 
+
+func pick_random_on_axis(range_array: float, mid_point: float, border_type: int, limit: float) -> float:
+	var lo := mid_point - range_array
+	var hi := mid_point + range_array
+	if border_type == world.Border.WALL:
+		# clamp the range inside the world [0, limit]
+		return randf_range(maxf(lo, 0.0), minf(hi, limit))
+	# WRAP: pick freely, then wrap back into [0, limit)
+	return fposmod(randf_range(lo, hi), limit)
+
+func pick_random_position(rangee: Vector3, centerr: Vector3) -> Vector3:
+	return Vector3(
+		pick_random_on_axis(rangee.x,centerr.x, world.border_type_x, world.size.x),
+		pick_random_on_axis(rangee.y,centerr.y ,world.border_type_y, world.size.y),
+		pick_random_on_axis(rangee.z,centerr.z ,world.border_type_z, world.size.z)
+	)
 
 
 

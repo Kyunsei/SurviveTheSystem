@@ -30,7 +30,7 @@ func init():
 
 	for sp in $AlifeManager.species_array:
 		for i in n_start_life:
-			sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2))+Vector3(world.size.x/2,0,world.size.z/2),randf_range(0.0,5.0))
+			sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),Vector3(world.size.x/2,0,world.size.z/2)),randf_range(0.0,5.0))
 
 	var t := (Time.get_ticks_usec() - tt)/1000.0
 	var e = n_start_life * $AlifeManager.species_array.size()
@@ -438,3 +438,15 @@ func _on_value_toggled(toggled_on: bool) -> void:
 
 func _on_photo_rate_text_submitted(new_text: String) -> void:
 	$AlifeManager.photo_absorption_rate = float(new_text)
+
+
+func _on_borderx_item_selected(index: int) -> void:
+	$World.border_type_x = index
+
+
+func _on_bordery_item_selected(index: int) -> void:
+	$World.border_type_y = index
+
+
+func _on_borderz_item_selected(index: int) -> void:
+	$World.border_type_z = index
