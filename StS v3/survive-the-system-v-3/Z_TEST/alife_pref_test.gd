@@ -6,21 +6,30 @@ var running = false
 var multithread = false
 var _accum := 1.
 var world: World
+var temp_world : World
+var world_setting_change := false
 
 #perf measure
 var visu_usec := 0.0
 var visu_draw_usec := 0.0
 var visu_update_usec := 0.0
 var visu_erase_usec := 0.0
+
+func _ready() -> void:
+	world = $World
+	temp_world = world.duplicate()
 	
+
 
 func init():
 	for mm in $AlifeManager.get_children():
 		mm.queue_free()
-	world = $World
+	#world = $World
 	world.init()
-	$AlifeManager.init(world)
-	$Visual.init(world,$AlifeManager)
+	temp_world = world.duplicate()
+	#temp_world.init()
+	$AlifeManager.init($World)
+	$Visual.init($World,$AlifeManager)
 	$simulation_UI/PopTracker.init($AlifeManager)
 #	$Visual/MultiMeshInstance2D.init($AlifeManager,world) #OLD
 
@@ -59,6 +68,7 @@ func init():
 func _process(delta: float) -> void:
 	if running :
 		if simulation_speed > 0:
+			update_world_settings()
 			run_simulation(delta)
 			run_visualisation()
 			
@@ -137,6 +147,30 @@ func run_simulation(delta):
 		else:
 			$AlifeManager.run_simulation_multithread(delta,simulation_speed)
 
+
+func update_world_settings():
+	#return
+	
+	if world_setting_change :
+		#update world size and grid size to new value
+		var ratio := Vector3.ONE
+		for a in 3:
+			if world.size[a] != 0.0:
+				ratio[a] = world.new_size[a] / world.size[a]
+		for sp in $AlifeManager.species_array:
+			for i in sp.entity_count:
+				sp.Stock_Life(i) #THIS can be changed by a reset of stamp layer only i guess 
+		world.init()
+		$AlifeManager.current_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
+
+		#recalculate new grid map of alife
+		
+		for sp in $AlifeManager.species_array:
+			for i in sp.entity_count:
+				sp.position_array[i] = sp.position_array[i] * ratio
+				sp.Release_Life(i)		
+		world_setting_change = false
+	
 func display_world_perf():
 	$simulation_UI/World/Label.text = "nLife - Active/Total : "+ str($AlifeManager.active_entity_count) +"/" + str($AlifeManager.entity_count)
 	$simulation_UI/World/Label.text += "\nSUN grid size: %d " % $World.SUN_NUM_CELLS
@@ -324,21 +358,21 @@ func _on_duplication_toggled(toggled_on: bool) -> void:
 
 
 func _on_world_y_text_submitted(new_text: String) -> void:
-	$World.size.y = float(new_text)
-	$World.init()
-	$AlifeManager.init_GRID($World.size)
+	world.new_size.y = float(new_text)
+	world_setting_change = true
+
 
 
 func _on_world_z_text_submitted(new_text: String) -> void:
-	$World.size.z = float(new_text)
-	$World.init()
-	$AlifeManager.init_GRID($World.size)
+	world.new_size.z = float(new_text)
+	world_setting_change = true
+
 
 
 func _on_world_x_text_submitted(new_text: String) -> void:
-	$World.size.x = float(new_text)
-	$World.init()
-	$AlifeManager.init_GRID($World.size)
+	world.new_size.x = float(new_text)
+	world_setting_change = true
+
 
 
 func _on_plant_on_toggled(toggled_on: bool) -> void:
@@ -346,22 +380,22 @@ func _on_plant_on_toggled(toggled_on: bool) -> void:
 
 
 func _on_check_button_toggled(toggled_on: bool) -> void:
-	$World.SUN_on = toggled_on
-	
+	world.SUN_on = toggled_on
+
 func _on_sunenergy_text_submitted(new_text: String) -> void:
-	$World.SUN_energy = float(new_text)
+	world.SUN_energy = float(new_text)
 
 func _on_sun_x_text_submitted(new_text: String) -> void:
-	$World.SUN_cell_size.x = float(new_text)
-	$World.init_SUN_GRID()
+	world.new_SUN_cell_size.x = float(new_text)
+	world_setting_change = true
 
 func _on_sun_y_text_submitted(new_text: String) -> void:
-	$World.SUN_cell_size.y = float(new_text)
-	$World.init_SUN_GRID()
+	world.new_SUN_cell_size.y = float(new_text)
+	world_setting_change = true
 
 func _on_sun_z_text_submitted(new_text: String) -> void:
-	$World.SUN_cell_size.z = float(new_text)
-	$World.init_SUN_GRID()
+	world.new_SUN_cell_size.z = float(new_text)
+	world_setting_change = true
 
 
 func _on_remove_on_toggled(toggled_on: bool) -> void:
@@ -441,12 +475,15 @@ func _on_photo_rate_text_submitted(new_text: String) -> void:
 
 
 func _on_borderx_item_selected(index: int) -> void:
-	$World.border_type_x = index
+	world.border_type_x = index
+	#world_setting_change	= true
 
 
 func _on_bordery_item_selected(index: int) -> void:
-	$World.border_type_y = index
+	world.border_type_y = index
+	#world_setting_change	= true
 
 
 func _on_borderz_item_selected(index: int) -> void:
-	$World.border_type_z = index
+	world.border_type_z = index
+	#world_setting_change	= true

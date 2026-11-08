@@ -546,6 +546,37 @@ func Remove_Life(i):
 	pending_multimesh_erase_id.append(i)
 
 
+func Stock_Life(i):
+	if active_alife_array[i] == 0:
+		return 
+	active_alife_array[i]= 2 # STORED ?
+	#free_indices.append(i)
+	#active_entity_count -= 1
+	if alifemanager.photosynthesis_on:
+			var c := current_worldpos_cell_id[i]
+			var height := int(init_size.y)-1
+			var r := int(init_size.x)-1
+			stamp(c,r,0,height,-1.0)
+	pending_multimesh_erase_id.append(i)
+	
+
+func Release_Life(i):
+	if active_alife_array[i] == 0:
+		return 
+	active_alife_array[i]= 1 # STORED ?
+	current_worldpos_cell_id[i] = get_world_cell_id(position_array[i],world)
+	if alifemanager.photosynthesis_on:
+			var c := current_worldpos_cell_id[i]
+			#var c_calc := c +  world.SUN_GRID_W
+			var height := int(init_size.y)-1
+			var r := int(init_size.x)-1
+			stamp(c,r,0,height,1.0)
+
+			
+	pending_multimesh_drawn_id.append(i)	
+	
+
+
 ##########################################################################################
 ####SUN/GRID MANAGEMENT
 ##########################################################################################

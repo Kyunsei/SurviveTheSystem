@@ -5,6 +5,7 @@ class_name World
 var  SUN_diffusion_on := false
 
 var size : Vector3
+var new_size : Vector3
 var default_size = Vector3(240*5,20,240*5)
 # Called when the node enters the scene tree for the first time.
 
@@ -21,6 +22,8 @@ var SUN_GRID_ids_offset : PackedInt32Array
 
 #var SUN_cell_size := 10.0
 var SUN_cell_size := Vector3(5.0,10.0,5.0)
+var new_SUN_cell_size : Vector3
+
 
 var SUN_GRID_W : int          # cells along x
 var SUN_GRID_H : int          # cells along y
@@ -49,15 +52,21 @@ var border_type_z := Border.WRAP
 
 func _ready() -> void:
 	size = default_size
+	new_size = size
+	new_SUN_cell_size = SUN_cell_size
 	init()
 
 
 
 func init():
-	print(border_type_x)
+	if !size:
+		size = default_size
+	if new_size:
+		size = new_size
+	if new_SUN_cell_size:
+		SUN_cell_size = new_SUN_cell_size
 
 	init_SUN_GRID()
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 
 
 
