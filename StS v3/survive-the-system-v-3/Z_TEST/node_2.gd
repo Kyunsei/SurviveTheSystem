@@ -72,6 +72,7 @@ var _panning := false
 
 
 func _ready() -> void:
+	return
 	if disable_vsync:
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 
@@ -152,6 +153,7 @@ func _init_ui() -> void:
 # ---------------------------------------------------------------- update
 
 func _process(delta: float) -> void:
+	return
 	if not paused:
 		# Phase 1: build grid from current positions (single-threaded counting sort)
 		# Phase 2: neighbour pass reads pos, writes only vel[i] of its own agent
@@ -338,6 +340,7 @@ func _query_radius(point: Vector2, radius: float, exclude: int = -1) -> PackedIn
 # ---------------------------------------------------------------- input
 
 func _unhandled_input(event: InputEvent) -> void:
+	return
 	if event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.pressed and mb.button_index == MOUSE_BUTTON_LEFT:

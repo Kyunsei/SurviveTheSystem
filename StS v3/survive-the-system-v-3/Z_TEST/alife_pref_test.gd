@@ -204,6 +204,7 @@ func display_general_perf() -> void:
 
 func diplay_alife_perf() -> void:
 	if simulation_speed > 0 :
+
 		'_accum += delta
 		if _accum >= 1.0:
 			_accum = 0.0'
@@ -380,7 +381,7 @@ func _on_plant_on_toggled(toggled_on: bool) -> void:
 
 
 func _on_check_button_toggled(toggled_on: bool) -> void:
-	world.SUN_on = toggled_on
+	$AlifeManager.bin_on = toggled_on
 
 func _on_sunenergy_text_submitted(new_text: String) -> void:
 	world.SUN_energy = float(new_text)
@@ -487,3 +488,7 @@ func _on_bordery_item_selected(index: int) -> void:
 func _on_borderz_item_selected(index: int) -> void:
 	world.border_type_z = index
 	#world_setting_change	= true
+
+
+func _on_interaction_onoff_toggled(toggled_on: bool) -> void:
+	$AlifeManager.interaction_on = toggled_on

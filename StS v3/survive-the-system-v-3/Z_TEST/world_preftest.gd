@@ -1,6 +1,7 @@
 extends Node2D
 class_name World
 
+#TODO need to move grid interaction for alifemanager to here
 
 var  SUN_diffusion_on := false
 
@@ -9,22 +10,32 @@ var new_size : Vector3
 var default_size = Vector3(240*5,20,240*5)
 # Called when the node enters the scene tree for the first time.
 
-var main_world_usec := 0.0
+
+##interaction GRID
+#var sun_usec := 0.0
+var bin_on := true
+var GRID : PackedFloat32Array
+var GRID_ids : PackedInt32Array
+var GRID_ids_offset : PackedInt32Array
+var cell_size := Vector3(5.0,10.0,5.0)
+var new_cell_size : Vector3
+var GRID_W : int          # cells along x
+var GRID_H : int          # cells along y
+var GRID_D : int          # cells along z
+var GRID_WD : int# = SUN_GRID_W * GRID_D
+var GRID_WH : int #= SUN_GRID_W * GRID_H
+var NUM_CELLS : int # = SUN_GRID_W * GRID_H * GRID_D
 
 
-##SUN
+##SUN #TODO check what is still use
 var sun_usec := 0.0
 var SUN_on := true
 var SUN_energy := 1.0
 var SUN_GRID : PackedFloat32Array
 var SUN_GRID_ids : PackedInt32Array
 var SUN_GRID_ids_offset : PackedInt32Array
-
-#var SUN_cell_size := 10.0
 var SUN_cell_size := Vector3(5.0,10.0,5.0)
 var new_SUN_cell_size : Vector3
-
-
 var SUN_GRID_W : int          # cells along x
 var SUN_GRID_H : int          # cells along y
 var SUN_GRID_D : int          # cells along z
@@ -32,6 +43,9 @@ var SUN_GRID_WD : int# = SUN_GRID_W * GRID_D
 var SUN_GRID_WH : int #= SUN_GRID_W * GRID_H
 var SUN_NUM_CELLS : int # = SUN_GRID_W * GRID_H * GRID_D
 
+
+
+#still suing those?
 var bin_origin := Vector3.ZERO   # min corner of the grid in world space
 var cell_start := PackedInt32Array()     # size NUM_CELLS + 1
 var write_pos := PackedInt32Array()      # size NUM_CELLS (scratch)
@@ -39,16 +53,19 @@ var cell_items := PackedInt32Array()     # size = alife count
 var current_cell_id := PackedInt32Array()  # size = alife count
 var sorted_pos := PackedVector3Array()
 
-var build_usec := 0.0
-var fill_usec := 0.0
-var distribute_usec := 0.0
+
+
 
 enum Border { WRAP, WALL }
-
 var border_type_x := Border.WRAP
 var border_type_y := Border.WALL
 var border_type_z := Border.WRAP
 
+
+var main_world_usec := 0.0
+var build_usec := 0.0
+var fill_usec := 0.0
+var distribute_usec := 0.0
 
 func _ready() -> void:
 	size = default_size
@@ -83,6 +100,26 @@ func init_SUN_GRID():
 	SUN_GRID.resize(SUN_NUM_CELLS)
 	SUN_GRID_ids.resize(SUN_NUM_CELLS)
 	init_sun_buffers() 
+	
+	
+
+func init_GRID():
+	var dims := Vector3i((size / cell_size).ceil())
+	GRID_W = dims.x         # cells along x
+	GRID_H = dims.y       # cells along y
+	GRID_D = dims.z         # cells along z
+	GRID_WD = GRID_W * GRID_D
+	GRID_WH = GRID_W * GRID_H
+	NUM_CELLS = GRID_W * GRID_H * GRID_D
+	cell_start.resize(NUM_CELLS + 1)
+	write_pos.resize(NUM_CELLS)
+	GRID.resize(NUM_CELLS)
+	GRID_ids.resize(NUM_CELLS)
+	#init_sun_buffers() 
+	
+	
+
+
 
 
 var _next :  PackedFloat32Array

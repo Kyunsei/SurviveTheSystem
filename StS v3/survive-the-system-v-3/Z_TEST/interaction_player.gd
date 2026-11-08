@@ -55,7 +55,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		var mouse_pos := mouse_sim_pos()
 		#mouse_pos = get_global_mouse_position()
 		_pick(mouse_pos)
-		if selected > 0:
+		if selected >= 0:
 			display_target_info()
 		
 

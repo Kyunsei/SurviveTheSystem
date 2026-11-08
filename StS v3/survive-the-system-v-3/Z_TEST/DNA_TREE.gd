@@ -46,7 +46,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				continue		
 			var _energy:= current_energy_array[i]
 			if _energy < 5:
-				var sun_c := current_worldpos_cell_id[i]
+				var sun_c := current_sungrid_id[i]
 				#var total := global_photo_rate[sun_c]
 				var r:= photo_range
 				var total := 0.0

@@ -4,13 +4,14 @@ class_name AlifeManager
 #THIS SCRIPT MANAGE THE DIFFERENT ALIFE SPECIES and connect them together and with other simulation element [player/world/rendering]
 #A bit similar to the one above (SimulationManager) but more focus on Alife
 
+#TODO need to move grid interaction for alifemanager to here
+
 #TODO wait thread?
 #TODO fix chunk number/order or make it random?
 #TODO simulation time in threads?
 #TODO sensing alife x alife : wolrd partioning + flow?
 #TODO add physics collision/gravity?
 #TODO optimise AI
-#TODO border Gestion
 #TODO optimisation element grid vs agent?
 
 ##Simulation par
@@ -37,7 +38,7 @@ var global_species_offset:PackedInt32Array
 
 
 var photo_absorption_rate := 1.0
-var previous_global_photosynthesis_rate : PackedFloat32Array
+#var previous_global_photosynthesis_rate : PackedFloat32Array
 var current_global_photosynthesis_rate : PackedFloat32Array
 var diffuse_global_photosynthesis_rate : PackedFloat32Array
 
@@ -93,8 +94,9 @@ var mouse_target : Vector3
 #old? CHECK THSI ONE?
 var LifeBin_array : Array[PackedInt32Array]  #HERE CAN BE COOL TO SEE IF REORDERING MATTERS
 
-var bin_on = true
-var cell_size := 10.0
+var bin_on := true
+var interaction_on := true
+var cell_size := Vector3(10,20,10)
 
 var GRID_W := 32          # cells along x
 var GRID_H := 16          # cells along y
@@ -220,8 +222,8 @@ func init(worldd):
 	
 	global_position_array = []
 	global_species_offset = []
-	previous_global_photosynthesis_rate.clear()
-	previous_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
+	#previous_global_photosynthesis_rate.clear()
+	#previous_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
 
 	current_global_photosynthesis_rate.clear()
 	current_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
@@ -259,12 +261,14 @@ func init_species(worldd:World,alifem:AlifeManager):
 			species_array[s].photo_range = randi_range(0,2)
 			species_array[s].duplication_range  = 100 #randi_range(10,100)
 			species_array[s].init(worldd,alifem)
+			species_array[s].species_id = s
 			
 			if species_array[s].photo_range ==0:
 				species_array[s].colour = Color(0.249, 0.557, 0.463, 1.0)
 				species_array[s].duplication_range  = 10 #randi_range(10,100)
 				species_array[s].photo_optimal_value  = 1#randi_range(10,100)
 				species_array[s].init_size  = Vector3(1,1,1)
+			
 
 
 
@@ -319,8 +323,9 @@ func run_simulation2(delta: float, sim_speed: float):
 	var t00 := Time.get_ticks_usec()
 	#if sim speed or delta is changed or anything thread is using. safer to change it before start or after wait!
 	if bin_on:
+
 		var bin_t0 = Time.get_ticks_usec()
-		build_grid(position_array)
+		build_grid(global_position_array)
 		bin_update_usec =  Time.get_ticks_usec() - bin_t0
 	var t0 := Time.get_ticks_usec()
 	#if photosynthesis_on:
@@ -388,13 +393,13 @@ func update_alife()-> void:
 	
 
 	
-	if  bin_on: 
-		for i in species_array.size():
-			var sp:= species_array[i]
-			global_species_offset[i] = total
-			global_position_array.append_array(sp.position_array)
-			total += sp.entity_count
-		global_species_offset[species_array.size()] = total
+	#if  bin_on: 
+	for i in species_array.size():
+		var sp:= species_array[i]
+		global_species_offset[i] = total
+		global_position_array.append_array(sp.position_array)
+		total += sp.entity_count
+	global_species_offset[species_array.size()] = total
 
 	#CURRENT GLOBAL PHOTO IS UPDATED in build and remove... dont need change anymore isnt?
 	'if photosynthesis_on:
@@ -1019,13 +1024,14 @@ func cell_id(cx: int, cy: int, cz: int) -> int:
 	return cx + GRID_W * (cy + GRID_H * cz)
 
 
-func build_grid(position_arrayy: PackedVector3Array) -> void:
+func build_grid(position_arrayy: PackedVector3Array) -> void: #ADAPT TO GLOBAL POS ARRAY 
 	var n := position_arrayy.size()
 	current_cell_id.resize(n)
 	cell_items.resize(n)
 	sorted_pos.resize(n)
 	cell_start.fill(0)
-	var inv := 1.0 / cell_size
+	#var inv := 1.0 / cell_size
+	var inv := Vector3.ONE / cell_size   # (1/x, 1/y, 1/z)
 
 	# 1. Count particles per cell
 	for i in n:
@@ -1049,6 +1055,5 @@ func build_grid(position_arrayy: PackedVector3Array) -> void:
 		cell_items[w] = i
 		sorted_pos[w] = position_arrayy[i]
 		write_pos[c] = w + 1
-
 func flow_diffusion():
 	pass

@@ -219,7 +219,7 @@ offset_right = 33.0
 offset_bottom = 26.0
 text = "Range"
 
-[node name="Bin_ONOFF" type="CheckButton" parent="simulation_UI/Alife" unique_id=528177472]
+[node name="Interaction_ONOFF" type="CheckButton" parent="simulation_UI/Alife" unique_id=528177472]
 layout_mode = 0
 offset_left = 113.0
 offset_top = 303.0
@@ -227,13 +227,13 @@ offset_right = 157.0
 offset_bottom = 327.0
 button_pressed = true
 
-[node name="Label" type="Label" parent="simulation_UI/Alife/Bin_ONOFF" unique_id=235717023]
+[node name="Label" type="Label" parent="simulation_UI/Alife/Interaction_ONOFF" unique_id=235717023]
 layout_mode = 0
 offset_left = -84.0
 offset_top = -1.0
 offset_right = -17.0
 offset_bottom = 22.0
-text = "GRID"
+text = "Interaction"
 
 [node name="Remove_ON" type="CheckButton" parent="simulation_UI/Alife" unique_id=1400993592]
 layout_mode = 0
@@ -1030,7 +1030,7 @@ scale = Vector2(0.6, 0.6)
 [connection signal="text_submitted" from="simulation_UI/Alife/photo_range" to="." method="_on_photo_range_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/Alife/photo_rate" to="." method="_on_photo_rate_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/Alife/dup_range" to="." method="_on_dup_range_text_submitted"]
-[connection signal="toggled" from="simulation_UI/Alife/Bin_ONOFF" to="." method="_on_bin_onoff_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/Interaction_ONOFF" to="." method="_on_interaction_onoff_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Remove_ON" to="." method="_on_remove_on_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Growth_on" to="." method="_on_growth_on_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/homeo_on" to="." method="_on_homeo_on_toggled"]
