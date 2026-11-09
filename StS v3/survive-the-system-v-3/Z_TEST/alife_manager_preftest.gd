@@ -96,7 +96,7 @@ var LifeBin_array : Array[PackedInt32Array]  #HERE CAN BE COOL TO SEE IF REORDER
 
 var bin_on := true
 var interaction_on := true
-var cell_size := Vector3(10,20,10)
+var cell_size := Vector3(20,20,20)
 var new_cell_size := Vector3(10,20,10)
 
 

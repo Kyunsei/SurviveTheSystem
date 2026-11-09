@@ -14,7 +14,7 @@ extends RefCounted
 
 ##Simulation par
 #var time := 0.0
-var dt := 0.0#.32
+var dt :float= 0.0#.32
 var total_time := 0
 #var time_counter := 1
 
@@ -31,6 +31,9 @@ var active_entity_count : int
 #ECS STATS
 var position_array : PackedVector3Array
 var current_energy_array : PackedFloat64Array
+var current_velocity : PackedVector3Array
+var new_velocity : PackedVector3Array
+
 
 var active_alife_array : PackedInt32Array  #To reuse some 
 var alive_array : PackedInt32Array
@@ -177,6 +180,9 @@ func init(worldd,alifm):
 	#alife 
 	position_array = [] 
 	current_energy_array = [] 
+	current_velocity = []
+	new_velocity = []
+
 	active_alife_array = []   #To reuse some 
 	alive_array = []
 	current_sungrid_id = []
@@ -244,12 +250,6 @@ func set_chunk(n:int):
 		photo_rate_per_chunk[i] = []
 		#r_data_per_chunk[i] = []
 	
-func Move_random(i,wrap_x,wrap_y,wrap_z,size):
-		var p: Vector3 = position_array[i] + Vector3(randf_range(-1, 1), 0, randf_range(-1, 1))
-		p.x = fposmod(p.x, size.x) if wrap_x else clampf(p.x, 0.0, size.x)
-		p.y = fposmod(p.y, size.y) if wrap_y else clampf(p.y, 0.0, size.y)
-		p.z = fposmod(p.z, size.z) if wrap_z else clampf(p.z, 0.0, size.z)
-		position_array[i] = p		
 
 
 
@@ -269,18 +269,33 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 	var local_pending_remove_id: PackedInt32Array
 	#var mouse_target :Vector3 = alifemanager.mouse_position # Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
 
+	var world_size: Vector3 = world.size
+	var wrap_x: bool = world.border_type_x == world.Border.WRAP
+	var wrap_y: bool = world.border_type_y == world.Border.WRAP
+	var wrap_z: bool = world.border_type_z == world.Border.WRAP
 
 	if AI_on:
-		var size: Vector3 = world.size
-		var wrap_x: bool = world.border_type_x == world.Border.WRAP
-		var wrap_y: bool = world.border_type_y == world.Border.WRAP
-		var wrap_z: bool = world.border_type_z == world.Border.WRAP
-		for i in range(start, end):
-			Move_random(i,wrap_x,wrap_y,wrap_z,size)
+
+		'for i in range(start, end):
+			Move_random(i,wrap_x,wrap_y,wrap_z,world_size)'
 		
 	
-	
+		if bin_on and alifemanager.global_position_array.size() >0:
+			Flock(start,end,dt)
 
+		#COMBINE MOVMNT AND CHECK BORDER
+		for i in range(start, end):
+			var q := position_array[i] + new_velocity[i] * dt
+			var v := new_velocity[i]
+			# borders (world is 0..size)
+			if wrap_x: q.x = fposmod(q.x, world_size.x)
+			elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); v.x = -v.x
+			if wrap_y: q.y = fposmod(q.y, world_size.y)
+			elif q.y < 0.0 or q.y > world_size.y: q.y = clampf(q.y, 0.0, world_size.y); v.y = -v.y
+			if wrap_z: q.z = fposmod(q.z, world_size.z)
+			elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); v.z = -v.z
+			position_array[i] = q
+			current_velocity[i] = v
 
 		
 						
@@ -379,11 +394,11 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			var global_pos: PackedVector3Array = alifemanager.global_position_array
 			var cell_start: PackedInt32Array = alifemanager.cell_start
 			var cell_items: PackedInt32Array = alifemanager.cell_items
-			var species_array: PackedInt32Array = alifemanager.species_array  # precomputed once per frame
+			var species_array := alifemanager.species_array  # precomputed once per frame
 			var size: Vector3 = world.size
-			var wrap_x: bool = world.border_type_x == world.Border.WRAP
-			var wrap_y: bool = world.border_type_y == world.Border.WRAP
-			var wrap_z: bool = world.border_type_z == world.Border.WRAP
+			#var wrap_x: bool = world.border_type_x == world.Border.WRAP
+			#var wrap_y: bool = world.border_type_y == world.Border.WRAP
+			#var wrap_z: bool = world.border_type_z == world.Border.WRAP
 			var r2 := radius * radius
 			var base := offs[species_id]
 			var nx := mini(3, W)
@@ -428,8 +443,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 								if wrap_y: d.y -= size.y * roundf(d.y / size.y)
 								if wrap_z: d.z -= size.z * roundf(d.z / size.z)
 								if d.length_squared() <= r2:
-									var sp_i := species_array[other]
-									var local_idx := other - offs[sp_i]
+									var sp_other := species_array[other]
+									var local_idx := other - offs[sp_other.species_id]
 									# ... use neighbour
 																		
 	if grow_on:	
@@ -469,10 +484,136 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 		remove_per_chunk[local_id] = local_pending_remove_id
 	
 
-
+##########################################################################################
+#### Main loop function
+##########################################################################################
 	
-	
+func Move_random(i,wrap_x,wrap_y,wrap_z,size):
+		var p: Vector3 = position_array[i] + Vector3(randf_range(-1, 1), 0, randf_range(-1, 1))
+		p.x = fposmod(p.x, size.x) if wrap_x else clampf(p.x, 0.0, size.x)
+		p.y = fposmod(p.y, size.y) if wrap_y else clampf(p.y, 0.0, size.y)
+		p.z = fposmod(p.z, size.z) if wrap_z else clampf(p.z, 0.0, size.z)
+		position_array[i] = p		
 
+
+func Flock(start,end,dt):
+	#world
+	var world_size: Vector3 = world.size
+	var wrap_x: bool = world.border_type_x == world.Border.WRAP
+	var wrap_y: bool = world.border_type_y == world.Border.WRAP
+	var wrap_z: bool = world.border_type_z == world.Border.WRAP	
+	var cell_size := alifemanager.cell_size		
+	var W := alifemanager.GRID_W
+	var H := alifemanager.GRID_H
+	var D := alifemanager.GRID_D
+	var WH := W * H
+	var nx := W if (wrap_x and W < 3) else 3
+	var ny := H if (wrap_y and H < 3) else 3
+	var nz := D if (wrap_z and D < 3) else 3
+	
+	#alifeglobal
+	var offs: PackedInt32Array = alifemanager.global_species_offset
+	var global_pos: PackedVector3Array = alifemanager.global_position_array
+	var global_sorted_pos: PackedVector3Array = alifemanager.sorted_pos
+	var cell_start: PackedInt32Array = alifemanager.cell_start
+	var cell_items: PackedInt32Array = alifemanager.cell_items
+	var species_array:= alifemanager.species_array  # precomputed once per frame
+	var base := offs[species_id] #to find own global id
+	
+	#flock par
+
+	var view_radius := 15.0	
+	var separation_radius := 12.0
+	var view_r2 := view_radius * view_radius
+	var sep_r2 := separation_radius * separation_radius
+	var w_separation := 2.0
+	var w_alignment := 1.0
+	var w_cohesion := 0.5
+	var max_force := 10.0
+
+
+	var total_n := 0
+	for i in range(start, end):
+		var n:= 0 #number of compatible neighbour
+		var sum_d := Vector3.ZERO      # for cohesion sum dist
+		var sum_v := Vector3.ZERO      # for alignment sum velocity
+		var sep := Vector3.ZERO
+		var p: Vector3 = position_array[i]
+		var v:Vector3= current_velocity[i]
+		var global_i := i + base
+		'var c: int = current_grid_id[i]  #current_grid_id not updated yet!
+		var cx := c % W
+		var cy := (c / W) % H
+		var cz := c / WH'
+		var cx := mini(int(p.x / cell_size.x), W - 1)
+		var cy := mini(int(p.y / cell_size.y), H - 1)
+		var cz := mini(int(p.z / cell_size.z), D - 1)
+		var c := cx + W * (cy + H * cz)
+		for dz in range(-1, -1 + nz):
+			var z := cz + dz
+			if z < 0 or z >= D:
+				if not wrap_z: continue
+				z = posmod(z, D)
+			var zoff := z * WH
+			for dy in range(-1, -1 + ny):
+				var y := cy + dy
+				if y < 0 or y >= H:
+					if not wrap_y: continue
+					y = posmod(y, H)
+				var yoff := zoff + y * W
+				for dx in range(-1, -1 + nx):
+					var x := cx + dx
+					if x < 0 or x >= W:
+						if not wrap_x: continue
+						x = posmod(x, W)
+					var cell := yoff + x
+					
+					for k in range(cell_start[cell], cell_start[cell + 1]):
+						var other: int = cell_items[k]
+					
+						if other == global_i:
+							continue
+				
+						var d: Vector3 = (global_sorted_pos[k] - p)
+						if wrap_x: d.x -= world_size.x * roundf(d.x / world_size.x)
+						if wrap_y: d.y -= world_size.y * roundf(d.y / world_size.y)
+						if wrap_z: d.z -= world_size.z * roundf(d.z / world_size.z)
+						var dist2: = d.length_squared()
+						
+						if dist2 > view_r2 or dist2 ==0:
+							continue
+						#print(dist2)
+						var sp_i := offs.bsearch(other, false) - 1
+						var sp_other := species_array[sp_i] #TODO HERE
+						var local_idx := other - offs[sp_i]
+						
+						if species_id == sp_i:
+											# same species -> flock with it
+							n += 1
+							sum_d += d
+							sum_v += sp_other.current_velocity[local_idx]
+							if dist2 < sep_r2:
+								sep -= d / dist2           # stronger the closer it is
+							#elif sp.is_predator:               # <- adapt to your predator check
+							#	flee -= d / dist2
+							#	threatened = tru
+
+		var steer := Vector3.ZERO
+		if n>0 :
+			var align_w := w_alignment #* (0.3 if calm else 1.0)
+			var coh_w := w_cohesion #* (0.3 if calm else (3.0 if herd else 1.0))  # selfish herd
+			steer += sep * w_separation
+			steer += (sum_v / n - v) * align_w
+			steer += (sum_d / n) * coh_w
+		#steer += flee * w_flee
+		steer = steer.limit_length(max_force)	
+		var new_v :Vector3= v + steer * dt
+		var s := new_v.length()
+		if s < 0.0001:
+			new_v = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) #.normalized() * min_speed
+		else:
+			new_v = new_v / s * clampf(s, 1, 10)		
+		new_velocity[i] = new_v
 
 ##########################################################################################
 ####GRID/SUN MANAGEMENT
@@ -582,6 +723,8 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		#species_id.append(sp)
 		color_array.append(col)
 		alive_array.append(1) 
+		current_velocity.append(Vector3.ZERO)
+		new_velocity.append(Vector3.ZERO)
 		#current_bin_id.append(get_binID(pos,bin_size,world.size))
 		current_life_state.append(1)
 		current_biomass.append(0)
@@ -604,6 +747,8 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		#species_id[i] = sp
 		color_array[i]=col
 		alive_array[i] = 1
+		current_velocity[i] = Vector3.ZERO
+		new_velocity[i] = Vector3.ZERO
 		current_sungrid_id[i] = get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 		current_grid_id[i] = get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
 		#current_bin_id[i] = get_binID(pos,bin_size,world.size)
@@ -672,6 +817,7 @@ func Release_Life(i):
 	active_alife_array[i]= 1 # STORED ?
 	current_sungrid_id[i] = get_cell_id(position_array[i],world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 	current_grid_id[i] = get_cell_id(position_array[i],alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
+	current_velocity[i] = Vector3.ZERO
 	if alifemanager.photosynthesis_on:
 			var c := current_sungrid_id[i]
 			#var c_calc := c +  world.SUN_GRID_W
