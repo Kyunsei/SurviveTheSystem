@@ -160,6 +160,8 @@ func update_world_settings():
 		for sp in $AlifeManager.species_array:
 			for i in sp.entity_count:
 				sp.Stock_Life(i) #THIS can be changed by a reset of stamp layer only i guess 
+		$AlifeManager.cell_size = $AlifeManager.new_cell_size
+		$AlifeManager.init_GRID(world.size)
 		world.init()
 		$AlifeManager.current_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
 
@@ -396,6 +398,19 @@ func _on_sun_y_text_submitted(new_text: String) -> void:
 
 func _on_sun_z_text_submitted(new_text: String) -> void:
 	world.new_SUN_cell_size.z = float(new_text)
+	world_setting_change = true
+	
+	
+func _on_x_text_submitted(new_text: String) -> void:
+	$AlifeManager.new_cell_size.x = float(new_text)
+	world_setting_change = true
+
+func _on_y_text_submitted(new_text: String) -> void:
+	$AlifeManager.new_cell_size.y = float(new_text)
+	world_setting_change = true
+
+func _on_z_text_submitted(new_text: String) -> void:
+	$AlifeManager.new_cell_size.z = float(new_text)
 	world_setting_change = true
 
 

@@ -97,6 +97,8 @@ var LifeBin_array : Array[PackedInt32Array]  #HERE CAN BE COOL TO SEE IF REORDER
 var bin_on := true
 var interaction_on := true
 var cell_size := Vector3(10,20,10)
+var new_cell_size := Vector3(10,20,10)
+
 
 var GRID_W := 32          # cells along x
 var GRID_H := 16          # cells along y
@@ -166,14 +168,9 @@ var merge_usec = 0.
 
 #############################################################################################
 ##############################################################################################
-
-
 var switch := true
 var species_array : Array[TESTDNA]
 var n_species :=2
-
-
-
 
 func _ready() -> void:
 	#TODO check how noise is working in different species now... and look to seed it?
@@ -220,6 +217,7 @@ func init(worldd):
 	init_GRID(world.size)
 	init_species(world,self)
 	
+		
 	global_position_array = []
 	global_species_offset = []
 	#previous_global_photosynthesis_rate.clear()
@@ -227,6 +225,7 @@ func init(worldd):
 
 	current_global_photosynthesis_rate.clear()
 	current_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
+
 
 	diffuse_global_photosynthesis_rate.clear()
 	diffuse_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
@@ -292,7 +291,6 @@ func init_species(worldd:World,alifem:AlifeManager):
 
 			#species_array[s].colour = Color(randf(),randf(),randf())
 
-
 			#if s == 1:
 			#	species_array[s].growth_rate = 1		
 
@@ -310,6 +308,11 @@ func init_GRID(world_size):
 	NUM_CELLS = GRID_W * GRID_H * GRID_D
 	cell_start.resize(NUM_CELLS + 1)
 	write_pos.resize(NUM_CELLS)
+	
+	
+#############################################################################################
+## MANAGE MULTITHREAD SIMULATION
+##############################################################################################
 
 func compute_chunk(total:int) -> int:
 	var threads := OS.get_processor_count()
@@ -323,16 +326,10 @@ func run_simulation2(delta: float, sim_speed: float):
 	var t00 := Time.get_ticks_usec()
 	#if sim speed or delta is changed or anything thread is using. safer to change it before start or after wait!
 	if bin_on:
-
 		var bin_t0 = Time.get_ticks_usec()
 		build_grid(global_position_array)
 		bin_update_usec =  Time.get_ticks_usec() - bin_t0
 	var t0 := Time.get_ticks_usec()
-	#if photosynthesis_on:
-		#print(current_global_photosynthesis_rate[species_array[0].current_worldpos_cell_id[0]+1])
-		#diffuse_global_photosynthesis_rate = diffuse(current_global_photosynthesis_rate)
-		#print(diffuse_global_photosynthesis_rate[species_array[0].current_worldpos_cell_id[0]+1])
-	#print( Time.get_ticks_usec() - t0)
 	start_simulation(delta,sim_speed)
 	wait_simulation()
 	multithread_usec = Time.get_ticks_usec() - t0
@@ -340,8 +337,6 @@ func run_simulation2(delta: float, sim_speed: float):
 	update_alife()
 	merge_usec = Time.get_ticks_usec() -t2
 	main_usec = Time.get_ticks_usec() - t00
-
-	#MERGE
 
 
 
@@ -382,18 +377,15 @@ func wait_simulation() -> void:
 		gid = -1
 
 func update_alife()-> void:
+	#can be optimised? #TODO
 	global_position_array.clear()
 	global_species_offset.resize(species_array.size() + 1)
 	var total := 0
 
-	
 	for i in species_array.size():
 		var sp:= species_array[i]
 		sp.Build_and_remove_pendings()
 	
-
-	
-	#if  bin_on: 
 	for i in species_array.size():
 		var sp:= species_array[i]
 		global_species_offset[i] = total
@@ -410,38 +402,49 @@ func update_alife()-> void:
 		previous_global_photosynthesis_rate = current_global_photosynthesis_rate
 		current_global_photosynthesis_rate = prev_rate
 		current_global_photosynthesis_rate.fill(0)'
-######################TEST
+		
+##########################################################################################
+####BIN FUNCTION #TODO MOVE TO WORLD
+##########################################################################################
 
-var _next := PackedFloat32Array()
-'
-func diffuse(field: PackedFloat32Array, w: int = 2000, h: int =1, d: int = 2000, rate: float = 0.5) -> PackedFloat32Array:
-	w =  world.SUN_GRID_W
-	h =  world.SUN_GRID_H
-	d =  world.SUN_GRID_D
 
-	if _next.size() != field.size():
-		_next.resize(field.size())
-	var plane := w * h
-	for z in d:
-		var zi := z * plane
-		for y in h:
-			var row := zi + y * w
-			for x in w:
-				var i := row + x
-				var s := 0.0
-				var c := 0
-				if x > 0:     s += field[i - 1];     c += 1
-				if x < w - 1: s += field[i + 1];     c += 1
-				if y > 0:     s += field[i - w];     c += 1
-				if y < h - 1: s += field[i + w];     c += 1
-				if z > 0:     s += field[i - plane]; c += 1
-				if z < d - 1: s += field[i + plane]; c += 1
-				var v := field[i]
-				_next[i] = v + (s / c - v) * rate
-	# swap so the caller gets the new field without copying
-	var out := _next
-	_next = field
-	return out'
+func build_grid(position_arrayy: PackedVector3Array) -> void: #ADAPT TO GLOBAL POS ARRAY  #TODO move to world
+	var n := position_arrayy.size()
+	current_cell_id.resize(n)
+	cell_items.resize(n)
+	sorted_pos.resize(n)
+	cell_start.fill(0)
+	#var inv := 1.0 / cell_size
+	var inv := Vector3.ONE / cell_size   # (1/x, 1/y, 1/z)
+
+	# 1. Count particles per cell
+	for i in n:
+		var p := (position_arrayy[i] - bin_origin) * inv
+		var cx := clampi(roundi(p.x), 0, GRID_W - 1)
+		var cy := clampi(roundi(p.y), 0, GRID_H - 1)
+		var cz := clampi(roundi(p.z), 0, GRID_D - 1)
+		var c := cx + GRID_W * (cy + GRID_H * cz)   # inline, no second division
+		current_cell_id[i] = c
+		cell_start[c + 1] += 1
+
+	# 2. Prefix sum -> start offset of each cell
+	for c in NUM_CELLS:
+		cell_start[c + 1] += cell_start[c]
+		write_pos[c] = cell_start[c]
+
+	# 3. Scatter indices and positions into sorted order
+	for i in n:
+		var c := current_cell_id[i]
+		var w := write_pos[c]
+		cell_items[w] = i
+		sorted_pos[w] = position_arrayy[i]
+		write_pos[c] = w + 1
+		
+func flow_diffusion():
+	pass		
+		
+
+
 
 #########################################################################################
 ######################OLD SCRIPT BELOW###################################################
@@ -1007,53 +1010,3 @@ func pick_random_position(rangee: Vector3)-> Vector3: # should be 3
 	var y = randf_range(-rangee.y,rangee.y)
 
 	return Vector3(x,y,z)
-
-##########################################################################################
-####BIN FUNCTION
-##########################################################################################
-
-'func get_binID(p : Vector3, binS : float) -> Vector3i:	
-	#var array_size = World_Size/tile_size
-	return Vector3i(floori(p.x / binS), floori(p.y / binS), floori(p.z / binS))'
-
-	#return int(pos.x + array_size.x * (pos.y + array_size.y * pos.z))
-
-
-func cell_id(cx: int, cy: int, cz: int) -> int:
-	#USE here grid coordinate
-	return cx + GRID_W * (cy + GRID_H * cz)
-
-
-func build_grid(position_arrayy: PackedVector3Array) -> void: #ADAPT TO GLOBAL POS ARRAY 
-	var n := position_arrayy.size()
-	current_cell_id.resize(n)
-	cell_items.resize(n)
-	sorted_pos.resize(n)
-	cell_start.fill(0)
-	#var inv := 1.0 / cell_size
-	var inv := Vector3.ONE / cell_size   # (1/x, 1/y, 1/z)
-
-	# 1. Count particles per cell
-	for i in n:
-		var p := (position_arrayy[i] - bin_origin) * inv
-		var cx := clampi(roundi(p.x), 0, GRID_W - 1)
-		var cy := clampi(roundi(p.y), 0, GRID_H - 1)
-		var cz := clampi(roundi(p.z), 0, GRID_D - 1)
-		var c := cx + GRID_W * (cy + GRID_H * cz)   # inline, no second division
-		current_cell_id[i] = c
-		cell_start[c + 1] += 1
-
-	# 2. Prefix sum -> start offset of each cell
-	for c in NUM_CELLS:
-		cell_start[c + 1] += cell_start[c]
-		write_pos[c] = cell_start[c]
-
-	# 3. Scatter indices and positions into sorted order
-	for i in n:
-		var c := current_cell_id[i]
-		var w := write_pos[c]
-		cell_items[w] = i
-		sorted_pos[w] = position_arrayy[i]
-		write_pos[c] = w + 1
-func flow_diffusion():
-	pass

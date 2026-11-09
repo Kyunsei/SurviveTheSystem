@@ -74,7 +74,7 @@ var writting_rendering_buffer_usec:= 0.0'
 #const STRIDE := 12  #buffer + colors
 
 #####AI THINGS¬¬¬¬¬
-var AI_on := false
+#var AI_on := false
 var current_action :PackedByteArray
 var action_scores := PackedFloat32Array()  # allocated once, reused
 
@@ -226,13 +226,6 @@ func init(worldd,alifm):
 	#species_array[s].rendering = mm
 
 
-
-
-
-
-
-
-
 ####MULTITHREAD
 func set_chunk(n:int):
 	#for perf tracking 
@@ -251,6 +244,13 @@ func set_chunk(n:int):
 		photo_rate_per_chunk[i] = []
 		#r_data_per_chunk[i] = []
 	
+func Move_random(i,wrap_x,wrap_y,wrap_z,size):
+		var p: Vector3 = position_array[i] + Vector3(randf_range(-1, 1), 0, randf_range(-1, 1))
+		p.x = fposmod(p.x, size.x) if wrap_x else clampf(p.x, 0.0, size.x)
+		p.y = fposmod(p.y, size.y) if wrap_y else clampf(p.y, 0.0, size.y)
+		p.z = fposmod(p.z, size.z) if wrap_z else clampf(p.z, 0.0, size.z)
+		position_array[i] = p		
+
 
 
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void:
@@ -259,6 +259,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 	var homeo_on := alifemanager.homeostasis_on
 	var interaction_on := alifemanager.interaction_on
 	var bin_on := alifemanager.bin_on
+	var AI_on := alifemanager.AI_on
 	#var visu_on := alifemanager.visualisation_on
 	var photo_on := alifemanager.photosynthesis_on
 	var agent_photo_calculate := alifemanager.agent_calculated_photo_value
@@ -266,9 +267,23 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 	var grow_on := alifemanager.grow_on
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
+	#var mouse_target :Vector3 = alifemanager.mouse_position # Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
 
-									
 
+	if AI_on:
+		var size: Vector3 = world.size
+		var wrap_x: bool = world.border_type_x == world.Border.WRAP
+		var wrap_y: bool = world.border_type_y == world.Border.WRAP
+		var wrap_z: bool = world.border_type_z == world.Border.WRAP
+		for i in range(start, end):
+			Move_random(i,wrap_x,wrap_y,wrap_z,size)
+		
+	
+	
+
+
+		
+						
 	if !photo_on:
 		for i in range(start, end):
 			#var t := Time.get_ticks_usec()
@@ -352,78 +367,71 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			current_energy_array[i] = _energy
 		#photo_rate_per_chunk[local_id] = local_photo_rate
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
-	
-
 
 	if interaction_on and bin_on:
-		var radius := 8.0									
-		var W := alifemanager.GRID_W
-		var H := alifemanager.GRID_H
-		var D := alifemanager.GRID_D
-		var WH := W * H
-		var offs: PackedInt32Array = alifemanager.global_species_offset
-		var global_pos: PackedVector3Array = alifemanager.global_position_array
-		var cell_start: PackedInt32Array = alifemanager.cell_start
-		var cell_items: PackedInt32Array = alifemanager.cell_items
-		var species_array: PackedInt32Array = alifemanager.species_array  # precomputed once per frame
-		var size: Vector3 = world.size
-		var wrap_x: bool = world.border_type_x == world.Border.WRAP
-		var wrap_y: bool = world.border_type_y == world.Border.WRAP
-		var wrap_z: bool = world.border_type_z == world.Border.WRAP
-		var r2 := radius * radius
-		var base := offs[species_id]
-		var nx := mini(3, W)
-		var ny := mini(3, H)
-		var nz := mini(3, D)
+		if  alifemanager.global_position_array.size() >0 :
+			var radius := 8.0									
+			var W := alifemanager.GRID_W
+			var H := alifemanager.GRID_H
+			var D := alifemanager.GRID_D
+			var WH := W * H
+			var offs: PackedInt32Array = alifemanager.global_species_offset
+			var global_pos: PackedVector3Array = alifemanager.global_position_array
+			var cell_start: PackedInt32Array = alifemanager.cell_start
+			var cell_items: PackedInt32Array = alifemanager.cell_items
+			var species_array: PackedInt32Array = alifemanager.species_array  # precomputed once per frame
+			var size: Vector3 = world.size
+			var wrap_x: bool = world.border_type_x == world.Border.WRAP
+			var wrap_y: bool = world.border_type_y == world.Border.WRAP
+			var wrap_z: bool = world.border_type_z == world.Border.WRAP
+			var r2 := radius * radius
+			var base := offs[species_id]
+			var nx := mini(3, W)
+			var ny := mini(3, H)
+			var nz := mini(3, D)
 
-		for i in range(start, end):
-			var p: Vector3 = position_array[i]
-			var global_i := i + base
-			var c: int = current_grid_id[i]
-			var cx := c % W
-			var cy := (c / W) % H
-			var cz := c / WH
+			for i in range(start, end):
+				var p: Vector3 = position_array[i]
+				var global_i := i + base
+				var c: int = current_grid_id[i]
+				var cx := c % W
+				var cy := (c / W) % H
+				var cz := c / WH
 
-			for dz in range(-1, -1 + nz):
-				var z := cz + dz
-				if z < 0 or z >= D:
-					if not wrap_z: continue
-					z = posmod(z, D)
-				var zoff := z * WH
+				for dz in range(-1, -1 + nz):
+					var z := cz + dz
+					if z < 0 or z >= D:
+						if not wrap_z: continue
+						z = posmod(z, D)
+					var zoff := z * WH
 
-				for dy in range(-1, -1 + ny):
-					var y := cy + dy
-					if y < 0 or y >= H:
-						if not wrap_y: continue
-						y = posmod(y, H)
-					var yoff := zoff + y * W
+					for dy in range(-1, -1 + ny):
+						var y := cy + dy
+						if y < 0 or y >= H:
+							if not wrap_y: continue
+							y = posmod(y, H)
+						var yoff := zoff + y * W
 
-					for dx in range(-1, -1 + nx):
-						var x := cx + dx
-						if x < 0 or x >= W:
-							if not wrap_x: continue
-							x = posmod(x, W)
-						var cell := yoff + x
+						for dx in range(-1, -1 + nx):
+							var x := cx + dx
+							if x < 0 or x >= W:
+								if not wrap_x: continue
+								x = posmod(x, W)
+							var cell := yoff + x
 
-						for k in range(cell_start[cell], cell_start[cell + 1]):
-							var other: int = cell_items[k]
-							if other == global_i:
-								continue
-							var d: Vector3 = global_pos[other] - p
-							if wrap_x: d.x -= size.x * roundf(d.x / size.x)
-							if wrap_y: d.y -= size.y * roundf(d.y / size.y)
-							if wrap_z: d.z -= size.z * roundf(d.z / size.z)
-							if d.length_squared() <= r2:
-								var sp_i := species_array[other]
-								var local_idx := other - offs[sp_i]
-								# ... use neighbour
-													
-
-
-
-
-		
-				
+							for k in range(cell_start[cell], cell_start[cell + 1]):
+								var other: int = cell_items[k]
+								if other == global_i:
+									continue
+								var d: Vector3 = global_pos[other] - p
+								if wrap_x: d.x -= size.x * roundf(d.x / size.x)
+								if wrap_y: d.y -= size.y * roundf(d.y / size.y)
+								if wrap_z: d.z -= size.z * roundf(d.z / size.z)
+								if d.length_squared() <= r2:
+									var sp_i := species_array[other]
+									var local_idx := other - offs[sp_i]
+									# ... use neighbour
+																		
 	if grow_on:	
 		for i in range(start, end):
 			#var t := Time.get_ticks_usec()
@@ -462,61 +470,86 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 	
 
 
-####################RENDERING#################################################
-################################################################################
-const STATE_BITS  := 2
-const ACTION_BITS := 4
-const SIZE_BITS   := 6
-const AGE_BITS    := 12        # total must be <= 24
-
-const ACTION_SHIFT := STATE_BITS                  # 2
-const SIZE_SHIFT   := ACTION_SHIFT + ACTION_BITS  # 6
-const AGE_SHIFT    := SIZE_SHIFT + SIZE_BITS      # 12
-
-const STATE_MASK  := (1 << STATE_BITS) - 1        # 3
-const ACTION_MASK := (1 << ACTION_BITS) - 1       # 15
-const SIZE_MASK   := (1 << SIZE_BITS) - 1         # 63
-const AGE_MASK    := (1 << AGE_BITS) - 1          # 4095
-
-const SIZE_MIN := 0.5
-const SIZE_MAX := 100.0
-
-func pack_agent(size: float, action: int, state: int, age: int) -> float:
-	var q := roundi(clampf(inverse_lerp(SIZE_MIN, SIZE_MAX, size), 0.0, 1.0) * SIZE_MASK)
-	var v := (clampi(state, 0, STATE_MASK)) \
-		| (clampi(action, 0, ACTION_MASK) << ACTION_SHIFT) \
-		| (q << SIZE_SHIFT) \
-		| (clampi(age, 0, AGE_MASK) << AGE_SHIFT)
-	return float(v)
-
-func write_rendering_buffer_in_chunk(start: int, end: int) -> void:
-	var visu_on := alifemanager.visualisation_on #Can be set before probably
-	var r_data:= rend_data.data
-	#r_data.resize((end-start)*4)
-	if visu_on:
-		#var r_data:= renderer.data
-		for i in range(start, end):
-			var p:= position_array[i]
-			var o := i * 4 #need to match STRIDE of renderer
-			'if renderer.data[o + 3] != active_alife_array[i]:
-				continue'
-			r_data[o]     = p.x #* dt     # x
-			r_data[o + 1] = p.z # * dt     # y
-			r_data[o + 2] = active_alife_array[i]
-			r_data[o + 3] = pack_agent(current_size[i].x,0,active_alife_array[i],current_life_state[i])# current_life_state[i]
-		#r_data_per_chunk[local_id] = r_data
-
-'func update_renderer():
-	#for c in r_data_per_chunk.size():
-	#	rendering_data.append_array(r_data_per_chunk[c]) #NOT IN GOOD ORDER?? yes becuas elocal ID?
-	#renderer.data = rendering_data
-	renderer2D.upload(entity_count)
-	#rendering_data.clear()'
 	
 	
 
-##########################################################################
 
+##########################################################################################
+####GRID/SUN MANAGEMENT
+##########################################################################################
+const R_MAX := 3
+const RY_MAX := 3
+var offsets: Array[PackedInt32Array] = []   # index = r * (RY_MAX + 1) + ry
+
+func build_offsets() -> void:
+	offsets.resize((R_MAX + 1) * (RY_MAX + 1))
+	for r in R_MAX + 1:
+		for ry in RY_MAX + 1:
+			var list := PackedInt32Array()
+			for dz in range(-r, r + 1):
+				for dy in range(-ry, ry + 1):
+					for dx in range(-r, r + 1):
+						var nx := float(dx) / maxf(r, 0.5)
+						var ny := float(dy) / maxf(ry, 0.5)
+						var nz := float(dz) / maxf(r, 0.5)
+						if nx * nx + ny * ny + nz * nz > 1.0:
+							continue
+						list.append(dx)
+						list.append(dy)
+						list.append(dz)
+			offsets[r * (RY_MAX + 1) + ry] = list	
+
+func stamp(c: int, r: int, ry: int, layer: int, w: float) -> void:
+	if !alifemanager.agent_photo_stamp_on:
+		alifemanager.current_global_photosynthesis_rate[c] += w
+		return
+
+	var W: int = world.SUN_GRID_W
+	var H: int = world.SUN_GRID_H
+	var D: int = world.SUN_GRID_D
+	var PLANE := W * H
+
+	# split flat index c into x, y, z (layer shifts y upward)
+	var cx := c % W
+	var cy := (c / W) % H + layer
+	var cz := c / PLANE
+
+	var wrap_x: bool = world.border_type_x == world.Border.WRAP
+	var wrap_y: bool = world.border_type_y == world.Border.WRAP
+	var wrap_z: bool = world.border_type_z == world.Border.WRAP
+
+	var list: PackedInt32Array = offsets[r * (RY_MAX + 1) + ry]
+	for k in range(0, list.size(), 3):
+		var x := cx + list[k]
+		if wrap_x: x = posmod(x, W)
+		elif x < 0 or x >= W: continue
+
+		var y := cy + list[k + 1]
+		if wrap_y: y = posmod(y, H)
+		elif y < 0 or y >= H: continue
+
+		var z := cz + list[k + 2]
+		if wrap_z: z = posmod(z, D)
+		elif z < 0 or z >= D: continue
+
+		alifemanager.current_global_photosynthesis_rate[x + y * W + z * PLANE] += w
+
+	if layer != 0:
+		alifemanager.current_global_photosynthesis_rate[c] += w
+
+
+func get_cell_id(pos: Vector3,cell_size:Vector3, W:int , H:int, D:int)-> int :
+		var inv := Vector3.ONE / cell_size # worldd.SUN_cell_size   # (1/x, 1/y, 1/z)
+		var p := (pos - world.bin_origin) * inv  #MAYBE HERE TO CHANGE?
+		var cx := clampi(roundi(p.x), 0, W - 1)
+		var cy := clampi(roundi(p.y), 0, H - 1)
+		var cz := clampi(roundi(p.z), 0, D - 1)
+		var c := cx + W * (cy + H * cz)   # inline, no second division
+		return c
+
+##########################################################################################
+####ARRAY MANAGEMENT + SPAWN/REMOVE
+##########################################################################################
 	
 func Build_and_remove_pendings():
 	for c in spawn_per_chunk.size():
@@ -536,11 +569,6 @@ func Build_and_remove_pendings():
 	pending_spawn_id.clear()
 	pending_remove_id.clear()
 
-
-
-		
-
-		
 
 func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.0)):
 	if alifemanager.entity_count >= alifemanager.maxLife and alifemanager.maxLife>0:
@@ -653,160 +681,6 @@ func Release_Life(i):
 
 			
 	pending_multimesh_drawn_id.append(i)	
-	
-
-
-##########################################################################################
-####SUN/GRID MANAGEMENT
-##########################################################################################
-
-func stamp(c: int, r: int, ry: int, layer: int, w: float) -> void:
-	if !alifemanager.agent_photo_stamp_on:
-		alifemanager.current_global_photosynthesis_rate[c] += w
-		return
-
-	var W: int = world.SUN_GRID_W
-	var H: int = world.SUN_GRID_H
-	var D: int = world.SUN_GRID_D
-	var PLANE := W * H
-
-	# split flat index c into x, y, z (layer shifts y upward)
-	var cx := c % W
-	var cy := (c / W) % H + layer
-	var cz := c / PLANE
-
-	var wrap_x: bool = world.border_type_x == world.Border.WRAP
-	var wrap_y: bool = world.border_type_y == world.Border.WRAP
-	var wrap_z: bool = world.border_type_z == world.Border.WRAP
-
-	var list: PackedInt32Array = offsets[r * (RY_MAX + 1) + ry]
-	for k in range(0, list.size(), 3):
-		var x := cx + list[k]
-		if wrap_x: x = posmod(x, W)
-		elif x < 0 or x >= W: continue
-
-		var y := cy + list[k + 1]
-		if wrap_y: y = posmod(y, H)
-		elif y < 0 or y >= H: continue
-
-		var z := cz + list[k + 2]
-		if wrap_z: z = posmod(z, D)
-		elif z < 0 or z >= D: continue
-
-		alifemanager.current_global_photosynthesis_rate[x + y * W + z * PLANE] += w
-
-	if layer != 0:
-		alifemanager.current_global_photosynthesis_rate[c] += w
-
-func stamp2(c: int, r: int, ry: int,layer:int, w: float) -> void:
-	#alifemanager.current_global_photosynthesis_rate[c] += w
-	#return
-	
-	var c_up := c  +  world.SUN_GRID_W*layer
-	if !alifemanager.agent_photo_stamp_on:
-		alifemanager.current_global_photosynthesis_rate[c] += w
-		return
-	for off in offsets[r * (RY_MAX + 1) + ry]:
-		if c_up+ off >= alifemanager.current_global_photosynthesis_rate.size():
-			continue
-		alifemanager.current_global_photosynthesis_rate[c_up + off] += w
-	
-	if layer != 0:
-		alifemanager.current_global_photosynthesis_rate[c] += w
-
-
-func stamp3(c: int, r: int, w: float, ry: int = -1) -> void:
-	if ry < 0:
-		#ry = r  # cube by default; pass ry = 0 for a flat square on one level
-		ry = 0
-	var W := world.SUN_GRID_W
-	var H := world.SUN_GRID_H
-	var D := world.SUN_GRID_D
-	var plane := W * H
-
-	# decode the central cell
-	var cx := c % W
-	var cy := (c / W) % H
-	var cz := c / plane
-
-	# clamp the box to the grid
-	var x0 := maxi(cx - r, 0)
-	var x1 := mini(cx + r, W - 1)
-	var y0 := maxi(cy - ry, 0)
-	var y1 := mini(cy + ry, H - 1)
-	var z0 := maxi(cz - r, 0)
-	var z1 := mini(cz + r, D - 1)
-
-	for z in range(z0, z1 + 1):
-		var zoff := z * plane
-		for y in range(y0, y1 + 1):
-			var row := zoff + y * W
-			for x in range(x0, x1 + 1):
-				
-				alifemanager.current_global_photosynthesis_rate[row + x] += w
-
-func get_cell_id(pos: Vector3,cell_size:Vector3, W:int , H:int, D:int)-> int :
-		var inv := Vector3.ONE / cell_size # worldd.SUN_cell_size   # (1/x, 1/y, 1/z)
-		var p := (pos - world.bin_origin) * inv  #MAYBE HERE TO CHANGE?
-		var cx := clampi(roundi(p.x), 0, W - 1)
-		var cy := clampi(roundi(p.y), 0, H - 1)
-		var cz := clampi(roundi(p.z), 0, D - 1)
-		var c := cx + W * (cy + H * cz)   # inline, no second division
-		return c
-		
-func collect(c: int, r: int, ry: int, w: float) -> float:
-	var total := 0.0
-	for off in offsets[r * (RY_MAX + 1) + ry]:
-			var cc := c + off
-			var d := alifemanager.current_global_photosynthesis_rate[cc]
-			if d > 1e-6:
-				total += world.SUN_GRID[cc] * w / d
-	return total		
-		
-		
-const R_MAX := 3
-const RY_MAX := 3
-var offsets: Array[PackedInt32Array] = []   # index = r * (RY_MAX + 1) + ry
-
-func build_offsets2() -> void:
-	var W := world.SUN_GRID_W
-	var H := world.SUN_GRID_H
-	var D := world.SUN_GRID_D
-	var PLANE := W * H
-
-	offsets.resize((R_MAX + 1) * (RY_MAX + 1))
-	for r in R_MAX + 1:
-		for ry in RY_MAX + 1:
-			var list := PackedInt32Array()
-			for dz in range(-r, r + 1):
-				for dy in range(-ry, ry + 1):
-					for dx in range(-r, r + 1):
-						list.append(dx + dy * W + dz* PLANE)
-			offsets[r * (RY_MAX + 1) + ry] = list	
-
-func build_offsets() -> void:
-	offsets.resize((R_MAX + 1) * (RY_MAX + 1))
-	for r in R_MAX + 1:
-		for ry in RY_MAX + 1:
-			var list := PackedInt32Array()
-			for dz in range(-r, r + 1):
-				for dy in range(-ry, ry + 1):
-					for dx in range(-r, r + 1):
-						var nx := float(dx) / maxf(r, 0.5)
-						var ny := float(dy) / maxf(ry, 0.5)
-						var nz := float(dz) / maxf(r, 0.5)
-						if nx * nx + ny * ny + nz * nz > 1.0:
-							continue
-						list.append(dx)
-						list.append(dy)
-						list.append(dz)
-			offsets[r * (RY_MAX + 1) + ry] = list	
-		
-##########################################################################################
-####ARRAY MANAGEMENT
-##########################################################################################
-
-
 
 func find_free_index():
 	var i : int
@@ -816,18 +690,9 @@ func find_free_index():
 		i = entity_count
 	return i 	
 
-
-
-func pick_random_position2(rangee: Vector3,center: Vector3)-> Vector3: # should be 3
-
-
-	var x = randf_range(-rangee.x,rangee.x)
-	var z = randf_range(-rangee.z,rangee.z)
-	var y = randf_range(-rangee.y,rangee.y)
-
-	return Vector3(x,y,z)
-
-
+##########################################################################################
+####HELP FUNCTION
+##########################################################################################
 
 func pick_random_on_axis(range_array: float, mid_point: float, border_type: int, limit: float) -> float:
 	var lo := mid_point - range_array
@@ -845,6 +710,52 @@ func pick_random_position(rangee: Vector3, centerr: Vector3) -> Vector3:
 		pick_random_on_axis(rangee.z,centerr.z ,world.border_type_z, world.size.z)
 	)
 
+
+################################################################################
+####RENDERING: write data to renderer #TODO OPTIMISATION
+## LOOK also at script for renderer 2D/3D and visu manager
+################################################################################
+const STATE_BITS  := 2
+const ACTION_BITS := 4
+const SIZE_BITS   := 6
+const AGE_BITS    := 12        # total must be <= 24
+
+const ACTION_SHIFT := STATE_BITS                  # 2
+const SIZE_SHIFT   := ACTION_SHIFT + ACTION_BITS  # 6
+const AGE_SHIFT    := SIZE_SHIFT + SIZE_BITS      # 12
+
+const STATE_MASK  := (1 << STATE_BITS) - 1        # 3
+const ACTION_MASK := (1 << ACTION_BITS) - 1       # 15
+const SIZE_MASK   := (1 << SIZE_BITS) - 1         # 63
+const AGE_MASK    := (1 << AGE_BITS) - 1          # 4095
+
+const SIZE_MIN := 0.5
+const SIZE_MAX := 100.0
+
+func pack_agent(size: float, action: int, state: int, age: int) -> float:
+	var q := roundi(clampf(inverse_lerp(SIZE_MIN, SIZE_MAX, size), 0.0, 1.0) * SIZE_MASK)
+	var v := (clampi(state, 0, STATE_MASK)) \
+		| (clampi(action, 0, ACTION_MASK) << ACTION_SHIFT) \
+		| (q << SIZE_SHIFT) \
+		| (clampi(age, 0, AGE_MASK) << AGE_SHIFT)
+	return float(v)
+
+func write_rendering_buffer_in_chunk(start: int, end: int) -> void:
+	var visu_on := alifemanager.visualisation_on #Can be set before probably
+	var r_data:= rend_data.data
+	#r_data.resize((end-start)*4)
+	if visu_on:
+		#var r_data:= renderer.data
+		for i in range(start, end):
+			var p:= position_array[i]
+			var o := i * 4 #need to match STRIDE of renderer
+			'if renderer.data[o + 3] != active_alife_array[i]:
+				continue'
+			r_data[o]     = p.x #* dt     # x
+			r_data[o + 1] = p.z # * dt     # y
+			r_data[o + 2] = active_alife_array[i]
+			r_data[o + 3] = pack_agent(current_size[i].x,0,active_alife_array[i],current_life_state[i])# current_life_state[i]
+		#r_data_per_chunk[local_id] = r_data
 
 
 
@@ -883,149 +794,3 @@ func getChunk_perf():
 	multithread_efficiency = float(total) / maxf(1.0, float(main_usec))
 	nThreadused = threads.size() # OS.get_processor_count()
 	
-
-
-
-
-##########################################################################################
-####BIN FUNCTION
-##########################################################################################
-
-'func get_binID(p : Vector3, binS : float) -> Vector3i:	
-	#var array_size = World_Size/tile_size
-	return Vector3i(floori(p.x / binS), floori(p.y / binS), floori(p.z / binS))'
-
-	#return int(pos.x + array_size.x * (pos.y + array_size.y * pos.z))
-
-
-'func cell_id(cx: int, cy: int, cz: int) -> int:
-	#USE here grid coordinate
-	return cx + GRID_W * (cy + GRID_H * cz)'
-
-
-
-
-
-'func build_grid(position_array: PackedVector3Array) -> void:
-	var n := position_array.size()
-	current_cell_id.resize(n)
-	cell_items.resize(n)
-	sorted_pos.resize(n)
-	cell_start.fill(0)
-	var inv := 1.0 / cell_size
-
-	# 1. Count particles per cell
-	for i in n:
-		var p := (position_array[i] - bin_origin) * inv
-		var cx := clampi(roundi(p.x), 0, GRID_W - 1)
-		var cy := clampi(roundi(p.y), 0, GRID_H - 1)
-		var cz := clampi(roundi(p.z), 0, GRID_D - 1)
-		var c := cx + GRID_W * (cy + GRID_H * cz)   # inline, no second division
-		current_cell_id[i] = c
-		cell_start[c + 1] += 1
-
-	# 2. Prefix sum -> start offset of each cell
-	for c in NUM_CELLS:
-		cell_start[c + 1] += cell_start[c]
-		write_pos[c] = cell_start[c]
-
-	# 3. Scatter indices and positions into sorted order
-	for i in n:
-		var c := current_cell_id[i]
-		var w := write_pos[c]
-		cell_items[w] = i
-		sorted_pos[w] = position_array[i]
-		write_pos[c] = w + 1'
-	
-'func update_bin_array(i, world):
-	var bin_id := get_binID(position_array[i], bin_size, world.size)
-	if current_bin_id[i] == bin_id:
-		return
-	if not bin_ids_array.has(bin_id):
-		bin_ids_array[bin_id] = []
-	bin_ids_array[bin_id].append(i)
-	if bin_ids_array.has(current_bin_id[i]):
-		bin_ids_array[current_bin_id[i]].erase(i)
-	current_bin_id[i] = bin_id'
-
-'func update_bin_array(i):
-	var bin_id := get_binID(position_array[i], bin_size, world_size)
-	if current_bin_id[i] == bin_id:
-		return
-	if not LifeBin_array.has(bin_id):
-		bin_ids_array[bin_id] = []
-	bin_ids_array[bin_id].append(i)
-	if bin_ids_array.has(current_bin_id[i]):
-		bin_ids_array[current_bin_id[i]].erase(i)
-	current_bin_id[i] = bin_id'
-
-
-
-
-
-'func get_index_in_bin_around(bin_array,i,radius):
-	var bin_index = binID_array[i]
-	var result : PackedInt32Array
-	var GRID_WIDTH: int =  int(World.World_Size.x/ World.bin_size.x)
-	var GRID_HEIGHT: int =  int(World.World_Size.z/ World.bin_size.z)
-
-	var row = bin_index / GRID_WIDTH
-	var col = bin_index % GRID_WIDTH
-	for dy in range(-radius, radius + 1):
-		for dx in range(-radius, radius + 1):
-			var nx = col + dx
-			var ny = row + dy
-			# Edge clamp — skip cells outside grid bounds
-			if nx < 0 or nx >= GRID_WIDTH:
-				continue
-			if ny < 0 or ny >= GRID_HEIGHT:
-				continue
-
-			var neighbor_bin = ny * GRID_WIDTH + nx
-
-			# Append all agent indices stored in that bin
-			if bin_array[neighbor_bin]:
-				var agents_in_bin: PackedInt32Array = bin_array[neighbor_bin]
-				for agent_idx in agents_in_bin:
-					result.append(agent_idx)
-	return result'
-'func get_real_current_bin(i):
-	var w_pos = World.get_PositionInGrid(position_array[i],World.bin_size)
-	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)	
-	return new_bin_ID'
-
-'func put_in_world_bin(i):
-	var bin_ID = binID_array[i]
-	var w_pos = World.get_PositionInGrid(position_array[i],World.bin_size)
-	#var w_pos = World.get_PositionInGrid(g.position,World.bin_size)
-	var new_bin_ID = World.index_3dto1d(w_pos.x, w_pos.y, w_pos.z, World.bin_size)
-	if new_bin_ID < 0 or new_bin_ID >= World.bin_array.size():
-		#print("life out of world")
-		remove_from_world_bin(i)
-		return
-	if bin_ID != new_bin_ID:
-		remove_from_world_bin(i)
-		binID_array[i] = new_bin_ID
-		#g["bin_ID"] = new_bin_ID
-	if World.bin_array[new_bin_ID] == null:
-		World.bin_array[new_bin_ID] = [i]
-		#World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
-		#species_world_array[Species_array[i]][new_bin_ID] += 1
-		sum_species_world_array[Species_array[i]][new_bin_ID] += 1
-	else:	
-		World.bin_array[new_bin_ID].append(i) 
-		#World.bin_sum_array[Species_array[i]][new_bin_ID] += 1
-		#species_world_array[Species_array[i]][new_bin_ID] += 1
-		sum_species_world_array[Species_array[i]][new_bin_ID] += 1
-
-	#binID_array[i] = new_bin_ID'
-
-'func remove_from_world_bin(i):
-
-	if binID_array[i] >= 0:
-		if World.bin_array[binID_array[i]].has(i):
-			World.bin_array[binID_array[i]].erase(i)
-			#World.bin_sum_array[Species_array[i]][binID_array[i]] -= 1
-			sum_species_world_array[Species_array[i]][binID_array[i]] -= 1
-			#field_world_array[Species_array[i]][binID_array[i]] -= 1
-			binID_array[i] = -1'
