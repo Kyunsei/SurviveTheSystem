@@ -349,6 +349,9 @@ func start_simulation(delta: float, sim_speed: float):
 	for s in species_array:
 		entity_count += s.entity_count
 		s.mouse_target =  mouse
+		s.build_field()
+		
+
 
 	#setup thread/chunk/jobs
 	jobs.clear()
@@ -385,6 +388,7 @@ func update_alife()-> void:
 	for i in species_array.size():
 		var sp:= species_array[i]
 		sp.Build_and_remove_pendings()
+		#sp.
 	
 	for i in species_array.size():
 		var sp:= species_array[i]

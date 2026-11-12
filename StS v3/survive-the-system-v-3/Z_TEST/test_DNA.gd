@@ -89,7 +89,6 @@ var MOMENTUM := 1.2
 var mouse_target : Vector3
 
 ### ALIFE GRID - agent - agent close detection
-
 #old? CHECK THSI ONE?
 
 'var bin_on = false
@@ -109,6 +108,20 @@ var write_pos := PackedInt32Array()      # size NUM_CELLS (scratch)
 var cell_items := PackedInt32Array()     # size = alife count
 var current_cell_id := PackedInt32Array()  # size = alife count
 var sorted_pos := PackedVector3Array()'
+
+####FLOW FIELD
+var FIELD: PackedFloat32Array
+var FIELD_velocity: PackedVector3Array
+
+var FLOW: PackedFloat32Array #can be computed on the go?
+var FLOW_tmp: PackedFloat32Array
+var FLOW_dir :PackedVector3Array
+var field_cell_size := Vector3(50,20,50)
+var FIELD_W : int
+var FIELD_H : int
+var FIELD_D : int
+var FIELD_NUM_CELLS : int
+
 
 ###SpeciesParameters
 var growth_rate := 0.25
@@ -217,7 +230,7 @@ func init(worldd,alifm):
 	alifemanager = alifm
 	#init_GRID(world.size)
 	build_offsets()
-
+	init_field_grid(world)
 	##Rendering
 	#rend_data = AlifeRenderingData.new()
 	#rendering_buffer.resize(rendering.multimesh.instance_count * STRIDE)
@@ -230,6 +243,33 @@ func init(worldd,alifm):
 	#rendering.init(self,world)
 	#multimesh.species = self
 	#species_array[s].rendering = mm
+
+func init_field_grid(worldd:World):
+	var dims := Vector3i((world.size / field_cell_size).ceil())
+	FIELD_W = dims.x         # cells along x
+	FIELD_H = dims.y       # cells along y
+	FIELD_D = dims.z         # cells along z
+	FIELD_NUM_CELLS = FIELD_W * FIELD_H * FIELD_D
+	FIELD.clear()
+	FIELD.resize(FIELD_NUM_CELLS)
+	FIELD.fill(0)
+	
+	FLOW.clear()
+	FLOW.resize(FIELD_NUM_CELLS)
+	FLOW.fill(0.0)
+
+	FLOW_tmp.clear()
+	FLOW_tmp.resize(FIELD_NUM_CELLS)
+	FLOW_tmp.fill(0.0)
+	
+	Vector3.ZERO
+	FLOW_dir.clear()
+	FLOW_dir.resize(FIELD_NUM_CELLS)
+	#FLOW_tmp.fill(0.0)
+		
+	FIELD_velocity.clear()
+	FIELD_velocity.resize(FIELD_NUM_CELLS)
+	FIELD_velocity.fill(Vector3.ZERO)
 
 
 ####MULTITHREAD
@@ -274,6 +314,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 	var wrap_y: bool = world.border_type_y == world.Border.WRAP
 	var wrap_z: bool = world.border_type_z == world.Border.WRAP
 
+	var field_on:= true 
+	
 	if AI_on:
 
 		'for i in range(start, end):
@@ -484,6 +526,78 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 		remove_per_chunk[local_id] = local_pending_remove_id
 	
 
+
+func build_field():
+	var field_on := true
+	var diffusion := 0.3
+	var decay := 0.8
+	if field_on:
+		var H:= FIELD_H
+		var W:= FIELD_W
+		var D:= FIELD_D
+		var wrap_x: bool = world.border_type_x == world.Border.WRAP
+		var wrap_y: bool = world.border_type_y == world.Border.WRAP
+		var wrap_z: bool = world.border_type_z == world.Border.WRAP
+		FIELD.fill(0)
+		FIELD_velocity.fill(Vector3.ZERO)
+		
+		for z in D:
+			for y in H:
+				for x in W:
+					var c := x + W * (y + H * z)
+					var s := FLOW[c]
+					var sum := 0.0
+					var k := 0
+					for o in [_cell_index(x + 1, y, z,W,H,D,wrap_x,wrap_y,wrap_z), _cell_index(x - 1, y, z,W,H,D,wrap_x,wrap_y,wrap_z),
+							  _cell_index(x, y + 1, z,W,H,D,wrap_x,wrap_y,wrap_z), _cell_index(x, y - 1, z,W,H,D,wrap_x,wrap_y,wrap_z),
+							  _cell_index(x, y, z + 1,W,H,D,wrap_x,wrap_y,wrap_z), _cell_index(x, y, z - 1,W,H,D,wrap_x,wrap_y,wrap_z)]:
+						if o >= 0 and o != c:
+							sum += FLOW[o]
+							k += 1
+					var avg := sum / k if k > 0 else s
+					FLOW_tmp[c] = (s + (avg - s) * diffusion) * decay
+		var t := FLOW; FLOW = FLOW_tmp; FLOW_tmp = t	
+		
+		for z in D:
+			for y in H:
+				for x in W:
+					var c := x + W * (y + H * z)
+					var s := FLOW[c]
+					var g := Vector3(
+						_scent(x + 1, y, z, s,W,H,D,wrap_x,wrap_y,wrap_z) - _scent(x - 1, y, z, s,W,H,D,wrap_x,wrap_y,wrap_z),
+						_scent(x, y + 1, z, s,W,H,D,wrap_x,wrap_y,wrap_z) - _scent(x, y - 1, z, s,W,H,D,wrap_x,wrap_y,wrap_z),
+						_scent(x, y, z + 1, s,W,H,D,wrap_x,wrap_y,wrap_z) - _scent(x, y, z - 1, s,W,H,D,wrap_x,wrap_y,wrap_z))
+					FLOW_dir[c] = g if g.length_squared() > 1e-8 else Vector3.ZERO
+		
+
+		for i in range(entity_count):
+			if active_alife_array[i]:
+				var p := position_array[i]
+				var cx := mini(int(p.x / field_cell_size.x), W - 1)
+				var cy := mini(int(p.y / field_cell_size.y), H - 1)
+				var cz := mini(int(p.z / field_cell_size.z), D - 1)
+				var c := cx + W * (cy + H * cz)
+				
+				FIELD[c] += 1 #* weight *dt?
+				FIELD_velocity[c] += current_velocity[i]
+				FLOW[c] += 1.0
+
+func _cell_index(x: int, y: int, z: int,W,H,D,wrap_x,wrap_y,wrap_z) -> int:
+	
+	if x < 0 or x >= W:
+		if not wrap_x: return -1      # beyond a wall: no cell
+		x = posmod(x, W)              # wrap: come back on the other side
+	if y < 0 or y >= H:
+		if not wrap_y: return -1
+		y = posmod(y, H)
+	if z < 0 or z >= D:
+		if not wrap_z: return -1
+		z = posmod(z, D)
+	return x + W * (y + H * z)        # same layout as your grid	
+
+func _scent(x: int, y: int, z: int, fallback: float,W,H,D,wrap_x,wrap_y,wrap_z) -> float:
+	var c := _cell_index(x, y, z,W,H,D,wrap_x,wrap_y,wrap_z)          # coordinates → flat index (wraps, or -1 at a wall)
+	return fallback if c < 0 else FLOW[c]
 ##########################################################################################
 #### Main loop function
 ##########################################################################################
@@ -530,9 +644,10 @@ func Flock(start,end,dt):
 	var w_alignment := 1.0
 	var w_cohesion := 0.5
 	var max_force := 10.0
+	var my_end := offs[species_id + 1]
+	var max_neighbors := 8
 
 
-	var total_n := 0
 	for i in range(start, end):
 		var n:= 0 #number of compatible neighbour
 		var sum_d := Vector3.ZERO      # for cohesion sum dist
@@ -550,53 +665,55 @@ func Flock(start,end,dt):
 		var cz := mini(int(p.z / cell_size.z), D - 1)
 		var c := cx + W * (cy + H * cz)
 		for dz in range(-1, -1 + nz):
+			if n >= max_neighbors: break
 			var z := cz + dz
-			if z < 0 or z >= D:
+			var sz := 0.0
+			if z < 0:
 				if not wrap_z: continue
-				z = posmod(z, D)
-			var zoff := z * WH
+				z += D; sz = -world_size.z
+			elif z >= D:
+				if not wrap_z: continue
+				z -= D; sz = world_size.z
+
 			for dy in range(-1, -1 + ny):
+				if n >= max_neighbors: break
 				var y := cy + dy
-				if y < 0 or y >= H:
+				var sy := 0.0
+				if y < 0:
 					if not wrap_y: continue
-					y = posmod(y, H)
-				var yoff := zoff + y * W
+					y += H; sy = -world_size.y
+				elif y >= H:
+					if not wrap_y: continue
+					y -= H; sy = world_size.y
+
 				for dx in range(-1, -1 + nx):
+					if n >= max_neighbors: break
 					var x := cx + dx
-					if x < 0 or x >= W:
+					var sx := 0.0
+					if x < 0:
 						if not wrap_x: continue
-						x = posmod(x, W)
-					var cell := yoff + x
-					
+						x += W; sx = -world_size.x
+					elif x >= W:
+						if not wrap_x: continue
+						x -= W; sx = world_size.x
+
+					var cell := x + W * (y + H * z)
+					var shift_p := Vector3(sx, sy, sz) - p   # one shift per cell
 					for k in range(cell_start[cell], cell_start[cell + 1]):
 						var other: int = cell_items[k]
-					
-						if other == global_i:
+						if other < base or other >= my_end or other == global_i: #WORK ONLY IF SELF SPECIES
 							continue
-				
-						var d: Vector3 = (global_sorted_pos[k] - p)
-						if wrap_x: d.x -= world_size.x * roundf(d.x / world_size.x)
-						if wrap_y: d.y -= world_size.y * roundf(d.y / world_size.y)
-						if wrap_z: d.z -= world_size.z * roundf(d.z / world_size.z)
-						var dist2: = d.length_squared()
-						
-						if dist2 > view_r2 or dist2 ==0:
+						var d: Vector3 = global_sorted_pos[k] + shift_p
+						var dist2 := d.length_squared()
+						if dist2 > view_r2 or dist2 == 0.0:
 							continue
-						#print(dist2)
-						var sp_i := offs.bsearch(other, false) - 1
-						var sp_other := species_array[sp_i] #TODO HERE
-						var local_idx := other - offs[sp_i]
-						
-						if species_id == sp_i:
-											# same species -> flock with it
-							n += 1
-							sum_d += d
-							sum_v += sp_other.current_velocity[local_idx]
-							if dist2 < sep_r2:
-								sep -= d / dist2           # stronger the closer it is
-							#elif sp.is_predator:               # <- adapt to your predator check
-							#	flee -= d / dist2
-							#	threatened = tru
+						n += 1
+						sum_d += d
+						sum_v += current_velocity[other - base]  #WORK ONLY IF SELF SPECIES
+						if dist2 < sep_r2:
+							sep -= d / dist2
+						if n >= max_neighbors:
+							break
 
 		var steer := Vector3.ZERO
 		if n>0 :

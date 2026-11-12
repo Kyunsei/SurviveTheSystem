@@ -47,12 +47,17 @@ func _ready() -> void:
 	#buff = multimesh.get_buffer()
 
 
-func init(cell_size):
+func init(cell_size, shape:= 0):
 	multimesh.visible_instance_count = 0
-	var quad = QuadMesh.new()
-	quad.size = Vector2(cell_size.x-1, cell_size.z-1)
+	var mesh
+	if shape == 0:
+		var quad = QuadMesh.new()
+		quad.size = Vector2(cell_size.x-1, cell_size.z-1)
+		mesh = quad
+	if shape == 1:
+		mesh = make_triangle(cell_size.x)
 	#bin_size = alifemanager.bin_size
-	multimesh.mesh = quad
+	multimesh.mesh = mesh
 
 
 func build_quad_mesh():
@@ -61,11 +66,12 @@ func build_quad_mesh():
 	return quad
 
 
-func make_triangle(size:float) -> ArrayMesh:
+func make_triangle(length:float, width: float = 0.35) -> ArrayMesh:
+	var half_w := length * width * 0.5
 	var verts := PackedVector2Array([
-		Vector2(0.0,-size),
-		Vector2(size * 0.866,size*0.5),
-		Vector2(-size * 0.866,size*0.5),
+		Vector2(length * 0.6, 0.0),        # tip
+		Vector2(-length * 0.4, half_w),    # back corner
+		Vector2(-length * 0.4, -half_w),   # back corner
 	])
 	var uvs := PackedVector2Array([
 		Vector2(0.5,0.0),
@@ -146,25 +152,36 @@ func update_all2(value_array, W:int,H:int,D:int,cell_size:float):
 	update_all_usec = Time.get_ticks_usec() - t0 #work because calle din second
 
 
-func update_all(value_array, W: int, H: int, D: int, cell_size: Vector3,col:Color) -> void:
+func update_all(value_array, W: int, H: int, D: int, cell_size: Vector3,col:Color,max:=4.0, shape:= 0) -> void:
 	var t0 := Time.get_ticks_usec()
-	value_array[10] = 4
-	value_array[10 + W] = 4
-	init(cell_size)
+
+	init(cell_size,shape)
 	var ii := 0
-	var cy := current_layer # to see by layer in y 
+	var cy :int= clamp(current_layer,0,H-1) # to see by layer in y 
 	for cz in D:
 		for cx in W:
 			#var cc := cx + W * current_layer * cz          # replace H by y = 0 layer
 			#var cc := cx + W * cy + D * cz   # inline, no second division
 			var cc := cx + W * (cy + H * cz)   # inline, no second division
 		
-			var v = clamp(value_array[cc]/4. ,0.,1.)  
+			var v = 0.5 
 
 			#var v = lerp(0.25,0.8,value_array[c])       # the cell's value, if needed
-			var pos := Vector2(cx, cz) * Vector2(cell_size.x, cell_size.z)
+			var pos := Vector2(cx, cz) * Vector2(cell_size.x, cell_size.z) + Vector2(cell_size.x/2,cell_size.z/2)
+			var angle := 0.0
+			if shape == 1:
+				var vec: Vector3 = value_array[cc]
+				#var angle := atan2(vec.y, vec.x) 
+				angle = atan2(vec.z, vec.x)   # if your direction is in x,z (data from a 3D grid)
+				var strength := vec.length()
+				var dir := vec / strength
+	
+				v = clampf(strength/max, 0.0, 1.0)
+			else:
+				v = clamp(value_array[cc]/max ,0.,1.)  
+			
 			col.a =v
-			multimesh.set_instance_transform_2d(ii, Transform2D(0.0, pos))
+			multimesh.set_instance_transform_2d(ii, Transform2D(angle, pos))
 			multimesh.set_instance_color(ii, col)
 			ii += 1
 

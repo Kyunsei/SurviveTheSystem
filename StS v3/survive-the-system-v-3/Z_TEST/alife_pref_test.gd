@@ -132,6 +132,18 @@ func run_visualisation():
 		$Visual/MultiMesh_BIN.update_all($World.SUN_GRID,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
 	if visu_sun_stamp_on:	
 		$Visual/MultiMesh_BIN.update_all($AlifeManager.current_global_photosynthesis_rate,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
+	if visu_field_on:
+		var sp =$AlifeManager.species_array[ visu_sp_selected ]
+		$Visual/MultiMesh_BIN.update_all(sp.FIELD,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,10,0)
+		 #,Color(0.324, 0.758, 0.814, 1.0))
+	if visu_flow_on:
+		var sp =$AlifeManager.species_array[ visu_sp_selected ]
+
+		$Visual/MultiMesh_BIN.update_all(sp.FLOW,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,10, 0)
+
+	if visu_flow_dir_on:
+		var sp =$AlifeManager.species_array[ visu_sp_selected ]
+		$Visual/MultiMesh_BIN.update_all(sp.FLOW_dir,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,10, 1)
 
 	visu_usec = Time.get_ticks_usec() - t
 	
@@ -469,7 +481,10 @@ func _on_fullrange_on_2_toggled(toggled_on: bool) -> void:
 var visu_sun_flow_on:= false
 var visu_sun_stamp_on:= false
 var visu_sun_value_on:= false
-
+var visu_field_on := false
+var visu_flow_on := false
+var visu_sp_selected := 0
+var visu_flow_dir_on:= false
 
 func _on_stamp_toggled(toggled_on: bool) -> void:
 	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
@@ -507,3 +522,23 @@ func _on_borderz_item_selected(index: int) -> void:
 
 func _on_interaction_onoff_toggled(toggled_on: bool) -> void:
 	$AlifeManager.interaction_on = toggled_on
+
+
+func _on_flow_toggled(toggled_on: bool) -> void:
+	visu_flow_on = toggled_on
+
+
+func _on_field_toggled(toggled_on: bool) -> void:
+	visu_field_on = toggled_on
+
+
+func _on_layer_text_submitted(new_text: String) -> void:
+	$Visual/MultiMesh_BIN.current_layer = int(new_text)
+
+
+func _on_sp_text_submitted(new_text: String) -> void:
+	visu_sp_selected = clamp(int(new_text),0,$AlifeManager.species_array.size()-1)
+
+
+func _on_dir_toggled(toggled_on: bool) -> void:
+	visu_flow_dir_on = toggled_on

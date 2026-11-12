@@ -73,6 +73,7 @@ text = "Hide Interface"
 [node name="simulation_UI" type="CanvasLayer" parent="." unique_id=438579712]
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_top = 4.0
@@ -801,7 +802,6 @@ offset_right = 702.0
 offset_bottom = 578.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -837,10 +837,10 @@ text = "ALife"
 
 [node name="ButtonFlowVisualisation3" type="Button" parent="simulation_UI/Rendering" unique_id=849010180]
 layout_mode = 0
-offset_left = 46.0
-offset_top = 253.0
-offset_right = 250.0
-offset_bottom = 284.0
+offset_left = 45.0
+offset_top = 289.0
+offset_right = 249.0
+offset_bottom = 320.0
 disabled = true
 toggle_mode = true
 text = "Off/On Flow Visualisation"
@@ -900,6 +900,89 @@ offset_top = 3.0
 offset_right = -7.0
 offset_bottom = 26.0
 text = "Layer"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/Sun" unique_id=454583276]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 221.0
+offset_right = 48.0
+offset_bottom = 244.0
+text = "SUN"
+
+[node name="FIELD" type="Control" parent="simulation_UI/Rendering" unique_id=1340767008]
+anchors_preset = 0
+offset_left = -1.0
+offset_top = 33.0
+offset_right = 39.0
+offset_bottom = 73.0
+
+[node name="FLOW" type="Button" parent="simulation_UI/Rendering/FIELD" unique_id=1891167157]
+layout_mode = 0
+offset_left = 127.0
+offset_top = 218.0
+offset_right = 185.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "FLOW"
+
+[node name="FIELD" type="Button" parent="simulation_UI/Rendering/FIELD" unique_id=420266195]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 218.0
+offset_right = 123.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "FIELD
+"
+
+[node name="dir" type="Button" parent="simulation_UI/Rendering/FIELD" unique_id=638753755]
+layout_mode = 0
+offset_left = 187.0
+offset_top = 218.0
+offset_right = 249.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "SCENT"
+
+[node name="sp" type="LineEdit" parent="simulation_UI/Rendering/FIELD" unique_id=379139214]
+layout_mode = 0
+offset_left = 332.0
+offset_top = 217.0
+offset_right = 400.5
+offset_bottom = 248.0
+text = "0"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/FIELD/sp" unique_id=759821312]
+layout_mode = 0
+offset_left = -67.0
+offset_top = 4.0
+offset_right = -6.0
+offset_bottom = 27.0
+text = "SPECIES"
+
+[node name="layer" type="LineEdit" parent="simulation_UI/Rendering/FIELD" unique_id=128886365]
+layout_mode = 0
+offset_left = 458.0
+offset_top = 218.0
+offset_right = 526.5
+offset_bottom = 249.0
+text = "0"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/FIELD/layer" unique_id=1733114872]
+layout_mode = 0
+offset_left = -50.0
+offset_top = 3.0
+offset_right = -7.0
+offset_bottom = 26.0
+text = "Layer"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/FIELD" unique_id=927782913]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 221.0
+offset_right = 48.0
+offset_bottom = 244.0
+text = "FIELD"
 
 [node name="Label" type="RichTextLabel" parent="simulation_UI" unique_id=1345646950]
 unique_name_in_owner = true
@@ -1065,6 +1148,11 @@ scale = Vector2(0.6, 0.6)
 [connection signal="toggled" from="simulation_UI/Rendering/Sun/Flux" to="." method="_on_flux_toggled"]
 [connection signal="toggled" from="simulation_UI/Rendering/Sun/Value" to="." method="_on_value_toggled"]
 [connection signal="text_submitted" from="simulation_UI/Rendering/Sun/LineEdit_layer" to="Visual/MultiMesh_BIN" method="_on_line_edit_layer_text_submitted"]
+[connection signal="toggled" from="simulation_UI/Rendering/FIELD/FLOW" to="." method="_on_flow_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/FIELD/FIELD" to="." method="_on_field_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/FIELD/dir" to="." method="_on_dir_toggled"]
+[connection signal="text_submitted" from="simulation_UI/Rendering/FIELD/sp" to="." method="_on_sp_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Rendering/FIELD/layer" to="." method="_on_layer_text_submitted"]
 [connection signal="text_submitted" from="simulation_UI/speed" to="." method="_on_speed_text_submitted"]
 [connection signal="pressed" from="simulation_UI/RunGDScript" to="." method="_on_run_gd_script_pressed"]
 [connection signal="pressed" from="simulation_UI/RunGPU" to="." method="_on_run_gpu_pressed"]
