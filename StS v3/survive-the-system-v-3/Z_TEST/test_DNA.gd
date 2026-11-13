@@ -1,82 +1,135 @@
 class_name TESTDNA
 extends RefCounted
 
+#This script deal with core loop of agent in every thread
+#it is run by alifemanger
+#the current version is species specific
+#need to think how i do a unique one for agent to evolve in different species
 
-
-#TODO make it close more easily? kindof fixed by stopping when FPS too low?
 #TODO wait thread?
 #TODO fix chunk number/order or make it random?
 #TODO simulation time in threads?
 #TODO optimise array extension and pending array? maybe more efficient code way -> check claude idea
-#TODO sensing alife x alife : wolrd partioning + flow?
 #TODO add physics collision/gravity?
 #TODO optimise AI
 
-##Simulation par
-#var time := 0.0
+#TODO sensing alife x alife : wolrd partioning + flow? oalmost done
+
+# ---- Simulation parameters -------------------------------------------
 var dt :float= 0.0#.32
 var total_time := 0
-#var time_counter := 1
 
-#cross reference
 var world: World
-var alife_GRID : PackedInt32Array
 var alifemanager : AlifeManager
 
-#entity managemnt
+# ---- ARRAY management variables -------------------------------------------
 var free_indices : Array =[]
 var entity_count : int
-var active_entity_count : int
+var active_entity_count : int #not in use currently
 
-#ECS STATS
+var pending_spawn_id : PackedInt32Array
+var pending_remove_id: PackedInt32Array
+var pending_update_id: PackedInt32Array #check if in use
+
+#multithread
+var spawn_per_chunk : Array[PackedInt32Array] = []
+var remove_per_chunk : Array[PackedInt32Array] = []
+var update_per_chunk : Array[PackedInt32Array] = [] 
+# ---- ALIFE ECS stats -------------------------------------------------------
+#Physics and position
 var position_array : PackedVector3Array
 var current_energy_array : PackedFloat64Array
 var current_velocity : PackedVector3Array
 var new_velocity : PackedVector3Array
 
 
+
+
+#Status
 var active_alife_array : PackedInt32Array  #To reuse some 
 var alive_array : PackedInt32Array
 
-var color_array : PackedColorArray
+#GROWTH. life cycle
 var current_life_state : PackedInt32Array
 var current_biomass : PackedFloat32Array
 var current_age : PackedInt32Array
 var current_size : PackedVector3Array
 var init_size := Vector3(1,1,1)
 
+#WORLD GRID REFERENCES
+#Not totally in use, not yet update if moved
 var current_sungrid_id : PackedInt32Array
-var current_grid_id : PackedInt32Array
+var current_grid_id : PackedInt32Array  
 
+#not in use
 var current_cpu_cost : PackedInt32Array
+var current_color :PackedColorArray
 
 #### Duplicate
-var pending_spawn_id : PackedInt32Array
-var pending_remove_id: PackedInt32Array
-var pending_update_id: PackedInt32Array #check if in use
 
-
-##RENDERING
-var pending_multimesh_drawn_id : PackedInt32Array
-var pending_multimesh_erase_id : PackedInt32Array
-var pending_multimesh_update_id : PackedInt32Array #check if in use
-
+# ---- RENDERING -------------------------------------------------------
+#Each species has its own renderer.  the script here just manage to write to the rend_data
+#make the link between the two also
 var renderer2D : AlifeRenderer2D
 var renderer3D : AlifeRenderer3D
 var rend_data : AlifeRenderingData
 
-var sprite := preload("res://Alife/Plant/Grass/grass.png")
+
+#ARRAY stuff
+var pending_multimesh_drawn_id : PackedInt32Array
+var pending_multimesh_erase_id : PackedInt32Array
+var pending_multimesh_update_id : PackedInt32Array #check if in use
+
+# ---- SPECIES SPECIFIC -------------------------------------------------------
+#here might move in full ecs array one time
+#general
 var name := "Test Species"
+var species_id := 0
 
-'var gid_r : int
-var rendering_data : PackedFloat32Array
-var r_data_per_chunk : Array[PackedFloat32Array] = []
-var writting_rendering_buffer_usec:= 0.0'
+#rendering
+var sprite := preload("res://Alife/Plant/Grass/grass.png")
+var colour := Color(0.193, 0.404, 0.283, 1.0)
+const CORPSE_COLOR := Color(0.488, 0.077, 0.15, 0.2)
 
-#var rendering_buffer : PackedFloat32Array
-#const STRIDE := 12  #buffer + colors
+#LIFECYCLE
+var growth_rate := 0.25
+var duplication_range := 15
 
-#####AI THINGS¬¬¬¬¬
+#METABO
+var photo_range := 0
+var photo_optimal_value = 1.0
+var photo_optimal_width = 0.2
+
+			
+
+
+
+# ---- GRID THINGS - mainly SCENT GRID -------------------------------------------------------
+
+####FLOW FIELD
+var FIELD_count: PackedInt32Array
+var FIELD_velocity: PackedVector3Array
+var FIELD_c_diffused: PackedFloat32Array
+var FIELD_v_diffused: PackedVector3Array
+var SCENT: PackedVector3Array
+
+
+'var FLOW: PackedFloat32Array #can be computed on the go?
+var FLOW_tmp: PackedFloat32Array
+var FLOW_dir :PackedVector3Array'
+#var field_cell_size := Vector3(50,20,50)
+var field_cell_size := Vector3(25,20,25)
+var FIELD_W : int
+var FIELD_H : int
+var FIELD_D : int
+var FIELD_NUM_CELLS : int
+
+
+
+
+
+# ---- AI part  -----------------------------------------------------------------
+#TODO not longer in use
 #var AI_on := false
 var current_action :PackedByteArray
 var action_scores := PackedFloat32Array()  # allocated once, reused
@@ -88,62 +141,29 @@ const WEIGHTS := [1.0, 1.0, 1.0]
 var MOMENTUM := 1.2
 var mouse_target : Vector3
 
-### ALIFE GRID - agent - agent close detection
-#old? CHECK THSI ONE?
+################# AI-between_species_input
+var view_radius := 15.0
+var max_neighbors_count := 8
+var neighbour_count : PackedInt32Array
 
-'var bin_on = false
-var cell_size := 10.0
+var food_sp_id : PackedInt32Array = [0]
+var danger_sp_id : PackedInt32Array
+var friend_sp_id : PackedInt32Array
 
-var GRID_W := 32          # cells along x
-var GRID_H := 16          # cells along y
-var GRID_D := 32          # cells along z
-var GRID_WD := GRID_W * GRID_D
-var GRID_WH := GRID_W * GRID_H
-var NUM_CELLS := GRID_W * GRID_H * GRID_D
+var danger_max_dist : float
 
-var bin_origin := Vector3.ZERO   # min corner of the grid in world space
-
-var cell_start := PackedInt32Array()     # size NUM_CELLS + 1
-var write_pos := PackedInt32Array()      # size NUM_CELLS (scratch)
-var cell_items := PackedInt32Array()     # size = alife count
-var current_cell_id := PackedInt32Array()  # size = alife count
-var sorted_pos := PackedVector3Array()'
-
-####FLOW FIELD
-var FIELD: PackedFloat32Array
-var FIELD_velocity: PackedVector3Array
-
-var FLOW: PackedFloat32Array #can be computed on the go?
-var FLOW_tmp: PackedFloat32Array
-var FLOW_dir :PackedVector3Array
-var field_cell_size := Vector3(50,20,50)
-var FIELD_W : int
-var FIELD_H : int
-var FIELD_D : int
-var FIELD_NUM_CELLS : int
-
-
-###SpeciesParameters
-var growth_rate := 0.25
-var colour := Color(0.193, 0.404, 0.283, 1.0)
-const CORPSE_COLOR := Color(0.488, 0.077, 0.15, 0.2)
-var species_id := 0
-
-var photo_range := 0
-var photo_optimal_value = 1.0
-var photo_optimal_width = 0.2
-
-		
-		
-var duplication_range := 15
+var minEnergy : float = 5.0
+var maxEnergy : float = 20.0
 
 #Randomness
 const JITTER_COUNT := 4096
 var _jitter: PackedVector3Array
 var _jhead: int = 0
 
-###multithread things
-var gid := -1
+
+# ---- multithread?  -----------------------------------------------------------------
+###multithread things #TODO still used here?
+'var gid := -1
 #var nThread_max := 8#1  #store on alifemnager
 var chunk_count: int
 var chunk_size: int
@@ -171,11 +191,10 @@ var bin_update_usec = 0
 var metabo_usec := 0.0
 var growth_usec := 0.0
 
+const usec_budget := 20_000'
 
-
-##TEST
-const usec_budget := 20_000
-
+#############################################################################################
+##############################################################################################
 #############################################################################################
 ##############################################################################################
 
@@ -184,12 +203,33 @@ func init(worldd,alifm):
 	_jitter.resize(JITTER_COUNT)
 	for k in JITTER_COUNT:
 		_jitter[k] = Vector3(randf_range(-1.0,1.0),0,randf_range(-1.0,1.0))
-
 	
+	#cross ref
+	world = worldd
+	alifemanager = alifm
+	_init_alife_par()
+	_init_array_management()
+	build_offsets()
+	_init_field_grid(world)
+
+	#NOT IN USE
+	action_scores.resize(ACTION_COUNT)
+	current_action = []
+	neighbour_count = []
+
+func _init_array_management():		
 	entity_count = 0
 	active_entity_count =0
 	free_indices = [] 
 	
+	pending_multimesh_drawn_id = []
+	pending_multimesh_update_id = []
+	pending_multimesh_erase_id = []
+	
+	pending_spawn_id = []
+	pending_update_id = []
+	pending_remove_id = []
+func _init_alife_par():
 	#alife 
 	position_array = [] 
 	current_energy_array = [] 
@@ -201,42 +241,15 @@ func init(worldd,alifm):
 	current_sungrid_id = []
 	current_grid_id = []
 	
-	pending_multimesh_drawn_id = []
-	pending_multimesh_update_id = []
-	pending_multimesh_erase_id = []
+
 	
-	pending_spawn_id = []
-	pending_update_id = []
-	pending_remove_id = []
-	
-	color_array = []	
+	current_color = []	
 	current_life_state= []
 	current_biomass= []
 	current_age= []
 	current_size= []
 	
 	current_cpu_cost = []
-		
-	
-	#AI
-	action_scores.resize(ACTION_COUNT)
-	current_action = []
-	
-	#Bin??
-	#TODO
-	
-	##WORLD
-	world = worldd
-	alifemanager = alifm
-	#init_GRID(world.size)
-	build_offsets()
-	init_field_grid(world)
-	##Rendering
-	#rend_data = AlifeRenderingData.new()
-	#rendering_buffer.resize(rendering.multimesh.instance_count * STRIDE)
-
-
-
 
 	
 	#rendering = RenderingALife2D.new()
@@ -244,60 +257,69 @@ func init(worldd,alifm):
 	#multimesh.species = self
 	#species_array[s].rendering = mm
 
-func init_field_grid(worldd:World):
-	var dims := Vector3i((world.size / field_cell_size).ceil())
+func _init_field_grid(worldd:World):
+	var dims := Vector3i((worldd.size / field_cell_size).ceil())
 	FIELD_W = dims.x         # cells along x
 	FIELD_H = dims.y       # cells along y
 	FIELD_D = dims.z         # cells along z
 	FIELD_NUM_CELLS = FIELD_W * FIELD_H * FIELD_D
-	FIELD.clear()
-	FIELD.resize(FIELD_NUM_CELLS)
-	FIELD.fill(0)
 	
-	FLOW.clear()
-	FLOW.resize(FIELD_NUM_CELLS)
-	FLOW.fill(0.0)
+	
+	FIELD_count.clear()
+	FIELD_count.resize(FIELD_NUM_CELLS)
+	FIELD_count.fill(0)
 
-	FLOW_tmp.clear()
-	FLOW_tmp.resize(FIELD_NUM_CELLS)
-	FLOW_tmp.fill(0.0)
-	
-	Vector3.ZERO
-	FLOW_dir.clear()
-	FLOW_dir.resize(FIELD_NUM_CELLS)
-	#FLOW_tmp.fill(0.0)
-		
 	FIELD_velocity.clear()
 	FIELD_velocity.resize(FIELD_NUM_CELLS)
 	FIELD_velocity.fill(Vector3.ZERO)
+
+	FIELD_c_diffused.clear()
+	FIELD_c_diffused.resize(FIELD_NUM_CELLS)
+	FIELD_c_diffused.fill(0.0)
+
+	FIELD_v_diffused.clear()
+	FIELD_v_diffused.resize(FIELD_NUM_CELLS)
+	FIELD_v_diffused.fill(Vector3.ZERO)	
+
+	SCENT.clear()
+	SCENT.resize(FIELD_NUM_CELLS)
+	SCENT.fill(Vector3.ZERO)	
+	
+	build_field_neighbors()
+
 
 
 ####MULTITHREAD
 func set_chunk(n:int):
 	#for perf tracking 
-	chunk_usec.resize(n)
+	'chunk_usec.resize(n)
 	chunk_tid.resize(n)	
 	#reshape temp chunk array
+
+	update_per_chunk.resize(n)	
+	photo_rate_per_chunk.resize(n)'
 	spawn_per_chunk.resize(n)
 	remove_per_chunk.resize(n)
-	update_per_chunk.resize(n)	
-	photo_rate_per_chunk.resize(n)
 	#REndering
 	#r_data_per_chunk.resize(n)
 	for i in n:
 		spawn_per_chunk[i] = []   # clear the previous frame's results
 		remove_per_chunk[i] = []
-		photo_rate_per_chunk[i] = []
+		#photo_rate_per_chunk[i] = []
 		#r_data_per_chunk[i] = []
 	
-
+#############################################################################################
+##############################################################################################
+# MAIN LOOOP
+#############################################################################################
+##############################################################################################
 
 
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void:
 	dt = 0.16 * 1 #TODO
 	var dup_on := alifemanager.duplicate_on
 	var homeo_on := alifemanager.homeostasis_on
-	var interaction_on := alifemanager.interaction_on
+	var interaction_on := alifemanager.count_neighbour_on
 	var bin_on := alifemanager.bin_on
 	var AI_on := alifemanager.AI_on
 	#var visu_on := alifemanager.visualisation_on
@@ -314,7 +336,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 	var wrap_y: bool = world.border_type_y == world.Border.WRAP
 	var wrap_z: bool = world.border_type_z == world.Border.WRAP
 
-	var field_on:= true 
+	#var field_on := alifemanager.field_on 
 	
 	if AI_on:
 
@@ -324,6 +346,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 	
 		if bin_on and alifemanager.global_position_array.size() >0:
 			Flock(start,end,dt)
+		
+		
 
 		#COMBINE MOVMNT AND CHECK BORDER
 		for i in range(start, end):
@@ -427,67 +451,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 
 	if interaction_on and bin_on:
 		if  alifemanager.global_position_array.size() >0 :
-			var radius := 8.0									
-			var W := alifemanager.GRID_W
-			var H := alifemanager.GRID_H
-			var D := alifemanager.GRID_D
-			var WH := W * H
-			var offs: PackedInt32Array = alifemanager.global_species_offset
-			var global_pos: PackedVector3Array = alifemanager.global_position_array
-			var cell_start: PackedInt32Array = alifemanager.cell_start
-			var cell_items: PackedInt32Array = alifemanager.cell_items
-			var species_array := alifemanager.species_array  # precomputed once per frame
-			var size: Vector3 = world.size
-			#var wrap_x: bool = world.border_type_x == world.Border.WRAP
-			#var wrap_y: bool = world.border_type_y == world.Border.WRAP
-			#var wrap_z: bool = world.border_type_z == world.Border.WRAP
-			var r2 := radius * radius
-			var base := offs[species_id]
-			var nx := mini(3, W)
-			var ny := mini(3, H)
-			var nz := mini(3, D)
-
-			for i in range(start, end):
-				var p: Vector3 = position_array[i]
-				var global_i := i + base
-				var c: int = current_grid_id[i]
-				var cx := c % W
-				var cy := (c / W) % H
-				var cz := c / WH
-
-				for dz in range(-1, -1 + nz):
-					var z := cz + dz
-					if z < 0 or z >= D:
-						if not wrap_z: continue
-						z = posmod(z, D)
-					var zoff := z * WH
-
-					for dy in range(-1, -1 + ny):
-						var y := cy + dy
-						if y < 0 or y >= H:
-							if not wrap_y: continue
-							y = posmod(y, H)
-						var yoff := zoff + y * W
-
-						for dx in range(-1, -1 + nx):
-							var x := cx + dx
-							if x < 0 or x >= W:
-								if not wrap_x: continue
-								x = posmod(x, W)
-							var cell := yoff + x
-
-							for k in range(cell_start[cell], cell_start[cell + 1]):
-								var other: int = cell_items[k]
-								if other == global_i:
-									continue
-								var d: Vector3 = global_pos[other] - p
-								if wrap_x: d.x -= size.x * roundf(d.x / size.x)
-								if wrap_y: d.y -= size.y * roundf(d.y / size.y)
-								if wrap_z: d.z -= size.z * roundf(d.z / size.z)
-								if d.length_squared() <= r2:
-									var sp_other := species_array[other]
-									var local_idx := other - offs[sp_other.species_id]
-									# ... use neighbour
+			count_neighbour(start,end)
+			
 																		
 	if grow_on:	
 		for i in range(start, end):
@@ -525,79 +490,127 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 
 		remove_per_chunk[local_id] = local_pending_remove_id
 	
+#############################################################################################
+# FIELD SCENT GRID MANAGEMENT
+#############################################################################################
+
+@export_range(0.0, 1.0) var field_diffusion := 0.3
+@export_range(0.8, 1.0, 0.001) var field_decay := 0.95
+
+var _nbr := PackedInt32Array()      # 6 neighbors per field cell, -1 = wall
+
+## Call once at start, and again when the field size or border types change.
+func build_field_neighbors() -> void:
+	var W := FIELD_W; var H := FIELD_H; var D := FIELD_D
+	var wx: bool = world.border_type_x == world.Border.WRAP
+	var wy: bool = world.border_type_y == world.Border.WRAP
+	var wz: bool = world.border_type_z == world.Border.WRAP
+	_nbr.resize(W * H * D * 6)
+	for z in D:
+		for y in H:
+			for x in W:
+				var c := x + W * (y + H * z)
+				var b := c * 6
+				_nbr[b]     = _nb(x + 1, y, z, c, W, H, D, wx, wy, wz)
+				_nbr[b + 1] = _nb(x - 1, y, z, c, W, H, D, wx, wy, wz)
+				_nbr[b + 2] = _nb(x, y + 1, z, c, W, H, D, wx, wy, wz)
+				_nbr[b + 3] = _nb(x, y - 1, z, c, W, H, D, wx, wy, wz)
+				_nbr[b + 4] = _nb(x, y, z + 1, c, W, H, D, wx, wy, wz)
+				_nbr[b + 5] = _nb(x, y, z - 1, c, W, H, D, wx, wy, wz)
 
 
-func build_field():
-	var field_on := true
-	var diffusion := 0.3
-	var decay := 0.8
-	if field_on:
-		var H:= FIELD_H
-		var W:= FIELD_W
-		var D:= FIELD_D
-		var wrap_x: bool = world.border_type_x == world.Border.WRAP
-		var wrap_y: bool = world.border_type_y == world.Border.WRAP
-		var wrap_z: bool = world.border_type_z == world.Border.WRAP
-		FIELD.fill(0)
-		FIELD_velocity.fill(Vector3.ZERO)
-		
-		for z in D:
-			for y in H:
-				for x in W:
-					var c := x + W * (y + H * z)
-					var s := FLOW[c]
-					var sum := 0.0
-					var k := 0
-					for o in [_cell_index(x + 1, y, z,W,H,D,wrap_x,wrap_y,wrap_z), _cell_index(x - 1, y, z,W,H,D,wrap_x,wrap_y,wrap_z),
-							  _cell_index(x, y + 1, z,W,H,D,wrap_x,wrap_y,wrap_z), _cell_index(x, y - 1, z,W,H,D,wrap_x,wrap_y,wrap_z),
-							  _cell_index(x, y, z + 1,W,H,D,wrap_x,wrap_y,wrap_z), _cell_index(x, y, z - 1,W,H,D,wrap_x,wrap_y,wrap_z)]:
-						if o >= 0 and o != c:
-							sum += FLOW[o]
-							k += 1
-					var avg := sum / k if k > 0 else s
-					FLOW_tmp[c] = (s + (avg - s) * diffusion) * decay
-		var t := FLOW; FLOW = FLOW_tmp; FLOW_tmp = t	
-		
-		for z in D:
-			for y in H:
-				for x in W:
-					var c := x + W * (y + H * z)
-					var s := FLOW[c]
-					var g := Vector3(
-						_scent(x + 1, y, z, s,W,H,D,wrap_x,wrap_y,wrap_z) - _scent(x - 1, y, z, s,W,H,D,wrap_x,wrap_y,wrap_z),
-						_scent(x, y + 1, z, s,W,H,D,wrap_x,wrap_y,wrap_z) - _scent(x, y - 1, z, s,W,H,D,wrap_x,wrap_y,wrap_z),
-						_scent(x, y, z + 1, s,W,H,D,wrap_x,wrap_y,wrap_z) - _scent(x, y, z - 1, s,W,H,D,wrap_x,wrap_y,wrap_z))
-					FLOW_dir[c] = g if g.length_squared() > 1e-8 else Vector3.ZERO
-		
-
-		for i in range(entity_count):
-			if active_alife_array[i]:
-				var p := position_array[i]
-				var cx := mini(int(p.x / field_cell_size.x), W - 1)
-				var cy := mini(int(p.y / field_cell_size.y), H - 1)
-				var cz := mini(int(p.z / field_cell_size.z), D - 1)
-				var c := cx + W * (cy + H * cz)
-				
-				FIELD[c] += 1 #* weight *dt?
-				FIELD_velocity[c] += current_velocity[i]
-				FLOW[c] += 1.0
-
-func _cell_index(x: int, y: int, z: int,W,H,D,wrap_x,wrap_y,wrap_z) -> int:
-	
+func _nb(x: int, y: int, z: int, self_c: int, W: int, H: int, D: int,
+		wx: bool, wy: bool, wz: bool) -> int:
 	if x < 0 or x >= W:
-		if not wrap_x: return -1      # beyond a wall: no cell
-		x = posmod(x, W)              # wrap: come back on the other side
+		if not wx: return -1
+		x = posmod(x, W)
 	if y < 0 or y >= H:
-		if not wrap_y: return -1
+		if not wy: return -1
 		y = posmod(y, H)
 	if z < 0 or z >= D:
-		if not wrap_z: return -1
+		if not wz: return -1
 		z = posmod(z, D)
-	return x + W * (y + H * z)        # same layout as your grid	
+	var o := x + W * (y + H * z)
+	return -1 if o == self_c else o      # wrapping onto itself (axis of size 1) = no neighbor
 
-func _scent(x: int, y: int, z: int, fallback: float,W,H,D,wrap_x,wrap_y,wrap_z) -> float:
-	var c := _cell_index(x, y, z,W,H,D,wrap_x,wrap_y,wrap_z)          # coordinates → flat index (wraps, or -1 at a wall)
-	return fallback if c < 0 else FLOW[c]
+
+func build_field() -> void:
+	if not alifemanager.field_on:
+		return
+	var W := FIELD_W; var H := FIELD_H; var D := FIELD_D
+
+	# 1. current-frame fields
+	FIELD_count.fill(0)
+	FIELD_velocity.fill(Vector3.ZERO)
+
+	# 2. deposit
+	for i in entity_count:
+		if not active_alife_array[i]:
+			continue
+		var p := position_array[i]
+		var c := clampi(int(p.x / field_cell_size.x), 0, W - 1) \
+			+ W * (clampi(int(p.y / field_cell_size.y), 0, H - 1) \
+			+ H * clampi(int(p.z / field_cell_size.z), 0, D - 1))
+		var v := current_velocity[i]
+		FIELD_count[c] += 1
+		FIELD_velocity[c] += v
+		FIELD_c_diffused[c] += 1.0
+		FIELD_v_diffused[c] += v
+
+	# 3. diffuse (every 2nd frame is plenty)
+	#if Engine.get_process_frames() % 2 == 0:
+	FIELD_c_diffused = _diffuse_f(FIELD_c_diffused)
+	FIELD_v_diffused = _diffuse_v(FIELD_v_diffused)
+
+
+func _diffuse_f(a: PackedFloat32Array) -> PackedFloat32Array:
+	var out := PackedFloat32Array()
+	out.resize(a.size())
+	for c in a.size():
+		var s := a[c]
+		var b := c * 6
+		var sum := 0.0
+		var k := 0
+		for j in 6:
+			var o := _nbr[b + j]
+			if o >= 0:
+				sum += a[o]
+				k += 1
+		out[c] = ((s + (sum / k - s) * field_diffusion) if k > 0 else s) * field_decay
+	return out
+
+
+func _diffuse_v(a: PackedVector3Array) -> PackedVector3Array:
+	var out := PackedVector3Array()
+	out.resize(a.size())
+	for c in a.size():
+		var s := a[c]
+		var b := c * 6
+		var sum := Vector3.ZERO
+		var k := 0
+		for j in 6:
+			var o := _nbr[b + j]
+			if o >= 0:
+				sum += a[o]
+				k += 1
+		out[c] = ((s + (sum / k - s) * field_diffusion) if k > 0 else s) * field_decay
+	return out
+
+
+## Scent gradient at one cell. Call it per agent, only when needed.
+func scent_gradient(c: int) -> Vector3:
+	var a := FIELD_c_diffused
+	var s := a[c]
+	var b := c * 6
+	var o: int
+	o = _nbr[b];     var xp := a[o] if o >= 0 else s
+	o = _nbr[b + 1]; var xm := a[o] if o >= 0 else s
+	o = _nbr[b + 2]; var yp := a[o] if o >= 0 else s
+	o = _nbr[b + 3]; var ym := a[o] if o >= 0 else s
+	o = _nbr[b + 4]; var zp := a[o] if o >= 0 else s
+	o = _nbr[b + 5]; var zm := a[o] if o >= 0 else s
+	return Vector3(xp - xm, yp - ym, zp - zm)
+	
 ##########################################################################################
 #### Main loop function
 ##########################################################################################
@@ -609,7 +622,99 @@ func Move_random(i,wrap_x,wrap_y,wrap_z,size):
 		p.z = fposmod(p.z, size.z) if wrap_z else clampf(p.z, 0.0, size.z)
 		position_array[i] = p		
 
+func count_neighbour(start:int, end:int):
+	var world_size: Vector3 = world.size
+	var wrap_x: bool = world.border_type_x == world.Border.WRAP
+	var wrap_y: bool = world.border_type_y == world.Border.WRAP
+	var wrap_z: bool = world.border_type_z == world.Border.WRAP	
+	var cell_size := alifemanager.cell_size		
+	var W := alifemanager.GRID_W
+	var H := alifemanager.GRID_H
+	var D := alifemanager.GRID_D
+	var WH := W * H
+	var nx := W if (wrap_x and W < 3) else 3
+	var ny := H if (wrap_y and H < 3) else 3
+	var nz := D if (wrap_z and D < 3) else 3
+	
+	#alifeglobal
+	var offs: PackedInt32Array = alifemanager.global_species_offset
+	var global_sorted_pos: PackedVector3Array = alifemanager.sorted_pos
+	var cell_start: PackedInt32Array = alifemanager.cell_start
+	var cell_items: PackedInt32Array = alifemanager.cell_items
+	var species_array:= alifemanager.species_array  # precomputed once per frame
+	var base := offs[species_id] #to find own global id
+	view_radius = alifemanager.neighbour_view_range	
+	max_neighbors_count = alifemanager.neighbour_max_count
+	var view_r2 := view_radius * view_radius
 
+	var my_end := offs[species_id + 1]
+	
+
+
+	for i in range(start, end):
+		var n:= 0 #number of compatible neighbour
+		var sum_d := Vector3.ZERO      # for cohesion sum dist
+		var sum_v := Vector3.ZERO      # for alignment sum velocity
+		var sep := Vector3.ZERO
+		var p: Vector3 = position_array[i]
+		var v:Vector3= current_velocity[i]
+		var global_i := i + base
+		'var c: int = current_grid_id[i]  #current_grid_id not updated yet!
+		var cx := c % W
+		var cy := (c / W) % H
+		var cz := c / WH'
+		var cx := mini(int(p.x / cell_size.x), W - 1)
+		var cy := mini(int(p.y / cell_size.y), H - 1)
+		var cz := mini(int(p.z / cell_size.z), D - 1)
+		var c := cx + W * (cy + H * cz)
+		for dz in range(-1, -1 + nz):
+			if n >= max_neighbors_count: break
+			var z := cz + dz
+			var sz := 0.0
+			if z < 0:
+				if not wrap_z: continue
+				z += D; sz = -world_size.z
+			elif z >= D:
+				if not wrap_z: continue
+				z -= D; sz = world_size.z
+
+			for dy in range(-1, -1 + ny):
+				if n >= max_neighbors_count: break
+				var y := cy + dy
+				var sy := 0.0
+				if y < 0:
+					if not wrap_y: continue
+					y += H; sy = -world_size.y
+				elif y >= H:
+					if not wrap_y: continue
+					y -= H; sy = world_size.y
+
+				for dx in range(-1, -1 + nx):
+					if n >= max_neighbors_count: break
+					var x := cx + dx
+					var sx := 0.0
+					if x < 0:
+						if not wrap_x: continue
+						x += W; sx = -world_size.x
+					elif x >= W:
+						if not wrap_x: continue
+						x -= W; sx = world_size.x
+
+					var cell := x + W * (y + H * z)
+					var shift_p := Vector3(sx, sy, sz) - p   # one shift per cell
+					for k in range(cell_start[cell], cell_start[cell + 1]):
+						var other: int = cell_items[k]
+						if  other == global_i: #other < base or other >= my_end or
+							continue
+						var d: Vector3 = global_sorted_pos[k] + shift_p
+						var dist2 := d.length_squared()
+						if dist2 > view_r2:# or dist2 == 0.0:
+							continue
+						n += 1
+						if n >= max_neighbors_count:
+							break
+		neighbour_count[i] = n
+		
 func Flock(start,end,dt):
 	#world
 	var world_size: Vector3 = world.size
@@ -620,6 +725,11 @@ func Flock(start,end,dt):
 	var W := alifemanager.GRID_W
 	var H := alifemanager.GRID_H
 	var D := alifemanager.GRID_D
+	
+	var fieldW := FIELD_W
+	var fieldH := FIELD_H
+	var fieldD := FIELD_D
+	
 	var WH := W * H
 	var nx := W if (wrap_x and W < 3) else 3
 	var ny := H if (wrap_y and H < 3) else 3
@@ -646,91 +756,145 @@ func Flock(start,end,dt):
 	var max_force := 10.0
 	var my_end := offs[species_id + 1]
 	var max_neighbors := 8
+	var n := 0
+	var TYPE = alifemanager.flock_type
+	var target_density := 20.0     # agents per cell you're happy with
 
+	if TYPE == 0: #neighbour
 
-	for i in range(start, end):
-		var n:= 0 #number of compatible neighbour
-		var sum_d := Vector3.ZERO      # for cohesion sum dist
-		var sum_v := Vector3.ZERO      # for alignment sum velocity
-		var sep := Vector3.ZERO
-		var p: Vector3 = position_array[i]
-		var v:Vector3= current_velocity[i]
-		var global_i := i + base
-		'var c: int = current_grid_id[i]  #current_grid_id not updated yet!
-		var cx := c % W
-		var cy := (c / W) % H
-		var cz := c / WH'
-		var cx := mini(int(p.x / cell_size.x), W - 1)
-		var cy := mini(int(p.y / cell_size.y), H - 1)
-		var cz := mini(int(p.z / cell_size.z), D - 1)
-		var c := cx + W * (cy + H * cz)
-		for dz in range(-1, -1 + nz):
-			if n >= max_neighbors: break
-			var z := cz + dz
-			var sz := 0.0
-			if z < 0:
-				if not wrap_z: continue
-				z += D; sz = -world_size.z
-			elif z >= D:
-				if not wrap_z: continue
-				z -= D; sz = world_size.z
-
-			for dy in range(-1, -1 + ny):
+		for i in range(start, end):
+			n= 0 #number of compatible neighbour
+			var sum_d := Vector3.ZERO      # for cohesion sum dist
+			var sum_v := Vector3.ZERO      # for alignment sum velocity
+			var sep := Vector3.ZERO
+			var p: Vector3 = position_array[i]
+			var v:Vector3= current_velocity[i]
+			var global_i := i + base
+			'var c: int = current_grid_id[i]  #current_grid_id not updated yet!
+			var cx := c % W
+			var cy := (c / W) % H
+			var cz := c / WH'
+			var cx := mini(int(p.x / cell_size.x), W - 1)
+			var cy := mini(int(p.y / cell_size.y), H - 1)
+			var cz := mini(int(p.z / cell_size.z), D - 1)
+			var c := cx + W * (cy + H * cz)
+			for dz in range(-1, -1 + nz):
 				if n >= max_neighbors: break
-				var y := cy + dy
-				var sy := 0.0
-				if y < 0:
-					if not wrap_y: continue
-					y += H; sy = -world_size.y
-				elif y >= H:
-					if not wrap_y: continue
-					y -= H; sy = world_size.y
+				var z := cz + dz
+				var sz := 0.0
+				if z < 0:
+					if not wrap_z: continue
+					z += D; sz = -world_size.z
+				elif z >= D:
+					if not wrap_z: continue
+					z -= D; sz = world_size.z
 
-				for dx in range(-1, -1 + nx):
+				for dy in range(-1, -1 + ny):
 					if n >= max_neighbors: break
-					var x := cx + dx
-					var sx := 0.0
-					if x < 0:
-						if not wrap_x: continue
-						x += W; sx = -world_size.x
-					elif x >= W:
-						if not wrap_x: continue
-						x -= W; sx = world_size.x
+					var y := cy + dy
+					var sy := 0.0
+					if y < 0:
+						if not wrap_y: continue
+						y += H; sy = -world_size.y
+					elif y >= H:
+						if not wrap_y: continue
+						y -= H; sy = world_size.y
 
-					var cell := x + W * (y + H * z)
-					var shift_p := Vector3(sx, sy, sz) - p   # one shift per cell
-					for k in range(cell_start[cell], cell_start[cell + 1]):
-						var other: int = cell_items[k]
-						if other < base or other >= my_end or other == global_i: #WORK ONLY IF SELF SPECIES
-							continue
-						var d: Vector3 = global_sorted_pos[k] + shift_p
-						var dist2 := d.length_squared()
-						if dist2 > view_r2 or dist2 == 0.0:
-							continue
-						n += 1
-						sum_d += d
-						sum_v += current_velocity[other - base]  #WORK ONLY IF SELF SPECIES
-						if dist2 < sep_r2:
-							sep -= d / dist2
-						if n >= max_neighbors:
-							break
+					for dx in range(-1, -1 + nx):
+						if n >= max_neighbors: break
+						var x := cx + dx
+						var sx := 0.0
+						if x < 0:
+							if not wrap_x: continue
+							x += W; sx = -world_size.x
+						elif x >= W:
+							if not wrap_x: continue
+							x -= W; sx = world_size.x
 
-		var steer := Vector3.ZERO
-		if n>0 :
-			var align_w := w_alignment #* (0.3 if calm else 1.0)
-			var coh_w := w_cohesion #* (0.3 if calm else (3.0 if herd else 1.0))  # selfish herd
-			steer += sep * w_separation
-			steer += (sum_v / n - v) * align_w
-			steer += (sum_d / n) * coh_w
-		#steer += flee * w_flee
-		steer = steer.limit_length(max_force)	
-		var new_v :Vector3= v + steer * dt
-		var s := new_v.length()
-		if s < 0.0001:
-			new_v = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) #.normalized() * min_speed
-		else:
-			new_v = new_v / s * clampf(s, 1, 10)		
-		new_velocity[i] = new_v
+						var cell := x + W * (y + H * z)
+						var shift_p := Vector3(sx, sy, sz) - p   # one shift per cell
+						for k in range(cell_start[cell], cell_start[cell + 1]):
+							var other: int = cell_items[k]
+							if other < base or other >= my_end or other == global_i: #WORK ONLY IF SELF SPECIES
+								continue
+							var d: Vector3 = global_sorted_pos[k] + shift_p
+							var dist2 := d.length_squared()
+							if dist2 > view_r2 or dist2 == 0.0:
+								continue
+							n += 1
+							sum_d += d
+							sum_v += current_velocity[other - base]  #WORK ONLY IF SELF SPECIES
+							if dist2 < sep_r2:
+								sep -= d / dist2
+							if n >= max_neighbors:
+								break
+			var steer := Vector3.ZERO
+			if n>0 :
+				var align_w := w_alignment #* (0.3 if calm else 1.0)
+				var coh_w := w_cohesion #* (0.3 if calm else (3.0 if herd else 1.0))  # selfish herd
+				steer += sep * w_separation
+				steer += (sum_v / n - v) * align_w
+				steer += (sum_d / n) * coh_w
+			#steer += flee * w_flee
+			steer = steer.limit_length(max_force)	
+			var new_v :Vector3= v + steer * dt
+			var s := new_v.length()
+			if s < 0.0001:
+				new_v = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) #.normalized() * min_speed
+			else:
+				new_v = new_v / s * clampf(s, 1, 10)		
+			new_velocity[i] = new_v
+			
+	elif TYPE == 1: #flow cell
+		for i in range(start, end):
+			pass
+			var p := position_array[i]
+			var v := current_velocity[i]
+
+			var cx := mini(int(p.x / field_cell_size.x), fieldW - 1)
+			var cy := mini(int(p.y / field_cell_size.y), fieldH - 1)
+			var cz := mini(int(p.z / field_cell_size.z), fieldD - 1)
+			var c = cx + fieldW * (cy + fieldH * cz)
+			#var s := scent[cx + W * (cy + H * cz)]
+			#steer += scent_dir[agent_cell] * w_cohesion
+			var cnt := FIELD_count[c]
+			var others := cnt - 1.0                     # remove myself from the count
+
+			# --- 1. ALIGNMENT: match the heading of the others in my cell -------
+			var desired_align := v
+			if others > 0.0:
+				desired_align = (FIELD_velocity[c] - v) / others      # remove my own velocity
+			elif FIELD_v_diffused[c].length_squared() > 1e-6: #here was vec_diff, to know previous direction of entity
+				desired_align = FIELD_v_diffused[c]            # alone: follow the recent flow
+			var steer_align := desired_align - v
+
+			# --- 2. SEPARATION: leave if too crowded ----------------------------
+			var crowd := clampf((others - target_density) / target_density, 0.0, 1.0)  # 0 = fine, 1 = packed
+			var steer_sep := Vector3.ZERO
+			if crowd > 0.0:
+				var g := SCENT[c]
+				if g.length_squared() > 1e-6:
+					steer_sep = (-g.normalized() * 10 - v) * crowd   # head toward emptier cells
+
+			# --- 3. COHESION: follow the scent toward the group -----------------
+			var steer_coh := Vector3.ZERO
+			var sg := scent_gradient(c)
+			
+
+			#var crowd := 0
+			if sg.length_squared() > 1e-6:
+				steer_coh = (sg.normalized() * 1 - v) * (1.0 - crowd)  # weaker when crowded
+
+			# --- combine --------------------------------------------------------
+			var steer := steer_align * w_alignment + steer_sep * w_separation + steer_coh * w_cohesion
+			steer = steer.limit_length(max_force)
+
+			var nv : Vector3= v + steer #* dt
+			var s := nv.length()
+			if s < 0.000001:
+				new_velocity[i] = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) #.normalized() * 1
+			else:
+				new_velocity[i] = nv / s * clampf(s, 1, 10)		
 
 ##########################################################################################
 ####GRID/SUN MANAGEMENT
@@ -817,7 +981,7 @@ func Build_and_remove_pendings():
 	var d_range:= duplication_range
 	for i in pending_spawn_id:
 		var newpos := pick_random_position(Vector3(d_range,0,d_range),position_array[i])
-		Build_New_Life(newpos,0.0, color_array[i])
+		Build_New_Life(newpos,0.0, current_color[i])
 	
 	for i in pending_remove_id:
 		Remove_Life(i)	
@@ -838,7 +1002,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		position_array.append(pos)
 		current_action.append(0)
 		#species_id.append(sp)
-		color_array.append(col)
+		current_color.append(col)
 		alive_array.append(1) 
 		current_velocity.append(Vector3.ZERO)
 		new_velocity.append(Vector3.ZERO)
@@ -852,6 +1016,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_grid_id.append(get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D))
 		
 		current_cpu_cost.append(0)
+		neighbour_count.append(0)
 		#update_bin_array(i)
 		entity_count += 1
 
@@ -862,7 +1027,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		position_array[i] = pos
 		current_action[i] = 0
 		#species_id[i] = sp
-		color_array[i]=col
+		current_color[i]=col
 		alive_array[i] = 1
 		current_velocity[i] = Vector3.ZERO
 		new_velocity[i] = Vector3.ZERO
@@ -875,6 +1040,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_age[i]=0
 		current_size[i]=init_size
 		current_cpu_cost[i] = 0
+		neighbour_count[i] = 0
 
 	active_entity_count += 1
 	if alifemanager.photosynthesis_on:
@@ -1045,7 +1211,8 @@ func _ready() -> void:
 
 
 func getChunk_perf():
-	var threads := {}
+	pass
+	'var threads := {}
 	var total := 0
 	var max_time := 0.0
 	for i in chunk_count:
@@ -1055,5 +1222,5 @@ func getChunk_perf():
 	total_thread_usec = total
 	thread_usec = max_time
 	multithread_efficiency = float(total) / maxf(1.0, float(main_usec))
-	nThreadused = threads.size() # OS.get_processor_count()
+	nThreadused = threads.size() # OS.get_processor_count()'
 	

@@ -1,0 +1,1103 @@
+[gd_scene format=3 uid="uid://dinmmq74ih57m"]
+
+[ext_resource type="Script" uid="uid://cdpo8tg7quyy6" path="res://Z_TEST/alife_pref_test.gd" id="1_wb3fy"]
+[ext_resource type="Script" uid="uid://dqbicb0y1jbkl" path="res://Z_TEST/world_preftest.gd" id="2_w27ml"]
+[ext_resource type="Script" uid="uid://4mjcv3fkgess" path="res://Z_TEST/alife_manager_preftest.gd" id="3_ywrax"]
+[ext_resource type="Script" uid="uid://dvp3esjv617sr" path="res://Z_TEST/camera_2d.gd" id="4_elrxu"]
+[ext_resource type="Script" uid="uid://bnllghtmmewck" path="res://Z_TEST/visualManager.gd" id="4_hlgly"]
+[ext_resource type="Script" uid="uid://cxe6qj5km8dxb" path="res://Z_TEST/camera_3d.gd" id="6_b3dws"]
+[ext_resource type="Script" uid="uid://cs3dmhyjbqk1u" path="res://Z_TEST/multi_mesh_bin.gd" id="7_elrxu"]
+[ext_resource type="Script" uid="uid://c55y17n4jx3rq" path="res://Z_TEST/interaction_player.gd" id="8_elrxu"]
+[ext_resource type="PackedScene" uid="uid://b4mvcnusn8a7h" path="res://Z_TEST/pop_tracker.tscn" id="9_b3dws"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hlgly"]
+albedo_color = Color(0.68307734, 0.6830774, 0.68307734, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_eg1w5"]
+material = SubResource("StandardMaterial3D_hlgly")
+size = Vector2(1000, 1000)
+
+[node name="SimulationManager" type="Node2D" unique_id=364310058]
+script = ExtResource("1_wb3fy")
+
+[node name="Visual" type="Node2D" parent="." unique_id=393155582]
+script = ExtResource("4_hlgly")
+
+[node name="MultiMesh_BIN" type="MultiMeshInstance2D" parent="Visual" unique_id=1021534949]
+script = ExtResource("7_elrxu")
+
+[node name="Panel" type="Panel" parent="Visual/MultiMesh_BIN" unique_id=1914076384]
+visible = false
+offset_left = 249.0
+offset_top = 113.0
+offset_right = 848.0
+offset_bottom = 607.0
+
+[node name="Rendering2D" type="Node2D" parent="Visual" unique_id=1852430157]
+
+[node name="Camera2D" type="Camera2D" parent="Visual" unique_id=1670601973]
+script = ExtResource("4_elrxu")
+
+[node name="Camera3D" type="Camera3D" parent="Visual" unique_id=1506139562]
+transform = Transform3D(1, 0, 0, 0, 0.13512763, 0.9908282, 0, -0.9908282, 0.13512763, 268.07706, 171.71745, -12.025177)
+script = ExtResource("6_b3dws")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Visual" unique_id=1786253232]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 500, 0, 500)
+visible = false
+mesh = SubResource("PlaneMesh_eg1w5")
+
+[node name="Rendering3D" type="Node3D" parent="Visual" unique_id=837410298]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Visual" unique_id=156406406]
+transform = Transform3D(1, 0, 0, 0, -0.83403033, 0.5517186, 0, -0.5517186, -0.83403033, 0, 250.0354, 0)
+
+[node name="World" type="Node2D" parent="." unique_id=1970063248]
+script = ExtResource("2_w27ml")
+
+[node name="AlifeManager" type="Node2D" parent="." unique_id=1182617890]
+script = ExtResource("3_ywrax")
+
+[node name="Interaction_Player" type="Node" parent="." unique_id=2140981912]
+script = ExtResource("8_elrxu")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=704968778]
+
+[node name="ButtonUIshow" type="Button" parent="CanvasLayer" unique_id=1966033748]
+offset_left = 527.0
+offset_top = 607.0
+offset_right = 645.0
+offset_bottom = 638.0
+text = "Hide Interface"
+
+[node name="simulation_UI" type="CanvasLayer" parent="." unique_id=438579712]
+
+[node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_top = 4.0
+offset_right = 40.0
+offset_bottom = 44.0
+
+[node name="Panel2" type="Panel" parent="simulation_UI/Alife" unique_id=438731039]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 67.0
+offset_right = 491.0
+offset_bottom = 460.0
+
+[node name="Panel" type="ScrollContainer" parent="simulation_UI/Alife" unique_id=1689476292]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 72.0
+offset_right = 488.0
+offset_bottom = 454.0
+
+[node name="Panel" type="VBoxContainer" parent="simulation_UI/Alife/Panel" unique_id=1362631757]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="simulation_UI/Alife/Panel/Panel" unique_id=807737720]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "ALife System"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=2070158218]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer" unique_id=402095443]
+layout_mode = 2
+text = "max Life"
+
+[node name="maxLife" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer" unique_id=1024051075]
+layout_mode = 2
+placeholder_text = "0 (∞)"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=2104533353]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer2" unique_id=1914887259]
+layout_mode = 2
+text = "nStart Life"
+
+[node name="nstartLife" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer2" unique_id=1277074122]
+layout_mode = 2
+placeholder_text = "10"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=1149089405]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer3" unique_id=1670038536]
+layout_mode = 2
+text = "n species"
+
+[node name="n_species" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer3" unique_id=1967071614]
+layout_mode = 2
+placeholder_text = "2"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=305907210]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer4" unique_id=1713346598]
+layout_mode = 2
+text = "Duplication"
+
+[node name="duplication" type="CheckButton" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer4" unique_id=837876564]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+
+[node name="Label2" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer4" unique_id=1395095617]
+layout_mode = 2
+text = "Range"
+
+[node name="dup_range" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer4" unique_id=462657378]
+layout_mode = 2
+placeholder_text = "15"
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=1082791817]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer5" unique_id=1467091236]
+layout_mode = 2
+text = "Homeostasis"
+
+[node name="homeo_on" type="CheckButton" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer5" unique_id=2111242016]
+layout_mode = 2
+button_pressed = true
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=1937073710]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer6" unique_id=75107309]
+layout_mode = 2
+text = "RemoveDead"
+
+[node name="Remove_ON" type="CheckButton" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer6" unique_id=1400993592]
+layout_mode = 2
+button_pressed = true
+
+[node name="HBoxContainer7" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=1854678986]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer7" unique_id=480979395]
+layout_mode = 2
+text = "Growth"
+
+[node name="Growth_on" type="CheckButton" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer7" unique_id=716179488]
+layout_mode = 2
+button_pressed = true
+
+[node name="HBoxContainer8" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=671738158]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer8" unique_id=361963002]
+layout_mode = 2
+text = "Photosynth."
+
+[node name="Photosynthesis" type="CheckButton" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer8" unique_id=2145691805]
+layout_mode = 2
+button_pressed = true
+
+[node name="Label2" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer8" unique_id=1578056458]
+layout_mode = 2
+text = "Range"
+
+[node name="photo_range" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer8" unique_id=1931824635]
+layout_mode = 2
+placeholder_text = "0"
+
+[node name="Label3" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer8" unique_id=1605997704]
+layout_mode = 2
+text = "Rate"
+
+[node name="photo_rate" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer8" unique_id=659035776]
+layout_mode = 2
+placeholder_text = "0"
+
+[node name="HBoxContainer9" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=362552107]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer9" unique_id=235717023]
+layout_mode = 2
+text = "Count Neighbours"
+
+[node name="Interaction_ONOFF" type="CheckButton" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer9" unique_id=528177472]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer9" unique_id=47742862]
+layout_mode = 2
+text = "Range"
+
+[node name="neighRange" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer9" unique_id=1387974493]
+layout_mode = 2
+placeholder_text = "15"
+
+[node name="Label3" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer9" unique_id=1538813244]
+layout_mode = 2
+text = "Bin Size"
+
+[node name="binsize" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer9" unique_id=333253471]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label4" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer9" unique_id=450888468]
+layout_mode = 2
+text = "MaxCount"
+
+[node name="neighMax" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer9" unique_id=367428971]
+layout_mode = 2
+placeholder_text = "8"
+
+[node name="HBoxContainer10" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=1804460920]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer10" unique_id=1761428302]
+layout_mode = 2
+text = "Flock"
+
+[node name="AI_onOFt" type="CheckButton" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer10" unique_id=1407208386]
+layout_mode = 2
+
+[node name="OptionButton" type="OptionButton" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer10" unique_id=1669724599]
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Neighbour"
+popup/item_0/id = 0
+popup/item_1/text = "Flow"
+popup/item_1/id = 1
+popup/item_2/text = "Hybrid"
+popup/item_2/id = 2
+
+[node name="Label4" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer10" unique_id=433406599]
+layout_mode = 2
+text = "MaxCount"
+
+[node name="neighMax" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer10" unique_id=1312459583]
+layout_mode = 2
+placeholder_text = "10"
+
+[node name="HBoxContainer11" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=121092153]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=1013801722]
+layout_mode = 2
+text = "Allignmnt"
+
+[node name="LineEdit" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=944905223]
+layout_mode = 2
+
+[node name="Label3" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=1079264522]
+layout_mode = 2
+text = "Separation"
+
+[node name="LineEdit3" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=1931526032]
+layout_mode = 2
+
+[node name="Label5" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=818218677]
+layout_mode = 2
+text = "Cohesion"
+
+[node name="LineEdit5" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=1182269845]
+layout_mode = 2
+
+[node name="HBoxContainer12" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=118987824]
+layout_mode = 2
+
+[node name="HBoxContainer13" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=839590823]
+layout_mode = 2
+
+[node name="HBoxContainer14" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=74512557]
+layout_mode = 2
+
+[node name="Label" type="RichTextLabel" parent="simulation_UI/Alife" unique_id=344910459]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 477.0
+offset_right = 480.0
+offset_bottom = 615.0
+
+[node name="Multispecies" type="CheckButton" parent="simulation_UI/Alife" unique_id=1756384413]
+visible = false
+layout_mode = 0
+offset_left = 114.0
+offset_top = 291.0
+offset_right = 158.0
+offset_bottom = 315.0
+button_pressed = true
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Multispecies" unique_id=1262571363]
+layout_mode = 0
+offset_left = -97.0
+offset_top = -1.0
+offset_right = 6.0
+offset_bottom = 22.0
+text = "Multispecies"
+
+[node name="Plant_on" type="CheckButton" parent="simulation_UI/Alife" unique_id=302973259]
+visible = false
+layout_mode = 0
+offset_left = 110.0
+offset_top = 249.0
+offset_right = 154.0
+offset_bottom = 273.0
+
+[node name="Label" type="Label" parent="simulation_UI/Alife/Plant_on" unique_id=1747171162]
+layout_mode = 0
+offset_left = -84.0
+offset_top = -1.0
+offset_right = -17.0
+offset_bottom = 22.0
+text = "Plant only"
+
+[node name="World" type="Control" parent="simulation_UI" unique_id=1735418898]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Panel" type="Panel" parent="simulation_UI/World" unique_id=846677692]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 71.0
+offset_right = 492.0
+offset_bottom = 450.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="simulation_UI/World" unique_id=2135532967]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 72.0
+offset_right = 478.0
+offset_bottom = 629.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="simulation_UI/World/ScrollContainer" unique_id=1689512397]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="world" type="VBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer" unique_id=261771660]
+layout_mode = 2
+theme_override_constants/separation = 19
+
+[node name="Label4" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world" unique_id=1350204628]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "World System"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world" unique_id=297817662]
+layout_mode = 2
+
+[node name="WorldSize" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer" unique_id=656318523]
+layout_mode = 2
+text = "World Size"
+
+[node name="world_x" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer" unique_id=1657746108]
+layout_mode = 2
+placeholder_text = "2000"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer/world_x" unique_id=899705006]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer" unique_id=1286475457]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer/world_y" unique_id=2083883795]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer" unique_id=269084611]
+layout_mode = 2
+placeholder_text = "2000"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer/world_z" unique_id=1822019927]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world" unique_id=472548375]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2" unique_id=1759173615]
+layout_mode = 2
+text = "Border Type"
+
+[node name="border-x" type="OptionButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2" unique_id=2135373465]
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "Wrap"
+popup/item_0/id = 0
+popup/item_1/text = "Wall"
+popup/item_1/id = 1
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2/border-x" unique_id=637860674]
+layout_mode = 0
+offset_left = 8.0
+offset_top = -23.0
+offset_right = 63.0
+text = "X axis"
+
+[node name="border-y" type="OptionButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2" unique_id=1964119791]
+layout_mode = 2
+selected = 1
+item_count = 2
+popup/item_0/text = "Wrap"
+popup/item_0/id = 0
+popup/item_1/text = "Wall"
+popup/item_1/id = 1
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2/border-y" unique_id=588993988]
+layout_mode = 0
+offset_left = 7.0
+offset_top = -24.0
+offset_right = 64.0
+offset_bottom = -1.0
+text = "Y axis"
+
+[node name="border-z" type="OptionButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2" unique_id=376749218]
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "Wrap"
+popup/item_0/id = 0
+popup/item_1/text = "Wall"
+popup/item_1/id = 1
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2/border-z" unique_id=641106507]
+layout_mode = 0
+offset_left = 6.0
+offset_top = -21.0
+offset_right = 50.0
+offset_bottom = 2.0
+text = "Z axis"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/world" unique_id=372904106]
+layout_mode = 2
+
+[node name="SUN" type="VBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer" unique_id=2128347602]
+layout_mode = 2
+theme_override_constants/separation = 13
+
+[node name="HBoxContainer" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN" unique_id=1344800892]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer" unique_id=312374844]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "SUN SYSTEM"
+
+[node name="CheckButton" type="CheckButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer" unique_id=624307597]
+layout_mode = 2
+button_pressed = true
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN" unique_id=1255580556]
+layout_mode = 2
+
+[node name="SunSize" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2" unique_id=1265906670]
+layout_mode = 2
+text = "SUN CELL"
+
+[node name="world_x" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2" unique_id=21929163]
+layout_mode = 2
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2/world_x" unique_id=228770285]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2" unique_id=1014600538]
+layout_mode = 2
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2/world_y" unique_id=214062980]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2" unique_id=1862386707]
+layout_mode = 2
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2/world_z" unique_id=369726637]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="Label3" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2" unique_id=1502174874]
+layout_mode = 2
+text = "SUN energy"
+
+[node name="SUNENERGY" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2" unique_id=86925024]
+layout_mode = 2
+placeholder_text = "1"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN" unique_id=133785362]
+layout_mode = 2
+
+[node name="Label3" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer4" unique_id=772506039]
+layout_mode = 2
+text = "Agent Stamp"
+
+[node name="CheckStampAgent" type="CheckButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer4" unique_id=1982008679]
+layout_mode = 2
+button_pressed = true
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer4" unique_id=1537114792]
+layout_mode = 2
+text = "Stamp Diffusion"
+
+[node name="CheckDiffusion" type="CheckButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer4" unique_id=187737691]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer4" unique_id=2046536450]
+layout_mode = 2
+text = "GRID Stamp"
+
+[node name="CheckStamp" type="CheckButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer4" unique_id=542727545]
+layout_mode = 2
+disabled = true
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN" unique_id=1245590782]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer5" unique_id=894613444]
+layout_mode = 2
+text = "Agent Full Range absorbed"
+
+[node name="fullrangeOn" type="CheckButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer5" unique_id=881973113]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer5" unique_id=520352483]
+layout_mode = 2
+text = "GRID Full Range absorbed"
+
+[node name="fullrangeOn2" type="CheckButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer5" unique_id=656353303]
+layout_mode = 2
+disabled = true
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SUN" unique_id=587642657]
+layout_mode = 2
+
+[node name="CONTACTGRID" type="VBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer" unique_id=1013785667]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="HBoxContainer8" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID" unique_id=38987139]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer8" unique_id=1495063155]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "CONTACT GRID"
+
+[node name="CheckButton" type="CheckButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer8" unique_id=525435353]
+layout_mode = 2
+button_pressed = true
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID" unique_id=182230098]
+layout_mode = 2
+
+[node name="SunSize" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6" unique_id=251440564]
+layout_mode = 2
+text = "GRID CELL"
+
+[node name="world_x" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6" unique_id=201385648]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6/world_x" unique_id=1965358083]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6" unique_id=2106238534]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6/world_y" unique_id=1096202369]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6" unique_id=35699347]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6/world_z" unique_id=376687195]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID" unique_id=2057839499]
+layout_mode = 2
+
+[node name="SCENTGRID" type="VBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer" unique_id=1232043944]
+layout_mode = 2
+theme_override_constants/separation = 13
+
+[node name="HBoxContainer10" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID" unique_id=88889333]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer10" unique_id=968183116]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "SCENT GRID"
+
+[node name="CheckButton" type="CheckButton" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer10" unique_id=1660196844]
+layout_mode = 2
+button_pressed = true
+
+[node name="HBoxContainer7" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID" unique_id=798144236]
+layout_mode = 2
+
+[node name="SunSize" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=1159190061]
+layout_mode = 2
+text = "SCENT CELL"
+
+[node name="world_x" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=962049005]
+layout_mode = 2
+placeholder_text = "50"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7/world_x" unique_id=1317670386]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=1545442212]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7/world_y" unique_id=897262024]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=1055092235]
+layout_mode = 2
+placeholder_text = "50"
+
+[node name="Label" type="Label" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7/world_z" unique_id=57821561]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID" unique_id=1269844520]
+layout_mode = 2
+
+[node name="Label" type="RichTextLabel" parent="simulation_UI/World" unique_id=201574479]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 458.0
+offset_right = 488.0
+offset_bottom = 637.0
+
+[node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label3" type="Label" parent="simulation_UI/Rendering" unique_id=960587007]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 68.0
+offset_right = 253.0
+offset_bottom = 102.0
+theme_override_font_sizes/font_size = 24
+text = "Rendering System"
+
+[node name="Label4" type="Label" parent="simulation_UI/Rendering" unique_id=731210140]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 121.0
+offset_right = 297.0
+offset_bottom = 155.0
+theme_override_font_sizes/font_size = 24
+text = "press tab to switch view"
+
+[node name="ButtonVisualisation" type="Button" parent="simulation_UI/Rendering" unique_id=437390614]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 179.0
+offset_right = 249.0
+offset_bottom = 210.0
+toggle_mode = true
+button_pressed = true
+text = "ALife"
+
+[node name="Label" type="RichTextLabel" parent="simulation_UI/Rendering" unique_id=841541968]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 324.0
+offset_right = 294.0
+offset_bottom = 645.0
+
+[node name="Sun" type="Control" parent="simulation_UI/Rendering" unique_id=834435136]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Stamp" type="Button" parent="simulation_UI/Rendering/Sun" unique_id=1523120692]
+layout_mode = 0
+offset_left = 127.0
+offset_top = 218.0
+offset_right = 185.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "Stamp"
+
+[node name="Flux" type="Button" parent="simulation_UI/Rendering/Sun" unique_id=1440237982]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 218.0
+offset_right = 123.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "Flux
+"
+
+[node name="Value" type="Button" parent="simulation_UI/Rendering/Sun" unique_id=1102702507]
+layout_mode = 0
+offset_left = 187.0
+offset_top = 218.0
+offset_right = 249.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "Value"
+
+[node name="LineEdit_layer" type="LineEdit" parent="simulation_UI/Rendering/Sun" unique_id=351985798]
+layout_mode = 0
+offset_left = 312.0
+offset_top = 217.0
+offset_right = 380.5
+offset_bottom = 248.0
+text = "0"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/Sun/LineEdit_layer" unique_id=1575654310]
+layout_mode = 0
+offset_left = -50.0
+offset_top = 3.0
+offset_right = -7.0
+offset_bottom = 26.0
+text = "Layer"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/Sun" unique_id=454583276]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 221.0
+offset_right = 48.0
+offset_bottom = 244.0
+text = "SUN"
+
+[node name="FIELD" type="Control" parent="simulation_UI/Rendering" unique_id=1340767008]
+anchors_preset = 0
+offset_left = -1.0
+offset_top = 33.0
+offset_right = 39.0
+offset_bottom = 73.0
+
+[node name="FLOW" type="Button" parent="simulation_UI/Rendering/FIELD" unique_id=1891167157]
+layout_mode = 0
+offset_left = 127.0
+offset_top = 218.0
+offset_right = 185.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "FLOW"
+
+[node name="FIELD" type="Button" parent="simulation_UI/Rendering/FIELD" unique_id=420266195]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 218.0
+offset_right = 123.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "FIELD
+"
+
+[node name="dir" type="Button" parent="simulation_UI/Rendering/FIELD" unique_id=638753755]
+layout_mode = 0
+offset_left = 187.0
+offset_top = 218.0
+offset_right = 249.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "SCENT"
+
+[node name="sp" type="LineEdit" parent="simulation_UI/Rendering/FIELD" unique_id=379139214]
+layout_mode = 0
+offset_left = 332.0
+offset_top = 217.0
+offset_right = 400.5
+offset_bottom = 248.0
+text = "0"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/FIELD/sp" unique_id=759821312]
+layout_mode = 0
+offset_left = -67.0
+offset_top = 4.0
+offset_right = -6.0
+offset_bottom = 27.0
+text = "SPECIES"
+
+[node name="layer" type="LineEdit" parent="simulation_UI/Rendering/FIELD" unique_id=128886365]
+layout_mode = 0
+offset_left = 458.0
+offset_top = 218.0
+offset_right = 526.5
+offset_bottom = 249.0
+text = "0"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/FIELD/layer" unique_id=1733114872]
+layout_mode = 0
+offset_left = -50.0
+offset_top = 3.0
+offset_right = -7.0
+offset_bottom = 26.0
+text = "Layer"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/FIELD" unique_id=927782913]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 221.0
+offset_right = 48.0
+offset_bottom = 244.0
+text = "FIELD"
+
+[node name="ALIFE" type="Control" parent="simulation_UI/Rendering" unique_id=955951889]
+anchors_preset = 0
+offset_left = -2.0
+offset_top = 68.0
+offset_right = 38.0
+offset_bottom = 108.0
+
+[node name="FLOW" type="Button" parent="simulation_UI/Rendering/ALIFE" unique_id=192549788]
+layout_mode = 0
+offset_left = 101.0
+offset_top = 218.0
+offset_right = 238.0
+offset_bottom = 249.0
+toggle_mode = true
+text = "TBD"
+
+[node name="Label" type="Label" parent="simulation_UI/Rendering/ALIFE" unique_id=149615983]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 221.0
+offset_right = 48.0
+offset_bottom = 244.0
+text = "AlifeGRID"
+
+[node name="Label" type="RichTextLabel" parent="simulation_UI" unique_id=1345646950]
+unique_name_in_owner = true
+offset_left = 849.0
+offset_top = 14.0
+offset_right = 1133.0
+offset_bottom = 637.0
+mouse_filter = 2
+
+[node name="speed" type="LineEdit" parent="simulation_UI" unique_id=1605889294]
+visible = false
+offset_left = 617.0
+offset_top = 103.0
+offset_right = 685.5
+offset_bottom = 134.0
+placeholder_text = "1"
+
+[node name="Label" type="Label" parent="simulation_UI/speed" unique_id=645297146]
+layout_mode = 0
+offset_left = -141.0
+offset_top = 3.0
+offset_right = -8.0
+offset_bottom = 26.0
+text = "simulation speed"
+
+[node name="RunGDScript" type="Button" parent="simulation_UI" unique_id=617219037]
+offset_left = 495.0
+offset_top = 53.0
+offset_right = 606.0
+offset_bottom = 84.0
+text = "Run GDScript"
+
+[node name="Label" type="Label" parent="simulation_UI/RunGDScript" unique_id=1596186498]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.36
+anchor_bottom = 0.74200004
+offset_left = -57.0
+offset_top = 34.0
+offset_right = 341.04
+offset_bottom = 33.998
+
+[node name="RunGPU" type="Button" parent="simulation_UI" unique_id=1318344758]
+offset_left = 728.0
+offset_top = 27.0
+offset_right = 839.0
+offset_bottom = 58.0
+disabled = true
+text = "Run GPU"
+
+[node name="RunCpp" type="Button" parent="simulation_UI" unique_id=1409697113]
+offset_left = 604.0
+offset_top = 27.0
+offset_right = 715.0
+offset_bottom = 58.0
+disabled = true
+text = "Run C++"
+
+[node name="nThreads" type="LineEdit" parent="simulation_UI" unique_id=1190334601]
+offset_left = 515.0
+offset_top = 15.0
+offset_right = 583.5
+offset_bottom = 46.0
+placeholder_text = "8"
+
+[node name="Label3" type="Label" parent="simulation_UI/nThreads" unique_id=1983668022]
+layout_mode = 0
+offset_left = -77.0
+offset_top = 4.0
+offset_right = 23.0
+offset_bottom = 27.0
+text = "nthreads"
+
+[node name="CheckBox" type="CheckBox" parent="simulation_UI/nThreads" unique_id=602669552]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_bottom = 0.5
+offset_left = -124.0
+offset_top = 4.0
+offset_right = -100.0
+offset_bottom = 12.5
+
+[node name="Panel" type="Panel" parent="simulation_UI" unique_id=1556430556]
+offset_left = 12.0
+offset_top = 9.0
+offset_right = 424.0
+offset_bottom = 69.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="simulation_UI/Panel" unique_id=1624320700]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 8.0
+offset_right = 286.0
+offset_bottom = 50.0
+
+[node name="Button_1" type="Button" parent="simulation_UI/Panel/HBoxContainer" unique_id=53267572]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+toggle_mode = true
+text = "Alife"
+
+[node name="Button_2" type="Button" parent="simulation_UI/Panel/HBoxContainer" unique_id=1560961543]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+toggle_mode = true
+text = "World"
+
+[node name="Button_3" type="Button" parent="simulation_UI/Panel/HBoxContainer" unique_id=1582095574]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+toggle_mode = true
+text = "Rendering"
+
+[node name="PopTracker" parent="simulation_UI" unique_id=1880471351 instance=ExtResource("9_b3dws")]
+offset_left = 903.0
+offset_top = 426.0
+offset_right = 138.0
+offset_bottom = 133.0
+scale = Vector2(0.6, 0.6)
+
+[connection signal="pressed" from="CanvasLayer/ButtonUIshow" to="." method="_on_button_u_ishow_pressed"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer/maxLife" to="." method="_on_max_life_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer2/nstartLife" to="." method="_on_nstart_life_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer3/n_species" to="." method="_on_n_species_text_submitted"]
+[connection signal="toggled" from="simulation_UI/Alife/Panel/Panel/HBoxContainer4/duplication" to="." method="_on_duplication_toggled"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer4/dup_range" to="." method="_on_dup_range_text_submitted"]
+[connection signal="toggled" from="simulation_UI/Alife/Panel/Panel/HBoxContainer5/homeo_on" to="." method="_on_homeo_on_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/Panel/Panel/HBoxContainer6/Remove_ON" to="." method="_on_remove_on_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/Panel/Panel/HBoxContainer7/Growth_on" to="." method="_on_growth_on_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/Panel/Panel/HBoxContainer8/Photosynthesis" to="." method="_on_photosynthesis_toggled"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer8/photo_range" to="." method="_on_photo_range_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer8/photo_rate" to="." method="_on_photo_rate_text_submitted"]
+[connection signal="toggled" from="simulation_UI/Alife/Panel/Panel/HBoxContainer9/Interaction_ONOFF" to="." method="_on_interaction_onoff_toggled"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer9/neighRange" to="." method="_on_neigh_range_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer9/binsize" to="." method="_on_binsize_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer9/neighMax" to="." method="_on_neigh_max_text_submitted"]
+[connection signal="toggled" from="simulation_UI/Alife/Panel/Panel/HBoxContainer10/AI_onOFt" to="." method="_on_ai_on_o_ft_toggled"]
+[connection signal="item_selected" from="simulation_UI/Alife/Panel/Panel/HBoxContainer10/OptionButton" to="." method="_on_option_button_item_selected"]
+[connection signal="toggled" from="simulation_UI/Alife/Multispecies" to="." method="_on_multispecies_toggled"]
+[connection signal="toggled" from="simulation_UI/Alife/Plant_on" to="." method="_on_plant_on_toggled"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer/world_x" to="." method="_on_world_x_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer/world_y" to="." method="_on_world_y_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer/world_z" to="." method="_on_world_z_text_submitted"]
+[connection signal="item_selected" from="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2/border-x" to="." method="_on_borderx_item_selected"]
+[connection signal="item_selected" from="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2/border-y" to="." method="_on_bordery_item_selected"]
+[connection signal="item_selected" from="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer2/border-z" to="." method="_on_borderz_item_selected"]
+[connection signal="toggled" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer/CheckButton" to="." method="_on_check_button_toggled"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2/world_x" to="." method="_on_sun_x_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2/world_y" to="." method="_on_sun_y_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2/world_z" to="." method="_on_sun_z_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer2/SUNENERGY" to="." method="_on_sunenergy_text_submitted"]
+[connection signal="toggled" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer4/CheckStampAgent" to="." method="_on_check_stamp_agent_toggled"]
+[connection signal="toggled" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer4/CheckDiffusion" to="." method="_on_check_diffusion_toggled"]
+[connection signal="toggled" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer4/CheckStamp" to="." method="_on_check_button_toggled"]
+[connection signal="toggled" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer5/fullrangeOn" to="." method="_on_fullrange_on_toggled"]
+[connection signal="toggled" from="simulation_UI/World/ScrollContainer/VBoxContainer/SUN/HBoxContainer5/fullrangeOn2" to="." method="_on_fullrange_on_2_toggled"]
+[connection signal="toggled" from="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer8/CheckButton" to="." method="_on_check_button_toggled"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6/world_x" to="." method="_on_x_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6/world_y" to="." method="_on_y_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/CONTACTGRID/HBoxContainer6/world_z" to="." method="_on_z_text_submitted"]
+[connection signal="toggled" from="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer10/CheckButton" to="." method="_on_check_scent_button_toggled"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7/world_x" to="." method="_on_x_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7/world_y" to="." method="_on_y_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/SCENTGRID/HBoxContainer7/world_z" to="." method="_on_z_text_submitted"]
+[connection signal="toggled" from="simulation_UI/Rendering/ButtonVisualisation" to="." method="_on_button_visualisation_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/Sun/Stamp" to="." method="_on_stamp_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/Sun/Flux" to="." method="_on_flux_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/Sun/Value" to="." method="_on_value_toggled"]
+[connection signal="text_submitted" from="simulation_UI/Rendering/Sun/LineEdit_layer" to="Visual/MultiMesh_BIN" method="_on_line_edit_layer_text_submitted"]
+[connection signal="toggled" from="simulation_UI/Rendering/FIELD/FLOW" to="." method="_on_flow_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/FIELD/FIELD" to="." method="_on_field_toggled"]
+[connection signal="toggled" from="simulation_UI/Rendering/FIELD/dir" to="." method="_on_dir_toggled"]
+[connection signal="text_submitted" from="simulation_UI/Rendering/FIELD/sp" to="." method="_on_sp_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Rendering/FIELD/layer" to="." method="_on_layer_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/speed" to="." method="_on_speed_text_submitted"]
+[connection signal="pressed" from="simulation_UI/RunGDScript" to="." method="_on_run_gd_script_pressed"]
+[connection signal="pressed" from="simulation_UI/RunGPU" to="." method="_on_run_gpu_pressed"]
+[connection signal="pressed" from="simulation_UI/RunCpp" to="." method="_on_run_cpp_pressed"]
+[connection signal="text_submitted" from="simulation_UI/nThreads" to="." method="_on_line_edit_text_submitted"]
+[connection signal="toggled" from="simulation_UI/nThreads/CheckBox" to="." method="_on_check_box_toggled"]
+[connection signal="toggled" from="simulation_UI/Panel/HBoxContainer/Button_1" to="." method="_on_button_1_toggled"]
+[connection signal="toggled" from="simulation_UI/Panel/HBoxContainer/Button_2" to="." method="_on_button_2_toggled"]
+[connection signal="toggled" from="simulation_UI/Panel/HBoxContainer/Button_3" to="." method="_on_button_3_toggled"]

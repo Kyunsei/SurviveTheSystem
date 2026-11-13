@@ -83,7 +83,7 @@ func _process(delta: float) -> void:
 
 			if Engine.get_frames_per_second() < 30:
 				$AlifeManager.duplicate_on = false
-				$simulation_UI/Alife/duplication.button_pressed = false
+				%duplication.button_pressed = false
 				#simulation_speed = 0
 				#$simulation_UI/speed.text = "0"
 			
@@ -132,18 +132,23 @@ func run_visualisation():
 		$Visual/MultiMesh_BIN.update_all($World.SUN_GRID,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
 	if visu_sun_stamp_on:	
 		$Visual/MultiMesh_BIN.update_all($AlifeManager.current_global_photosynthesis_rate,$World.SUN_GRID_W,$World.SUN_GRID_H,$World.SUN_GRID_D,$World.SUN_cell_size,Color(0.71, 0.71, 0.348, 1.0))
+
 	if visu_field_on:
 		var sp =$AlifeManager.species_array[ visu_sp_selected ]
-		$Visual/MultiMesh_BIN.update_all(sp.FIELD,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,10,0)
-		 #,Color(0.324, 0.758, 0.814, 1.0))
-	if visu_flow_on:
+		$Visual/MultiMesh_BIN.update_all(sp.FIELD_count,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,10, 0)
+	if visu_field_diff_on:
 		var sp =$AlifeManager.species_array[ visu_sp_selected ]
-
-		$Visual/MultiMesh_BIN.update_all(sp.FLOW,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,10, 0)
-
+		$Visual/MultiMesh_BIN.update_all(sp.FIELD_c_diffused,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,20, 0)
+	if visu_gradient_on:
+		var sp =$AlifeManager.species_array[ visu_sp_selected ]
+		var SCENT  #TODO
+		#$Visual/MultiMesh_BIN.update_all(sp.FIELD_c_diffused,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,100, 0)
+	if visu_flow_dir_diff_on:
+		var sp =$AlifeManager.species_array[ visu_sp_selected ]
+		$Visual/MultiMesh_BIN.update_all(sp.FIELD_v_diffused,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,20.0, 1)
 	if visu_flow_dir_on:
 		var sp =$AlifeManager.species_array[ visu_sp_selected ]
-		$Visual/MultiMesh_BIN.update_all(sp.FLOW_dir,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,10, 1)
+		$Visual/MultiMesh_BIN.update_all(sp.FIELD_velocity,sp.FIELD_W,sp.FIELD_H,sp.FIELD_D,sp.field_cell_size, sp.colour,10.0, 1)
 
 	visu_usec = Time.get_ticks_usec() - t
 	
@@ -324,8 +329,10 @@ func _on_ai_on_o_ft_toggled(toggled_on: bool) -> void:
 
 
 func _on_binsize_text_submitted(new_text: String) -> void:
-	$AlifeManager.cell_size = float(new_text)
-	$AlifeManager.init_GRID($World.size)
+	$AlifeManager.new_cell_size.x = float(new_text)
+	$AlifeManager.new_cell_size.z = float(new_text)
+	world_setting_change = true
+	#$AlifeManager.init_GRID($World.size)
 	#$AlifeManager.set_bin
 
 
@@ -481,10 +488,17 @@ func _on_fullrange_on_2_toggled(toggled_on: bool) -> void:
 var visu_sun_flow_on:= false
 var visu_sun_stamp_on:= false
 var visu_sun_value_on:= false
+
 var visu_field_on := false
-var visu_flow_on := false
+var visu_field_diff_on := false
+var visu_gradient_on := false
+
+
 var visu_sp_selected := 0
+
 var visu_flow_dir_on:= false
+var visu_flow_dir_diff_on:= false
+
 
 func _on_stamp_toggled(toggled_on: bool) -> void:
 	$Visual/MultiMesh_BIN.init($World.SUN_cell_size)
@@ -521,15 +535,15 @@ func _on_borderz_item_selected(index: int) -> void:
 
 
 func _on_interaction_onoff_toggled(toggled_on: bool) -> void:
-	$AlifeManager.interaction_on = toggled_on
+	$AlifeManager.count_neighbour_on = toggled_on
 
 
-func _on_flow_toggled(toggled_on: bool) -> void:
-	visu_flow_on = toggled_on
+func _on_field_count_toggled(toggled_on: bool) -> void:
+	visu_field_on = toggled_on
 
 
 func _on_field_toggled(toggled_on: bool) -> void:
-	visu_field_on = toggled_on
+	visu_field_diff_on = toggled_on
 
 
 func _on_layer_text_submitted(new_text: String) -> void:
@@ -542,3 +556,28 @@ func _on_sp_text_submitted(new_text: String) -> void:
 
 func _on_dir_toggled(toggled_on: bool) -> void:
 	visu_flow_dir_on = toggled_on
+
+
+
+func _on_neigh_range_text_submitted(new_text: String) -> void:
+	$AlifeManager.neighbour_view_range = float(new_text)
+
+
+func _on_neigh_max_text_submitted(new_text: String) -> void:
+	$AlifeManager.neighbour_max_count = int(new_text)
+
+
+func _on_option_button_item_selected(index: int) -> void:
+	$AlifeManager.flock_type = index
+
+
+func _on_check_scent_button_toggled(toggled_on: bool) -> void:
+	$AlifeManager.field_on = toggled_on
+
+
+func _on_gradient_toggled(toggled_on: bool) -> void:
+	visu_gradient_on = toggled_on
+
+
+func _on_dir_diff_toggled(toggled_on: bool) -> void:
+	visu_flow_dir_diff_on = toggled_on

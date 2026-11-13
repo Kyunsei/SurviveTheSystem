@@ -93,11 +93,14 @@ var mouse_target : Vector3
 
 #old? CHECK THSI ONE?
 var LifeBin_array : Array[PackedInt32Array]  #HERE CAN BE COOL TO SEE IF REORDERING MATTERS
+var count_neighbour_on := false
+var neighbour_view_range := 15.0
+var neighbour_max_count := 8
+var flock_type := 0
 
 var bin_on := true
-var interaction_on := true
 var cell_size := Vector3(20,20,20)
-var new_cell_size := Vector3(10,20,10)
+var new_cell_size := Vector3(20,20,20)
 
 
 var GRID_W := 32          # cells along x
@@ -118,9 +121,9 @@ var sorted_pos := PackedVector3Array()
 
 
 ### FLOW
-var flow_on = true
-var flowbin_size := 10.0
-var flowbin_dic : Dictionary
+var field_on := true
+#var flowbin_size := 10.0
+#var flowbin_dic : Dictionary
 #var current_bin_id : Array[Vector3i]
  
 
@@ -210,7 +213,7 @@ func init(worldd):
 	#bin_ids_array.resize(10) #TODO
 	#current_bin_id = []
 	#FLOW not yet there
-	flowbin_dic.clear()	
+	#flowbin_dic.clear()	
 	
 	##WORLD
 	world = worldd
@@ -349,7 +352,7 @@ func start_simulation(delta: float, sim_speed: float):
 	for s in species_array:
 		entity_count += s.entity_count
 		s.mouse_target =  mouse
-		s.build_field()
+		s.build_field() #TODO ? call in thread?
 		
 
 
