@@ -35,7 +35,7 @@ var grid_calculated_photo_value := false
 
 var global_position_array : PackedVector3Array
 var global_species_offset:PackedInt32Array
-
+var global_active := PackedByteArray()     # 1 = active, 0 = inactive, indexed by global id
 
 var photo_absorption_rate := 1.0
 #var previous_global_photosynthesis_rate : PackedFloat32Array
@@ -95,8 +95,11 @@ var mouse_target : Vector3
 var LifeBin_array : Array[PackedInt32Array]  #HERE CAN BE COOL TO SEE IF REORDERING MATTERS
 var count_neighbour_on := false
 var neighbour_view_range := 15.0
-var neighbour_max_count := 8
+var neighbour_max_count := 10
 var flock_type := 0
+var allignment := 1.0
+var separation := 2.0
+var cohesion := .5
 
 var bin_on := true
 var cell_size := Vector3(20,20,20)
@@ -254,7 +257,7 @@ func init_species(worldd:World,alifem:AlifeManager):
 	if switch:
 		for c in get_children():
 			c.queue_free()
-		species_array.resize(n_species)
+		species_array.resize(n_species + 1)
 		for s in n_species:
 			species_array[s] = TESTDNA.new()
 			#if s == 0:
@@ -281,16 +284,30 @@ func init_species(worldd:World,alifem:AlifeManager):
 				species_array[s].photo_optimal_value  = 1./3. #randi_range(10,100)
 				species_array[s].photo_optimal_width = 0.3
 				species_array[s].init_size  = Vector3(1,1,1)
+				species_array[s].sprite = preload("res://Alife/Plant/Moss/moss.png")
 
 
 			if species_array[s].photo_range ==2:
 				species_array[s].duplication_range  = 100 #randi_range(10,100)
 				species_array[s].photo_optimal_value  = 0.5 #randi_range(10,100) #self shadow
 				species_array[s].init_size  = Vector3(3,2,3)
-
-
-
 				species_array[s].colour = Color(0.757, 0.234, 0.147, 1.0)
+				species_array[s].sprite = preload("res://Alife/Plant/tree/tree.png")
+
+	
+		
+		species_array[n_species] = TESTDNA.new()
+			#if s == 0:
+			#	species_array[s].photo_range = photo_range
+			#else:
+		species_array[n_species].photo_range = 0
+		species_array[n_species].duplication_range  = 10 #randi_range(10,100)
+		species_array[n_species].init(worldd,alifem)
+		species_array[n_species].species_id = n_species #SHEEP
+			
+		species_array[n_species].colour = Color(0.766, 0.612, 0.77, 1.0)
+		species_array[n_species].init_size  = Vector3(4,4,4)
+		species_array[n_species].sprite = preload("res://Alife/animal/Herbivor/sheep3.png")
 
 			#species_array[s].colour = Color(randf(),randf(),randf())
 
@@ -393,12 +410,22 @@ func update_alife()-> void:
 		sp.Build_and_remove_pendings()
 		#sp.
 	
+
+	
 	for i in species_array.size():
 		var sp:= species_array[i]
 		global_species_offset[i] = total
 		global_position_array.append_array(sp.position_array)
 		total += sp.entity_count
 	global_species_offset[species_array.size()] = total
+
+	global_active.resize(global_species_offset[species_array.size()])
+	for s in species_array.size():
+		var sp = species_array[s]
+		var o := global_species_offset[s]
+		var act = sp.active_alife_array
+		for i in sp.entity_count:
+			global_active[o + i] = 1 if act[i] else 0
 
 	#CURRENT GLOBAL PHOTO IS UPDATED in build and remove... dont need change anymore isnt?
 	'if photosynthesis_on:

@@ -107,7 +107,7 @@ var photo_optimal_width = 0.2
 # ---- GRID THINGS - mainly SCENT GRID -------------------------------------------------------
 
 ####FLOW FIELD
-var FIELD_count: PackedInt32Array
+var FIELD_count: PackedFloat32Array
 var FIELD_velocity: PackedVector3Array
 var FIELD_c_diffused: PackedFloat32Array
 var FIELD_v_diffused: PackedVector3Array
@@ -343,12 +343,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 		'for i in range(start, end):
 			Move_random(i,wrap_x,wrap_y,wrap_z,world_size)'
 		
-	
 		if bin_on and alifemanager.global_position_array.size() >0:
 			Flock(start,end,dt)
-		
-		
-
+			
 		#COMBINE MOVMNT AND CHECK BORDER
 		for i in range(start, end):
 			var q := position_array[i] + new_velocity[i] * dt
@@ -362,7 +359,25 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); v.z = -v.z
 			position_array[i] = q
 			current_velocity[i] = v
-
+	
+	if interaction_on and bin_on:
+		if  alifemanager.global_position_array.size() >0 :
+			count_neighbour(start,end)
+	
+	if species_id == alifemanager.n_species: #temp test for sheep and other
+			GoTo(start,end)
+			for i in range(start, end):
+				var q := position_array[i] + new_velocity[i] * dt
+				var v := new_velocity[i]
+				# borders (world is 0..size)
+				if wrap_x: q.x = fposmod(q.x, world_size.x)
+				elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); v.x = -v.x
+				if wrap_y: q.y = fposmod(q.y, world_size.y)
+				elif q.y < 0.0 or q.y > world_size.y: q.y = clampf(q.y, 0.0, world_size.y); v.y = -v.y
+				if wrap_z: q.z = fposmod(q.z, world_size.z)
+				elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); v.z = -v.z
+				position_array[i] = q
+				current_velocity[i] = v
 		
 						
 	if !photo_on:
@@ -449,9 +464,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 		#photo_rate_per_chunk[local_id] = local_photo_rate
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
 
-	if interaction_on and bin_on:
-		if  alifemanager.global_position_array.size() >0 :
-			count_neighbour(start,end)
+
 			
 																		
 	if grow_on:	
@@ -598,8 +611,7 @@ func _diffuse_v(a: PackedVector3Array) -> PackedVector3Array:
 
 
 ## Scent gradient at one cell. Call it per agent, only when needed.
-func scent_gradient(c: int) -> Vector3:
-	var a := FIELD_c_diffused
+func scent_gradient(a:PackedFloat32Array, c: int) -> Vector3:
 	var s := a[c]
 	var b := c * 6
 	var o: int
@@ -614,7 +626,59 @@ func scent_gradient(c: int) -> Vector3:
 ##########################################################################################
 #### Main loop function
 ##########################################################################################
+
+func Eat(start:int,end:int):
+	pass
+	for i in range(start,end):
+		pass
+
+func GoTo(start:int,end:int):
+	if alifemanager.global_position_array.size()<1:
+		return
+	var H := FIELD_H
+	var W := FIELD_W
+	var D := FIELD_D
 	
+	var target_dist := 1.0
+	var offs: PackedInt32Array = alifemanager.global_species_offset
+	var base  := offs[alifemanager.species_array.size()-1]
+	var target_id := 0
+	var t_sp := alifemanager.species_array[target_id]
+	var t_diff := t_sp.FIELD_c_diffused
+	var t_count := t_sp.FIELD_count
+	for i in range(start,end):
+		var steer := Vector3.ZERO
+		var p := position_array[i]
+		var cx := mini(int(p.x / field_cell_size.x), W - 1)
+		var cy := mini(int(p.y / field_cell_size.y), H - 1)
+		var cz := mini(int(p.z / field_cell_size.z), D - 1)
+		var c := cx + W * (cy + H * cz)	
+		var tc := t_count[c]
+		if tc < 1 :
+			var g:= scent_gradient(t_diff, c)
+			if g.length_squared() > 1e-6:
+				steer = (g.normalized() * 5 ) 
+		else:
+			var me := i + base
+			# closest agent of any species, in the 3x3x3 block
+			#var id := find_nearest(p, me)
+			# closest prey (species 0), searching up to 4/1 cells away
+			var prey := find_nearest(p, me, 0, 4)
+			if prey >= 0:
+				var dir := nearest_delta.normalized()       # direction to it (wrap-aware)
+				var dist := sqrt(nearest_dist2)
+				if dist < target_dist:
+					var sp := offs.bsearch(prey, false) - 1
+					var local := prey - offs[sp]
+					alifemanager.species_array[sp].current_energy_array[local] = -10
+					pass  # eat / attack prey
+				else:
+					steer += dir * 5 # (dir * cruise_speed - v) * w_hunt
+						
+			
+		new_velocity[i]=steer
+
+
 func Move_random(i,wrap_x,wrap_y,wrap_z,size):
 		var p: Vector3 = position_array[i] + Vector3(randf_range(-1, 1), 0, randf_range(-1, 1))
 		p.x = fposmod(p.x, size.x) if wrap_x else clampf(p.x, 0.0, size.x)
@@ -750,9 +814,11 @@ func Flock(start,end,dt):
 	var separation_radius := 12.0
 	var view_r2 := view_radius * view_radius
 	var sep_r2 := separation_radius * separation_radius
-	var w_separation := 2.0
-	var w_alignment := 1.0
-	var w_cohesion := 0.5
+	
+	var w_separation := alifemanager.separation
+	var w_alignment :=alifemanager.allignment
+	var w_cohesion := alifemanager.cohesion
+	
 	var max_force := 10.0
 	var my_end := offs[species_id + 1]
 	var max_neighbors := 8
@@ -846,55 +912,176 @@ func Flock(start,end,dt):
 			new_velocity[i] = new_v
 			
 	elif TYPE == 1: #flow cell
+		var cruise_speed := 5.0
+		var w_speed := 1.0
 		for i in range(start, end):
-			pass
 			var p := position_array[i]
 			var v := current_velocity[i]
+			var c := clampi(int(p.x / field_cell_size.x), 0, fieldW - 1) \
+				+ fieldW * (clampi(int(p.y / field_cell_size.y), 0, fieldH - 1) \
+				+ fieldH * clampi(int(p.z / field_cell_size.z), 0, fieldD - 1))
 
-			var cx := mini(int(p.x / field_cell_size.x), fieldW - 1)
-			var cy := mini(int(p.y / field_cell_size.y), fieldH - 1)
-			var cz := mini(int(p.z / field_cell_size.z), fieldD - 1)
-			var c = cx + fieldW * (cy + fieldH * cz)
-			#var s := scent[cx + W * (cy + H * cz)]
-			#steer += scent_dir[agent_cell] * w_cohesion
-			var cnt := FIELD_count[c]
-			var others := cnt - 1.0                     # remove myself from the count
+			var others := FIELD_count[c] - 1.0          # remove myself
 
-			# --- 1. ALIGNMENT: match the heading of the others in my cell -------
-			var desired_align := v
+			# --- 1. ALIGNMENT: direction only, never brakes -----------------
+			var steer_align := Vector3.ZERO
+			var flow := Vector3.ZERO
 			if others > 0.0:
-				desired_align = (FIELD_velocity[c] - v) / others      # remove my own velocity
-			elif FIELD_v_diffused[c].length_squared() > 1e-6: #here was vec_diff, to know previous direction of entity
-				desired_align = FIELD_v_diffused[c]            # alone: follow the recent flow
-			var steer_align := desired_align - v
+				flow = FIELD_velocity[c] - v              # others in my cell
+			else:
+				flow = FIELD_v_diffused[c]                # alone: recent flow nearby
+			if flow.length_squared() > 1e-6:
+				steer_align = flow.normalized() * cruise_speed - v
 
-			# --- 2. SEPARATION: leave if too crowded ----------------------------
-			var crowd := clampf((others - target_density) / target_density, 0.0, 1.0)  # 0 = fine, 1 = packed
+			# --- 2. SEPARATION: current crowding, not the scent -------------
+			var crowd := clampf((others - target_density) / target_density, 0.0, 1.0)
 			var steer_sep := Vector3.ZERO
 			if crowd > 0.0:
-				var g := SCENT[c]
+				var g := scent_gradient(FIELD_count, c)
 				if g.length_squared() > 1e-6:
-					steer_sep = (-g.normalized() * 10 - v) * crowd   # head toward emptier cells
+					steer_sep = (-g.normalized() * cruise_speed - v) * crowd
 
-			# --- 3. COHESION: follow the scent toward the group -----------------
+			# --- 3. COHESION: scent toward the group, fades when crowded ----
 			var steer_coh := Vector3.ZERO
-			var sg := scent_gradient(c)
-			
-
-			#var crowd := 0
+			var sg := scent_gradient(FIELD_c_diffused, c)
 			if sg.length_squared() > 1e-6:
-				steer_coh = (sg.normalized() * 1 - v) * (1.0 - crowd)  # weaker when crowded
+				steer_coh = (sg.normalized() * cruise_speed - v) * (1.0 - crowd)
 
-			# --- combine --------------------------------------------------------
-			var steer := steer_align * w_alignment + steer_sep * w_separation + steer_coh * w_cohesion
+			# --- 4. CRUISE: keep moving ---------------------------------------
+			var steer_speed := Vector3.ZERO
+			if v.length_squared() > 1e-6:
+				steer_speed = (v.normalized() * cruise_speed - v) * w_speed
+
+			# --- combine --------------------------------------------------
+			var steer := steer_align * w_alignment + steer_sep * w_separation \
+				+ steer_coh * w_cohesion + steer_speed
 			steer = steer.limit_length(max_force)
 
-			var nv : Vector3= v + steer #* dt
+			var nv : Vector3 = v + steer * dt
 			var s := nv.length()
-			if s < 0.000001:
-				new_velocity[i] = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) #.normalized() * 1
+			if s < 1e-6:
+				new_velocity[i] = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)).normalized() * cruise_speed
 			else:
-				new_velocity[i] = nv / s * clampf(s, 1, 10)		
+				new_velocity[i] = nv / s * clampf(s, 1.0, 10.0)
+	elif TYPE == 2: #hybrid: contact grid for separation + alignment, field for cohesion
+		# --- hybrid tuning (move to @export later) --------------------------
+		var contact_radius := 6.0          # alignment range, must be <= cell_size
+		var sep_radius := 3.0              # personal space, < contact_radius
+		var cruise_speed := 5.0
+		var w_speed := 1.0
+		var contact_r2 := contact_radius * contact_radius
+		var sep_r2_h := sep_radius * sep_radius
+
+		for i in range(start, end):
+			var p: Vector3 = position_array[i]
+			var v: Vector3 = current_velocity[i]
+			var global_i := i + base
+
+			# ===== SHORT RANGE: contact grid ===============================
+			#var n := 0
+			n = 0
+			var sum_v := Vector3.ZERO
+			var sep := Vector3.ZERO
+			var min_d2 := sep_r2_h                # closest neighbor inside personal space
+
+			var cx := clampi(int(p.x / cell_size.x), 0, W - 1)
+			var cy := clampi(int(p.y / cell_size.y), 0, H - 1)
+			var cz := clampi(int(p.z / cell_size.z), 0, D - 1)
+
+			for dz in range(-1, -1 + nz):
+				if n >= max_neighbors: break
+				var z := cz + dz
+				var sz := 0.0
+				if z < 0:
+					if not wrap_z: continue
+					z += D; sz = -world_size.z
+				elif z >= D:
+					if not wrap_z: continue
+					z -= D; sz = world_size.z
+
+				for dy in range(-1, -1 + ny):
+					if n >= max_neighbors: break
+					var y := cy + dy
+					var sy := 0.0
+					if y < 0:
+						if not wrap_y: continue
+						y += H; sy = -world_size.y
+					elif y >= H:
+						if not wrap_y: continue
+						y -= H; sy = world_size.y
+
+					for dx in range(-1, -1 + nx):
+						if n >= max_neighbors: break
+						var x := cx + dx
+						var sx := 0.0
+						if x < 0:
+							if not wrap_x: continue
+							x += W; sx = -world_size.x
+						elif x >= W:
+							if not wrap_x: continue
+							x -= W; sx = world_size.x
+
+						var cell := x + W * (y + H * z)
+						var shift_p := Vector3(sx, sy, sz) - p
+						for k in range(cell_start[cell], cell_start[cell + 1]):
+							var other: int = cell_items[k]
+							if other < base or other >= my_end or other == global_i:
+								continue                      # same species only
+							var d: Vector3 = global_sorted_pos[k] + shift_p
+							var dist2 := d.length_squared()
+							if dist2 > contact_r2 or dist2 == 0.0:
+								continue
+							n += 1
+							sum_v += current_velocity[other - base]
+							if dist2 < sep_r2_h:
+								sep -= d / dist2              # stronger when closer
+								min_d2 = minf(min_d2, dist2)
+							if n >= max_neighbors:
+								break
+
+			# ===== LONG RANGE: field cell ===================================
+			var fc := clampi(int(p.x / field_cell_size.x), 0, fieldW - 1) \
+				+ fieldW * (clampi(int(p.y / field_cell_size.y), 0, fieldH - 1) \
+				+ fieldH * clampi(int(p.z / field_cell_size.z), 0, fieldD - 1))
+
+			var crowd := clampf(float(n) / max_neighbors, 0.0, 1.0)   # 0 = alone, 1 = in a group
+
+			# --- 1. SEPARATION: exact neighbors, scaled by how close the nearest is
+			var steer_sep := Vector3.ZERO
+			if sep.length_squared() > 1e-8:
+				var closeness := 1.0 - sqrt(min_d2) / sep_radius        # 0 at edge, 1 touching
+				steer_sep = (sep.normalized() * cruise_speed - v) * closeness
+
+			# --- 2. ALIGNMENT: real neighbors, or the field's flow when alone
+			var steer_align := Vector3.ZERO
+			var flow := sum_v if n > 0 else FIELD_v_diffused[fc]
+			if flow.length_squared() > 1e-6:
+				var align_scale := 1.0 if n > 0 else 0.5              # weaker when guessing from the field
+				steer_align = (flow.normalized() * cruise_speed - v) * align_scale
+
+			# --- 3. COHESION: scent toward the group, fades once in a group
+			var steer_coh := Vector3.ZERO
+			if crowd < 1.0:
+				var sg := scent_gradient(FIELD_c_diffused, fc)
+				if sg.length_squared() > 1e-6:
+					steer_coh = (sg.normalized() * cruise_speed - v) * (1.0 - crowd)
+
+			# --- 4. CRUISE: keep moving -------------------------------------
+			var steer_speed := Vector3.ZERO
+			if v.length_squared() > 1e-6:
+				steer_speed = (v.normalized() * cruise_speed - v) * w_speed
+
+			# --- combine ----------------------------------------------------
+			var steer := steer_sep * w_separation + steer_align * w_alignment \
+				+ steer_coh * w_cohesion + steer_speed
+			steer = steer.limit_length(max_force)
+
+			var nv :Vector3= v + steer * dt
+			var s := nv.length()
+			if s < 1e-6:
+				new_velocity[i] = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)).normalized() * cruise_speed
+			else:
+				new_velocity[i] = nv / s * clampf(s, 1.0, 10.0)	
 
 ##########################################################################################
 ####GRID/SUN MANAGEMENT
@@ -959,6 +1146,94 @@ func stamp(c: int, r: int, ry: int, layer: int, w: float) -> void:
 	if layer != 0:
 		alifemanager.current_global_photosynthesis_rate[c] += w
 
+var nearest_dist2 := INF      # filled by find_nearest (distance² of the result)
+var nearest_delta := Vector3.ZERO   # vector from p to the result (wrap-aware)
+
+## Returns the global id of the closest agent to `p`, or -1 if none found.
+## self_id:   global id to ignore (-1 = none)
+## species:   only this species (-1 = any species)
+## max_rings: how far to search, in cells (1 = the 3x3x3 block around me)
+func find_nearest(p: Vector3, self_id: int = -1, species: int = -1, max_rings: int = 1) -> int:
+	var am := alifemanager
+	var W: int = am.GRID_W
+	var H: int = am.GRID_H
+	var D: int = am.GRID_D
+	var cs: Vector3 = am.cell_size
+	var ws: Vector3 = world.size
+	var wrap_x: bool = world.border_type_x == world.Border.WRAP
+	var wrap_y: bool = world.border_type_y == world.Border.WRAP
+	var wrap_z: bool = world.border_type_z == world.Border.WRAP
+	var cell_start: PackedInt32Array = am.cell_start
+	var cell_items: PackedInt32Array = am.cell_items
+	var sorted_pos: PackedVector3Array = am.sorted_pos
+	var offs: PackedInt32Array = am.global_species_offset
+	var active: PackedByteArray = am.global_active          
+
+	# species filter as an id range (no lookup per agent)
+	var lo := 0
+	var hi := 1 << 30
+	if species >= 0:
+		lo = offs[species]
+		hi = offs[species + 1]
+
+	var cx := clampi(int(p.x / cs.x), 0, W - 1)
+	var cy := clampi(int(p.y / cs.y), 0, H - 1)
+	var cz := clampi(int(p.z / cs.z), 0, D - 1)
+
+	# on wrap axes, don't search further than half the grid (avoids visiting cells twice)
+	var lim_x := mini(max_rings, (W - 1) / 2) if wrap_x else max_rings
+	var lim_y := mini(max_rings, (H - 1) / 2) if wrap_y else max_rings
+	var lim_z := mini(max_rings, (D - 1) / 2) if wrap_z else max_rings
+	var cmin := minf(cs.x, minf(cs.y, cs.z))
+
+	var best := -1
+	var best_d2 := INF
+	var best_d := Vector3.ZERO
+
+	for r in max_rings + 1:
+		# stop: anything in ring r is at least (r - 1) cells away
+		if best >= 0 and best_d2 <= pow((r - 1) * cmin, 2):
+			break
+
+		for dz in range(-mini(r, lim_z), mini(r, lim_z) + 1):
+			var z := cz + dz
+			if not wrap_z and (z < 0 or z >= D): continue
+			var zw := posmod(z, D)
+			var sz := float((z - zw) / D) * ws.z
+
+			for dy in range(-mini(r, lim_y), mini(r, lim_y) + 1):
+				var y := cy + dy
+				if not wrap_y and (y < 0 or y >= H): continue
+				var yw := posmod(y, H)
+				var sy := float((y - yw) / H) * ws.y
+
+				for dx in range(-mini(r, lim_x), mini(r, lim_x) + 1):
+					# only the shell of this ring (inner cells were done before)
+					if maxi(absi(dx), maxi(absi(dy), absi(dz))) != r:
+						continue
+					var x := cx + dx
+					if not wrap_x and (x < 0 or x >= W): continue
+					var xw := posmod(x, W)
+					var sx := float((x - xw) / W) * ws.x
+
+					var cell := xw + W * (yw + H * zw)
+					var shift_p := Vector3(sx, sy, sz) - p
+					for k in range(cell_start[cell], cell_start[cell + 1]):
+						var other: int = cell_items[k]
+						if other == self_id or other < lo or other >= hi:
+							continue
+						if active[other] == 0:                  # <- new: skip inactive
+							continue
+						var d: Vector3 = sorted_pos[k] + shift_p
+						var d2 := d.length_squared()
+						if d2 < best_d2:
+							best_d2 = d2
+							best = other
+							best_d = d
+
+	nearest_dist2 = best_d2
+	nearest_delta = best_d
+	return best
 
 func get_cell_id(pos: Vector3,cell_size:Vector3, W:int , H:int, D:int)-> int :
 		var inv := Vector3.ONE / cell_size # worldd.SUN_cell_size   # (1/x, 1/y, 1/z)

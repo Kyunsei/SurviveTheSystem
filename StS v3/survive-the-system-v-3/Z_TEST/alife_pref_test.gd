@@ -38,8 +38,14 @@ func init():
 	var tt := Time.get_ticks_usec() 
 
 	for sp in $AlifeManager.species_array:
-		for i in n_start_life:
-			sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),Vector3(world.size.x/2,0,world.size.z/2)),randf_range(0.0,5.0))
+		if sp == $AlifeManager.species_array[-1]:
+			for i in 10:
+				sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),Vector3(world.size.x/2,0,world.size.z/2)),randf_range(0.0,5.0))
+
+		else:
+			for i in n_start_life:
+					
+				sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),Vector3(world.size.x/2,0,world.size.z/2)),randf_range(0.0,5.0))
 
 	var t := (Time.get_ticks_usec() - tt)/1000.0
 	var e = n_start_life * $AlifeManager.species_array.size()
@@ -581,3 +587,15 @@ func _on_gradient_toggled(toggled_on: bool) -> void:
 
 func _on_dir_diff_toggled(toggled_on: bool) -> void:
 	visu_flow_dir_diff_on = toggled_on
+
+
+func _on_allign_text_submitted(new_text: String) -> void:
+	$AlifeManager.allignment = float(new_text)
+
+
+func _on_sep_text_submitted(new_text: String) -> void:
+	$AlifeManager.separation = float(new_text)
+
+
+func _on_cohesion_text_submitted(new_text: String) -> void:
+	$AlifeManager.cohesion = float(new_text)

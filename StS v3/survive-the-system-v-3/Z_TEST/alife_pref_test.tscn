@@ -73,7 +73,6 @@ text = "Hide Interface"
 [node name="simulation_UI" type="CanvasLayer" parent="." unique_id=438579712]
 
 [node name="Alife" type="Control" parent="simulation_UI" unique_id=1688543948]
-visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_top = 4.0
@@ -270,14 +269,6 @@ popup/item_1/id = 1
 popup/item_2/text = "Hybrid"
 popup/item_2/id = 2
 
-[node name="Label4" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer10" unique_id=433406599]
-layout_mode = 2
-text = "MaxCount"
-
-[node name="neighMax" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer10" unique_id=1312459583]
-layout_mode = 2
-placeholder_text = "10"
-
 [node name="HBoxContainer11" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=121092153]
 layout_mode = 2
 
@@ -285,21 +276,21 @@ layout_mode = 2
 layout_mode = 2
 text = "Allignmnt"
 
-[node name="LineEdit" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=944905223]
+[node name="allign" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=944905223]
 layout_mode = 2
 
 [node name="Label3" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=1079264522]
 layout_mode = 2
 text = "Separation"
 
-[node name="LineEdit3" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=1931526032]
+[node name="sep" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=1931526032]
 layout_mode = 2
 
 [node name="Label5" type="Label" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=818218677]
 layout_mode = 2
 text = "Cohesion"
 
-[node name="LineEdit5" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=1182269845]
+[node name="cohesion" type="LineEdit" parent="simulation_UI/Alife/Panel/Panel/HBoxContainer11" unique_id=1182269845]
 layout_mode = 2
 
 [node name="HBoxContainer12" type="HBoxContainer" parent="simulation_UI/Alife/Panel/Panel" unique_id=118987824]
@@ -722,6 +713,7 @@ offset_right = 488.0
 offset_bottom = 637.0
 
 [node name="Rendering" type="Control" parent="simulation_UI" unique_id=475746332]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -1043,6 +1035,9 @@ scale = Vector2(0.6, 0.6)
 [connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer9/neighMax" to="." method="_on_neigh_max_text_submitted"]
 [connection signal="toggled" from="simulation_UI/Alife/Panel/Panel/HBoxContainer10/AI_onOFt" to="." method="_on_ai_on_o_ft_toggled"]
 [connection signal="item_selected" from="simulation_UI/Alife/Panel/Panel/HBoxContainer10/OptionButton" to="." method="_on_option_button_item_selected"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer11/allign" to="." method="_on_allign_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer11/sep" to="." method="_on_sep_text_submitted"]
+[connection signal="text_submitted" from="simulation_UI/Alife/Panel/Panel/HBoxContainer11/cohesion" to="." method="_on_cohesion_text_submitted"]
 [connection signal="toggled" from="simulation_UI/Alife/Multispecies" to="." method="_on_multispecies_toggled"]
 [connection signal="toggled" from="simulation_UI/Alife/Plant_on" to="." method="_on_plant_on_toggled"]
 [connection signal="text_submitted" from="simulation_UI/World/ScrollContainer/VBoxContainer/world/HBoxContainer/world_x" to="." method="_on_world_x_text_submitted"]
