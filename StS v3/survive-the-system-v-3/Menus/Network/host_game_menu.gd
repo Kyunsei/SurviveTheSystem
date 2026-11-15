@@ -89,5 +89,24 @@ func _on_button_start_pressed() -> void:
 		pass # Replace with function body.
 
 
+func _on_button_start2_pressed() -> void:
+	if isWorldReady:
+		#hide()
+		get_parent().hide()
+		get_parent().client_started.emit()
+		#just an ugly way to fix somthing here... to send last version of all alife status:
+		get_parent().get_parent().get_parent().get_node("Alife manager").get_node("Grass_Manager2")._on_peer_connected(1)
+
+	else:
+		$Return.hide()
+		$ButtonStart/Label.text = "Generating World..."
+		$ButtonStart.disabled = true
+		get_parent().simulation_started.emit()
+		pass # Replace with function body.
+
 func _on_port_text_changed(new_text: String) -> void:
 	PORT = int(new_text)
+
+
+func _on_button_start_2_pressed() -> void:
+	pass # Replace with function body.

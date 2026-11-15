@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://y8ehmcitqo7p"]
+
+[ext_resource type="Script" uid="uid://bb7fqful0tfra" path="res://Simulationv0.4/simulation_manager.gd" id="1_tnrjr"]
+[ext_resource type="Script" uid="uid://cvjfonwy8nib8" path="res://Simulationv0.4/world.gd" id="2_n8m0f"]
+[ext_resource type="PackedScene" uid="uid://ctgprx0q6hu1g" path="res://Simulationv0.4/ui_simulation.tscn" id="3_se6q8"]
+[ext_resource type="Script" uid="uid://dht5a0fts2itw" path="res://Simulationv0.4/alife_manager.gd" id="3_u0fto"]
+
+[node name="NewSimulationManager" type="Node" unique_id=1440062817]
+script = ExtResource("1_tnrjr")
+simulation_speed = null
+
+[node name="World" type="Node" parent="." unique_id=212681917]
+script = ExtResource("2_n8m0f")
+
+[node name="AlifeManager" type="Node" parent="." unique_id=1403663435]
+script = ExtResource("3_u0fto")
+
+[node name="RenderingManager" type="Node" parent="." unique_id=871390878]
+
+[node name="UI_simulation" parent="." unique_id=2073576286 instance=ExtResource("3_se6q8")]

@@ -98,7 +98,6 @@ offset_top = 324.0
 offset_right = 764.0
 offset_bottom = 387.0
 theme_override_font_sizes/font_size = 40
-disabled = true
 text = "Host v2"
 
 [node name="Label" type="Label" parent="ButtonStart2" unique_id=1478606620]
@@ -183,11 +182,11 @@ text = "Close"
 
 [node name="Instruction2" type="Label" parent="." unique_id=1147806342]
 layout_mode = 0
-offset_left = 798.0
+offset_left = 772.0
 offset_top = 611.0
 offset_right = 1131.0
 offset_bottom = 634.0
-text = "Press '#' to see server & Simulation status"
+text = "Press 'TAB' to see server & Simulation status"
 autowrap_mode = 3
 
 [node name="Tree" type="Sprite2D" parent="." unique_id=561090230]
@@ -204,6 +203,6 @@ texture = ExtResource("2_6mtfq")
 [connection signal="text_changed" from="Port" to="." method="_on_port_text_changed"]
 [connection signal="pressed" from="Port/ButtonHelp" to="." method="_on_button_help_pressed"]
 [connection signal="pressed" from="ButtonStart" to="." method="_on_button_start_pressed"]
-[connection signal="pressed" from="ButtonStart2" to="." method="_on_button_start_pressed"]
+[connection signal="pressed" from="ButtonStart2" to="." method="_on_button_start_2_pressed"]
 [connection signal="pressed" from="Return" to="." method="_on_return_pressed"]
 [connection signal="pressed" from="Panel/Button" to="." method="_on_button_pressed"]

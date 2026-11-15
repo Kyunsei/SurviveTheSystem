@@ -2,7 +2,7 @@ class_name RTSCamera3D
 extends Camera3D
 
 @export var target := Vector3.ZERO      # point on the ground the camera looks at
-@export var distance := 800.0
+@export var distance := 10.0
 @export var min_distance := 5.0
 @export var max_distance := 5000.0
 @export var yaw := 0.0                  # degrees, rotation around the vertical axis

@@ -45,7 +45,7 @@ func init():
 		else:
 			for i in n_start_life:
 					
-				sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),Vector3(world.size.x/2,0,world.size.z/2)),randf_range(0.0,5.0))
+				sp.Build_New_Life(sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),Vector3(world.size.x/2,0,world.size.z/2)),15)
 
 	var t := (Time.get_ticks_usec() - tt)/1000.0
 	var e = n_start_life * $AlifeManager.species_array.size()

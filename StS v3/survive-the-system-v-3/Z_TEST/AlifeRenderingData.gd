@@ -6,6 +6,7 @@ var tex_h := 0
 var data := PackedFloat32Array()
 var img: Image
 var tex: ImageTexture
+
 const MIN_CAP := 16 * TEX_W
 
 func capacity() -> int:

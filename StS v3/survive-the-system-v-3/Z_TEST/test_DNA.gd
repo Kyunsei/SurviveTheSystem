@@ -20,7 +20,7 @@ var dt :float= 0.0#.32
 var total_time := 0
 
 var world: World
-var alifemanager : AlifeManager
+var alifemanager : AlifeManager_test
 
 # ---- ARRAY management variables -------------------------------------------
 var free_indices : Array =[]
@@ -380,7 +380,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 				current_velocity[i] = v
 		
 						
-	if !photo_on:
+	if !photo_on and species_id != alifemanager.n_species:
 		for i in range(start, end):
 			#var t := Time.get_ticks_usec()
 
@@ -392,7 +392,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float) -> void
 			if _energy < 5:		
 				current_energy_array[i] += (1) * dt	
 			#current_cpu_cost[i]	+= Time.get_ticks_usec() -t 									
-	if photo_on:
+	if photo_on and species_id != alifemanager.n_species:
 		'var ad := [0.0,1.0/4,1.0/3,1.0/2,1.0]
 		var arr := []
 		for v in ad:
@@ -670,7 +670,11 @@ func GoTo(start:int,end:int):
 				if dist < target_dist:
 					var sp := offs.bsearch(prey, false) - 1
 					var local := prey - offs[sp]
-					alifemanager.species_array[sp].current_energy_array[local] = -10
+					var e:= alifemanager.species_array[sp].current_energy_array[local] 
+					alifemanager.species_array[sp].current_energy_array[local] = 0
+					alifemanager.species_array[sp].alive_array[local] = 0
+					current_energy_array[i] += e*10
+
 					pass  # eat / attack prey
 				else:
 					steer += dir * 5 # (dir * cruise_speed - v) * w_hunt
@@ -1107,6 +1111,27 @@ func build_offsets() -> void:
 						list.append(dy)
 						list.append(dz)
 			offsets[r * (RY_MAX + 1) + ry] = list	
+
+
+var photo_gain := PackedFloat32Array()   # energy gain per sun cell, for this species
+
+## Call ONCE per frame, before dispatching the chunks (not inside each chunk).
+func update_photo_gain() -> void:
+	var stamp := alifemanager.current_global_photosynthesis_rate
+	var sun_grid := world.SUN_GRID
+	var W := world.SUN_GRID_W
+	var photo_rate := 1.0
+	var inv_2w2 :float= 1.0 / (2.0 * photo_optimal_width * photo_optimal_width)
+
+	photo_gain.resize(stamp.size())
+	photo_gain.fill(0.0)
+	for c in stamp.size() - W:            # only cells that have a layer above
+		var up := c + W
+		var value := sun_grid[up] / maxf(stamp[up] + 1.0, photo_rate)
+		var diff :float= value - photo_optimal_value
+		photo_gain[c] = photo_rate * exp(-diff * diff * inv_2w2) / maxf(stamp[c], photo_rate)
+
+
 
 func stamp(c: int, r: int, ry: int, layer: int, w: float) -> void:
 	if !alifemanager.agent_photo_stamp_on:

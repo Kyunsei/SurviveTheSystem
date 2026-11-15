@@ -1,0 +1,61 @@
+extends Node
+
+@export var simulation_speed = 1
+
+@export var world: WorldManager
+@export var alifemanager: AlifeManager
+@export var render_manager: AlifeRendererManager
+@export var ui_simulation : CanvasLayer
+var running = false
+
+
+var _accum := 1.
+
+var world_usec := 0.0
+var alife_usec := 0.0
+var render_usec := 0.0
+
+func _ready() -> void:
+
+	
+	init()
+	DrawSimulation()
+
+
+func init():
+	for mm in $AlifeManager.get_children():
+		mm.queue_free()
+	world.init()
+	alifemanager.init()
+	Generate_ALife()
+	#$Visual.init($World,$AlifeManager)
+	#$simulation_UI/PopTracker.init($AlifeManager)
+	running = true
+
+func DrawSimulation():
+	world.render_world()
+	render_manager.init()
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	if running :
+		var dt :float= delta * simulation_speed
+		var t0 := Time.get_ticks_usec()
+		if simulation_speed > 0:
+			 
+			world.run_world_simulation(delta, simulation_speed)
+			var t1 := Time.get_ticks_usec()
+			alifemanager.run_simulation(delta, simulation_speed)
+			var t2 := Time.get_ticks_usec()
+			render_manager.run_visualisation()
+			var t3 := Time.get_ticks_usec()
+			
+			world_usec = t1 - t0
+			alife_usec = t2-t1
+			render_usec = t3-t2
+			ui_simulation.display_performance(alife_usec,world_usec,render_usec)
+
+
+	
+func Generate_ALife():
+	pass

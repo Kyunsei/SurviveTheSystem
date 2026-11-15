@@ -1,5 +1,5 @@
 extends Node2D
-class_name AlifeManager
+class_name AlifeManager_test
 
 #THIS SCRIPT MANAGE THE DIFFERENT ALIFE SPECIES and connect them together and with other simulation element [player/world/rendering]
 #A bit similar to the one above (SimulationManager) but more focus on Alife
@@ -9,7 +9,6 @@ class_name AlifeManager
 #TODO wait thread?
 #TODO fix chunk number/order or make it random?
 #TODO simulation time in threads?
-#TODO sensing alife x alife : wolrd partioning + flow?
 #TODO add physics collision/gravity?
 #TODO optimise AI
 #TODO optimisation element grid vs agent?
@@ -237,7 +236,7 @@ func init(worldd):
 	diffuse_global_photosynthesis_rate.resize(world.SUN_NUM_CELLS)
 		
 
-func init_species2(worldd:World,alifem:AlifeManager):
+func init_species2(worldd:World,alifem:AlifeManager_test):
 	if switch:
 		for c in get_children():
 			c.queue_free()
@@ -253,7 +252,7 @@ func init_species2(worldd:World,alifem:AlifeManager):
 
 
 		
-func init_species(worldd:World,alifem:AlifeManager):
+func init_species(worldd:World,alifem:AlifeManager_test):
 	if switch:
 		for c in get_children():
 			c.queue_free()

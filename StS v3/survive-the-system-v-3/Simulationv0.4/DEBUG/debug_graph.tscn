@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://byeh0yb3cbsnt"]
+
+[ext_resource type="Script" uid="uid://mavlvrwgd5re" path="res://Simulationv0.4/DEBUG/debug_graph.gd" id="1_r7hfp"]
+
+[node name="DEBUG_graph" type="Control" unique_id=1190113629]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_r7hfp")
+
+[node name="Panel" type="Panel" parent="." unique_id=1043781842]
+layout_mode = 0
+offset_left = 820.0
+offset_top = 11.0
+offset_right = 1140.0
+offset_bottom = 633.0
+
+[node name="Label" type="Label" parent="Panel" unique_id=234318848]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="SHOW_HIDEButton" type="Button" parent="." unique_id=1459329359]
+layout_mode = 0
+offset_left = 831.0
+offset_top = 595.0
+offset_right = 1125.0
+offset_bottom = 626.0
+text = "CLOSE"
+
+[connection signal="pressed" from="SHOW_HIDEButton" to="." method="_on_show_hide_button_pressed"]

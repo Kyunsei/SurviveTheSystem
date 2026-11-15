@@ -239,7 +239,7 @@ func distribute_sun_old(energy_array,alive_array,active_array):
 				#print(SUN_GRID[i])
 				SUN_GRID[i] = 0
 
-func distribute_sun2(alifem:AlifeManager):
+func distribute_sun2(alifem:AlifeManager_test):
 	var sp_offset := alifem.global_species_offset
 	var sp_array := alifem.species_array
 	for i in SUN_GRID.size():
@@ -276,7 +276,7 @@ func init_sun_buffers() -> void:
 	best_si.resize(cells)
 	best_li.resize(cells)
 
-func distribute_sun(alifem: AlifeManager) -> void:
+func distribute_sun(alifem: AlifeManager_test) -> void:
 	var global_pos := alifem.global_position_array
 	var inv := Vector3.ONE / SUN_cell_size
 	var W := SUN_GRID_W
@@ -316,7 +316,7 @@ func distribute_sun(alifem: AlifeManager) -> void:
 		best_age[c] = -1 
 #index deadcell/alive cell are mixed
 
-func run_world_simulation(alifemanager: AlifeManager, delta,simulation_speed):
+func run_world_simulation(alifemanager: AlifeManager_test, delta,simulation_speed):
 	sun_usec = 0.0
 	main_world_usec = 0.0
 	build_usec = 0.0	
@@ -349,7 +349,7 @@ var min_id := PackedInt32Array()   # all size SUN_NUM_CELLS
 var tmp_a := PackedInt32Array()
 var tmp_b := PackedInt32Array()
 
-func sun_first_come(r: Vector3i, alifemanger:AlifeManager) -> void:   # cube half-size in cells per axis, e.g. Vector3i(1,1,1)
+func sun_first_come(r: Vector3i, alifemanger:AlifeManager_test) -> void:   # cube half-size in cells per axis, e.g. Vector3i(1,1,1)
 	var W := SUN_GRID_W; var H := SUN_GRID_H; var D := SUN_GRID_D
 	if min_id.size() != SUN_NUM_CELLS:
 		min_id.resize(SUN_NUM_CELLS)
@@ -391,7 +391,7 @@ func _min_pass(src: PackedInt32Array, dst: PackedInt32Array, stride: int, L: int
 	return dst
 
 
-func sun_first_come_disk(r: float,alifemanager:AlifeManager) -> void:   # r in cells, e.g. 2.0
+func sun_first_come_disk(r: float,alifemanager:AlifeManager_test) -> void:   # r in cells, e.g. 2.0
 	if r != disk_r:
 		build_disk(r)
 	if min_id.size() != SUN_NUM_CELLS:

@@ -21,7 +21,7 @@ var renderer_count := 0
 
 #crossREF in case
 var world: World
-var alifemanager: AlifeManager
+var alifemanager: AlifeManager_test
 
 var write_usec:= 0.0
 var update_usec:= 0.0

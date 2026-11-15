@@ -2,7 +2,7 @@ extends Node
 
 #TODO when grid off doesnt work bc global position doesnt exist
 
-var alifemanager  :AlifeManager
+var alifemanager  :AlifeManager_test
 var use_grid := false
 var pick_radius_px: float = 6.0   
 var selected := -1

@@ -264,7 +264,7 @@ func update_world(delta):
 			#print("/////////////////")
 			FPS_World = Time.get_ticks_msec() - ss
 			
-			print( "World Update at %d entities \n fill: %d \n Update: %d \n distribute %d \n total: %d" %[entity_count,t1,t2,t3,FPS_World] )
+			#print( "World Update at %d entities \n fill: %d \n Update: %d \n distribute %d \n total: %d" %[entity_count,t1,t2,t3,FPS_World] )
 
 
 

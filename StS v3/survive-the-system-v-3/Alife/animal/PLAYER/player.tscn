@@ -18,39 +18,39 @@
 [ext_resource type="Texture2D" uid="uid://cvg3shiu2vcb5" path="res://assets/assets kyun/Three.png" id="15_lmbmf"]
 [ext_resource type="Texture2D" uid="uid://cuki8beg6hao6" path="res://assets/assets kyun/Four.png" id="16_44ocd"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6t5sv"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gm5ve"]
 albedo_color = Color(0.093700476, 0.10681253, 0.21656331, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_31v8x"]
-material = SubResource("StandardMaterial3D_6t5sv")
+material = SubResource("StandardMaterial3D_gm5ve")
 top_radius = 0.2
 bottom_radius = 0.2
 height = 0.2
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5e6c6"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lmbmf"]
 transparency = 1
 albedo_color = Color(1, 1, 1, 0.1764706)
 
 [sub_resource type="BoxMesh" id="BoxMesh_kcrxs"]
-material = SubResource("StandardMaterial3D_5e6c6")
+material = SubResource("StandardMaterial3D_lmbmf")
 size = Vector3(2, 2, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_kcrxs"]
 size = Vector3(2, 3, 5.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_5e6c6"]
-material = SubResource("StandardMaterial3D_5e6c6")
+material = SubResource("StandardMaterial3D_lmbmf")
 size = Vector3(2, 2, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_lwlqs"]
 size = Vector3(2, 3, 2)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_geoiu"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44ocd"]
 transparency = 1
 albedo_color = Color(1, 1, 1, 0.20784314)
 
 [sub_resource type="BoxMesh" id="BoxMesh_geoiu"]
-material = SubResource("StandardMaterial3D_geoiu")
+material = SubResource("StandardMaterial3D_44ocd")
 size = Vector3(1.2, 2, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_geoiu"]
@@ -68,13 +68,13 @@ size = Vector3(0.2, 0.25, 0.1)
 radius = 0.02
 height = 0.5
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2y45n"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hxb5l"]
 transparency = 1
 depth_draw_mode = 2
 albedo_color = Color(1, 1, 1, 0.07450981)
 
 [sub_resource type="SphereMesh" id="SphereMesh_1iiag"]
-material = SubResource("StandardMaterial3D_2y45n")
+material = SubResource("StandardMaterial3D_hxb5l")
 radius = 1.0
 height = 2.0
 
@@ -90,22 +90,22 @@ viewport_path = NodePath("MeshInstance3D/Status_bar/SubViewport2")
 [sub_resource type="BoxShape3D" id="BoxShape3D_2y45n"]
 size = Vector3(1.5, 1.2, 1.5)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kcrxs"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_02fpq"]
 albedo_color = Color(0.093700476, 0.10681253, 0.21656331, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_5e6c6"]
-material = SubResource("StandardMaterial3D_kcrxs")
+material = SubResource("StandardMaterial3D_02fpq")
 top_radius = 0.15
 bottom_radius = 0.15
 height = 0.4
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_kcrxs"]
-material = SubResource("StandardMaterial3D_6t5sv")
+material = SubResource("StandardMaterial3D_gm5ve")
 top_radius = 0.05
 bottom_radius = 0.05
 height = 0.2
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lmbmf"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v3sy7"]
 albedo_texture = ExtResource("6_gm5ve")
 uv1_scale = Vector3(3, 2, 3)
 uv1_triplanar = true
@@ -113,26 +113,26 @@ uv2_triplanar = true
 texture_filter = 2
 
 [sub_resource type="BoxMesh" id="BoxMesh_dpvp7"]
-material = SubResource("StandardMaterial3D_lmbmf")
+material = SubResource("StandardMaterial3D_v3sy7")
 size = Vector3(0.15, 0.7, 0.02)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_44ocd"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7yp7n"]
 albedo_texture = ExtResource("6_gm5ve")
 uv1_scale = Vector3(3, 2, 3)
 uv1_triplanar = true
 texture_filter = 2
 
 [sub_resource type="BoxMesh" id="BoxMesh_gm5ve"]
-material = SubResource("StandardMaterial3D_44ocd")
+material = SubResource("StandardMaterial3D_7yp7n")
 size = Vector3(0.15, 0.4, 0.02)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gm5ve"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mkk61"]
 emission_enabled = true
 emission = Color(0.9304411, 1, 0, 1)
 emission_energy_multiplier = 3.0
 
 [sub_resource type="TorusMesh" id="TorusMesh_gm5ve"]
-material = SubResource("StandardMaterial3D_gm5ve")
+material = SubResource("StandardMaterial3D_mkk61")
 inner_radius = 1.2
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qrp1o"]

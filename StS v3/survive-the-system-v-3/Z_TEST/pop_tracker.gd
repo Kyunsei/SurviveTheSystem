@@ -2,7 +2,7 @@ extends Control
 
 
 var graph : Graph
-var alifem : AlifeManager
+var alifem : AlifeManager_test
 var pop_data_set : Array[Array]
 var gene_data_set : Array[Array]
 
@@ -11,7 +11,7 @@ func  _ready() -> void:
 	graph = $Panel/ColorRect
 
 
-func init (alm:AlifeManager):
+func init (alm:AlifeManager_test):
 	alifem =alm
 	pop_data_set.resize(alifem.species_array.size())
 	for sp in alifem.species_array.size():

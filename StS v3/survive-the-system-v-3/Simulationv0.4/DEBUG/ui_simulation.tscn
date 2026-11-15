@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://ctgprx0q6hu1g"]
+
+[ext_resource type="Script" uid="uid://gpjdwdisf1sb" path="res://Simulationv0.4/DEBUG/ui_simulation.gd" id="1_kaaxh"]
+[ext_resource type="PackedScene" uid="uid://dqark5axgfobe" path="res://Simulationv0.4/DEBUG/debug_map.tscn" id="2_jpk3n"]
+[ext_resource type="Script" uid="uid://cncdugbarccxc" path="res://Simulationv0.4/DEBUG/debug_UI_label.gd" id="2_qqghd"]
+[ext_resource type="PackedScene" uid="uid://byeh0yb3cbsnt" path="res://Simulationv0.4/DEBUG/debug_graph.tscn" id="3_qqghd"]
+[ext_resource type="PackedScene" uid="uid://5nl14atwl4fq" path="res://Simulationv0.4/DEBUG/debug_settings.tscn" id="4_u0ept"]
+
+[node name="UI_simulation" type="CanvasLayer" unique_id=2073576286]
+script = ExtResource("1_kaaxh")
+
+[node name="Label" type="RichTextLabel" parent="." unique_id=494414381]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -225.0
+offset_top = 8.0
+offset_right = 226.0
+offset_bottom = 52.0
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 10
+text = "FPS:200
+Alife : 100 ms World : 200 ms Render: 200 ms"
+horizontal_alignment = 1
+vertical_alignment = 3
+script = ExtResource("2_qqghd")
+
+[node name="Debug_Map" parent="." unique_id=1781444780 instance=ExtResource("2_jpk3n")]
+mouse_filter = 2
+
+[node name="DEBUG_graph" parent="." unique_id=1190113629 instance=ExtResource("3_qqghd")]
+mouse_filter = 2
+
+[node name="DEBUG_Settings" parent="." unique_id=686420294 instance=ExtResource("4_u0ept")]
+mouse_filter = 2

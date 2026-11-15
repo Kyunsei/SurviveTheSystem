@@ -1,0 +1,374 @@
+[gd_scene format=3 uid="uid://5nl14atwl4fq"]
+
+[ext_resource type="Script" uid="uid://b06yl60d72v57" path="res://Simulationv0.4/DEBUG/debug_settings.gd" id="1_qcoj2"]
+
+[node name="DEBUG_Settings" type="Control" unique_id=686420294]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1152.0
+offset_bottom = -648.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qcoj2")
+
+[node name="Panel" type="Panel" parent="." unique_id=881353742]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 11.0
+offset_right = 334.0
+offset_bottom = 633.0
+
+[node name="choose_menu" type="HBoxContainer" parent="Panel" unique_id=1456483983]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 8.0
+offset_right = 315.0
+offset_bottom = 50.0
+
+[node name="Button_2" type="Button" parent="Panel/choose_menu" unique_id=1039529239]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+toggle_mode = true
+button_pressed = true
+text = "World"
+
+[node name="Button_1" type="Button" parent="Panel/choose_menu" unique_id=1870344981]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+toggle_mode = true
+text = "Alife"
+
+[node name="Button_3" type="Button" parent="Panel/choose_menu" unique_id=1959464302]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+toggle_mode = true
+text = "Rendering"
+
+[node name="World" type="ScrollContainer" parent="Panel" unique_id=960359716]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 58.0
+offset_right = 315.0
+offset_bottom = 580.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/World" unique_id=189435209]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="world" type="VBoxContainer" parent="Panel/World/VBoxContainer" unique_id=1366056754]
+layout_mode = 2
+theme_override_constants/separation = 27
+
+[node name="Label4" type="Label" parent="Panel/World/VBoxContainer/world" unique_id=1292123576]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "World System"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/World/VBoxContainer/world" unique_id=508061794]
+layout_mode = 2
+
+[node name="WorldSize" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer" unique_id=341519198]
+layout_mode = 2
+text = "World Size"
+
+[node name="world_x" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer" unique_id=1567817188]
+layout_mode = 2
+placeholder_text = "2000"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer/world_x" unique_id=1419731309]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer" unique_id=383134550]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer/world_y" unique_id=514245194]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer" unique_id=980496636]
+layout_mode = 2
+placeholder_text = "2000"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer/world_z" unique_id=542463752]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/World/VBoxContainer/world" unique_id=1881470819]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer2" unique_id=933090911]
+layout_mode = 2
+text = "Border"
+
+[node name="border-x" type="OptionButton" parent="Panel/World/VBoxContainer/world/HBoxContainer2" unique_id=245453182]
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "Wrap"
+popup/item_0/id = 0
+popup/item_1/text = "Wall"
+popup/item_1/id = 1
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer2/border-x" unique_id=336274223]
+layout_mode = 0
+offset_left = 8.0
+offset_top = -23.0
+offset_right = 63.0
+text = "X axis"
+
+[node name="border-y" type="OptionButton" parent="Panel/World/VBoxContainer/world/HBoxContainer2" unique_id=767438731]
+layout_mode = 2
+selected = 1
+item_count = 2
+popup/item_0/text = "Wrap"
+popup/item_0/id = 0
+popup/item_1/text = "Wall"
+popup/item_1/id = 1
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer2/border-y" unique_id=1600652374]
+layout_mode = 0
+offset_left = 7.0
+offset_top = -24.0
+offset_right = 64.0
+offset_bottom = -1.0
+text = "Y axis"
+
+[node name="border-z" type="OptionButton" parent="Panel/World/VBoxContainer/world/HBoxContainer2" unique_id=293038302]
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "Wrap"
+popup/item_0/id = 0
+popup/item_1/text = "Wall"
+popup/item_1/id = 1
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer2/border-z" unique_id=2005645217]
+layout_mode = 0
+offset_left = 6.0
+offset_top = -21.0
+offset_right = 50.0
+offset_bottom = 2.0
+text = "Z axis"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="Panel/World/VBoxContainer/world" unique_id=2122555645]
+layout_mode = 2
+
+[node name="SunSize" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer4" unique_id=1518469648]
+layout_mode = 2
+text = "SUN CELL"
+
+[node name="sun_x" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer4" unique_id=1569741567]
+layout_mode = 2
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer4/sun_x" unique_id=816852517]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="sun_y" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer4" unique_id=1341355801]
+layout_mode = 2
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer4/sun_y" unique_id=1855312981]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="sun_z" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer4" unique_id=696735111]
+layout_mode = 2
+placeholder_text = "10"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer4/sun_z" unique_id=1241973361]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="Panel/World/VBoxContainer/world" unique_id=428973356]
+layout_mode = 2
+
+[node name="Label3" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer3" unique_id=1480927654]
+layout_mode = 2
+text = "SUN energy"
+
+[node name="SUNENERGY" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer3" unique_id=320282177]
+layout_mode = 2
+placeholder_text = "1"
+
+[node name="CONTACTGRID" type="VBoxContainer" parent="Panel/World/VBoxContainer" unique_id=194802572]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="HBoxContainer8" type="HBoxContainer" parent="Panel/World/VBoxContainer/CONTACTGRID" unique_id=186086979]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/CONTACTGRID/HBoxContainer8" unique_id=677291479]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "CONTACT GRID"
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="Panel/World/VBoxContainer/CONTACTGRID" unique_id=1211542489]
+layout_mode = 2
+
+[node name="SunSize" type="Label" parent="Panel/World/VBoxContainer/CONTACTGRID/HBoxContainer6" unique_id=1134659792]
+layout_mode = 2
+text = "GRID CELL"
+
+[node name="world_x" type="LineEdit" parent="Panel/World/VBoxContainer/CONTACTGRID/HBoxContainer6" unique_id=606924612]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/CONTACTGRID/HBoxContainer6/world_x" unique_id=607469155]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="Panel/World/VBoxContainer/CONTACTGRID/HBoxContainer6" unique_id=1550117352]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/CONTACTGRID/HBoxContainer6/world_y" unique_id=1398203921]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="Panel/World/VBoxContainer/CONTACTGRID/HBoxContainer6" unique_id=993750793]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/CONTACTGRID/HBoxContainer6/world_z" unique_id=1778451217]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="Panel/World/VBoxContainer/CONTACTGRID" unique_id=342440820]
+layout_mode = 2
+
+[node name="SCENTGRID" type="VBoxContainer" parent="Panel/World/VBoxContainer" unique_id=398071484]
+layout_mode = 2
+theme_override_constants/separation = 13
+
+[node name="HBoxContainer10" type="HBoxContainer" parent="Panel/World/VBoxContainer/SCENTGRID" unique_id=1050528169]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer10" unique_id=1457268727]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "SCENT GRID"
+
+[node name="HBoxContainer7" type="HBoxContainer" parent="Panel/World/VBoxContainer/SCENTGRID" unique_id=739640786]
+layout_mode = 2
+
+[node name="SunSize" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=63763170]
+layout_mode = 2
+text = "SCENT CELL"
+
+[node name="world_x" type="LineEdit" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=1979472248]
+layout_mode = 2
+placeholder_text = "50"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/world_x" unique_id=855762886]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "x"
+
+[node name="world_y" type="LineEdit" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=463234624]
+layout_mode = 2
+placeholder_text = "20"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/world_y" unique_id=506757928]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "y"
+
+[node name="world_z" type="LineEdit" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=444748845]
+layout_mode = 2
+placeholder_text = "50"
+
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/world_z" unique_id=11106328]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -23.0
+offset_right = 51.0
+text = "z"
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="Panel/World/VBoxContainer/SCENTGRID" unique_id=2090898738]
+layout_mode = 2
+
+[node name="Alife" type="ScrollContainer" parent="Panel" unique_id=498987436]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/Alife" unique_id=1706727379]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/Alife/HBoxContainer" unique_id=305799060]
+layout_mode = 2
+text = "Alife"
+
+[node name="Rendering" type="ScrollContainer" parent="Panel" unique_id=1463633985]
+visible = false
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/Rendering" unique_id=1978373405]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/Rendering/HBoxContainer" unique_id=1262019400]
+layout_mode = 2
+text = "Render"
+
+[node name="SHOW_HIDEButton" type="Button" parent="." unique_id=2107055338]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 595.0
+offset_right = 319.0
+offset_bottom = 626.0
+text = "CLOSE"
+
+[connection signal="toggled" from="Panel/choose_menu/Button_2" to="." method="_on_button_2_toggled"]
+[connection signal="toggled" from="Panel/choose_menu/Button_1" to="." method="_on_button_1_toggled"]
+[connection signal="toggled" from="Panel/choose_menu/Button_3" to="." method="_on_button_3_toggled"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer/world_x" to="." method="_on_world_x_text_submitted"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer/world_y" to="." method="_on_world_y_text_submitted"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer/world_z" to="." method="_on_world_z_text_submitted"]
+[connection signal="item_selected" from="Panel/World/VBoxContainer/world/HBoxContainer2/border-x" to="." method="_on_borderx_item_selected"]
+[connection signal="item_selected" from="Panel/World/VBoxContainer/world/HBoxContainer2/border-y" to="." method="_on_bordery_item_selected"]
+[connection signal="item_selected" from="Panel/World/VBoxContainer/world/HBoxContainer2/border-z" to="." method="_on_borderz_item_selected"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer4/sun_x" to="." method="_on_sun_x_text_submitted"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer4/sun_y" to="." method="_on_sun_y_text_submitted"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer4/sun_z" to="." method="_on_sun_z_text_submitted"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer3/SUNENERGY" to="." method="_on_sunenergy_text_submitted"]
+[connection signal="pressed" from="SHOW_HIDEButton" to="." method="_on_show_hide_button_pressed"]
