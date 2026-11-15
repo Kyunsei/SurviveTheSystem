@@ -14,7 +14,7 @@ script = ExtResource("1_lynb6")
 [node name="Panel" type="Panel" parent="." unique_id=1148373421]
 layout_mode = 0
 offset_left = 349.0
-offset_top = 56.0
+offset_top = 108.0
 offset_right = 803.0
 offset_bottom = 632.0
 

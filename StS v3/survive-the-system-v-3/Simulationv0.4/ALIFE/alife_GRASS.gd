@@ -50,7 +50,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 			_energy += value2 /maxf(d, photo_rate) *dt
 
 		#maintain cost
-		_energy += -0.5  * dt # - (side * side - side) *dt #* active_alife_array[i]
+		_energy += -0.7  * dt # - (side * side - side) *dt #* active_alife_array[i]
 		
 		#DEATH
 		if _energy < 0 :

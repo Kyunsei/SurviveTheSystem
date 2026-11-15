@@ -12,5 +12,5 @@ func _process(delta: float) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo \
 			and event.physical_keycode == KEY_O:
-		ui.visible = not ui.visible
+		ui.visible = not ui.visible 
 		get_viewport().set_input_as_handled()

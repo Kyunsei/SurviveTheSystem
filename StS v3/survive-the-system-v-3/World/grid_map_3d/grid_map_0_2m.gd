@@ -12,12 +12,15 @@ func _ready() -> void:
 	make_gridmap()
 
 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
 	pass
 	
 func make_gridmap():
+	var count = 0
 	for x in range(-width/2,width/2):
 		for y in range(height):
 			for z in range(-depth/2,depth/2):
 				set_cell_item(Vector3i(x, y, z), tile_id)
+				count +=1

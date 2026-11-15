@@ -13,7 +13,7 @@ class_name AlifeManager
 
 
 #Simulation par---------
-var maxLife = 0#80000 #0 # 0
+var maxLife = 70000# 0#80000 #0 # 0
 var total_time := 0.0
 
 
@@ -116,7 +116,7 @@ func run_simulation(delta: float, sim_speed: float):
 	update_alife()
 	var t4:= Time.get_ticks_usec()
 
-	print("build: %f, start : %f, wait %f, update %f"  % [t1-t0,t2-t1,t3-t2,t4-t3])
+	#print("build: %f, start : %f, wait %f, update %f"  % [t1-t0,t2-t1,t3-t2,t4-t3])
 
 
 func start_simulation(delta: float, sim_speed: float):
@@ -187,17 +187,26 @@ func update_alife() -> void:
 
 
 func init_default_species(worldd:WorldManager,alifem:AlifeManager):
-	var n_sp = ALIFE_GRASS.new()
-	n_sp.init(worldd,alifem)
-	species_array.append(n_sp)
-	
-	var start_quantity:= 500
-	
-	for n in start_quantity:
-		var pos := n_sp.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),
+	var n_sp0 = ALIFE_GRASS.new()
+	n_sp0.init(worldd,alifem)
+	species_array.append(n_sp0)
+	for n in 500:
+		var pos := n_sp0.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),
 											Vector3(world.size.x/2,0,world.size.z/2))
 		var energy := randf_range(0,5)
-		n_sp.Build_New_Life(pos,energy)
+		n_sp0.Build_New_Life(pos,energy)
+		
+	var n_sp1 = ALIFE_TREE.new()
+	n_sp1.init(worldd,alifem)
+	species_array.append(n_sp1)
+	
+	for n in 100:
+		var pos := n_sp1.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),
+											Vector3(world.size.x/2,0,world.size.z/2))
+		var energy := randf_range(0,5)
+		n_sp1.Build_New_Life(pos,energy)
+	
+	
 
 
 

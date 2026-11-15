@@ -30,11 +30,12 @@ script = ExtResource("5_oxs6a")
 alifemanager = NodePath("../AlifeManager")
 world = NodePath("../World")
 
-[node name="UI_simulation" parent="." unique_id=2073576286 node_paths=PackedStringArray("alifemanager", "world", "render") instance=ExtResource("3_se6q8")]
+[node name="UI_simulation" parent="." unique_id=2073576286 node_paths=PackedStringArray("alifemanager", "world", "render", "simulation_manager") instance=ExtResource("3_se6q8")]
 visible = false
 alifemanager = NodePath("../AlifeManager")
 world = NodePath("../World")
 render = NodePath("../RendererManager")
+simulation_manager = NodePath("..")
 
 [node name="DEBUG_control" type="Node" parent="." unique_id=906355386 node_paths=PackedStringArray("ui")]
 script = ExtResource("6_gytwx")

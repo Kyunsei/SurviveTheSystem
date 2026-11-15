@@ -3,6 +3,8 @@ extends CanvasLayer
 @export var alifemanager : AlifeManager
 @export var world : WorldManager
 @export var render: AlifeRendererManager
+@export var simulation_manager: SimulationManager
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -17,6 +19,9 @@ func connect_crossref():
 	$DEBUG_graph.world  = world
 	$DEBUG_graph.alifemanager = alifemanager
 	$DEBUG_graph.render  = render
+	
+	$SPEED.simulation_manager = simulation_manager
+
 
 func display_performance(am_usec:float, world_usec:float, render_usec:float) -> void:
 			$Label.display_performance(am_usec, world_usec, render_usec)	

@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://ch8hhhqkcso1l"]
+
+[ext_resource type="Script" uid="uid://ccwd4ek64nyn2" path="res://Simulationv0.4/DEBUG/debug_speed.gd" id="1_kf1op"]
+
+[node name="SPEED" type="Control" unique_id=631663]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_kf1op")
+
+[node name="Panel" type="Panel" parent="." unique_id=348583750]
+layout_mode = 0
+offset_right = 434.0
+offset_bottom = 40.0
+
+[node name="LineEdit" type="LineEdit" parent="Panel" unique_id=2094035844]
+layout_mode = 0
+offset_left = 174.0
+offset_top = 6.0
+offset_right = 242.5
+offset_bottom = 37.0
+placeholder_text = "1"
+
+[node name="Label" type="Label" parent="Panel" unique_id=2000667627]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 10.0
+offset_right = 147.0
+offset_bottom = 33.0
+text = "Simulation Speed"
+
+[node name="Label2" type="Label" parent="Panel" unique_id=528778557]
+layout_mode = 0
+offset_left = 276.0
+offset_top = 10.0
+offset_right = 411.0
+offset_bottom = 33.0
+text = "SPACE to Pause"
+
+[connection signal="text_submitted" from="Panel/LineEdit" to="." method="_on_line_edit_text_submitted"]

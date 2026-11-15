@@ -75,7 +75,7 @@ var pending_multimesh_update_id : PackedInt32Array #check if in use
 # ---- SPECIES SPECIFIC -------------------------------------------------------
 #here might move in full ecs array one time
 #general
-var name := "Test"
+var species_name := "Test"
 var species_id := 0
 var photosynthesis_on := false
 

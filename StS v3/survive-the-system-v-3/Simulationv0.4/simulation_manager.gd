@@ -1,4 +1,5 @@
 extends Node
+class_name SimulationManager
 
 @export var simulation_speed = 1
 
@@ -55,7 +56,8 @@ func _process(delta: float) -> void:
 			render_usec = t3-t2
 			ui_simulation.display_performance(alife_usec,world_usec,render_usec)
 
-
+func set_simulation_speed(newvalue:float):
+	simulation_speed = maxf(newvalue,0.0)
 	
 func Generate_ALife():
 	pass
