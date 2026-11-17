@@ -200,11 +200,11 @@ func Release_all_alife():
 
 
 func init_default_species(worldd:WorldManager,alifem:AlifeManager):	
-	generateAlife(ALIFE_GRASS.new(), 200)
-	generateAlife(ALIFE_CLOVERMOSS.new(), 1000)
-	generateAlife(ALIFE_GLOWBERRY.new(), 6)
-	generateAlife(ALIFE_TREE.new(), 50)
-	generateAlife(ALIFE_SPIKYFLOWER.new(), 3)
+	generateAlife(ALIFE_GRASS.new(), 400)
+	#generateAlife(ALIFE_CLOVERMOSS.new(), 1000)
+	#generateAlife(ALIFE_GLOWBERRY.new(), 6)
+	#generateAlife(ALIFE_TREE.new(), 50)
+	#generateAlife(ALIFE_SPIKYFLOWER.new(), 3)
 	generateAlife(ALIFE_BUGSHEEP.new(), 1)
 
 

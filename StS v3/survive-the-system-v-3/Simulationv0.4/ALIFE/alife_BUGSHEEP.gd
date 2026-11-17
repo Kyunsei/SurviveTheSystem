@@ -10,19 +10,19 @@ func _init() -> void:
 	species_id = 0
 	sprite = preload("res://Alife/animal/Herbivor/sheep3.png")
 	colour = Color(0.772, 0.772, 0.772, 1.0)
-	seed_energy = 2000
-	seed_biomass = 1000
+	seed_energy = 500
+	seed_biomass = 250
 	max_speed = 5.
 	#Flock par
 	#contact par
 	view_radius = 15.0	 #need to be < that contact cell grid
-	separation_radius = 12.0
+	separation_radius = 14.0
 	
-	w_separation = 2.0 #dont merge
-	w_alignment =0. #follow other
-	w_cohesion = 0.2# stay in group
+	w_separation = 5.0 #dont merge
+	w_alignment =0.1 #follow other
+	w_cohesion = 0.3# stay in group
 	w_seek = 1.0# seek food
-	max_force = 5.0 #how much power has steer
+	max_force = 10.0 #how much power has steer
 
 	
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_speed:float) -> void:
@@ -111,8 +111,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 					var sp := offs.bsearch(prey, false) - 1
 					var local := prey - offs[sp]
 					var sp_o = alifemanager.species_array[sp]
-					sp_o.alive_array[local] = 0
-					_energy += sp_o.current_biomass[local]
+					if sp_o.alive_array[local] == 1:
+						sp_o.alive_array[local] = 0
+						_energy += sp_o.current_biomass[local]
 				elif dist > 0.0:
 					steer += (delta / dist * max_speed - v) * w_seek
 					#steer += (delta / dist * 1 - v) * w_seek
@@ -189,7 +190,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		
 
 	#--------maintain cost
-		_energy += -2 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
+		_energy += -1 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
 		
 	#--------DEATH
 		if _energy < 0 :

@@ -4,8 +4,8 @@ class_name WorldManager
 
 #------------Planete General
 var size : Vector3
-var default_size = Vector3(240,20,240) 
-#var default_size = Vector3(40,20,40)
+#var default_size = Vector3(240,20,240) 
+var default_size = Vector3(60,20,60)
 
 
 enum Border { WRAP, WALL }

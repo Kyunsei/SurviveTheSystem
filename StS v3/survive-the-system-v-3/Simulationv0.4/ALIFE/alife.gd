@@ -1103,7 +1103,7 @@ func Build_and_remove_pendings():
 	var d_range:= duplication_range
 	for i in pending_spawn_id:
 		var newpos := pick_random_position(Vector3(d_range,0,d_range),position_array[i])
-		Build_New_Life(newpos,0.0, current_color[i])
+		Build_New_Life(newpos,seed_energy, current_color[i])
 	
 	for i in pending_remove_id:
 		Remove_Life(i)	
@@ -1117,6 +1117,7 @@ func Build_and_remove_pendings():
 func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.555, 0.215, 1.0)):
 	if alifemanager.global_entity_count >= alifemanager.maxLife and alifemanager.maxLife>0:
 		return
+
 	var i  =  find_free_index()
 	if i >= entity_count:
 		current_energy_array.append(e) #HERE MAYBE
