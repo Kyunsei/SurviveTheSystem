@@ -20,7 +20,7 @@ func setup(agent_data: AlifeRenderingData, world_size: Vector3, color: Color) ->
 	mm.use_colors = false #can be changed
 	mm.use_custom_data = false
 	var quad := QuadMesh.new()
-	quad.size = Vector2(4, 4)       # base size; the shader multiplies by the agent's size
+	quad.size = Vector2(0.5, 0.5)       # base size; the shader multiplies by the agent's size
 	mm.mesh = quad
 	#NEED TO TEST HERE TODO
 	#mm.custom_aabb = AABB(-world_size, world_size * 2.0) #STILL NEED TO CHECK THIS
@@ -30,7 +30,7 @@ func setup(agent_data: AlifeRenderingData, world_size: Vector3, color: Color) ->
 
 	# --- Material ---
 	var mat := ShaderMaterial.new()
-	mat.shader = preload("res://Z_TEST/test.gdshader")
+	mat.shader = preload("res://Simulationv0.4/Render/test.gdshader")
 	mat.set_shader_parameter("agent_data", agent_data.tex)
 	mat.set_shader_parameter("tex_width", AlifeRenderingData.TEX_W)
 	mat.set_shader_parameter("alive_color", color)

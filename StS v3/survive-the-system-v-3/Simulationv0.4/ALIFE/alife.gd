@@ -87,11 +87,28 @@ const CORPSE_COLOR := Color(0.488, 0.077, 0.15, 0.2)
 #LIFECYCLE
 var growth_rate := 0.25
 var duplication_range := 15
+var seed_energy := 5.0
+var seed_biomass := 5.0
 
 #METABO
 var photo_range := 0
 var photo_optimal_value = 1.0
 var photo_optimal_width = 0.2
+
+#Movement & AI
+var max_speed := 10
+
+#Flock par
+var view_radius := 15.0	 #need to be < that contact cell grid
+var separation_radius := 12.0
+var w_separation := 2.0 #alifemanager.separation
+var w_alignment :=1.0 #alifemanager.allignment
+var w_cohesion := 0.5# alifemanager.cohesion
+var w_seek := 0.5# alifemanager.cohesion
+
+var max_force := 10.0
+var max_neighbors := 8
+var target_density := 20.0     # agents per cell you're happy with
 
 
 # ---- GRID THINGS - mainly SCENT GRID -------------------------------------------------------
@@ -104,7 +121,7 @@ var FIELD_v_diffused: PackedVector3Array
 var SCENT: PackedVector3Array
 
 #SHOULD MOVE TO ALIFEMANAGER
-var field_cell_size := Vector3(25,20,25)
+#var field_cell_size := Vector3(20,20,20)
 var FIELD_W : int
 var FIELD_H : int
 var FIELD_D : int
@@ -116,9 +133,8 @@ var FIELD_NUM_CELLS : int
 var mouse_target : Vector3
 
 
-
+#not in use?
 ################# AI-between_species_input
-var view_radius := 15.0
 var max_neighbors_count := 8
 var neighbour_count : PackedInt32Array
 
@@ -155,7 +171,7 @@ func init(worldd:WorldManager,alifm:AlifeManager):
 	_init_alife_par()
 	_init_array_management()
 	build_offsets()
-	_init_field_grid(world)
+	_init_field_grid()
 
 
 
@@ -193,8 +209,8 @@ func _init_alife_par():
 	current_cpu_cost = []
 
 
-func _init_field_grid(worldd:WorldManager):
-	var dims := Vector3i((worldd.size / field_cell_size).ceil())
+func _init_field_grid():
+	var dims := Vector3i((world.size / alifemanager.field_cell_size).ceil())
 	FIELD_W = dims.x         # cells along x
 	FIELD_H = dims.y       # cells along y
 	FIELD_D = dims.z         # cells along z
@@ -345,7 +361,7 @@ func _nb(x: int, y: int, z: int, self_c: int, W: int, H: int, D: int,
 
 
 func build_field() -> void:
-
+	var field_cell_size := alifemanager.field_cell_size
 	var W := FIELD_W; var H := FIELD_H; var D := FIELD_D
 
 	# 1. current-frame fields
@@ -428,11 +444,13 @@ func Eat(start:int,end:int):
 		pass
 
 func GoTo(start:int,end:int):
+
 	if alifemanager.global_position_array.size()<1:
 		return
 	var H := FIELD_H
 	var W := FIELD_W
 	var D := FIELD_D
+	var field_cell_size := alifemanager.field_cell_size
 	
 	var target_dist := 1.0
 	var offs: PackedInt32Array = alifemanager.global_species_offset
@@ -458,21 +476,23 @@ func GoTo(start:int,end:int):
 			# closest agent of any species, in the 3x3x3 block
 			#var id := find_nearest(p, me)
 			# closest prey (species 0), searching up to 4/1 cells away
-			var prey := find_nearest(p, me, 0, 4)
+			var found := find_nearest(p, me, 0, 4)
+			var prey := int(found.w)
 			if prey >= 0:
-				var dir := nearest_delta.normalized()       # direction to it (wrap-aware)
-				var dist := sqrt(nearest_dist2)
+				var delta := Vector3(found.x, found.y, found.z)
+				var dist := delta.length()       # direction to it (wrap-aware)
+				var dir :Vector3 = delta / dist if dist > 0.0 else Vector3.ZERO
 				if dist < target_dist:
+					# eat / attack prey
 					var sp := offs.bsearch(prey, false) - 1
 					var local := prey - offs[sp]
-					var e:= alifemanager.species_array[sp].current_energy_array[local] 
-					alifemanager.species_array[sp].current_energy_array[local] = 0
-					alifemanager.species_array[sp].alive_array[local] = 0
-					current_energy_array[i] += e*10
-
-					pass  # eat / attack prey
+					var sp_o : = alifemanager.species_array[sp]
+					#var e:=  sp_o.current_energy_array[local] 
+					#sp_o.current_energy_array[local] = 0
+					sp_o.alive_array[local] = 0
+					current_energy_array[i] +=  sp_o.current_biomass[local]
 				else:
-					steer += dir * 5 # (dir * cruise_speed - v) * w_hunt
+					steer += dir * 1 # (dir * cruise_speed - v) * w_hunt
 						
 			
 		new_velocity[i]=steer
@@ -580,6 +600,8 @@ func count_neighbour(start:int, end:int):
 		
 func Flock(start,end,dt):
 	#world
+	var field_cell_size := alifemanager.field_cell_size
+
 	var world_size: Vector3 = world.size
 	var wrap_x: bool = world.border_type_x == world.Border.WRAP
 	var wrap_y: bool = world.border_type_y == world.Border.WRAP
@@ -607,23 +629,13 @@ func Flock(start,end,dt):
 	var species_array:= alifemanager.species_array  # precomputed once per frame
 	var base := offs[species_id] #to find own global id
 	
-	#flock par
 
-	var view_radius := 15.0	
-	var separation_radius := 12.0
+
 	var view_r2 := view_radius * view_radius
 	var sep_r2 := separation_radius * separation_radius
-	
-	var w_separation := 2.0 #alifemanager.separation
-	var w_alignment :=1.0 #alifemanager.allignment
-	var w_cohesion := 0.5# alifemanager.cohesion
-	
-	var max_force := 10.0
 	var my_end := offs[species_id + 1]
-	var max_neighbors := 8
 	var n := 0
 	var TYPE = alifemanager.flock_type
-	var target_density := 20.0     # agents per cell you're happy with
 
 	if TYPE == 0: #neighbour
 
@@ -922,7 +934,7 @@ func Photosynthesis(start:int,end:int,dt:float):
 ##########################################################################################
 ####GRID/SUN MANAGEMENT
 ##########################################################################################
-const R_MAX := 3
+const R_MAX := 10
 const RY_MAX := 3
 var offsets: Array[PackedInt32Array] = []   # index = r * (RY_MAX + 1) + ry
 
@@ -982,14 +994,14 @@ func stamp(c: int, r: int, ry: int, layer: int, w: float) -> void:
 	if layer != 0:
 		world.SUN_stamp[c] += w
 
-var nearest_dist2 := INF      # filled by find_nearest (distance² of the result)
-var nearest_delta := Vector3.ZERO   # vector from p to the result (wrap-aware)
 
 ## Returns the global id of the closest agent to `p`, or -1 if none found.
 ## self_id:   global id to ignore (-1 = none)
 ## species:   only this species (-1 = any species)
 ## max_rings: how far to search, in cells (1 = the 3x3x3 block around me)
-func find_nearest(p: Vector3, self_id: int = -1, species: int = -1, max_rings: int = 1) -> int:
+func find_nearest(p: Vector3, self_id: int = -1, species: int = -1, max_rings: int = 1) -> Vector4:
+
+	
 	var am := alifemanager
 	var W: int = am.GRID_W
 	var H: int = am.GRID_H
@@ -1067,9 +1079,8 @@ func find_nearest(p: Vector3, self_id: int = -1, species: int = -1, max_rings: i
 							best = other
 							best_d = d
 
-	nearest_dist2 = best_d2
-	nearest_delta = best_d
-	return best
+
+	return Vector4(best_d.x, best_d.y, best_d.z, float(best))
 
 func get_cell_id(pos: Vector3,cell_size:Vector3, W:int , H:int, D:int)-> int :
 		var inv := Vector3.ONE / cell_size # worldd.SUN_cell_size   # (1/x, 1/y, 1/z)
@@ -1103,7 +1114,7 @@ func Build_and_remove_pendings():
 	pending_remove_id.clear()
 
 
-func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.0)):
+func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.555, 0.215, 1.0)):
 	if alifemanager.global_entity_count >= alifemanager.maxLife and alifemanager.maxLife>0:
 		return
 	var i  =  find_free_index()
@@ -1116,7 +1127,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_velocity.append(Vector3.ZERO)
 		new_velocity.append(Vector3.ZERO)
 		current_life_state.append(1)
-		current_biomass.append(0)
+		current_biomass.append(seed_biomass)
 		current_age.append(0)
 		current_size.append(init_size)
 
@@ -1140,7 +1151,7 @@ func Build_New_Life(pos: Vector3, e: float, col := Color(0.159, 0.555, 0.215, 1.
 		current_sungrid_id[i] = get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 		current_grid_id[i] = get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
 		current_life_state[i]=1
-		current_biomass[i]=0
+		current_biomass[i]=seed_biomass
 		current_age[i]=0
 		current_size[i]=init_size
 		current_cpu_cost[i] = 0
@@ -1178,7 +1189,7 @@ func Stock_Life(i):
 	active_alife_array[i]= 2 # STORED ?
 
 	#active_entity_count -= 1
-	if alifemanager.photosynthesis_on:
+	if photosynthesis_on:
 			var c := current_sungrid_id[i]
 			var height := int(init_size.y)-1
 			var r := int(init_size.x)-1
@@ -1193,7 +1204,7 @@ func Release_Life(i):
 	current_sungrid_id[i] = get_cell_id(position_array[i],world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 	current_grid_id[i] = get_cell_id(position_array[i],alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
 	current_velocity[i] = Vector3.ZERO
-	if alifemanager.photosynthesis_on:
+	if photosynthesis_on:
 			var c := current_sungrid_id[i]
 			#var c_calc := c +  world.SUN_GRID_W
 			var height := int(init_size.y)-1

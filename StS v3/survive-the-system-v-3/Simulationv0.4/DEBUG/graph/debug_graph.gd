@@ -3,15 +3,19 @@ extends Control
 var world : WorldManager
 var alifemanager : AlifeManager
 var render : AlifeRendererManager 
+var simulation_manager : SimulationManager
 
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
 
+func init(graphdata):
+	$Panel/ScrollContainer/Graphstack.data = graphdata
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func update():
 	$Panel/Label.text = str(alifemanager.global_entity_count)
+
+	$Panel/ScrollContainer/Graphstack.refresh()
+
+
 	
 func _on_show_hide_button_pressed() -> void:
 	var ishow :bool = $Panel.visible

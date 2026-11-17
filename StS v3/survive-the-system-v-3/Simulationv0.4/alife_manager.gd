@@ -44,6 +44,10 @@ var cell_items := PackedInt32Array()     # size = alife count
 var current_cell_id := PackedInt32Array()  # size = alife count
 var sorted_pos := PackedVector3Array()
 
+#FIELD GRID
+var field_cell_size := Vector3(20,20,20)
+#other var are stored in species 
+
 #MULTITHREAD
 var gid := -1
 var jobs: Array = []     # each entry: [species, chunk_index]
@@ -102,24 +106,23 @@ func compute_chunk(total:int) -> int:
 
 #main loop -------------------------------------------------------------------------------------------
 
-func run_simulation(delta: float, sim_speed: float):	
+func run_simulation(dt: float, sim_speed: float):
+	
 	var t0:= Time.get_ticks_usec()
 	build_grid(global_position_array, global_active)
 	var t1:= Time.get_ticks_usec()
 
-	start_simulation(delta,sim_speed)
+	start_simulation(dt,sim_speed)
 	var t2:= Time.get_ticks_usec()
 
 	wait_simulation()
 	var t3:= Time.get_ticks_usec()
-
 	update_alife()
 	var t4:= Time.get_ticks_usec()
-
 	#print("build: %f, start : %f, wait %f, update %f"  % [t1-t0,t2-t1,t3-t2,t4-t3])
 
 
-func start_simulation(delta: float, sim_speed: float):
+func start_simulation(dt: float, sim_speed: float):
 	#update 
 	var m := get_viewport().get_mouse_position()
 	var mouse := Vector3(m.x, 0.0, m.y)
@@ -141,7 +144,7 @@ func start_simulation(delta: float, sim_speed: float):
 		var local_id:= 0
 		var n: int = s.entity_count
 		for start in range(0, n, chunk_size):
-			jobs.append([s, start, mini(start + chunk_size, n),local_id, delta, sim_speed])
+			jobs.append([s, start, mini(start + chunk_size, n),local_id, dt, sim_speed])
 			local_id += 1
 		s.set_chunk(local_id)
 	
@@ -183,67 +186,44 @@ func update_alife() -> void:
 
 	global_species_offset[species_count] = total
 
+func Store_all_alife():
+	for sp in species_array:
+		for i in sp.entity_count:
+			sp.Stock_Life(i)
+
+func Release_all_alife():
+	for sp in species_array:
+		for i in sp.entity_count:
+			sp.Release_Life(i)
+
 #Species generation-------------------------------------------------------------------------------------------
 
 
-func init_default_species(worldd:WorldManager,alifem:AlifeManager):
-	var n_sp0 = ALIFE_GRASS.new()
-	n_sp0.init(worldd,alifem)
-	species_array.append(n_sp0)
-	for n in 500:
-		var pos := n_sp0.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),
-											Vector3(world.size.x/2,0,world.size.z/2))
-		var energy := randf_range(0,5)
-		n_sp0.Build_New_Life(pos,energy)
-		
-	var n_sp1 = ALIFE_TREE.new()
-	n_sp1.init(worldd,alifem)
-	species_array.append(n_sp1)
-	
-	for n in 100:
-		var pos := n_sp1.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),
-											Vector3(world.size.x/2,0,world.size.z/2))
-		var energy := randf_range(0,5)
-		n_sp1.Build_New_Life(pos,energy)
-	
-	
+func init_default_species(worldd:WorldManager,alifem:AlifeManager):	
+	generateAlife(ALIFE_GRASS.new(), 200)
+	generateAlife(ALIFE_CLOVERMOSS.new(), 1000)
+	generateAlife(ALIFE_GLOWBERRY.new(), 6)
+	generateAlife(ALIFE_TREE.new(), 50)
+	generateAlife(ALIFE_SPIKYFLOWER.new(), 3)
+	generateAlife(ALIFE_BUGSHEEP.new(), 1)
 
 
+func generateAlife (Alife : ALIFE, nb:int):
+	
+	Alife.init(world,self)
+	Alife.species_id = species_array.size()
+	species_array.append(Alife)
+	for n in nb:# 100:
+		var pos :Vector3= Alife.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),
+											Vector3(world.size.x/2,0,world.size.z/2))
+		#var energy := randf_range(0,5)
+		Alife.Build_New_Life(pos)
+	
 
 
 #Contact GRID-------------------------------------------------------------------------------------------
 
-func build_grid2(position_arrayy: PackedVector3Array) -> void: #ADAPT TO GLOBAL POS ARRAY  #TODO move to world
-	var n := position_arrayy.size()
-	current_cell_id.resize(n)
-	cell_items.resize(n)
-	sorted_pos.resize(n)
-	cell_start.fill(0)
-	#var inv := 1.0 / cell_size
-	var inv := Vector3.ONE / cell_size   # (1/x, 1/y, 1/z)
 
-	# 1. Count particles per cell
-	for i in n:
-		var p := (position_arrayy[i]) * inv
-		var cx := clampi(roundi(p.x), 0, GRID_W - 1)
-		var cy := clampi(roundi(p.y), 0, GRID_H - 1)
-		var cz := clampi(roundi(p.z), 0, GRID_D - 1)
-		var c := cx + GRID_W * (cy + GRID_H * cz)   # inline, no second division
-		current_cell_id[i] = c
-		cell_start[c + 1] += 1
-
-	# 2. Prefix sum -> start offset of each cell
-	for c in NUM_CELLS:
-		cell_start[c + 1] += cell_start[c]
-		write_pos[c] = cell_start[c]
-
-	# 3. Scatter indices and positions into sorted order
-	for i in n:
-		var c := current_cell_id[i]
-		var w := write_pos[c]
-		cell_items[w] = i
-		sorted_pos[w] = position_arrayy[i]
-		write_pos[c] = w + 1
 		
 
 func build_grid(positions: PackedVector3Array, active: PackedInt32Array) -> void:
@@ -288,8 +268,16 @@ func set_contact_cell_size(new_size:Vector3):
 	cell_size = new_size
 	init_GRID(world.size)
 	
-	
-	
+func set_field_cell(key: String, value:float):
+	match key:
+		"x":
+			field_cell_size.x = value
+		"y":
+			field_cell_size.y = value
+		"z":
+			field_cell_size.z = value
+	for sp in species_array:
+		sp._init_field_grid()
 
 
 	

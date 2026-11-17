@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://ctgprx0q6hu1g"]
 
 [ext_resource type="Script" uid="uid://gpjdwdisf1sb" path="res://Simulationv0.4/DEBUG/ui_simulation.gd" id="1_kaaxh"]
-[ext_resource type="PackedScene" uid="uid://dqark5axgfobe" path="res://Simulationv0.4/DEBUG/debug_map.tscn" id="2_jpk3n"]
+[ext_resource type="PackedScene" uid="uid://dqark5axgfobe" path="res://Simulationv0.4/DEBUG/map/debug_map.tscn" id="2_jpk3n"]
 [ext_resource type="Script" uid="uid://cncdugbarccxc" path="res://Simulationv0.4/DEBUG/debug_UI_label.gd" id="2_qqghd"]
-[ext_resource type="PackedScene" uid="uid://byeh0yb3cbsnt" path="res://Simulationv0.4/DEBUG/debug_graph.tscn" id="3_qqghd"]
-[ext_resource type="PackedScene" uid="uid://5nl14atwl4fq" path="res://Simulationv0.4/DEBUG/debug_settings.tscn" id="4_u0ept"]
-[ext_resource type="PackedScene" uid="uid://ch8hhhqkcso1l" path="res://Simulationv0.4/DEBUG/debug_speed.tscn" id="6_u0ept"]
+[ext_resource type="PackedScene" uid="uid://byeh0yb3cbsnt" path="res://Simulationv0.4/DEBUG/graph/debug_graph.tscn" id="3_qqghd"]
+[ext_resource type="PackedScene" uid="uid://5nl14atwl4fq" path="res://Simulationv0.4/DEBUG/settings/debug_settings.tscn" id="4_u0ept"]
+[ext_resource type="PackedScene" uid="uid://ch8hhhqkcso1l" path="res://Simulationv0.4/DEBUG/settings/debug_speed.tscn" id="6_u0ept"]
 
 [node name="UI_simulation" type="CanvasLayer" unique_id=2073576286]
 script = ExtResource("1_kaaxh")
@@ -40,3 +40,4 @@ offset_left = 361.0
 offset_top = 57.0
 offset_right = 361.0
 offset_bottom = 57.0
+mouse_filter = 2

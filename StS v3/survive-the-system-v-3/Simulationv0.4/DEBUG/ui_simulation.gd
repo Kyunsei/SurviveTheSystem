@@ -7,9 +7,17 @@ extends CanvasLayer
 
 
 # Called when the node enters the scene tree for the first time.
-func _ready() -> void:
+func _ready():
 	print_system_info() # Replace with function body.
+
+func init():
 	connect_crossref()
+	$Debug_Map.init()
+
+
+func update():
+	$Debug_Map.update()
+	$DEBUG_graph.update()
 
 func connect_crossref():
 	$DEBUG_Settings.world  = world
@@ -19,9 +27,16 @@ func connect_crossref():
 	$DEBUG_graph.world  = world
 	$DEBUG_graph.alifemanager = alifemanager
 	$DEBUG_graph.render  = render
+	$DEBUG_graph.init(simulation_manager.graph_data) 
+
 	
 	$SPEED.simulation_manager = simulation_manager
 
+
+	
+	$Debug_Map.world  = world
+	$Debug_Map.alifemanager = alifemanager
+#	$Debug_Map.render  = render
 
 func display_performance(am_usec:float, world_usec:float, render_usec:float) -> void:
 			$Label.display_performance(am_usec, world_usec, render_usec)	

@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://byeh0yb3cbsnt"]
+
+[ext_resource type="Script" uid="uid://mavlvrwgd5re" path="res://Simulationv0.4/DEBUG/graph/debug_graph.gd" id="1_r7hfp"]
+[ext_resource type="Script" uid="uid://lur3eid04mrr" path="res://Simulationv0.4/DEBUG/graph/graphstack.gd" id="2_0gues"]
+[ext_resource type="Script" uid="uid://c6ko5c3eu031x" path="res://Simulationv0.4/DEBUG/graph/graph.gd" id="3_qqgip"]
+
+[node name="DEBUG_graph" type="Control" unique_id=1190113629]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_r7hfp")
+
+[node name="Panel" type="Panel" parent="." unique_id=1043781842]
+layout_mode = 0
+offset_left = 820.0
+offset_top = 11.0
+offset_right = 1140.0
+offset_bottom = 633.0
+
+[node name="Label" type="Label" parent="Panel" unique_id=234318848]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel" unique_id=828080415]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 44.0
+offset_right = 309.0
+offset_bottom = 579.0
+
+[node name="Graphstack" type="VBoxContainer" parent="Panel/ScrollContainer" unique_id=922421560]
+layout_mode = 2
+script = ExtResource("2_0gues")
+
+[node name="graphserie" type="VBoxContainer" parent="Panel/ScrollContainer/Graphstack" unique_id=1213084162]
+layout_mode = 2
+script = ExtResource("3_qqgip")
+
+[node name="SHOW_HIDEButton" type="Button" parent="." unique_id=1459329359]
+layout_mode = 0
+offset_left = 831.0
+offset_top = 595.0
+offset_right = 1125.0
+offset_bottom = 626.0
+text = "CLOSE"
+
+[connection signal="pressed" from="SHOW_HIDEButton" to="." method="_on_show_hide_button_pressed"]

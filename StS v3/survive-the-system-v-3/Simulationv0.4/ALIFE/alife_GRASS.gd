@@ -6,14 +6,18 @@ func _init() -> void:
 	photosynthesis_on = true
 	duplication_range = 10
 	init_size = Vector3(1.3,1.,1.3)
-	
+	species_name = "Grass"
+	species_id = 0
+	seed_energy = 10
+	seed_biomass = 5
 
-func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_speed:float) -> void:
-	var dt := 0.16 * 1 #TODO
+func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_speed:float) -> void:
+	#var dt := #TODO
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
 	#var mouse_target :Vector3 = alifemanager.mouse_position # Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
 
+	var field_cell_size := alifemanager.field_cell_size
 	var world_size: Vector3 = world.size
 	var wrap_x: bool = world.border_type_x == world.Border.WRAP
 	var wrap_y: bool = world.border_type_y == world.Border.WRAP
@@ -33,12 +37,15 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 		if active_alife_array[i] == 0:
 			continue
 		if alive_array[i] == 0:
-			continue
+			if active_alife_array[i] == 1:
+				local_pending_remove_id.append(i)
+				continue
+		
 		var _energy:= current_energy_array[i]
 		
-		#EAT
+		#--------EAT
 		# Photosynthesis (cached per cell for this frame)
-		if _energy < 10:
+		if _energy < 200:
 			#_energy += photo(i,sun_W,sun_stamp, sun_grid) * dt
 
 			var sun_c := current_sungrid_id[i]
@@ -47,25 +54,30 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 			var d_up := sun_stamp[sun_c_up] +1
 			value =  sun_grid[sun_c_up]  /   maxf(d_up, photo_rate) 
 			var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
-			_energy += value2 /maxf(d, photo_rate) *dt
+			_energy += value2 /maxf(d, photo_rate)  *  dt * sim_speed
 
-		#maintain cost
-		_energy += -0.7  * dt # - (side * side - side) *dt #* active_alife_array[i]
+		#--------maintain cost
+		_energy += -0.7  *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
 		
-		#DEATH
+		#--------DEATH
 		if _energy < 0 :
 			alive_array[i] = 0
 			
-		#Duplicate
-		if _energy >= 8:
+		#--------Duplicate
+		if _energy >= seed_energy*1.5:
 			local_pending_spawn_id.append(i)
-			_energy -= 5
+			_energy -= seed_energy
+			
+			
+			
+			
 		#update energy
-		current_energy_array[i] = _energy	
+		current_energy_array[i] = _energy
 		
-		#CHECK to free entity
-		if alive_array[i] == 0 and active_alife_array[i] == 1:
-			local_pending_remove_id.append(i)
+		
+		
+		
+		
 			
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id

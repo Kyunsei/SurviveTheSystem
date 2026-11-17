@@ -36,6 +36,7 @@ var renderer_count := 0
 func init():
 	entity_count = 0
 	renderer_count = 0
+	nThread_max = OS.get_processor_count()
 	chunk_count = clamp( nThread_max,1,OS.get_processor_count()) 
 	init_renderer()
 	
@@ -54,6 +55,9 @@ func init_renderer():
 		s.renderer3D.setup( s.rend_data,s.sprite, world.size, s.colour)
 		add_child.call_deferred(s.renderer3D)
 
+		#s.renderer2D = AlifeRenderer2D.new()
+		#s.renderer2D.setup(s.rend_data, world.size, s.colour)
+		#add_child.call_deferred(s.renderer2D)
 
 
 #main looop -------------------------------------------------------
@@ -79,7 +83,7 @@ func start_write_rendering_buffer():
 	for s in alifemanager.species_array:
 		entity_count += s.entity_count
 		s.rend_data.resize(entity_count)
-		#s.renderer2D.ensure_instances2D(s.entity_count)
+		s.renderer2D.ensure_instances2D(s.entity_count)
 		s.renderer3D.ensure_instances3D(s.entity_count)
 		
 
@@ -98,7 +102,6 @@ func start_write_rendering_buffer():
 	#run working group	
 	r_gid = -1	
 	if jobs.size() > 0:
-		#gid = WorkerThreadPool.add_group_task(run_chunk, jobs.size(), -1, true, "species_update")
 		r_gid = WorkerThreadPool.add_group_task(run_chunk, jobs.size(), nThread_max, true, "species_update")
 
 func run_chunk(k: int) -> void:
@@ -113,7 +116,7 @@ func wait_rendering_buffer() -> void:
 func upload_buffer()-> void:
 	for s in alifemanager.species_array:
 		s.rend_data.upload()
-		#s.renderer2D.set_count(s.entity_count)
+		s.renderer2D.set_count(s.entity_count)
 		s.renderer3D.set_count(s.entity_count)
 
 	

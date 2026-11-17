@@ -52,7 +52,7 @@ var max_plant  = 10000
 #and probably but the loop on a thread
 #USE DICTIONARY structure currently, but for more optimisation should be replaced by array -ECS system
 
-var default := false
+var default := true
 func init():
 			$Grass_Manager.World = World
 			$Grass_Manager2.World = World

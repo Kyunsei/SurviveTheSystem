@@ -43,54 +43,40 @@ float sprite_alpha(vec2 uv) {
 }
 
 
-
 void vertex() {
 	ivec2 px = ivec2(INSTANCE_ID % tex_width, INSTANCE_ID / tex_width);
+	vec4 d = texelFetch(agent_data, px, 0);   // x, y, active, packed
 
-	vec4 d = texelFetch(agent_data, px, 0);   // x,y, z, state
-	
-	int v = int(d.w + 0.5); //size,action,state,lifecycle compile in one int
-	state  = v & 3;
-	action = (v >> 2) & 15;
-	size   = mix(SIZE_MIN, SIZE_MAX, float((v >> 6) & 63) / 63.0);
-	life_cycle    = v >> 12;
-	
-	
-	//v_state = d.w;
+	int v = int(d.w + 0.5);   // state, action, size, life cycle packed in one int
+	state      = v & 3;
+	action     = (v >> 2) & 15;
+	size       = mix(SIZE_MIN, SIZE_MAX, float((v >> 6) & 63) / 63.0);
+	life_cycle = v >> 12;
+	is_selected = 0.0;
 
-	// sprite frame from custom data
-	//float f = floor(INSTANCE_CUSTOM.r + 0.5);
-	//vec2 cell = vec2(mod(f, float(hframes)), floor(f / float(hframes)));
-	//UV = (UV + cell) / vec2(float(hframes), float(vframes));
+	if (state < 1) {
+		// FREE slot: all 4 corners on the same point -> zero-area quad, not drawn
+		VERTEX = vec3(0.0);
+	} else {
+		// Billboard around Y, placed at the agent's position on the ground
+		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
+				vec4(normalize(cross(vec3(0.0, 1.0, 0.0), MAIN_CAM_INV_VIEW_MATRIX[2].xyz)), 0.0),
+				vec4(0.0, 1.0, 0.0, 0.0),
+				vec4(normalize(cross(MAIN_CAM_INV_VIEW_MATRIX[0].xyz, vec3(0.0, 1.0, 0.0))), 0.0),
+				MODEL_MATRIX[3] + vec4(d.x, 0.0, d.y, 0.0));
+		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
 
-	// collapse FREE slots to a degenerate quad
-	//VERTEX *= (d.z < 0.5) ? 0.0 : d.z;
+		VERTEX *= size;
 
-	// world-space position: instance origin + agent offset
-   // if (d.z < 0.5) {
-   //     VERTEX = VERTEX  + vec3(d.x, 0.0, d.y); //vec3(0.0);                   // FREE slot: collapsed, not drawn
-  //  } else {
-  //      VERTEX = VERTEX  + vec3(d.x, 0.0, d.y);   // 2D (x, y) → ground (x, 0, z)
-  //  }	
-
-	MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
-			vec4(normalize(cross(vec3(0.0, 1.0, 0.0), MAIN_CAM_INV_VIEW_MATRIX[2].xyz)), 0.0),
-			vec4(0.0, 1.0, 0.0, 0.0),
-			vec4(normalize(cross(MAIN_CAM_INV_VIEW_MATRIX[0].xyz, vec3(0.0, 1.0, 0.0))), 0.0),
-			MODEL_MATRIX[3] + vec4(d.x, 0.0, d.y, 0.0));
-	MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
-	
-	VERTEX *= size;
-	
-	is_selected = (INSTANCE_ID == selected_id) ? 1.0 : 0.0;
-	if (is_selected > 0.5) {
-		vec2 tex_size = vec2(textureSize(sprite_texture, 0));
-		vec2 grow = 1.0 + 2.0 * float(outline_px) / tex_size;
-		VERTEX.xy *= grow;
-		UV = (UV - 0.5) * grow + 0.5;
+		is_selected = (INSTANCE_ID == selected_id) ? 1.0 : 0.0;
+		if (is_selected > 0.5) {
+			vec2 tex_size = vec2(textureSize(sprite_texture, 0));
+			vec2 grow = 1.0 + 2.0 * float(outline_px) / tex_size;
+			VERTEX.xy *= grow;
+			UV = (UV - 0.5) * grow + 0.5;
+		}
 	}
 }
-
 
 void fragment() {
 

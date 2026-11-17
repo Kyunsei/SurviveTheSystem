@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://5nl14atwl4fq"]
 
-[ext_resource type="Script" uid="uid://b06yl60d72v57" path="res://Simulationv0.4/DEBUG/debug_settings.gd" id="1_qcoj2"]
+[ext_resource type="Script" uid="uid://b06yl60d72v57" path="res://Simulationv0.4/DEBUG/settings/debug_settings.gd" id="1_qcoj2"]
 
 [node name="DEBUG_Settings" type="Control" unique_id=686420294]
 layout_mode = 3
@@ -47,6 +47,7 @@ toggle_mode = true
 text = "Rendering"
 
 [node name="World" type="ScrollContainer" parent="Panel" unique_id=960359716]
+visible = false
 layout_mode = 0
 offset_left = 6.0
 offset_top = 58.0
@@ -76,6 +77,7 @@ text = "World Size"
 [node name="world_x" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer" unique_id=1567817188]
 layout_mode = 2
 placeholder_text = "2000"
+editable = false
 
 [node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer/world_x" unique_id=1419731309]
 layout_mode = 0
@@ -87,6 +89,7 @@ text = "x"
 [node name="world_y" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer" unique_id=383134550]
 layout_mode = 2
 placeholder_text = "20"
+editable = false
 
 [node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer/world_y" unique_id=514245194]
 layout_mode = 0
@@ -98,6 +101,7 @@ text = "y"
 [node name="world_z" type="LineEdit" parent="Panel/World/VBoxContainer/world/HBoxContainer" unique_id=980496636]
 layout_mode = 2
 placeholder_text = "2000"
+editable = false
 
 [node name="Label" type="Label" parent="Panel/World/VBoxContainer/world/HBoxContainer/world_z" unique_id=542463752]
 layout_mode = 0
@@ -279,7 +283,7 @@ layout_mode = 2
 [node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer10" unique_id=1457268727]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "SCENT GRID"
+text = "FIELD/SCENT GRID"
 
 [node name="HBoxContainer7" type="HBoxContainer" parent="Panel/World/VBoxContainer/SCENTGRID" unique_id=739640786]
 layout_mode = 2
@@ -288,33 +292,33 @@ layout_mode = 2
 layout_mode = 2
 text = "SCENT CELL"
 
-[node name="world_x" type="LineEdit" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=1979472248]
+[node name="field_x" type="LineEdit" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=1979472248]
 layout_mode = 2
-placeholder_text = "50"
+placeholder_text = "20"
 
-[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/world_x" unique_id=855762886]
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/field_x" unique_id=855762886]
 layout_mode = 0
 offset_left = 24.0
 offset_top = -23.0
 offset_right = 51.0
 text = "x"
 
-[node name="world_y" type="LineEdit" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=463234624]
+[node name="field_y" type="LineEdit" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=463234624]
 layout_mode = 2
 placeholder_text = "20"
 
-[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/world_y" unique_id=506757928]
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/field_y" unique_id=506757928]
 layout_mode = 0
 offset_left = 24.0
 offset_top = -23.0
 offset_right = 51.0
 text = "y"
 
-[node name="world_z" type="LineEdit" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=444748845]
+[node name="field_z" type="LineEdit" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7" unique_id=444748845]
 layout_mode = 2
-placeholder_text = "50"
+placeholder_text = "20"
 
-[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/world_z" unique_id=11106328]
+[node name="Label" type="Label" parent="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/field_z" unique_id=11106328]
 layout_mode = 0
 offset_left = 24.0
 offset_top = -23.0
@@ -371,4 +375,7 @@ text = "CLOSE"
 [connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer4/sun_y" to="." method="_on_sun_y_text_submitted"]
 [connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer4/sun_z" to="." method="_on_sun_z_text_submitted"]
 [connection signal="text_submitted" from="Panel/World/VBoxContainer/world/HBoxContainer3/SUNENERGY" to="." method="_on_sunenergy_text_submitted"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/field_x" to="." method="_on_field_x_text_submitted"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/field_y" to="." method="_on_field_y_text_submitted"]
+[connection signal="text_submitted" from="Panel/World/VBoxContainer/SCENTGRID/HBoxContainer7/field_z" to="." method="_on_field_z_text_submitted"]
 [connection signal="pressed" from="SHOW_HIDEButton" to="." method="_on_show_hide_button_pressed"]

@@ -35,7 +35,7 @@ func setup(agent_data: AlifeRenderingData, sprite:Texture2D, world_size: Vector3
 	multimesh = mm
 
 	var mat := ShaderMaterial.new()
-	mat.shader = preload("res://Z_TEST/test3d.gdshader")
+	mat.shader = preload("res://Simulationv0.4/Render/test3d.gdshader")
 	mat.set_shader_parameter("agent_data", agent_data.tex)
 	mat.set_shader_parameter("tex_width", AlifeRenderingData.TEX_W)
 	mat.set_shader_parameter("alive_color", color)

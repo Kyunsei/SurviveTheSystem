@@ -5,7 +5,7 @@ class_name WorldManager
 #------------Planete General
 var size : Vector3
 var default_size = Vector3(240,20,240) 
-#var default_size = Vector3(50,20,50)
+#var default_size = Vector3(40,20,40)
 
 
 enum Border { WRAP, WALL }
@@ -70,7 +70,7 @@ func render_world():
 
 #------------------MAIN------------------------------------------------
 # Called when the node enters the scene tree for the first time.
-func run_world_simulation(delta,simulation_speed):
+func run_world_simulation(dt,simulation_speed):
 	#SUN_GRID.fill(SUN_energy)
 	pass
 

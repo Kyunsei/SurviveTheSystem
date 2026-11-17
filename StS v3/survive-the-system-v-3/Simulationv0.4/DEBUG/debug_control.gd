@@ -14,3 +14,4 @@ func _unhandled_input(event: InputEvent) -> void:
 			and event.physical_keycode == KEY_O:
 		ui.visible = not ui.visible 
 		get_viewport().set_input_as_handled()
+		#ui.get_node("debug_Map").init()

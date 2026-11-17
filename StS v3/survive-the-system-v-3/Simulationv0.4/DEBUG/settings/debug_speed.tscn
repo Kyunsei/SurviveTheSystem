@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ch8hhhqkcso1l"]
 
-[ext_resource type="Script" uid="uid://ccwd4ek64nyn2" path="res://Simulationv0.4/DEBUG/debug_speed.gd" id="1_kf1op"]
+[ext_resource type="Script" uid="uid://ccwd4ek64nyn2" path="res://Simulationv0.4/DEBUG/settings/debug_speed.gd" id="1_kf1op"]
 
 [node name="SPEED" type="Control" unique_id=631663]
 layout_mode = 3
