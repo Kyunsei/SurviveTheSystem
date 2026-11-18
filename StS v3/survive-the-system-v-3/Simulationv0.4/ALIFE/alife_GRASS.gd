@@ -3,16 +3,24 @@ class_name ALIFE_GRASS
 
 
 func _init() -> void:
+	species_name = "GRASS"
+	#PHOT
 	photosynthesis_on = true
+	photo_layer_y = 0
+	photo_range = 0
+	photo_optimal_value = 1
+	photo_optimal_width = 0.2
+	
+	#LIFECYCLE/DUP
 	duplication_range = 10
-	init_size = Vector3(1.3,1.,1.3)
-	species_name = "Grass"
-	species_id = 0
-	seed_energy = 10
+	init_size = 0.5
+	seed_energy = 50
 	seed_biomass = 5
+	max_life_cycle = 3
+	growth_cost = [50,50,50,50] #Should be size of max_life
+	growth_rate = 0.4
 
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_speed:float) -> void:
-	#var dt := #TODO
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
 	#var mouse_target :Vector3 = alifemanager.mouse_position # Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
@@ -38,14 +46,19 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 			continue
 		if alive_array[i] == 0:
 			if active_alife_array[i] == 1:
-				local_pending_remove_id.append(i)
+				var b = current_biomass[i]
+				b -= 0.1 * dt *sim_speed
+				current_biomass[i] = b
+				if b < 0:
+					local_pending_remove_id.append(i)
 				continue
 		
-		var _energy:= current_energy_array[i]
 		
+		
+		var _energy:= current_energy_array[i]
 		#--------EAT
 		# Photosynthesis (cached per cell for this frame)
-		if _energy < 200:
+		if _energy < seed_energy*2:
 			#_energy += photo(i,sun_W,sun_stamp, sun_grid) * dt
 
 			var sun_c := current_sungrid_id[i]
@@ -55,8 +68,20 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 			value =  sun_grid[sun_c_up]  /   maxf(d_up, photo_rate) 
 			var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
 			_energy += value2 /maxf(d, photo_rate)  *  dt * sim_speed
+	
+	#--------Growth
+		var lifecycle := current_life_state[i]
+		var g_cost:=  growth_cost[lifecycle]
+	
+		if _energy >= g_cost*1.2 and lifecycle < max_life_cycle:
+			current_size[i] += growth_rate
+			current_biomass[i] += 5
+			current_life_state[i] +=1
+			_energy -= g_cost
 
-		#--------maintain cost
+
+
+	#--------maintain cost
 		_energy += -0.7  *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
 		
 		#--------DEATH

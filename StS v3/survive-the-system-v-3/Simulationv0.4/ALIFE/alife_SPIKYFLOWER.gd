@@ -5,12 +5,13 @@ class_name ALIFE_SPIKYFLOWER
 func _init() -> void:
 	photosynthesis_on = true
 	duplication_range = 3
-	init_size = Vector3(1.5,1.,1.5)
+	init_size = 1.5
 	species_name = "SPIKYFLOWER"
 	species_id = 0
 	sprite = preload("res://Alife/Plant/spikyflower/spiky_grass_3.png")
 	colour = Color(0.533, 0.464, 0.187, 1.0)
 	photo_range = 1
+	photo_layer_y = 0
 
 func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_speed:float) -> void:
 	var dt := 0.16 * sim_speed #TODO

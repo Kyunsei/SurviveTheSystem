@@ -4,25 +4,36 @@ class_name ALIFE_BUGSHEEP
 
 func _init() -> void:
 	photosynthesis_on = false
-	duplication_range = 1
-	init_size = Vector3(10,1.,10)
+	init_size = 4.0
 	species_name = "BUGSHEEP"
-	species_id = 0
-	sprite = preload("res://Alife/animal/Herbivor/sheep3.png")
+	sprite =preload("res://Alife/animal/Herbivor/Sheep/SHEEP-Sheet.png")
+	hframes = 3
+	vframes=2
 	colour = Color(0.772, 0.772, 0.772, 1.0)
-	seed_energy = 500
-	seed_biomass = 250
-	max_speed = 5.
+	
+	max_energy = 2500
+	max_speed = 30.
+
+	#LIFECYCLE/DUP
+	duplication_range = 2
+	seed_energy = 600
+	seed_biomass = 2000
+	max_life_cycle = 2
+	growth_cost = [1000,1000,1000] #Should be size of max_life+1
+	growth_rate = 0.5	
+	
+	
 	#Flock par
 	#contact par
-	view_radius = 15.0	 #need to be < that contact cell grid
-	separation_radius = 14.0
+	view_radius = 19.0	 #need to be < that contact cell grid
+	separation_radius = 18.0
 	
-	w_separation = 5.0 #dont merge
-	w_alignment =0.1 #follow other
-	w_cohesion = 0.3# stay in group
+
+	w_separation = 2.0 #dont merge
+	w_alignment =0.5 #follow other
+	w_cohesion = 0.5# stay in group
 	w_seek = 1.0# seek food
-	max_force = 10.0 #how much power has steer
+	max_force = 2.0 #how much power has steer
 
 	
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_speed:float) -> void:
@@ -77,10 +88,26 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 			continue
 		if alive_array[i] == 0:
 			if active_alife_array[i] == 1:
-				local_pending_remove_id.append(i)
+				var b = current_biomass[i]
+				b -= 0.1 * dt *sim_speed
+				current_biomass[i] = b
+				if b < 0:
+					local_pending_remove_id.append(i)
 				continue
-				
+		
+		var lifecycle := current_life_state[i]
+		var g_cost:=  growth_cost[lifecycle]
 		var _energy:= current_energy_array[i]
+
+#EGG TIME---------		
+		if lifecycle == 0:
+			_energy -= 2 * dt * sim_speed
+			if _energy < 0:
+				current_life_state[i]+=1
+				_energy = seed_energy
+			current_energy_array[i] = _energy
+			continue
+			
 		var p := position_array[i]		
 		var cx := mini(int(p.x / field_cell_size.x), W - 1)
 		var cy := mini(int(p.y / field_cell_size.y), H - 1)
@@ -111,69 +138,77 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 					var sp := offs.bsearch(prey, false) - 1
 					var local := prey - offs[sp]
 					var sp_o = alifemanager.species_array[sp]
-					if sp_o.alive_array[local] == 1:
+					if sp_o.active_alife_array[local] == 1:
 						sp_o.alive_array[local] = 0
 						_energy += sp_o.current_biomass[local]
+						sp_o.current_biomass[local] = 0
+
 				elif dist > 0.0:
 					steer += (delta / dist * max_speed - v) * w_seek
 					#steer += (delta / dist * 1 - v) * w_seek
 
 		#--------NEIGHBOURS
-		var n := 0
-		var sum_d := Vector3.ZERO
-		var sum_v := Vector3.ZERO
-		var sep := Vector3.ZERO
+		#--------NEIGHBOURS
+		var n := 0                          # neighbours counted for alignment / cohesion (capped)
+		var sum_d := Vector3.ZERO      # cohesion: sum of offsets
+		var sum_v := Vector3.ZERO      # alignment: sum of velocities
+		var sep := Vector3.ZERO        # separation: every close agent (not capped)
 
 		for dz in range(-1, -1 + nz):
-			if n >= max_neighbors: break
 			var z := cz + dz
 			var sz := 0.0
 			if z < 0:
 				if not wrap_z: continue
-				z += C_D; sz = -world_size.z
-			elif z >= C_D:
+				z += D; sz = -world_size.z
+			elif z >= D:
 				if not wrap_z: continue
-				z -= C_D; sz = world_size.z
+				z -= D; sz = world_size.z
 
 			for dy in range(-1, -1 + ny):
-				if n >= max_neighbors: break
 				var y := cy + dy
 				var sy := 0.0
 				if y < 0:
 					if not wrap_y: continue
-					y += C_H; sy = -world_size.y
+					y += H; sy = -world_size.y
 				elif y >= H:
 					if not wrap_y: continue
-					y -= C_H; sy = world_size.y
+					y -= H; sy = world_size.y
 
 				for dx in range(-1, -1 + nx):
-					if n >= max_neighbors: break
 					var x := cx + dx
 					var sx := 0.0
 					if x < 0:
 						if not wrap_x: continue
-						x += C_W; sx = -world_size.x
-					elif x >= C_W:
+						x += W; sx = -world_size.x
+					elif x >= W:
 						if not wrap_x: continue
-						x -= C_W; sx = world_size.x
+						x -= W; sx = world_size.x
 
-					var cell := x + C_W * (y + C_H * z)
+					var cell := x + W * (y + H * z)
 					var shift_p := Vector3(sx, sy, sz) - p   # one shift per cell
 					for k in range(cell_start[cell], cell_start[cell + 1]):
 						var other: int = cell_items[k]
-						if other < base or other >= my_end or other == global_i: #WORK ONLY IF SELF SPECIES
+						if other < base or other >= my_end or other == global_i:   # same species only
 							continue
 						var d: Vector3 = global_sorted_pos[k] + shift_p
 						var dist2 := d.length_squared()
-						if dist2 > view_r2 or dist2 == 0.0:
+						if dist2 > view_r2:
 							continue
-						n += 1
-						sum_d += d
-						sum_v += current_velocity[other - base]  #WORK ONLY IF SELF SPECIES
+
+						# Separation: every close agent, never capped
 						if dist2 < sep_r2:
-							sep -= d / dist2
-						if n >= max_neighbors:
-							break
+							if dist2 < 1e-8:
+								# exactly on top of each other: push in a direction based on the ids
+								var a := float(global_i * 7 + other * 13)
+								sep += Vector3(sin(a), 0.0, cos(a))
+							else:
+								sep -= d / dist2
+
+						# Alignment / cohesion: capped
+						if n < max_neighbors:
+							n += 1
+							sum_d += d
+							sum_v += current_velocity[other - base]
 		if n > 0:
 			steer += sep * w_separation
 			steer += (sum_v / n - v) * w_alignment
@@ -182,12 +217,26 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 
 	#--------APPLY STEERING, once
 		steer = steer.limit_length(max_force)      # "=" not "+="
-		var new_v := v + steer * dt
+		var new_v := v + steer * dt *sim_speed
 		new_v = new_v.limit_length(max_speed)
 		if new_v.length_squared() < 1e-8:
 			new_v = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) #* 0.1   # small nudge
-		new_velocity[i] = new_v
 		
+		if i == player_index:
+			new_v = player_velocity* dt *sim_speed     # player-controlled: the AI is ignored
+			#new_v = new_v.limit_length(max_speed)
+
+		new_velocity[i] = new_v
+
+	#--------Growth
+
+	
+		if _energy >= g_cost*1.2 and lifecycle < max_life_cycle:
+			current_size[i] += growth_rate
+			current_biomass[i] += g_cost/10
+			current_life_state[i] +=1
+			_energy -= g_cost
+
 
 	#--------maintain cost
 		_energy += -1 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
@@ -197,9 +246,11 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 			alive_array[i] = 0
 			
 	#--------Duplicate
-		if _energy >= 1.5*seed_energy:
+		if _energy >= 1.5*seed_energy*3:
 			local_pending_spawn_id.append(i)
-			_energy -= seed_energy
+			local_pending_spawn_id.append(i)
+			local_pending_spawn_id.append(i)
+			_energy -= seed_energy*3
 			
 			
 			

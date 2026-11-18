@@ -6,13 +6,21 @@ func _init() -> void:
 	species_id = 1
 	species_name = "tree"
 	photosynthesis_on = true
-	duplication_range = 40
-	photo_range = 5
-	init_size = Vector3(10,2.,2)
+	photo_range = 7
+	photo_layer_y = 1
 	sprite = preload("res://Alife/Plant/tree/tree.png")
 	colour = Color(0.678, 0.372, 0.439, 1.0)
 	photo_optimal_value  = 0.5
 	
+	#LIFECYCLE/DUP
+	duplication_range = 40
+	init_size = 1.0
+	seed_energy = 250
+	seed_biomass = 20
+	max_energy = seed_energy
+	max_life_cycle = 7 #growt_cost size -1
+	growth_cost = [100,100,100,100,100,100,150,200] #Should be size of max_life
+	growth_rate = 2
 
 func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_speed:float) -> void:
 	var dt := 0.16 * sim_speed #TODO
@@ -40,13 +48,17 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 			continue
 		if alive_array[i] == 0:
 			if active_alife_array[i] == 1:
-				local_pending_remove_id.append(i)
+				var b = current_biomass[i]
+				b -= 0.1 * dt *sim_speed
+				current_biomass[i] = b
+				if b < 0:
+					local_pending_remove_id.append(i)
 				continue
 		var _energy:= current_energy_array[i]
 		
 		#--------EAT
 		# Photosynthesis (cached per cell for this frame)
-		if _energy < 550:
+		if _energy < seed_energy*2:
 			#_energy += photo(i,sun_W,sun_stamp, sun_grid) * dt
 
 			var sun_c := current_sungrid_id[i]
@@ -63,11 +75,21 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 		#--------DEATH
 		if _energy < 0 :
 			alive_array[i] = 0
+	
+	#--------Growth
+		var lifecycle := current_life_state[i]
+		var g_cost:=  growth_cost[lifecycle]
+	
+		if _energy >= g_cost*1.2 and lifecycle < max_life_cycle:
+			current_size[i] += growth_rate
+			current_biomass[i] += g_cost/10
+			current_life_state[i] +=1
+			_energy -= g_cost	
 			
 		#--------Duplicate
-		if _energy >= 30:
+		if _energy >= seed_energy*1.5:
 			local_pending_spawn_id.append(i)
-			_energy -= 30
+			_energy -= seed_energy
 		#update energy
 		current_energy_array[i] = _energy	
 		

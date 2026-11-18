@@ -20,10 +20,12 @@ var total_time := 0.0
 #cross reference---------
 @export var world: WorldManager
 #@export var renderer : AlifeRendererManager 
-var simulation_speed := 1
+var simulation_speed :float
 
 
 #Alife Section---------
+var codex := ALIFE_CODEX.new()
+
 var species_array : Array[ALIFE] 
 var global_position_array : PackedVector3Array
 var global_species_offset:PackedInt32Array
@@ -200,25 +202,32 @@ func Release_all_alife():
 
 
 func init_default_species(worldd:WorldManager,alifem:AlifeManager):	
-	generateAlife(ALIFE_GRASS.new(), 400)
-	#generateAlife(ALIFE_CLOVERMOSS.new(), 1000)
-	#generateAlife(ALIFE_GLOWBERRY.new(), 6)
-	#generateAlife(ALIFE_TREE.new(), 50)
-	#generateAlife(ALIFE_SPIKYFLOWER.new(), 3)
-	generateAlife(ALIFE_BUGSHEEP.new(), 1)
-
-
-func generateAlife (Alife : ALIFE, nb:int):
+	init_species_from_codex(worldd,alifem)
 	
-	Alife.init(world,self)
-	Alife.species_id = species_array.size()
-	species_array.append(Alife)
+	SpawnRandomAlife(0,4000) #GRASS
+	SpawnRandomAlife(1,40) #TREE
+	SpawnRandomAlife(0,1000) #clovermoss
+	SpawnRandomAlife(0,10) #glowberry
+	SpawnRandomAlife(0,3) #spikyflower
+	SpawnRandomAlife(0,1) #bugsheep
+
+
+func init_species_from_codex(worldd:WorldManager,alifem:AlifeManager):
+	species_array = []
+	for sp in codex.species_list:
+		sp.init(worldd,alifem)
+		sp.species_id = species_array.size()
+		species_array.append(sp)
+
+
+
+func SpawnRandomAlife(alifeID : int, nb:int):
+	var Alife := species_array[alifeID]
 	for n in nb:# 100:
 		var pos :Vector3= Alife.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),
 											Vector3(world.size.x/2,0,world.size.z/2))
 		#var energy := randf_range(0,5)
 		Alife.Build_New_Life(pos)
-	
 
 
 #Contact GRID-------------------------------------------------------------------------------------------

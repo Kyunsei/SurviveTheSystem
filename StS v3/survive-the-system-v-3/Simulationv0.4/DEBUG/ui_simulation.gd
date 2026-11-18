@@ -13,6 +13,7 @@ func _ready():
 func init():
 	connect_crossref()
 	$Debug_Map.init()
+	$DEBUG_Settings.init()
 
 
 func update():
@@ -23,6 +24,8 @@ func connect_crossref():
 	$DEBUG_Settings.world  = world
 	$DEBUG_Settings.alifemanager = alifemanager
 	$DEBUG_Settings.render  = render
+	$DEBUG_Settings.sim_manager  = simulation_manager
+
 	
 	$DEBUG_graph.world  = world
 	$DEBUG_graph.alifemanager = alifemanager

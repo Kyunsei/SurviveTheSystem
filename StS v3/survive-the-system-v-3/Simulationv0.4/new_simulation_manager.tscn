@@ -37,9 +37,14 @@ world = NodePath("../World")
 render = NodePath("../RendererManager")
 simulation_manager = NodePath("..")
 
-[node name="DEBUG_control" type="Node" parent="." unique_id=139330103 node_paths=PackedStringArray("ui")]
+[node name="DEBUG_control" type="Node" parent="." unique_id=139330103 node_paths=PackedStringArray("alifemanager", "camera", "menu", "sim_manager")]
 script = ExtResource("6_gytwx")
-ui = NodePath("../UI_simulation")
+alifemanager = NodePath("../AlifeManager")
+camera = NodePath("DebugCamera3D")
+menu = NodePath("../UI_simulation")
+sim_manager = NodePath("..")
+control_speed = 4.0
+energy_bar_size = Vector2(36, 8)
 
 [node name="DebugCamera3D" type="Camera3D" parent="DEBUG_control" unique_id=2122777896]
 transform = Transform3D(-0.7071067, 0.02467767, -0.70667595, 0, 0.99939084, 0.03489949, 0.7071067, 0.02467767, -0.70667595, -10, 28, -10)

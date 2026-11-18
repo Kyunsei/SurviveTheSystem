@@ -6,9 +6,13 @@ extends Control
 var world : WorldManager
 var alifemanager : AlifeManager
 var render : AlifeRendererManager 
+var sim_manager :SimulationManager
 
 #-------------------------
 
+func init():
+	$Panel/Alife.alifemanager = alifemanager
+	$Panel/Alife.init()
 
 func update_alife_to_world_settings(new_size):
 	#return

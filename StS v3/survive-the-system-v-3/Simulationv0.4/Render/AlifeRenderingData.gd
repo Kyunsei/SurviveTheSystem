@@ -9,6 +9,8 @@ var tex: ImageTexture
 
 const MIN_CAP := 16 * TEX_W
 
+var dirty := true   # true when data changed and needs to be sent to the GPU
+
 func capacity() -> int:
 	return data.size() / 4
 
@@ -28,9 +30,13 @@ func resize(requested: int) -> void:
 	if tex == null:
 		tex = ImageTexture.create_from_image(img)
 	else:
-		tex.set_image(img)            # same resource: every material using it updates
+		tex.set_image(img)    # same resource: every material using it updates
+	dirty = true        
 
 func upload() -> void:
+	#if not dirty:
+	#	return
+	#dirty = false
 	#print(data[0])
 	#print(data.size())
 	img.set_data(TEX_W, tex_h, false, Image.FORMAT_RGBAF, data.to_byte_array())

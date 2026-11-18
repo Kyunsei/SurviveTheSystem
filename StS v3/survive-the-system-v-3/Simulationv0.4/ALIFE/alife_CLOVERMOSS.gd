@@ -8,12 +8,13 @@ func _init() -> void:
 	photosynthesis_on = true
 	duplication_range = 20
 	photo_range = 0
-	init_size = Vector3(2,1.,2)
+	init_size = 2.0
 	sprite = preload("res://Alife/Plant/Moss/moss.png")
 	colour = Color(0.335, 0.474, 0.739, 1.0)
 	#photo_optimal_value  = 0.5
 	photo_optimal_value  = 1./3. #randi_range(10,100)
 	photo_optimal_width = 0.3
+	photo_layer_y = 0
 
 func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_speed:float) -> void:
 	var dt := 0.16 * sim_speed #TODO

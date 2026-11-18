@@ -41,13 +41,14 @@ var new_velocity : PackedVector3Array
 #Status
 var active_alife_array : PackedInt32Array  #To reuse some 
 var alive_array : PackedInt32Array
+var current_action: PackedInt32Array  #not yet in use but already in shader and intialized
 
 #GROWTH. life cycle
 var current_life_state : PackedInt32Array
 var current_biomass : PackedFloat32Array
 var current_age : PackedInt32Array
-var current_size : PackedVector3Array
-var init_size := Vector3(1,1,1)
+var current_size : PackedFloat32Array
+var init_size := 1.0
 
 #WORLD GRID REFERENCES
 #Not totally in use, not yet update if moved
@@ -78,25 +79,32 @@ var pending_multimesh_update_id : PackedInt32Array #check if in use
 var species_name := "Test"
 var species_id := 0
 var photosynthesis_on := false
+var photo_layer_y := 0
 
 #rendering
 var sprite := preload("res://Alife/Plant/Grass/grass.png")
 var colour := Color(0.193, 0.404, 0.283, 1.0)
 const CORPSE_COLOR := Color(0.488, 0.077, 0.15, 0.2)
-
+var hframes := 1
+var vframes := 1
 #LIFECYCLE
 var growth_rate := 0.25
 var duplication_range := 15
 var seed_energy := 5.0
 var seed_biomass := 5.0
+var max_life_cycle := 3
+var growth_cost : PackedFloat32Array
+
 
 #METABO
 var photo_range := 0
 var photo_optimal_value = 1.0
 var photo_optimal_width = 0.2
+var max_energy := 100.0
+var has_seed := false
 
 #Movement & AI
-var max_speed := 10
+var max_speed := 10.0
 
 #Flock par
 var view_radius := 15.0	 #need to be < that contact cell grid
@@ -129,14 +137,19 @@ var FIELD_NUM_CELLS : int
 
 
 
+#for player control---------------
+var player_index := -1                 # local index of the controlled agent (-1 = none)
+var player_velocity := Vector3.ZERO    # velocity chosen by the player
 
-var mouse_target : Vector3
+
 
 
 #not in use?
 ################# AI-between_species_input
 var max_neighbors_count := 8
 var neighbour_count : PackedInt32Array
+var mouse_target : Vector3
+
 
 var food_sp_id : PackedInt32Array = [0]
 var danger_sp_id : PackedInt32Array
@@ -205,8 +218,12 @@ func _init_alife_par():
 	current_biomass= []
 	current_age= []
 	current_size= []
+	current_action=[]
 	
 	current_cpu_cost = []
+	
+	#for render only
+	color_packed=[]
 
 
 func _init_field_grid():
@@ -437,6 +454,9 @@ func scent_gradient(a:PackedFloat32Array, c: int) -> Vector3:
 ##########################################################################################
 #### Main loop function
 ##########################################################################################
+
+func Interact(i:int, sp:ALIFE, local_id:int):
+	print("%s ID: %d interacted with %s ID: %d" %[sp.species_name, local_id, species_name, i])
 
 func Eat(start:int,end:int):
 	pass
@@ -1070,7 +1090,7 @@ func find_nearest(p: Vector3, self_id: int = -1, species: int = -1, max_rings: i
 						var other: int = cell_items[k]
 						if other == self_id or other < lo or other >= hi:
 							continue
-						if active[other] == 0:                  # <- new: skip inactive
+						if active[other] == 0 :                  # <- new: skip inactive
 							continue
 						var d: Vector3 = sorted_pos[k] + shift_p
 						var d2 := d.length_squared()
@@ -1103,6 +1123,10 @@ func Build_and_remove_pendings():
 	var d_range:= duplication_range
 	for i in pending_spawn_id:
 		var newpos := pick_random_position(Vector3(d_range,0,d_range),position_array[i])
+		if photosynthesis_on and !has_seed:
+			var s_c := get_cell_id(newpos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
+			if world.SUN_stamp[s_c] > 0 :
+				continue
 		Build_New_Life(newpos,seed_energy, current_color[i])
 	
 	for i in pending_remove_id:
@@ -1124,13 +1148,17 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		active_alife_array.append(1)
 		position_array.append(pos)
 		current_color.append(col)
+		color_packed.append(0)
+		set_agent_color(i,Color(1.0, 1.0, 1.0, 1.0))
 		alive_array.append(1) 
 		current_velocity.append(Vector3.ZERO)
 		new_velocity.append(Vector3.ZERO)
-		current_life_state.append(1)
+		current_life_state.append(0)
 		current_biomass.append(seed_biomass)
 		current_age.append(0)
 		current_size.append(init_size)
+		current_action.append(0)
+		
 
 		current_sungrid_id.append(get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D))
 		current_grid_id.append(get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D))
@@ -1146,24 +1174,25 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		active_alife_array[i] = 1
 		position_array[i] = pos
 		current_color[i]=col
+		set_agent_color(i,Color(1.0, 1.0, 1.0, 1.0))
 		alive_array[i] = 1
 		current_velocity[i] = Vector3.ZERO
 		new_velocity[i] = Vector3.ZERO
 		current_sungrid_id[i] = get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 		current_grid_id[i] = get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
-		current_life_state[i]=1
+		current_life_state[i]=0
 		current_biomass[i]=seed_biomass
 		current_age[i]=0
 		current_size[i]=init_size
 		current_cpu_cost[i] = 0
 		neighbour_count[i] = 0
+		current_action[i] = 0
 
 	active_entity_count += 1
 	if photosynthesis_on:
 			var c := current_sungrid_id[i]
-			var height := int(init_size.y)-1
 			var r := photo_range#int(init_size.x)-1
-			stamp(c,r,0,height,1.0)
+			stamp(c,r,0,photo_layer_y,1.0)
 
 	pending_multimesh_drawn_id.append(i)
 
@@ -1177,9 +1206,8 @@ func Remove_Life(i):
 	
 	if photosynthesis_on:
 			var c := current_sungrid_id[i]
-			var height := int(init_size.y)-1
 			var r := photo_range #int(init_size.x)-1
-			stamp(c,r,0,height,-1.0)
+			stamp(c,r,0,photo_layer_y,-1.0)
 
 	pending_multimesh_erase_id.append(i)
 
@@ -1192,9 +1220,8 @@ func Stock_Life(i):
 	#active_entity_count -= 1
 	if photosynthesis_on:
 			var c := current_sungrid_id[i]
-			var height := int(init_size.y)-1
-			var r := int(init_size.x)-1
-			stamp(c,r,0,height,-1.0)
+			var r := photo_range
+			stamp(c,r,0,photo_layer_y,-1.0)
 	pending_multimesh_erase_id.append(i)
 	
 
@@ -1208,9 +1235,8 @@ func Release_Life(i):
 	if photosynthesis_on:
 			var c := current_sungrid_id[i]
 			#var c_calc := c +  world.SUN_GRID_W
-			var height := int(init_size.y)-1
-			var r := int(init_size.x)-1
-			stamp(c,r,0,height,1.0)
+			var r := photo_range
+			stamp(c,r,0,photo_layer_y,1.0)
 
 			
 	pending_multimesh_drawn_id.append(i)	
@@ -1248,49 +1274,90 @@ func pick_random_position(rangee: Vector3, centerr: Vector3) -> Vector3:
 ####RENDERING: write data to renderer #TODO OPTIMISATION
 ## LOOK also at script for renderer 2D/3D and visu manager
 ################################################################################
+# ============================================================================
+# Render packing — paste into your species script.
+# Writes 4 floats per agent into rend_data.data (read by test3d.gdshader):
+#   R = x
+#   G = z
+#   B = y (12 bits) << 12 | color RGB 4:4:4 (12 bits)
+#   A = state (2) | action (4) << 2 | size (6) << 6 | life cycle (12) << 12
+# Every packed channel is <= 24 bits: the largest integer a float stores exactly.
+# ============================================================================
+
+enum AgentState { FREE = 0, ALIVE = 1, DEAD = 2, DECOMPOSING = 3 }
+
+# --- Channel A ---
 const STATE_BITS  := 2
 const ACTION_BITS := 4
-const SIZE_BITS   := 6
-const AGE_BITS    := 12        # total must be <= 24
+const SIZE_BITS   := 8
+const LIFE_BITS   := 10      # 2 + 4 + 6 + 12 = 24
 
 const ACTION_SHIFT := STATE_BITS                  # 2
 const SIZE_SHIFT   := ACTION_SHIFT + ACTION_BITS  # 6
-const AGE_SHIFT    := SIZE_SHIFT + SIZE_BITS      # 12
+const LIFE_SHIFT   := SIZE_SHIFT + SIZE_BITS      # 12
 
-const STATE_MASK  := (1 << STATE_BITS) - 1        # 3
 const ACTION_MASK := (1 << ACTION_BITS) - 1       # 15
 const SIZE_MASK   := (1 << SIZE_BITS) - 1         # 63
-const AGE_MASK    := (1 << AGE_BITS) - 1          # 4095
+const LIFE_MASK   := (1 << LIFE_BITS) - 1         # 4095
 
-const SIZE_MIN := 0.5
-const SIZE_MAX := 100.0
+#const SIZE_MIN := 0.5        # must match SIZE_MIN in the shader
+#const SIZE_MAX := 100.0      # must match SIZE_MAX in the shader
+#const SIZE_SCALE := SIZE_MASK / (SIZE_MAX - SIZE_MIN)
 
-func pack_agent(size: float, action: int, state: int, age: int) -> float:
-	var q := roundi(clampf(inverse_lerp(SIZE_MIN, SIZE_MAX, size), 0.0, 1.0) * SIZE_MASK)
-	var v := (clampi(state, 0, STATE_MASK)) \
-		| (clampi(action, 0, ACTION_MASK) << ACTION_SHIFT) \
-		| (q << SIZE_SHIFT) \
-		| (clampi(age, 0, AGE_MASK) << AGE_SHIFT)
-	return float(v)
+# --- Channel B ---
+const COLOR_BITS := 12                            # RGB 4:4:4
+const Y_SHIFT    := COLOR_BITS                    # 12
+const Y_MASK     := (1 << 12) - 1                 # 4095 levels between 0 and world height
 
-const SIZE_SCALE := SIZE_MASK / (SIZE_MAX - SIZE_MIN)
+var y_scale := 0.0                                # set by setup_render_packing()
+
+## Per-agent color, packed 4:4:4. Set at birth / mutation with set_agent_color().
+## 0 = "no color": the shader uses the species' alive_color instead.
+## Resize it together with your other per-agent arrays.
+var color_packed := PackedInt32Array()
+
+
+## Call once after the world size is known (e.g. in the species setup).
+func setup_render_packing() -> void:
+	y_scale = Y_MASK / maxf(world.size.y, 0.001)  # guard against a flat world
+
+
+static func pack_color444(c: Color) -> int:
+	return (roundi(c.r * 15.0) << 8) | (roundi(c.g * 15.0) << 4) | roundi(c.b * 15.0)
+
+
+func set_agent_color(i: int, c: Color) -> void:
+	color_packed[i] = pack_color444(c)
+
 
 func write_rendering_buffer_in_chunk(start: int, end: int) -> void:
 	var r_data := rend_data.data
 	for i in range(start, end):
-		var p := position_array[i]
-		var active := int(active_alife_array[i])
-		var q := clampi(roundi((current_size[i].x - SIZE_MIN) * SIZE_SCALE), 0, SIZE_MASK)
-		var age := mini(current_life_state[i], AGE_MASK)
-
 		var o := i * 4
+
+		# --- State: active + alive merged ---
+		var state := AgentState.FREE
+		if active_alife_array[i] != 0:
+			state = AgentState.ALIVE if alive_array[i] != 0 else AgentState.DEAD
+			# if <your decomposing flag>: state = AgentState.DECOMPOSING
+
+		if state == AgentState.FREE:
+			r_data[o + 3] = 0.0                   # shader skips free slots
+			continue
+
+		var p := position_array[i]
+		var size_q := mini(roundi(current_size[i] * 10.0), SIZE_MASK)
+		var action := mini(current_action[i], ACTION_MASK)       # <- your action array
+		var life := mini(current_life_state[i], LIFE_MASK)
+		var y_q := clampi(roundi(p.y * y_scale), 0, Y_MASK)
+
 		r_data[o]     = p.x
 		r_data[o + 1] = p.z
-		r_data[o + 2] = active   # free channel: could hold p.y instead
-		r_data[o + 3] = float(active | (q << SIZE_SHIFT) | (age << AGE_SHIFT))
-
-	#rend_data.dirty = true
-
+		r_data[o + 2] = float(color_packed[i] | (y_q << Y_SHIFT))
+		r_data[o + 3] = float(state | (action << ACTION_SHIFT) \
+				| (size_q << SIZE_SHIFT) | (life << LIFE_SHIFT))
+	
+	rend_data.dirty = true
 
 #####################################OLD BELOW##############################
 #############################################################################

@@ -52,7 +52,7 @@ func init_renderer():
 		s.rend_data = AlifeRenderingData.new()
 		s.rend_data.resize(s.entity_count)	
 		s.renderer3D = AlifeRenderer3D.new()
-		s.renderer3D.setup( s.rend_data,s.sprite, world.size, s.colour)
+		s.renderer3D.setup( s.rend_data,s, world.size, s.colour)
 		add_child.call_deferred(s.renderer3D)
 
 		#s.renderer2D = AlifeRenderer2D.new()

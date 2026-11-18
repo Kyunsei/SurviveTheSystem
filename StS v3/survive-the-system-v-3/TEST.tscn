@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://deuit7vk0e60x"]
+
+[ext_resource type="Script" uid="uid://bwn87mdutr4sd" path="res://Simulationv0.4/DEBUG/settings/spawn_box.gd" id="1_7vw07"]
+
+[node name="Control" type="Control" unique_id=732852178]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SpawnBox" type="ScrollContainer" parent="." unique_id=234865840]
+layout_mode = 0
+offset_right = 1000.0
+offset_bottom = 10000.0
+script = ExtResource("1_7vw07")

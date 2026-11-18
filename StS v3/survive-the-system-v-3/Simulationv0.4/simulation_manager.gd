@@ -22,17 +22,12 @@ var _sample_timer := 0.0
 
 
 func _ready() -> void:
-
-	
 	init()
 
 
 func init():
-	for mm in $AlifeManager.get_children():
-		mm.queue_free()
 	world.init()
 	alifemanager.init()
-	Generate_ALife()
 	#$Visual.init($World,$AlifeManager)
 	#$simulation_UI/PopTracker.init($AlifeManager)
 	running = true
@@ -74,8 +69,7 @@ func _process(delta: float) -> void:
 func set_simulation_speed(newvalue:float):
 	simulation_speed = maxf(newvalue,0.0)
 	
-func Generate_ALife():
-	pass
+
 
 func collect_data(delta:float) -> void:
 	_sample_timer += delta
