@@ -125,7 +125,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_help_button.button_pressed = not _help_button.button_pressed
 			get_viewport().set_input_as_handled()
 
-		KEY_SPACE:
+		MOUSE_BUTTON_LEFT:
 			if controlled_species != null:
 				if target_species != null:
 					_interact(controlled_species, controlled_index, target_species, target_index)
@@ -244,6 +244,7 @@ func _release_control() -> void:
 
 
 var sprint := 1.0
+var input2 := Vector3.ZERO
 func _process_control() -> void:
 	var sp = controlled_species
 	var i := controlled_index
@@ -258,6 +259,8 @@ func _process_control() -> void:
 	if Input.is_physical_key_pressed(KEY_A): input.x -= 1.0
 	if Input.is_physical_key_pressed(KEY_D): input.x += 1.0
 	sprint = 2.0 if Input.is_physical_key_pressed(KEY_SHIFT) else 1.0
+	if Input.is_physical_key_pressed(KEY_SPACE) and input2.y == 0: input2.y += 10.0
+
 
 	var dir := Vector3.ZERO
 	if control_view == ControlView.NORTH:
@@ -268,7 +271,7 @@ func _process_control() -> void:
 		var fwd := Vector3(-b.z.x, 0.0, -b.z.z).normalized()
 		var right := Vector3(b.x.x, 0.0, b.x.z).normalized()
 		dir = right * input.x + fwd * input.y
-	sp.player_velocity = dir.normalized() * control_speed*sprint
+	sp.player_velocity = dir.normalized() * control_speed*sprint + input2
 
 	# Closest other agent (any species) within range
 	target_species = null

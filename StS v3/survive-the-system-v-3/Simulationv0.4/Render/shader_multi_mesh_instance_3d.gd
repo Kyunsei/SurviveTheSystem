@@ -49,6 +49,7 @@ func setup(agent_data: AlifeRenderingData, alife:ALIFE, world_size: Vector3, col
 	mat.set_shader_parameter("wind_strength", 0.3 if is_plant else 0.0)
 	mat.set_shader_parameter("hframes", hframes)
 	mat.set_shader_parameter("vframes", vframes)
+	mat.set_shader_parameter("world_height", world_size.y)
 
 	material_override = mat
 	ensure_instances3D(agent_data.capacity())
