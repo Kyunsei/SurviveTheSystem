@@ -254,12 +254,14 @@ func _process_control() -> void:
 
 	# WASD: x = right, y = forward
 	var input := Vector2.ZERO
+	var input2 := Vector3.ZERO
+	var p = sp.position_array[i]
 	if Input.is_physical_key_pressed(KEY_W): input.y += 1.0
 	if Input.is_physical_key_pressed(KEY_S): input.y -= 1.0
 	if Input.is_physical_key_pressed(KEY_A): input.x -= 1.0
 	if Input.is_physical_key_pressed(KEY_D): input.x += 1.0
 	sprint = 2.0 if Input.is_physical_key_pressed(KEY_SHIFT) else 1.0
-	if Input.is_physical_key_pressed(KEY_SPACE) and input2.y == 0: input2.y += 10.0
+	if Input.is_physical_key_pressed(KEY_SPACE) and p.y == 0: input2.y += 10.0
 
 
 	var dir := Vector3.ZERO

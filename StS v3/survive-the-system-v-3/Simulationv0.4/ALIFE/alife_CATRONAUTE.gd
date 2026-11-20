@@ -121,7 +121,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		if i == player_index:
 			new_v = player_velocity # player-controlled: the AI is ignored
 			#new_v = new_v.limit_length(max_speed)
-		if p.y > 0 : new_v.y -=1
+		if p.y > 0 : new_v.y -=0.8
 		new_velocity[i] = new_v
 	#--------maintain cost
 		# _energy += -1 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
