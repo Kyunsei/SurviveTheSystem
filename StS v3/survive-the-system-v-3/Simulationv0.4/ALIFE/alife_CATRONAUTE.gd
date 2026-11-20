@@ -121,7 +121,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		if i == player_index:
 			new_v = player_velocity # player-controlled: the AI is ignored
 			#new_v = new_v.limit_length(max_speed)
-
+		if p.y > 0 : new_v.y -=1
 		new_velocity[i] = new_v
 	#--------maintain cost
 		# _energy += -1 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
@@ -152,7 +152,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		if wrap_z: q.z = fposmod(q.z, world_size.z)
 		elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); v.z = -v.z
 		position_array[i] = q
-		current_velocity[i] = nv		
+		current_velocity[i] = nv
+		print(position_array[i])		
 
 			
 	spawn_per_chunk[local_id] = local_pending_spawn_id
