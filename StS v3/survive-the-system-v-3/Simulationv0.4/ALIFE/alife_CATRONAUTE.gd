@@ -12,7 +12,7 @@ func _init() -> void:
 	colour = Color(0.655, 0.154, 0.226, 1.0)
 	
 	max_energy = 2500
-	max_speed = 40.
+	max_speed = 6. #WIP might not work as intended
 
 	#LIFECYCLE/DUP
 	duplication_range = 2
@@ -98,125 +98,19 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 				continue
 		
 		var lifecycle := current_life_state[i]
-		var g_cost:=  growth_cost[lifecycle]
+		var _g_cost:=  growth_cost[lifecycle]
 		var _energy:= current_energy_array[i]
-
-#EGG TIME---------		
-		'if lifecycle == 0:
-			_energy -= 2 * dt * sim_speed
-			if _energy < 0:
-				current_life_state[i]+=1
-				_energy = seed_energy
-			current_energy_array[i] = _energy
-			continue'
 			
 		var p := position_array[i]		
 		var cx := mini(int(p.x / field_cell_size.x), W - 1)
 		var cy := mini(int(p.y / field_cell_size.y), H - 1)
 		var cz := mini(int(p.z / field_cell_size.z), D - 1)
 		var c := cx + W * (cy + H * cz)	
-		var tc := t_count[c]
+		var _tc := t_count[c]
 		var steer := Vector3.ZERO   # sum of forces (acceleration), NOT a velocity
 		var v:Vector3= current_velocity[i]
-		var global_i := i + base
+		var _global_i := i + base
 		
-		
-	#--------MOVE & AI
-		#--------FOOD (seek: force toward a desired velocity)
-		if tc < 1:
-			var g := scent_gradient(t_diff, c)
-			if g.length_squared() > 1e-6:
-				steer += (g.normalized() * max_speed - v) * w_seek
-				#steer += (g.normalized() * 1 - v) * w_seek
-
-		else:
-			var me := i + base
-			var found := find_nearest(p, me, target_id, 4)
-			var prey := int(found.w)
-			if prey >= 0:
-				var delta := Vector3(found.x, found.y, found.z)
-				var dist := delta.length()
-				if dist < target_dist:
-					var sp := offs.bsearch(prey, false) - 1
-					var local := prey - offs[sp]
-					var sp_o = alifemanager.species_array[sp]
-					if sp_o.active_alife_array[local] == 1:
-						sp_o.alive_array[local] = 0
-						_energy += sp_o.current_biomass[local]
-						sp_o.current_biomass[local] = 0
-
-				elif dist > 0.0:
-					steer += (delta / dist * max_speed - v) * w_seek
-					#steer += (delta / dist * 1 - v) * w_seek
-
-		#--------NEIGHBOURS
-		#--------NEIGHBOURS
-		var n := 0                          # neighbours counted for alignment / cohesion (capped)
-		var sum_d := Vector3.ZERO      # cohesion: sum of offsets
-		var sum_v := Vector3.ZERO      # alignment: sum of velocities
-		var sep := Vector3.ZERO        # separation: every close agent (not capped)
-
-		for dz in range(-1, -1 + nz):
-			var z := cz + dz
-			var sz := 0.0
-			if z < 0:
-				if not wrap_z: continue
-				z += D; sz = -world_size.z
-			elif z >= D:
-				if not wrap_z: continue
-				z -= D; sz = world_size.z
-
-			for dy in range(-1, -1 + ny):
-				var y := cy + dy
-				var sy := 0.0
-				if y < 0:
-					if not wrap_y: continue
-					y += H; sy = -world_size.y
-				elif y >= H:
-					if not wrap_y: continue
-					y -= H; sy = world_size.y
-
-				for dx in range(-1, -1 + nx):
-					var x := cx + dx
-					var sx := 0.0
-					if x < 0:
-						if not wrap_x: continue
-						x += W; sx = -world_size.x
-					elif x >= W:
-						if not wrap_x: continue
-						x -= W; sx = world_size.x
-
-					var cell := x + W * (y + H * z)
-					var shift_p := Vector3(sx, sy, sz) - p   # one shift per cell
-					for k in range(cell_start[cell], cell_start[cell + 1]):
-						var other: int = cell_items[k]
-						if other < base or other >= my_end or other == global_i:   # same species only
-							continue
-						var d: Vector3 = global_sorted_pos[k] + shift_p
-						var dist2 := d.length_squared()
-						if dist2 > view_r2:
-							continue
-
-						# Separation: every close agent, never capped
-						if dist2 < sep_r2:
-							if dist2 < 1e-8:
-								# exactly on top of each other: push in a direction based on the ids
-								var a := float(global_i * 7 + other * 13)
-								sep += Vector3(sin(a), 0.0, cos(a))
-							else:
-								sep -= d / dist2
-
-						# Alignment / cohesion: capped
-						if n < max_neighbors:
-							n += 1
-							sum_d += d
-							sum_v += current_velocity[other - base]
-		if n > 0:
-			steer += sep * w_separation
-			steer += (sum_v / n - v) * w_alignment
-			steer += (sum_d / n) * w_cohesion
-
-
 	#--------APPLY STEERING, once
 		steer = steer.limit_length(max_force)      # "=" not "+="
 		var new_v := v + steer * dt *sim_speed
@@ -225,21 +119,10 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 			new_v = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) #* 0.1   # small nudge
 		
 		if i == player_index:
-			new_v = player_velocity* dt *sim_speed     # player-controlled: the AI is ignored
+			new_v = player_velocity # player-controlled: the AI is ignored
 			#new_v = new_v.limit_length(max_speed)
 
 		new_velocity[i] = new_v
-
-	#--------Growth
-
-	
-		if _energy >= g_cost*1.2 and lifecycle < max_life_cycle:
-			current_size[i] += growth_rate
-			current_biomass[i] += g_cost/10
-			current_life_state[i] +=1
-			_energy -= g_cost
-
-
 	#--------maintain cost
 		# _energy += -1 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
 		

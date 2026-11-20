@@ -237,7 +237,7 @@ func _release_control() -> void:
 	camera.set_yaw_lock(false)
 	control_ended.emit(sp, i)
 
-
+var sprint := 1.0
 func _process_control() -> void:
 	var sp = controlled_species
 	var i := controlled_index
@@ -251,6 +251,7 @@ func _process_control() -> void:
 	if Input.is_physical_key_pressed(KEY_S): input.y -= 1.0
 	if Input.is_physical_key_pressed(KEY_A): input.x -= 1.0
 	if Input.is_physical_key_pressed(KEY_D): input.x += 1.0
+	sprint = 2.0 if Input.is_physical_key_pressed(KEY_SHIFT) else 1.0
 
 	var dir := Vector3.ZERO
 	if control_view == ControlView.NORTH:
@@ -261,7 +262,7 @@ func _process_control() -> void:
 		var fwd := Vector3(-b.z.x, 0.0, -b.z.z).normalized()
 		var right := Vector3(b.x.x, 0.0, b.x.z).normalized()
 		dir = right * input.x + fwd * input.y
-	sp.player_velocity = dir.normalized() * control_speed
+	sp.player_velocity = dir.normalized() * control_speed*sprint
 
 	# Closest other agent (any species) within range
 	target_species = null

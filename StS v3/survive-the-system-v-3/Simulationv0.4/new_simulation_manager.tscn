@@ -45,7 +45,7 @@ alifemanager = NodePath("../AlifeManager")
 camera = NodePath("DebugCamera3D")
 menu = NodePath("../UI_simulation")
 sim_manager = NodePath("..")
-control_speed = 4.0
+control_speed = 1.0
 energy_bar_size = Vector2(36, 8)
 
 [node name="DebugCamera3D" type="Camera3D" parent="DEBUG_control" unique_id=2122777896]
