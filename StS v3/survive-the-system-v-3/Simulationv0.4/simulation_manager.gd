@@ -76,9 +76,10 @@ func collect_data(delta:float) -> void:
 	if _sample_timer < SAMPLE_INTERVAL:
 		return
 	_sample_timer -= SAMPLE_INTERVAL
+
 	var sample := {
 		"Time": total_time,
-		"Total_entity": alifemanager.global_entity_count,
+		"Total_entity": alifemanager.global_active_entity_count,
 	}
 	for sp in alifemanager.species_array:
 		sample[sp.species_name] = sp.active_entity_count

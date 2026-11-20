@@ -31,4 +31,5 @@ func _on_kill_all_pressed() -> void:
 func _on_remove_all_pressed() -> void:
 	for sp in alifemanager.species_array:
 		for i in sp.entity_count:
+			#sp.active_alife_array[i]=0
 			sp.Remove_Life(i)

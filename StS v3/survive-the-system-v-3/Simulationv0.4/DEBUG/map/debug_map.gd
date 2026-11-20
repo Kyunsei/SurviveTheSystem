@@ -16,7 +16,7 @@ var world: WorldManager
 var display_col : Color
 var display_array 
 var current_species := 0
-
+var current_selected := "alife"
 
 
 func _ready() -> void:
@@ -33,8 +33,9 @@ func init()-> void:
 	init_species_renderer()
 	map_view.world_rect =Rect2(0,0,world.size.x, world.size.z)
 	map_view._init_view(world.size)
+	update_map_display(current_selected)
 	
-	for y in world.SUN_GRID_H: #TODO adapt according to slection of display..
+	for y in world.SUN_GRID_H: 
 		select_layer_option.add_item(str(y))
 
 	select_species_option.add_item("All")
@@ -133,6 +134,7 @@ func update_map_display(button_name):
 			display_col =  alifemanager.species_array[display_map.current_species].colour  
 			display_array = alifemanager.species_array[display_map.current_species].SCENT #TODO
 			display_map.setup(alifemanager.field_cell_size, world.size,1)
+	current_selected = button_name
 
 func _on_mode_toggled(on: bool, button: Button) -> void:
 	if not on:

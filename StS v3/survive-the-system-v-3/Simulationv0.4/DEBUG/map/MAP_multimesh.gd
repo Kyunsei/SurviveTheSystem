@@ -6,7 +6,7 @@ class_name world_map #not sure of name..
 
 @export var activated = false
 @export var display : Control
-@export var MaxDrawn := 100000
+@export var MaxDrawn := 1000000
 @export var scalebar : Control
 
 
@@ -52,8 +52,7 @@ func setup( cell_size: Vector3, world_size:Vector3, shape:= 0):
 	panel_size =  world_size2
 	display.size = panel_size
 	display_cell_size = Vector2(cell_size.x,cell_size.z) #panel_size/world_size2
-	
-	var mesh_size = cell_size.x
+	var mesh_size = Vector2(cell_size.x,cell_size.z)
 	var dims := Vector3i((world_size / cell_size).ceil())
 	W = dims.x         # cells along x
 	H = dims.y       # cells along y
@@ -70,14 +69,14 @@ func setup( cell_size: Vector3, world_size:Vector3, shape:= 0):
 	if shape == 0:
 		mesh =  build_quad_mesh(mesh_size)
 	if shape == 1:
-		mesh = build_triangle_mesh(mesh_size)
+		mesh = build_triangle_mesh(mesh_size.x)
 	#bin_size = alifemanager.bin_size
 	multimesh.mesh = mesh
 
 
-func build_quad_mesh(size: float):
+func build_quad_mesh(size: Vector2):
 	var quad = QuadMesh.new()
-	quad.size = Vector2(size, size)
+	quad.size = size
 	return quad
 
 

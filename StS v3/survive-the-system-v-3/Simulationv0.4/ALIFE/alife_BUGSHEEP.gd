@@ -17,7 +17,7 @@ func _init() -> void:
 	#LIFECYCLE/DUP
 	duplication_range = 2
 	seed_energy = 600
-	seed_biomass = 2000
+	seed_biomass = 60 #
 	max_life_cycle = 2
 	growth_cost = [1000,1000,1000] #Should be size of max_life+1
 	growth_rate = 0.5	
@@ -26,7 +26,7 @@ func _init() -> void:
 	#Flock par
 	#contact par
 	view_radius = 19.0	 #need to be < that contact cell grid
-	separation_radius = 18.0
+	separation_radius = 3.0
 	
 
 	w_separation = 2.0 #dont merge
@@ -68,7 +68,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 	#GLOBAL ID
 	var offs: PackedInt32Array = alifemanager.global_species_offset
 	var my_end := offs[species_id + 1]
-	var base := offs[alifemanager.species_array.size()-1]		
+	var base := offs[species_id]		
 	
 	#FOOD
 	var target_dist := 1.0
@@ -159,32 +159,32 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 			var sz := 0.0
 			if z < 0:
 				if not wrap_z: continue
-				z += D; sz = -world_size.z
-			elif z >= D:
+				z += C_D; sz = -world_size.z
+			elif z >= C_D:
 				if not wrap_z: continue
-				z -= D; sz = world_size.z
+				z -= C_D; sz = world_size.z
 
 			for dy in range(-1, -1 + ny):
 				var y := cy + dy
 				var sy := 0.0
 				if y < 0:
 					if not wrap_y: continue
-					y += H; sy = -world_size.y
-				elif y >= H:
+					y += C_H; sy = -world_size.y
+				elif y >= C_H:
 					if not wrap_y: continue
-					y -= H; sy = world_size.y
+					y -= C_H; sy = world_size.y
 
 				for dx in range(-1, -1 + nx):
 					var x := cx + dx
 					var sx := 0.0
 					if x < 0:
 						if not wrap_x: continue
-						x += W; sx = -world_size.x
-					elif x >= W:
+						x += C_W; sx = -world_size.x
+					elif x >= C_W:
 						if not wrap_x: continue
-						x -= W; sx = world_size.x
+						x -= C_W; sx = world_size.x
 
-					var cell := x + W * (y + H * z)
+					var cell := x + C_W * (y + C_H * z)
 					var shift_p := Vector3(sx, sy, sz) - p   # one shift per cell
 					for k in range(cell_start[cell], cell_start[cell + 1]):
 						var other: int = cell_items[k]

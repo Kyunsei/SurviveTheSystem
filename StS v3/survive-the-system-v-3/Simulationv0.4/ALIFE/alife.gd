@@ -1217,7 +1217,7 @@ func Stock_Life(i):
 		return 
 	active_alife_array[i]= 2 # STORED ?
 
-	#active_entity_count -= 1
+	active_entity_count -= 1
 	if photosynthesis_on:
 			var c := current_sungrid_id[i]
 			var r := photo_range
@@ -1229,6 +1229,8 @@ func Release_Life(i):
 	if active_alife_array[i] == 0:
 		return 
 	active_alife_array[i]= 1 # STORED ?
+	active_entity_count += 1
+
 	current_sungrid_id[i] = get_cell_id(position_array[i],world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 	current_grid_id[i] = get_cell_id(position_array[i],alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
 	current_velocity[i] = Vector3.ZERO

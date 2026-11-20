@@ -637,8 +637,8 @@ func _agent_text(sp, i: int) -> String:
 	var lines := PackedStringArray()
 	lines.append("%s  #%d" % [sp.species_name, i])
 	lines.append("Energy  %.2f" % sp.current_energy_array[i])
-	lines.append("Size  %.2f" % sp.current_size[i])
-	lines.append("Life  %d" % sp.current_life_state[i])
+	lines.append("Biomass  %.2f" % sp.current_biomass[i])
+	lines.append("LifeCycle  %d" % sp.current_life_state[i])
 	if sp.alive_array[i] == 0:
 		lines.append("(dead)")
 	lines.append("F follow   C control   K kill")

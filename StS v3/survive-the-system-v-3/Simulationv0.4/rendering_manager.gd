@@ -26,6 +26,7 @@ const JOBS_PER_THREAD := 4
 var entity_count := 0
 var renderer_count := 0
 
+var activated := true
 
 
 
@@ -63,6 +64,8 @@ func init_renderer():
 #main looop -------------------------------------------------------
 
 func run_visualisation():	
+	if !activated:
+		return
 	var t0 := Time.get_ticks_usec()
 	start_write_rendering_buffer()
 	var t1 := Time.get_ticks_usec()

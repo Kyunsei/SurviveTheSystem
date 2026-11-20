@@ -19,21 +19,23 @@ var total_time := 0.0
 
 #cross reference---------
 @export var world: WorldManager
+@export var sim_manager : SimulationManager
 #@export var renderer : AlifeRendererManager 
-var simulation_speed :float
 
 
 #Alife Section---------
-var codex := ALIFE_CODEX.new()
+var codex : ALIFE_CODEX
 
 var species_array : Array[ALIFE] 
 var global_position_array : PackedVector3Array
 var global_species_offset:PackedInt32Array
-var global_active : PackedInt32Array   
+var global_active : PackedInt32Array    #collect index and status of all
 var global_entity_count := 0
+var global_active_entity_count := 0 #track number only
+
 
 #contactGRID
-var cell_size := Vector3(20,20,20)
+var cell_size := Vector3(5,20,5)
 var GRID_W :int          # cells along x
 var GRID_H :int        # cells along y
 var GRID_D :int       # cells along z
@@ -76,7 +78,7 @@ var mouse_target : Vector3
 
 
 func init():
-
+	codex =ALIFE_CODEX.new()
 	total_time = 0
 	global_entity_count = 0
 	global_position_array = []
@@ -133,8 +135,12 @@ func start_simulation(dt: float, sim_speed: float):
 	#UPDATE BEFORE RUNING FOR EACH SPECIES 
 	#TODO maybe move this 5 lines in new function for clarity
 	global_entity_count = 0
+	global_active_entity_count = 0
+
 	for s in species_array:
 		global_entity_count += s.entity_count
+		global_active_entity_count += s.active_entity_count
+
 		s.mouse_target =  mouse
 		s.build_field() #TODO call in thread?
 	
@@ -193,7 +199,29 @@ func Store_all_alife():
 		for i in sp.entity_count:
 			sp.Stock_Life(i)
 
+func update_alife_position_to_world_settings(ratio: Vector3):
+		#return
+	#update world size and grid size to new value
+	#var c_speed = sim_manager.simulation_speed
+	#sim_manager.simulation_speed = 0
+	#wait_simulation()
+	#await get_tree().create_timer(1.0).timeout  #dirty fix? the issue is that if the grid is updated during a thra
+	#Store_all_alife()
+
+	for sp in species_array:
+		for i in sp.position_array.size():
+			sp.position_array[i] = sp.position_array[i]*ratio
+
+	init_GRID(world.size)
+	#Release_all_alife()
+	#sim_manager.simulation_speed = c_speed
+
+
+
+
+
 func Release_all_alife():
+
 	for sp in species_array:
 		for i in sp.entity_count:
 			sp.Release_Life(i)
@@ -205,11 +233,13 @@ func init_default_species(worldd:WorldManager,alifem:AlifeManager):
 	init_species_from_codex(worldd,alifem)
 	
 	SpawnRandomAlife(0,4000) #GRASS
-	SpawnRandomAlife(1,40) #TREE
-	SpawnRandomAlife(0,1000) #clovermoss
-	SpawnRandomAlife(0,10) #glowberry
-	SpawnRandomAlife(0,3) #spikyflower
-	SpawnRandomAlife(0,1) #bugsheep
+	#SpawnRandomAlife(1,40) #TREE
+	#SpawnRandomAlife(2,1000) #clovermoss
+	#SpawnRandomAlife(3,10) #glowberry
+	#SpawnRandomAlife(4,3) #spikyflower
+	SpawnRandomAlife(5,30) #bugsheep 
+	SpawnRandomAlife(6,1) #spidercrab
+
 
 
 func init_species_from_codex(worldd:WorldManager,alifem:AlifeManager):
@@ -278,6 +308,9 @@ func set_contact_cell_size(new_size:Vector3):
 	init_GRID(world.size)
 	
 func set_field_cell(key: String, value:float):
+	var c_speed :float= sim_manager.simulation_speed
+	sim_manager.set_simulation_speed(0)
+	wait_simulation()
 	match key:
 		"x":
 			field_cell_size.x = value
@@ -285,8 +318,10 @@ func set_field_cell(key: String, value:float):
 			field_cell_size.y = value
 		"z":
 			field_cell_size.z = value
+
 	for sp in species_array:
 		sp._init_field_grid()
+	sim_manager.set_simulation_speed(c_speed)
 
 
 	

@@ -32,8 +32,9 @@ mouse_filter = 2
 [node name="DEBUG_graph" parent="." unique_id=1190113629 instance=ExtResource("3_qqghd")]
 mouse_filter = 2
 
-[node name="DEBUG_Settings" parent="." unique_id=686420294 instance=ExtResource("4_u0ept")]
+[node name="DEBUG_Settings" parent="." unique_id=686420294 node_paths=PackedStringArray("map") instance=ExtResource("4_u0ept")]
 mouse_filter = 2
+map = NodePath("../Debug_Map")
 
 [node name="SPEED" parent="." unique_id=631663 instance=ExtResource("6_u0ept")]
 offset_left = 361.0
