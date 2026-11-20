@@ -1,6 +1,6 @@
 class_name FlyCamera
 extends Camera3D
-## Map-style camera (Godot 4): the mouse is always visible.
+## Map-style camera (Godot 4): the mouse is visible, except in mouse-look mode.
 ##
 ## Fly mode:
 ##   WASD:               move parallel to the ground (relative to where the camera faces)
@@ -11,6 +11,8 @@ extends Camera3D
 ## Follow mode (start it with follow(...) from your code):
 ##   Right click + drag: orbit around the entity | Wheel: distance
 ##   WASD / E / Q:       stop following
+## Mouse-look mode (set_mouse_look(true), used by control mode 2):
+##   the mouse turns the view directly, no click needed, cursor hidden
 ## H: show / hide the overlay
 ## Keys use physical positions, so WASD works on QWERTY, AZERTY and QWERTZ layouts.
 
@@ -54,6 +56,7 @@ var click_to_capture := false
 var _yaw := 0.0
 var _pitch := 0.0
 var _yaw_locked := false                     # true: dragging only tilts up/down (control mode 1)
+var _mouse_look := false                     # true: the mouse turns the view without a click
 var _dragging := false
 var _drag_start := Vector2.ZERO
 var _overlay: Label
@@ -104,7 +107,20 @@ func set_yaw_lock(locked: bool, yaw: float = 0.0) -> void:
 		rotation = Vector3(_pitch, _yaw, 0.0)
 
 
-## Kept for compatibility with older scripts: the mouse is always visible now.
+## Mouse look: when on, moving the mouse turns the view directly (no right click),
+## and the cursor is hidden. Used by control mode 2.
+func set_mouse_look(on: bool) -> void:
+	_mouse_look = on
+	if not _dragging:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if on else Input.MOUSE_MODE_VISIBLE
+	_update_overlay()
+
+
+func is_mouse_look() -> bool:
+	return _mouse_look
+
+
+## Kept for compatibility with older scripts.
 func set_mouse_captured(_captured: bool) -> void:
 	pass
 
@@ -116,9 +132,12 @@ func is_dragging() -> bool:
 # --- Input ---------------------------------------------------------------------
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Right click + drag: rotate the view (or orbit in follow mode)
+	# Right click + drag: rotate the view (or orbit in follow mode).
+	# Not needed in mouse-look mode: the mouse already turns the view.
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		if event.pressed:
+		if _mouse_look:
+			pass
+		elif event.pressed:
 			_dragging = true
 			_drag_start = event.position
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED   # unlimited rotation while dragging
@@ -128,7 +147,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			Input.warp_mouse(_drag_start)                   # cursor back where the drag started
 		get_viewport().set_input_as_handled()
 
-	elif event is InputEventMouseMotion and _dragging:
+	elif event is InputEventMouseMotion and (_dragging or _mouse_look):
 		if not _yaw_locked:
 			_yaw -= event.relative.x * mouse_sensitivity
 		_pitch -= event.relative.y * mouse_sensitivity
@@ -271,15 +290,15 @@ func _build_overlay() -> void:
 	layer.add_child(_overlay)
 
 
+
 func _update_overlay() -> void:
 	if _overlay == null:
 		return
 	if is_following():
 		_overlay.text = "\n".join([
 			"Following",
-			"Right drag  orbit",
+			"Mouse  look around" if _mouse_look else "Right drag  orbit",
 			"Wheel  distance %.1f" % follow_distance,
-			"WASD  stop following",
 			"H  hide",
 		])
 		return

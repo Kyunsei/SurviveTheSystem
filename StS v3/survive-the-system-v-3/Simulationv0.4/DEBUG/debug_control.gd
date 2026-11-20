@@ -154,10 +154,13 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 
 
-func _toggle_menu() -> void:
-	if menu != null:
-		menu.visible = not menu.visible
 
+func _toggle_menu() -> void:
+	if menu == null:
+		return
+	menu.visible = not menu.visible
+	var mode_2 := controlled_species != null and control_view == ControlView.CAMERA
+	camera.set_mouse_look(mode_2 and not menu.visible)
 
 # --- Per frame -----------------------------------------------------------------
 
@@ -165,7 +168,7 @@ func _process(_delta: float) -> void:
 	# Hover (not while right-dragging the view)
 	var sp = null
 	var i := -1
-	if not camera.is_dragging():
+	if not camera.is_dragging() and not camera.is_mouse_look():
 		var hit := _pick_at(get_viewport().get_mouse_position())
 		if not hit.is_empty():
 			sp = hit[0]
@@ -177,6 +180,7 @@ func _process(_delta: float) -> void:
 
 	if controlled_species != null:
 		_process_control()
+
 
 	# Outline priority: interact target > hovered > followed
 	if target_species != null:
@@ -219,8 +223,8 @@ func _take_control(sp, i: int) -> void:
 
 func _set_control_view(view: ControlView) -> void:
 	control_view = view
-	camera.set_yaw_lock(view == ControlView.NORTH, 0.0)   # yaw 0 = facing north (-Z)
-
+	camera.set_yaw_lock(view == ControlView.NORTH, 0.0)
+	camera.set_mouse_look(view == ControlView.CAMERA)
 
 func _release_control() -> void:
 	if controlled_species == null:
@@ -236,7 +240,7 @@ func _release_control() -> void:
 	camera.move_keys_enabled = true
 	camera.set_yaw_lock(false)
 	control_ended.emit(sp, i)
-
+	camera.set_mouse_look(false)
 
 func _process_control() -> void:
 	var sp = controlled_species
