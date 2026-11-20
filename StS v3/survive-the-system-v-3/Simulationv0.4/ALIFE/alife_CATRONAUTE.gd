@@ -2,6 +2,7 @@ extends ALIFE
 class_name ALIFE_CATRONAUTE
 
 
+
 func _init() -> void:
 	photosynthesis_on = false
 	init_size = 2.0
@@ -120,6 +121,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		
 		if i == player_index:
 			new_v = player_velocity # player-controlled: the AI is ignored
+			new_v.y = _player_vertical(position_array[i].y, dt*sim_speed)  # jump + gravity
+
 			#new_v = new_v.limit_length(max_speed)
 		if p.y > 0 : new_v.y -=0.8
 		new_velocity[i] = new_v
