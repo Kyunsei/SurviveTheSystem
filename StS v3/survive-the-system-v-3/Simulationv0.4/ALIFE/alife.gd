@@ -1358,7 +1358,8 @@ func write_rendering_buffer_in_chunk(start: int, end: int) -> void:
 		r_data[o + 2] = float(color_packed[i] | (y_q << Y_SHIFT))
 		r_data[o + 3] = float(state | (action << ACTION_SHIFT) \
 				| (size_q << SIZE_SHIFT) | (life << LIFE_SHIFT))
-	
+		if i == 0:
+			print("y=", p.y, "  y_scale=", y_scale, "  y_q=", y_q, "  world.y=", world.size.y)
 	rend_data.dirty = true
 
 #####################################OLD BELOW##############################
