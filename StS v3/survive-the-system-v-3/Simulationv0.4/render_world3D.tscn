@@ -7,6 +7,22 @@
 [ext_resource type="PackedScene" uid="uid://bbpte0ycxxfvu" path="res://assets/asset dabols/spear.fbx" id="5_vojrr"]
 [ext_resource type="Texture2D" uid="uid://buxl5ta2p3oy8" path="res://assets/assets kyun/feather_texture.png" id="6_mv5wp"]
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ph3yl"]
+
+[sub_resource type="Sky" id="Sky_2t87l"]
+sky_material = SubResource("ProceduralSkyMaterial_ph3yl")
+
+[sub_resource type="Environment" id="Environment_76o36"]
+sky = SubResource("Sky_2t87l")
+ambient_light_source = 3
+reflected_light_source = 2
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.12146898, 0.66015524, 0.30644467, 1)
+fog_density = 1.0
+fog_depth_begin = 50.0
+fog_depth_end = 80.0
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6t5sv"]
 albedo_color = Color(0.093700476, 0.10681253, 0.21656331, 1)
 
@@ -133,8 +149,10 @@ transform = Transform3D(1, 0, 0, 0, 0.026351461, 0.99965274, 0, -0.99965274, 0.0
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=19569398]
+environment = SubResource("Environment_76o36")
 
 [node name="GROUND_GridMap" type="GridMap" parent="." unique_id=686524495]
+visible = false
 mesh_library = ExtResource("3_igj41")
 cell_size = Vector3(5, 0.2, 5)
 
