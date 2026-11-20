@@ -13,6 +13,7 @@ extends Camera3D
 ##   WASD / E / Q:       stop following
 ## Mouse-look mode (set_mouse_look(true), used by control mode 2):
 ##   the mouse turns the view directly, no click needed, cursor hidden
+##   Esc: give the cursor back | Esc again or left click: back to mouse look
 ## H: show / hide the overlay
 ## Keys use physical positions, so WASD works on QWERTY, AZERTY and QWERTZ layouts.
 
@@ -46,6 +47,9 @@ var click_to_capture := false
 @export var follow_smoothing := 10.0         # higher = sticks tighter to the entity
 @export var follow_height_offset := 0.5      # look slightly above the entity's feet
 @export var follow_snap_distance := 10.0     # bigger jump (wrap, teleport): snap instead of sliding
+## Lowest height above the ground while following: looking up stops at the angle
+## where the camera would touch the soil (the distance never changes).
+@export var follow_min_height := 0.3
 
 @export_group("Overlay")
 @export var show_overlay := true
@@ -57,6 +61,7 @@ var _yaw := 0.0
 var _pitch := 0.0
 var _yaw_locked := false                     # true: dragging only tilts up/down (control mode 1)
 var _mouse_look := false                     # true: the mouse turns the view without a click
+var _look_suspended := false                 # Esc: cursor given back, mouse look paused
 var _dragging := false
 var _drag_start := Vector2.ZERO
 var _overlay: Label
@@ -111,13 +116,19 @@ func set_yaw_lock(locked: bool, yaw: float = 0.0) -> void:
 ## and the cursor is hidden. Used by control mode 2.
 func set_mouse_look(on: bool) -> void:
 	_mouse_look = on
-	if not _dragging:
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if on else Input.MOUSE_MODE_VISIBLE
-	_update_overlay()
+	_look_suspended = false
+	_apply_mouse_mode()
 
 
+## True while the mouse is actually turning the view (on, and not paused with Esc).
 func is_mouse_look() -> bool:
-	return _mouse_look
+	return _mouse_look and not _look_suspended
+
+
+func _apply_mouse_mode() -> void:
+	if not _dragging:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if is_mouse_look() else Input.MOUSE_MODE_VISIBLE
+	_update_overlay()
 
 
 ## Kept for compatibility with older scripts.
@@ -134,8 +145,20 @@ func is_dragging() -> bool:
 func _unhandled_input(event: InputEvent) -> void:
 	# Right click + drag: rotate the view (or orbit in follow mode).
 	# Not needed in mouse-look mode: the mouse already turns the view.
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		if _mouse_look:
+	if event is InputEventKey and event.pressed and not event.echo \
+			and event.physical_keycode == KEY_ESCAPE and _mouse_look:
+		_look_suspended = not _look_suspended          # Esc: cursor back / mouse look again
+		_apply_mouse_mode()
+		get_viewport().set_input_as_handled()
+
+	elif event is InputEventMouseButton and event.pressed \
+			and event.button_index == MOUSE_BUTTON_LEFT and _mouse_look and _look_suspended:
+		_look_suspended = false                         # click in the world: mouse look again
+		_apply_mouse_mode()
+		get_viewport().set_input_as_handled()
+
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		if is_mouse_look():
 			pass
 		elif event.pressed:
 			_dragging = true
@@ -147,7 +170,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			Input.warp_mouse(_drag_start)                   # cursor back where the drag started
 		get_viewport().set_input_as_handled()
 
-	elif event is InputEventMouseMotion and (_dragging or _mouse_look):
+	elif event is InputEventMouseMotion and (_dragging or is_mouse_look()):
 		if not _yaw_locked:
 			_yaw -= event.relative.x * mouse_sensitivity
 		_pitch -= event.relative.y * mouse_sensitivity
@@ -241,7 +264,18 @@ func _process_follow(delta: float) -> void:
 
 	# Orbit: stay behind the look direction, at follow_distance from the entity
 	var center := _follow_pos + Vector3.UP * follow_height_offset
+	var floor_y := ground_y + follow_min_height
+
+	# Looking up lowers the camera: stop the angle where it would touch the soil.
+	# Camera height = center.y - sin(pitch) * distance, so sin(pitch) <= (center.y - floor) / distance
+	var s := clampf((center.y - floor_y) / maxf(follow_distance, 0.001), -1.0, 1.0)
+	var max_pitch := minf(asin(s), deg_to_rad(89.0))
+	if _pitch > max_pitch:
+		_pitch = max_pitch
+		rotation = Vector3(_pitch, _yaw, 0.0)
+
 	global_position = center + global_transform.basis.z * follow_distance
+	global_position.y = maxf(global_position.y, floor_y)   # safety net
 
 
 func _read_move_input() -> Vector3:
@@ -290,14 +324,14 @@ func _build_overlay() -> void:
 	layer.add_child(_overlay)
 
 
-
 func _update_overlay() -> void:
 	if _overlay == null:
 		return
 	if is_following():
 		_overlay.text = "\n".join([
 			"Following",
-			"Mouse  look around" if _mouse_look else "Right drag  orbit",
+			("Mouse  look around   Esc  free cursor" if is_mouse_look()
+					else ("Esc / click  mouse look" if _mouse_look else "Right drag  orbit")),
 			"Wheel  distance %.1f" % follow_distance,
 			"H  hide",
 		])
