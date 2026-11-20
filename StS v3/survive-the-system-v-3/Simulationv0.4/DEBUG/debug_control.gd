@@ -47,6 +47,9 @@ signal control_ended(species, index: int)
 @export var arrow_color := Color(1.0, 1.0, 1.0, 0.75)
 @export var arrow_scale := 1.0                 # relative to the agent's width
 
+
+
+
 enum ControlView { NORTH, CAMERA }
 ## 1 = NORTH: camera locked facing north, W always goes north
 ## 2 = CAMERA: camera turns freely, W goes where the camera looks
@@ -131,6 +134,10 @@ func _unhandled_input(event: InputEvent) -> void:
 					_interact(controlled_species, controlled_index, target_species, target_index)
 				get_viewport().set_input_as_handled()
 
+		KEY_SPACE:
+			if controlled_species != null:
+				controlled_species.player_jump_buffer = 0.12    # jump buffering
+				get_viewport().set_input_as_handled()
 		KEY_F:
 			if controlled_species != null:
 				return                                     # the camera already follows it
@@ -254,16 +261,18 @@ func _process_control() -> void:
 
 	# WASD: x = right, y = forward
 	var input := Vector2.ZERO
-	var input2 := Vector3.ZERO
+	#var jump_velocity := 0.0
 	var p = sp.position_array[i]
 	if Input.is_physical_key_pressed(KEY_W): input.y += 1.0
 	if Input.is_physical_key_pressed(KEY_S): input.y -= 1.0
 	if Input.is_physical_key_pressed(KEY_A): input.x -= 1.0
 	if Input.is_physical_key_pressed(KEY_D): input.x += 1.0
 	sprint = 2.0 if Input.is_physical_key_pressed(KEY_SHIFT) else 1.0
-	if Input.is_physical_key_pressed(KEY_SPACE) and p.y == 0: input2.y += 10.0
+	#if Input.is_physical_key_pressed(KEY_SPACE) and p.y == 0: jump_velocity = 2.0 * jump_height / time_to_jump_apex 
+	sp.player_jump_held = Input.is_physical_key_pressed(KEY_SPACE)
 
-
+	#var gravity := 2.0 * jump_height / (time_to_jump_apex * time_to_jump_apex)
+	
 	var dir := Vector3.ZERO
 	if control_view == ControlView.NORTH:
 		dir = Vector3(input.x, 0.0, -input.y)          # W = north (-Z), D = east (+X)
@@ -273,7 +282,9 @@ func _process_control() -> void:
 		var fwd := Vector3(-b.z.x, 0.0, -b.z.z).normalized()
 		var right := Vector3(b.x.x, 0.0, b.x.z).normalized()
 		dir = right * input.x + fwd * input.y
+		
 	sp.player_velocity = dir.normalized() * control_speed*sprint + input2
+	#sp.player_velocity.y = _player_vertical(p.y,0.1)  # jump + gravity
 
 	# Closest other agent (any species) within range
 	target_species = null

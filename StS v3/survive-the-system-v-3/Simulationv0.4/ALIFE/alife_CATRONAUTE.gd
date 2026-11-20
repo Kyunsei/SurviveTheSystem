@@ -2,6 +2,49 @@ extends ALIFE
 class_name ALIFE_CATRONAUTE
 
 
+var player_vy := 0.0               # vertical speed of the controlled agent
+var player_jump_buffer := 0.0      # > 0: jump pressed recently (set by the picker)
+var player_jump_held := false      # jump key still held (variable height)
+var player_air_time := 0.0         # time since leaving the ground (coyote time)
+
+@export_group("JUMP")
+@export var jump_height := 8.0
+@export var time_to_jump_apex := 3.5
+@export var fall_multiplier := 2.0        # falls faster than it rises
+@export var low_jump_multiplier := 2.5    # key released early: shorter jump
+@export var coyote_time := 0.12
+@export var max_fall_speed := 30.0
+@export var ground_y := 0.0
+
+
+## Vertical physics of the controlled agent. Returns its vertical speed for this step.
+func _player_vertical(y: float, dt: float) -> float:
+	var g := 2.0 * jump_height / (time_to_jump_apex * time_to_jump_apex)
+	var grounded := y <= ground_y + 0.001 and player_vy <= 0.0
+	if grounded:
+		player_vy = 0.0
+		player_air_time = 0.0
+	else:
+		player_air_time += dt
+
+	# Jump: pressed recently (buffer) + on the ground or just left it (coyote)
+	if player_jump_buffer > 0.0 and player_air_time <= coyote_time:
+		player_vy = 2.0 * jump_height / time_to_jump_apex
+		player_jump_buffer = 0.0
+		player_air_time = coyote_time + 1.0     # no second jump in the air
+		grounded = false
+	player_jump_buffer = maxf(player_jump_buffer - dt, 0.0)
+
+	# Gravity: stronger when falling, or when the key was released early
+	if not grounded:
+		var m := 1.0
+		if player_vy < 0.0:
+			m = fall_multiplier
+		elif not player_jump_held:
+			m = low_jump_multiplier
+		player_vy = maxf(player_vy - g * m * dt, -max_fall_speed)
+	return player_vy
+
 func _init() -> void:
 	photosynthesis_on = false
 	init_size = 2.0
@@ -120,6 +163,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		
 		if i == player_index:
 			new_v = player_velocity # player-controlled: the AI is ignored
+			new_v.y = _player_vertical(position_array[i].y, dt*sim_speed)  # jump + gravity
+
 			#new_v = new_v.limit_length(max_speed)
 		if p.y > 0 : new_v.y -=0.8
 		new_velocity[i] = new_v
