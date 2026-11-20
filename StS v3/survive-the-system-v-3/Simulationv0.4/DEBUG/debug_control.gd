@@ -172,6 +172,7 @@ func _toggle_menu() -> void:
 # --- Per frame -----------------------------------------------------------------
 
 func _process(_delta: float) -> void:
+	_update_wrap_view() 
 	# Hover (not while right-dragging the view)
 	var sp = null
 	var i := -1
@@ -232,6 +233,16 @@ func _set_control_view(view: ControlView) -> void:
 	control_view = view
 	camera.set_yaw_lock(view == ControlView.NORTH, 0.0)
 	camera.set_mouse_look(view == ControlView.CAMERA)
+
+
+func _update_wrap_view() -> void:
+	var on := controlled_species != null # and control_view != ControlView.FIRST_PERSON
+	if on == WorldWrap.visual:
+		return
+	print("wrap view: ", on, "  mask: ", WorldWrap.mask, "  size: ", WorldWrap.size)
+	WorldWrap.visual = on
+	for sp in alifemanager.species_array:
+		sp.renderer3D.set_wrap_view(on)
 
 func _release_control() -> void:
 	if controlled_species == null:

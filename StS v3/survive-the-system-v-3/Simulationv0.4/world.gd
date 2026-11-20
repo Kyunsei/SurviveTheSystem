@@ -51,7 +51,10 @@ func init():
 func _init_worldsize():
 	if !size:
 		size = default_size
-
+	WorldWrap.configure(size,
+		border_type_x == Border.WRAP,
+		border_type_y == Border.WRAP,
+		border_type_z == Border.WRAP)
 func _init_SUN():
 	var sun_dims := Vector3i((size / SUN_cell_size).ceil())
 	SUN_GRID_W = sun_dims.x         # cells along x
@@ -91,3 +94,13 @@ func set_world_size(new_size: Vector3):
 	render_world()
 	world_size_change = true
 	
+func set_world_border(axis:String, value : Border):
+	match axis:
+		"x":
+			border_type_x = value
+		"y":
+			border_type_y = value
+		"z":
+			border_type_z = value
+			
+	_init_worldsize()

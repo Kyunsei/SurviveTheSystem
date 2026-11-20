@@ -79,19 +79,22 @@ func _on_world_z_text_submitted(new_text: String) -> void:
 	
 func _on_borderx_item_selected(index: int) -> void:
 	alifemanager.Store_all_alife()
-	world.border_type_x = index
+	var value = index as WorldManager.Border
+	world.set_world_border("x",value)
 	alifemanager.Release_all_alife()
 
 
 
 func _on_bordery_item_selected(index: int) -> void:
 	alifemanager.Store_all_alife()
-	world.border_type_y= index
+	var value = index as WorldManager.Border
+	world.set_world_border("y",value)
 	alifemanager.Release_all_alife()
 
 func _on_borderz_item_selected(index: int) -> void:
 	alifemanager.Store_all_alife()
-	world.border_type_z = index
+	var value = index as WorldManager.Border
+	world.set_world_border("z",value)
 	alifemanager.Release_all_alife()
 
 func _on_sunenergy_text_submitted(new_text: String) -> void:

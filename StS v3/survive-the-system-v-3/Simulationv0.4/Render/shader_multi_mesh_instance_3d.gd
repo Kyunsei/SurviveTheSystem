@@ -50,11 +50,10 @@ func setup(agent_data: AlifeRenderingData, alife:ALIFE, world_size: Vector3, col
 	mat.set_shader_parameter("hframes", hframes)
 	mat.set_shader_parameter("vframes", vframes)
 	mat.set_shader_parameter("world_height", world_size.y)
-
+	mat.set_shader_parameter("world_size", world_size)
 	material_override = mat
 	ensure_instances3D(agent_data.capacity())
 
-# At the end of setup():
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 	var smm := MultiMesh.new()
@@ -67,6 +66,8 @@ func setup(agent_data: AlifeRenderingData, alife:ALIFE, world_size: Vector3, col
 	smat.set_shader_parameter("agent_data", agent_data.tex)
 	smat.set_shader_parameter("tex_width", AlifeRenderingData.TEX_W)
 	smat.set_shader_parameter("world_height", world_size.y)
+	smat.set_shader_parameter("world_size", world_size)
+
 	_shadow = MultiMeshInstance3D.new()
 	_shadow.multimesh = smm
 	_shadow.material_override = smat
@@ -97,3 +98,10 @@ func ensure_instances3D(n: int) -> void:
 	_ensure(multimesh, n)
 	if _shadow:
 		_ensure(_shadow.multimesh, n)
+		
+		
+func set_wrap_view(on: bool) -> void:
+	var m := WorldWrap.mask if on else Vector3.ZERO
+	material_override.set_shader_parameter("wrap_axes", m)
+	if _shadow:
+		_shadow.material_override.set_shader_parameter("wrap_axes", m)

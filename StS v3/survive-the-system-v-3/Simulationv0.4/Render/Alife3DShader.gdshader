@@ -44,6 +44,16 @@ uniform int life_span = 0;
 
 varying flat vec2 frame;      // (column, row) of the current frame
 
+uniform vec3 world_size = vec3(100.0);
+uniform vec3 wrap_axes = vec3(0.0);     // 1.0 on axes that wrap
+
+// The copy of p closest to ref (shortest way through the borders)
+vec3 nearest_image(vec3 p, vec3 ref) {
+	vec3 d = p - ref;
+	d -= wrap_axes * world_size * round(d / max(world_size, vec3(1e-6)));
+	return ref + d;
+}
+
 vec2 frame_px() {
 	return vec2(textureSize(sprite_texture, 0)) / vec2(float(hframes), float(vframes));
 }
@@ -132,11 +142,15 @@ void vertex() {
 			VERTEX.y *= 1.0 - 0.15 * sway * wind_strength * t;   // shorten a bit when bent
 		}
 
+		vec3 cam_pos = MAIN_CAM_INV_VIEW_MATRIX[3].xyz;
+		vec3 agent = nearest_image(MODEL_MATRIX[3].xyz + vec3(d.x, y, d.y), cam_pos);
+
 		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
 				vec4(right, 0.0),
 				vec4(up, 0.0),
 				vec4(fwd, 0.0),
-				MODEL_MATRIX[3] + vec4(d.x, y, d.y, 0.0));
+				vec4(agent, 1.0));     
+
 		MODELVIEW_NORMAL_MATRIX = mat3(MODELVIEW_MATRIX);
 
 		VERTEX *= size;

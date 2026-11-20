@@ -15,6 +15,15 @@ uniform float fade_height = 10.0;                      // no shadow above this h
 
 varying float v_strength;
 
+uniform vec3 world_size = vec3(100.0);
+uniform vec3 wrap_axes = vec3(0.0);     // 1.0 on axes that wrap
+
+// The copy of p closest to ref (shortest way through the borders)
+vec3 nearest_image(vec3 p, vec3 ref) {
+	vec3 d = p - ref;
+	d -= wrap_axes * world_size * round(d / max(world_size, vec3(1e-6)));
+	return ref + d;
+}
 
 void vertex() {
 	ivec2 px = ivec2(INSTANCE_ID % tex_width, INSTANCE_ID / tex_width);
@@ -34,13 +43,15 @@ void vertex() {
 		float h = max(y - ground_y, 0.0);
 		v_strength = clamp(1.0 - h / fade_height, 0.0, 1.0);
 		vec2 c = vec2(d.x, d.y) + sun_offset * h;      // shift with the sun direction
-
-		// Lay the quad flat on the ground: local x -> world x, local y -> world z
+		vec3 cam_pos = MAIN_CAM_INV_VIEW_MATRIX[3].xyz;
+		vec3 spot = nearest_image(MODEL_MATRIX[3].xyz + vec3(c.x, ground_y + 0.01, c.y), cam_pos);
 		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
 				vec4(1.0, 0.0, 0.0, 0.0),
 				vec4(0.0, 0.0, 1.0, 0.0),
 				vec4(0.0, 1.0, 0.0, 0.0),
-				MODEL_MATRIX[3] + vec4(c.x, ground_y + 0.01, c.y, 0.0));
+				vec4(spot, 1.0));
+		// Lay the quad flat on the ground: local x -> world x, local y -> world z
+
 		VERTEX *= size * radius_scale * 2.0;
 	}
 }
