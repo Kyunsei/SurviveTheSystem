@@ -261,7 +261,7 @@ func _process_control() -> void:
 	if Input.is_physical_key_pressed(KEY_A): input.x -= 1.0
 	if Input.is_physical_key_pressed(KEY_D): input.x += 1.0
 	sprint = 2.0 if Input.is_physical_key_pressed(KEY_SHIFT) else 1.0
-	if Input.is_physical_key_pressed(KEY_SPACE) and p.y == 0: input2.y += 10.0
+	if Input.is_action_just_pressed("jump") and input2.y <= 0.0:input2.y = 10.0
 
 
 	var dir := Vector3.ZERO
