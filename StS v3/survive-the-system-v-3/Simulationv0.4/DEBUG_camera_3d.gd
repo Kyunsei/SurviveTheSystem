@@ -11,9 +11,14 @@ extends Camera3D
 ## Follow mode (start it with follow(...) from your code):
 ##   Right click + drag: orbit around the entity | Wheel: distance
 ##   WASD / E / Q:       stop following
-## Mouse-look mode (set_mouse_look(true), used by control mode 2):
+## Mouse-look mode (set_mouse_look(true), used by control modes 2 and 3):
 ##   the mouse turns the view directly, no click needed, cursor hidden
 ##   Esc: give the cursor back | Esc again or left click: back to mouse look
+## First person (set_first_person(true), used by control mode 3):
+##   while following, the camera sits at the entity's eyes (first_person_eye_height)
+## Wrap view (WorldWrap.visual, used by control modes 1 and 2):
+##   the camera crosses the world's borders seamlessly. Every frame it publishes
+##   the global shader value `wrap_center` (Project Settings > Shader Globals, vec3).
 ## H: show / hide the overlay
 ## Keys use physical positions, so WASD works on QWERTY, AZERTY and QWERTZ layouts.
 
@@ -33,7 +38,7 @@ signal follow_stopped
 @export var wheel_changes_height := false
 @export var wheel_step := 0.15               # fraction of the distance to the ground per notch
 
-## When false, WASD / E / Q / Ctrl / Space don't move the camera (and don't stop following).
+## When false, WASD / E / Q don't move the camera (and don't stop following).
 ## Turned off by the picker while you control an agent.
 @export var move_keys_enabled := true
 ## Kept for compatibility with older scripts: the mouse is never captured anymore.
@@ -50,6 +55,9 @@ var click_to_capture := false
 ## Lowest height above the ground while following: looking up stops at the angle
 ## where the camera would touch the soil (the distance never changes).
 @export var follow_min_height := 0.3
+## First person: eye height above the entity's feet. Updated every frame by the picker
+## from the agent's size.
+@export var first_person_eye_height := 0.8
 
 @export_group("Overlay")
 @export var show_overlay := true
@@ -62,6 +70,7 @@ var _pitch := 0.0
 var _yaw_locked := false                     # true: dragging only tilts up/down (control mode 1)
 var _mouse_look := false                     # true: the mouse turns the view without a click
 var _look_suspended := false                 # Esc: cursor given back, mouse look paused
+var _first_person := false                   # follow from the entity's eyes
 var _dragging := false
 var _drag_start := Vector2.ZERO
 var _overlay: Label
@@ -113,7 +122,7 @@ func set_yaw_lock(locked: bool, yaw: float = 0.0) -> void:
 
 
 ## Mouse look: when on, moving the mouse turns the view directly (no right click),
-## and the cursor is hidden. Used by control mode 2.
+## and the cursor is hidden. Used by control modes 2 and 3.
 func set_mouse_look(on: bool) -> void:
 	_mouse_look = on
 	_look_suspended = false
@@ -125,10 +134,21 @@ func is_mouse_look() -> bool:
 	return _mouse_look and not _look_suspended
 
 
-func _apply_mouse_mode() -> void:
-	if not _dragging:
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if is_mouse_look() else Input.MOUSE_MODE_VISIBLE
+## First person: while following, the camera is placed at the entity's eyes.
+func set_first_person(on: bool) -> void:
+	_first_person = on
 	_update_overlay()
+
+
+func is_first_person() -> bool:
+	return _first_person
+
+
+## Point the wrap view is centered on: the followed entity, or the camera itself.
+## Every agent is drawn at its copy closest to this point, so zooming in or out
+## never changes which copy you see.
+func get_wrap_center() -> Vector3:
+	return _follow_pos if is_following() else global_position
 
 
 ## Kept for compatibility with older scripts.
@@ -140,11 +160,15 @@ func is_dragging() -> bool:
 	return _dragging
 
 
+func _apply_mouse_mode() -> void:
+	if not _dragging:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED if is_mouse_look() else Input.MOUSE_MODE_VISIBLE
+	_update_overlay()
+
+
 # --- Input ---------------------------------------------------------------------
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Right click + drag: rotate the view (or orbit in follow mode).
-	# Not needed in mouse-look mode: the mouse already turns the view.
 	if event is InputEventKey and event.pressed and not event.echo \
 			and event.physical_keycode == KEY_ESCAPE and _mouse_look:
 		_look_suspended = not _look_suspended          # Esc: cursor back / mouse look again
@@ -157,6 +181,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		_apply_mouse_mode()
 		get_viewport().set_input_as_handled()
 
+	# Right click + drag: rotate the view (or orbit in follow mode).
+	# Not needed in mouse-look mode: the mouse already turns the view.
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
 		if is_mouse_look():
 			pass
@@ -194,6 +220,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _zoom(direction: float, mouse_pos: Vector2) -> void:
+	if is_following() and _first_person:
+		return                                     # no zoom from the eyes
 	if is_following():
 		if direction > 0.0:
 			follow_distance = maxf(follow_distance / follow_distance_step, follow_min_distance)
@@ -215,6 +243,12 @@ func _zoom(direction: float, mouse_pos: Vector2) -> void:
 # --- Per frame -------------------------------------------------------------------
 
 func _process(delta: float) -> void:
+	_process_move(delta)
+	# Shared with every shader that wraps (Project Settings > Shader Globals: wrap_center, vec3)
+	RenderingServer.global_shader_parameter_set("wrap_center", get_wrap_center())
+
+
+func _process_move(delta: float) -> void:
 	var input := _read_move_input() if move_keys_enabled else Vector3.ZERO
 
 	if is_following():
@@ -225,6 +259,7 @@ func _process(delta: float) -> void:
 			return
 
 	if input == Vector3.ZERO:
+		_wrap_camera()                             # the wheel may have moved it
 		return
 
 	# Move on a plane parallel to the ground, relative to where the camera faces
@@ -249,6 +284,7 @@ func _process(delta: float) -> void:
 
 	global_position += dir * current_speed * delta
 	global_position.y = maxf(global_position.y, ground_y + min_height)
+	_wrap_camera()
 
 
 func _process_follow(delta: float) -> void:
@@ -257,10 +293,25 @@ func _process_follow(delta: float) -> void:
 		stop_follow()                              # entity gone: back to fly mode, camera stays here
 		return
 
+	# First person: exactly at the eyes, no smoothing (smoothing feels like lag from inside)
+	if _first_person:
+		_follow_pos = p
+		global_position = p + Vector3.UP * first_person_eye_height
+		return
+
+	# Through the border if the wrap view is on: the camera never sweeps across the world
+	p = WorldWrap.nearest_image(p, _follow_pos)
 	if p.distance_to(_follow_pos) > follow_snap_distance:
-		_follow_pos = p                            # wrapped / teleported: don't sweep across the world
+		_follow_pos = p                            # teleported: snap instead of sliding
 	else:
 		_follow_pos = _follow_pos.lerp(p, 1.0 - exp(-follow_smoothing * delta))
+
+	# Keep the followed point inside the world. The camera is placed from it below,
+	# so it moves along automatically: invisible on screen, and zoom never wraps anything.
+	if WorldWrap.view_enabled():
+		var y := _follow_pos.y
+		_follow_pos = WorldWrap.wrap_into(_follow_pos)
+		_follow_pos.y = y
 
 	# Orbit: stay behind the look direction, at follow_distance from the entity
 	var center := _follow_pos + Vector3.UP * follow_height_offset
@@ -276,6 +327,20 @@ func _process_follow(delta: float) -> void:
 
 	global_position = center + global_transform.basis.z * follow_distance
 	global_position.y = maxf(global_position.y, floor_y)   # safety net
+
+
+## Keeps the free-flying camera inside the world on wrapped axes (x / z only, never
+## its height), only while the wrap view is on. Returns how much the camera was moved.
+func _wrap_camera() -> Vector3:
+	if not WorldWrap.view_enabled():
+		return Vector3.ZERO
+	var before := global_position
+	var after := WorldWrap.wrap_into(before)
+	after.y = before.y
+	if after == before:
+		return Vector3.ZERO
+	global_position = after
+	return after - before
 
 
 func _read_move_input() -> Vector3:
@@ -326,6 +391,14 @@ func _build_overlay() -> void:
 
 func _update_overlay() -> void:
 	if _overlay == null:
+		return
+	if is_following() and _first_person:
+		_overlay.text = "\n".join([
+			"First person",
+			("Mouse  look around   Esc  free cursor" if is_mouse_look()
+					else "Esc / click  mouse look"),
+			"H  hide",
+		])
 		return
 	if is_following():
 		_overlay.text = "\n".join([

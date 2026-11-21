@@ -1,12 +1,12 @@
 extends Node
 class_name WorldManager
 
-
+@export var picker : Node
 #------------Planete General
 var size : Vector3
 #var default_size = Vector3(240,20,240) 
 #var default_size = Vector3(60,20,60)
-var default_size = Vector3(140,20,140) 
+var default_size = Vector3(240,20,240) 
 
 
 enum Border { WRAP, WALL }
@@ -40,6 +40,7 @@ var render3D :  WorldRender3D
 #------------------SET_UP-----------------------------------------------
 
 func init():
+	$Render_World3D.setup(picker)
 	
 	_init_worldsize()
 	_init_SUN()

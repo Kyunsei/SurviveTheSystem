@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://clujs5mkf4ysr" path="res://Simulationv0.4/DEBUG/debug_control.gd" id="6_gytwx"]
 [ext_resource type="Script" uid="uid://edndstn7d2e7" path="res://Simulationv0.4/DEBUG_camera_3d.gd" id="6_ii0et"]
 [ext_resource type="Script" uid="uid://cl3q2rgl5b6oq" path="res://Simulationv0.4/sound_manager.gd" id="9_di811"]
+[ext_resource type="Script" uid="uid://xnfnbbmicva2" path="res://Simulationv0.4/infrastructure.gd" id="10_royot"]
 
 [node name="NewSimulationManager" type="Node" unique_id=1440062817 node_paths=PackedStringArray("world", "alifemanager", "render_manager", "ui_simulation")]
 script = ExtResource("1_tnrjr")
@@ -17,8 +18,9 @@ alifemanager = NodePath("AlifeManager")
 render_manager = NodePath("RendererManager")
 ui_simulation = NodePath("UI_simulation")
 
-[node name="World" type="Node" parent="." unique_id=212681917]
+[node name="World" type="Node" parent="." unique_id=212681917 node_paths=PackedStringArray("picker")]
 script = ExtResource("2_n8m0f")
+picker = NodePath("../DEBUG_control")
 
 [node name="Render_World3D" parent="World" unique_id=1366239665 instance=ExtResource("3_uyr7n")]
 
@@ -56,3 +58,6 @@ follow_height_offset = 1.5
 
 [node name="SoundManager" type="Node" parent="." unique_id=895262020]
 script = ExtResource("9_di811")
+
+[node name="Infrastructure" type="Node" parent="." unique_id=1444813330]
+script = ExtResource("10_royot")

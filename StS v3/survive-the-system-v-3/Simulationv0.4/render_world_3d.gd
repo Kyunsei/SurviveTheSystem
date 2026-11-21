@@ -9,6 +9,9 @@ func _ready() -> void:
 	pass # Replace with function body.
 
 
+func setup(pciker):
+	$GROUND.picker = pciker
+	
 
 func DrawWorld(world:WorldManager):
 	ground_gridmap.clear()

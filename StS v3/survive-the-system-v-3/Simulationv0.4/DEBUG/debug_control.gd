@@ -6,26 +6,36 @@ extends Node
 ## F:            follow the hovered agent | while following: stop following
 ## K:            kill the hovered agent
 ## C:            take control of the hovered (or followed) agent | C again: release it
-##   In control: WASD moves the agent (world directions, not the camera's)
-##               the closest other agent is outlined, SPACE interacts with it
-##               a small energy bar is shown above the controlled agent
+##   In control: WASD moves the agent, Shift runs, Space jumps
+##               the closest other agent is outlined, LEFT CLICK picks it up
+##               while carrying (one at a time): Q drops it, E eats it
+##               a small energy bar is shown above the controlled agent (HUD in first person)
 ##               an arrow on the ground shows where it is facing
 ##               1: north view (default): camera faces north, W = north, right drag only tilts
-##               2: camera view: right drag turns freely, W = where the camera looks
+##               2: camera view: the mouse turns the view, W = where the camera looks
+##               3: first person: from the agent's eyes, the mouse turns the view
+##               Esc (modes 2 / 3): give the cursor back
 ## P:            pause / resume the simulation
 ## F1 or "?" button (top right): show / hide the controls help
 ## O:            open / close the menu. Independent from picking.
 ##
-## Control needs two variables in the species script, read by the simulation:
+## Control needs these variables in the species script, read by the simulation:
 ##   var player_index := -1                 # local index of the controlled agent (-1 = none)
 ##   var player_velocity := Vector3.ZERO    # velocity chosen by the player
+##   var player_jump_buffer := 0.0, player_jump_held := false (jump)
+## First person needs `uniform int hidden_id = -1;` in the sprite shader.
+## Carrying: species that can be carried should have, read by the simulation:
+##   var held_index := -1                   # local index of the carried agent (-1 = none)
+##   var held_position := Vector3.ZERO      # where the carrier holds it
+## (Without them it still works for agents the simulation never moves, like plants.)
 
 signal agent_hovered(species, index: int)      # species = null when nothing is hovered
 signal agent_followed(species, index: int)
 signal agent_killed(species, index: int)
 signal control_started(species, index: int)
 signal control_ended(species, index: int)
-#signal agent_interacted(species, index: int, target_species, target_index: int)
+signal agent_picked_up(species, index: int, item_species, item_index: int)
+signal agent_dropped(species, index: int, item_species, item_index: int)
 
 @export var alifemanager: AlifeManager
 @export var camera: FlyCamera
@@ -42,20 +52,23 @@ signal control_ended(species, index: int)
 @export var control_speed := 3.0               # world units per second
 @export var target_range := 3.0                # max distance for the outlined / interact target
 @export var target_search_rings := 2           # grid rings searched for the closest agent
-@export var energy_bar_max := 10.0             # energy shown as a full bar
 @export var energy_bar_size := Vector2(36, 5)  # pixels
 @export var arrow_color := Color(1.0, 1.0, 1.0, 0.75)
 @export var arrow_scale := 1.0                 # relative to the agent's width
+@export var eye_ratio := 0.8                   # first person: eye height / sprite height
 
+@export_group("Carry")
+@export var carry_forward := 0.5               # how far in front of the carrier (x its height)
+@export var carry_height := 0.5                # how high (fraction of the carrier's height)
 
-
-
-enum ControlView { NORTH, CAMERA }
+enum ControlView { NORTH, CAMERA, FIRST_PERSON }
 ## 1 = NORTH: camera locked facing north, W always goes north
-## 2 = CAMERA: camera turns freely, W goes where the camera looks
+## 2 = CAMERA: the mouse turns the view, W goes where the camera looks
+## 3 = FIRST_PERSON: from the agent's eyes, the mouse turns the view
 @export var control_view := ControlView.NORTH
 
 var old_speed := 0.0
+var sprint := 1.0
 
 var hovered_species = null
 var hovered_index := -1
@@ -65,6 +78,8 @@ var controlled_species = null
 var controlled_index := -1
 var target_species = null
 var target_index := -1
+var held_species = null                        # the carried agent (one at a time)
+var held_index := -1
 
 var _outlined_species = null
 var _outlined_index := -1
@@ -97,6 +112,14 @@ func _ready() -> void:
 # --- Input ---------------------------------------------------------------------
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Left click in control mode: pick up the outlined agent (if the hands are free)
+	if event is InputEventMouseButton and event.pressed \
+			and event.button_index == MOUSE_BUTTON_LEFT:
+		if controlled_species != null and held_species == null and target_species != null:
+			_interact(controlled_species, controlled_index, target_species, target_index)
+			get_viewport().set_input_as_handled()
+		return
+
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
 
@@ -124,29 +147,43 @@ func _unhandled_input(event: InputEvent) -> void:
 				_set_control_view(ControlView.CAMERA)
 				get_viewport().set_input_as_handled()
 
+		KEY_3, KEY_KP_3:
+			if controlled_species != null:
+				_set_control_view(ControlView.FIRST_PERSON)
+				get_viewport().set_input_as_handled()
+
 		KEY_F1:
 			_help_button.button_pressed = not _help_button.button_pressed
 			get_viewport().set_input_as_handled()
-
-		MOUSE_BUTTON_LEFT:
-			if controlled_species != null:
-				if target_species != null:
-					_interact(controlled_species, controlled_index, target_species, target_index)
-				get_viewport().set_input_as_handled()
 
 		KEY_SPACE:
 			if controlled_species != null:
 				controlled_species.player_jump_buffer = 0.12    # jump buffering
 				get_viewport().set_input_as_handled()
+
+		KEY_Q:
+			if controlled_species != null and held_species != null:
+				_drop()
+				get_viewport().set_input_as_handled()
+
+		KEY_E:
+			if controlled_species != null and held_species != null:
+				_eat(controlled_species, controlled_index, held_species, held_index)
+				get_viewport().set_input_as_handled()
+
 		KEY_F:
 			if controlled_species != null:
-				return                                     # the camera already follows it
+				return      # the camera already follows it
 			if camera.is_following():
 				camera.stop_follow()
 			elif hovered_species != null:
 				_follow(hovered_species, hovered_index)
 			get_viewport().set_input_as_handled()
-
+		KEY_R:
+			if controlled_species != null and held_species == null and target_species != null:
+					_interact(controlled_species, controlled_index, target_species, target_index)
+					get_viewport().set_input_as_handled() 
+		
 		KEY_K:
 			if hovered_species != null:
 				_kill(hovered_species, hovered_index)
@@ -161,19 +198,20 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 
 
-
 func _toggle_menu() -> void:
 	if menu == null:
 		return
 	menu.visible = not menu.visible
-	var mode_2 := controlled_species != null and control_view == ControlView.CAMERA
-	camera.set_mouse_look(mode_2 and not menu.visible)
+	var looking := controlled_species != null and control_view != ControlView.NORTH
+	camera.set_mouse_look(looking and not menu.visible)
+
 
 # --- Per frame -----------------------------------------------------------------
 
 func _process(_delta: float) -> void:
-	_update_wrap_view() 
-	# Hover (not while right-dragging the view)
+	_update_wrap_view()
+
+	# Hover (not while the mouse turns the view)
 	var sp = null
 	var i := -1
 	if not camera.is_dragging() and not camera.is_mouse_look():
@@ -188,11 +226,13 @@ func _process(_delta: float) -> void:
 
 	if controlled_species != null:
 		_process_control()
+	_process_carry()
 
-
-	# Outline priority: interact target > hovered > followed
+	# Outline priority: interact target > carried > hovered > followed
 	if target_species != null:
 		_set_outline(target_species, target_index)
+	elif held_species != null:
+		_set_outline(held_species, held_index)
 	elif hovered_species != null:
 		_set_outline(hovered_species, hovered_index)
 	elif followed_species != null and controlled_species == null:
@@ -231,75 +271,82 @@ func _take_control(sp, i: int) -> void:
 
 func _set_control_view(view: ControlView) -> void:
 	control_view = view
-	camera.set_yaw_lock(view == ControlView.NORTH, 0.0)
-	camera.set_mouse_look(view == ControlView.CAMERA)
+	camera.set_yaw_lock(view == ControlView.NORTH, 0.0)        # yaw 0 = facing north (-Z)
+	camera.set_mouse_look(view != ControlView.NORTH)          # modes 2 and 3
+	camera.set_first_person(view == ControlView.FIRST_PERSON)
+	# Hide the agent's own sprite in first person, or you'd see it from inside
+	if controlled_species != null:
+		controlled_species.renderer3D.material_override.set_shader_parameter(
+				"hidden_id", controlled_index if view == ControlView.FIRST_PERSON else -1)
 
 
+## Wrap-around display: only in control modes 1 and 2.
 func _update_wrap_view() -> void:
-	var on := controlled_species != null # and control_view != ControlView.FIRST_PERSON
+	var on := controlled_species != null and control_view != ControlView.FIRST_PERSON
 	if on == WorldWrap.visual:
 		return
-	print("wrap view: ", on, "  mask: ", WorldWrap.mask, "  size: ", WorldWrap.size)
 	WorldWrap.visual = on
 	for sp in alifemanager.species_array:
 		sp.renderer3D.set_wrap_view(on)
 
+
 func _release_control() -> void:
 	if controlled_species == null:
 		return
+	_drop()                                            # let go of anything carried
 	var sp = controlled_species
 	var i := controlled_index
 	sp.player_index = -1
 	sp.player_velocity = Vector3.ZERO
+	sp.renderer3D.material_override.set_shader_parameter("hidden_id", -1)
 	controlled_species = null
 	controlled_index = -1
 	target_species = null
 	target_index = -1
 	camera.move_keys_enabled = true
 	camera.set_yaw_lock(false)
-	control_ended.emit(sp, i)
 	camera.set_mouse_look(false)
+	camera.set_first_person(false)
+	control_ended.emit(sp, i)
 
 
-var sprint := 1.0
-var input2 := Vector3.ZERO
 func _process_control() -> void:
 	var sp = controlled_species
 	var i := controlled_index
 	if sp.active_alife_array[i] == 0 or sp.alive_array[i] == 0:
-		_release_control()                             # the agent died
+		_release_control()                             # the agent died (drops what it carries)
 		return
+
+	# Eye height follows the agent's size (it may grow)
+	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
+	camera.first_person_eye_height = q.y * sp.current_size[i] * eye_ratio
 
 	# WASD: x = right, y = forward
 	var input := Vector2.ZERO
-	#var jump_velocity := 0.0
-	var p = sp.position_array[i]
 	if Input.is_physical_key_pressed(KEY_W): input.y += 1.0
 	if Input.is_physical_key_pressed(KEY_S): input.y -= 1.0
 	if Input.is_physical_key_pressed(KEY_A): input.x -= 1.0
 	if Input.is_physical_key_pressed(KEY_D): input.x += 1.0
 	sprint = 2.0 if Input.is_physical_key_pressed(KEY_SHIFT) else 1.0
-	#if Input.is_physical_key_pressed(KEY_SPACE) and p.y == 0: jump_velocity = 2.0 * jump_height / time_to_jump_apex 
 	sp.player_jump_held = Input.is_physical_key_pressed(KEY_SPACE)
 
-	#var gravity := 2.0 * jump_height / (time_to_jump_apex * time_to_jump_apex)
-	
 	var dir := Vector3.ZERO
 	if control_view == ControlView.NORTH:
 		dir = Vector3(input.x, 0.0, -input.y)          # W = north (-Z), D = east (+X)
 	else:
-		# Relative to where the camera looks, flattened on the ground
+		# Modes 2 and 3: relative to where the camera looks, flattened on the ground
 		var b := camera.global_transform.basis
 		var fwd := Vector3(-b.z.x, 0.0, -b.z.z).normalized()
 		var right := Vector3(b.x.x, 0.0, b.x.z).normalized()
 		dir = right * input.x + fwd * input.y
-		
-	sp.player_velocity = dir.normalized() * control_speed*sprint + input2
-	#sp.player_velocity.y = _player_vertical(p.y,0.1)  # jump + gravity
+	sp.player_velocity = dir.normalized() * control_speed * sprint
 
-	# Closest other agent (any species) within range
+	# Closest other agent (any species) within range. None while carrying:
+	# the hands are full, and the carried agent would always be the closest.
 	target_species = null
 	target_index = -1
+	if held_species != null:
+		return
 	var me: int = alifemanager.global_species_offset[alifemanager.species_array.find(sp)] + i
 	var found: Vector4 = sp.find_nearest(sp.position_array[i], me, -1, target_search_rings)
 	var id := int(found.w)
@@ -309,11 +356,82 @@ func _process_control() -> void:
 		target_index = t[1]
 
 
-## SPACE in control mode. Replace the body with your interaction (eat, mate, attack...).
+## Left click in control mode, on the outlined agent: pick it up.
 func _interact(sp, i: int, target_sp, j: int) -> void:
-	print("%s #%d interacts with %s #%d" % [sp.species_name, i, target_sp.species_name, j])
-	#agent_interacted.emit(sp, i, target_sp, j)
-	target_sp.Interact(j,sp,i)
+	print("%s #%d picks up %s #%d" % [sp.species_name, i, target_sp.species_name, j])
+	#target_sp.Interact(j, sp, i)      # your previous interaction, if you still need it
+	_pick_up(target_sp, j)
+
+
+# --- Carry -----------------------------------------------------------------------
+
+func _pick_up(item_sp, j: int) -> void:
+	if held_species != null:
+		return                                         # one item at a time
+	held_species = item_sp
+	held_index = j
+	if "held_index" in item_sp:
+		item_sp.held_index = j
+		item_sp.held_position = _carry_position()
+	target_species = null
+	target_index = -1
+	agent_picked_up.emit(controlled_species, controlled_index, item_sp, j)
+
+
+## Q while carrying: put the item down in front of the carrier, on its feet level.
+func _drop() -> void:
+	if held_species == null:
+		return
+	var item_sp = held_species
+	var j := held_index
+	if controlled_species != null and item_sp.active_alife_array[j] != 0:
+		var p := _carry_position()
+		p.y = controlled_species.position_array[controlled_index].y
+		item_sp.position_array[j] = p
+	_clear_held()
+	agent_dropped.emit(controlled_species, controlled_index, item_sp, j)
+
+
+## E while carrying. Write the eating here (energy gain, removing the eaten agent...).
+## If the eaten agent is removed (e.g. its energy set to -1), the carry ends on its own.
+func _eat(sp, i: int, food_sp, j: int) -> void:
+	print("%s #%d eats %s #%d" % [sp.species_name, i, food_sp.species_name, j])
+	sp.current_energy_array[i] += food_sp.current_biomass[j]
+	food_sp.Remove_Life(j)
+	pass
+
+
+## Every frame: keep the carried agent in the carrier's hands.
+func _process_carry() -> void:
+	if held_species == null:
+		return
+	var item_sp = held_species
+	var j := held_index
+	if controlled_species == null or item_sp.active_alife_array[j] == 0:
+		_clear_held()                                  # item gone (eaten, removed) or no carrier
+		return
+	var p := _carry_position()
+	if "held_index" in item_sp:
+		item_sp.held_position = p                      # the simulation places it there
+	item_sp.position_array[j] = p                      # and right now, for plants / no simulation
+
+
+## In front of the carrier (along its facing arrow), at a fraction of its height.
+func _carry_position() -> Vector3:
+	var sp = controlled_species
+	var i := controlled_index
+	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
+	var h := maxf(q.y * sp.current_size[i], 0.2)
+	var p: Vector3 = sp.position_array[i] + _facing * carry_forward * h + Vector3.UP * h * carry_height
+	return WorldWrap.wrap_into(p)                      # stays inside the world near a border
+
+
+func _clear_held() -> void:
+	if held_species != null and "held_index" in held_species:
+		held_species.held_index = -1
+	held_species = null
+	held_index = -1
+
 
 # --- Follow / kill / outline -----------------------------------------------------
 
@@ -374,17 +492,24 @@ func _pick_at(screen_pos: Vector2) -> Array:
 	if low == null: low = high
 	if high == null: high = low
 
-	# 2. Grid cells covering that segment (+ one sprite of margin), capped
+	# 2. Grid cells covering that segment (+ one sprite of margin), capped.
+	#    With the wrap view on, the search continues through the borders.
 	var W: int = am.GRID_W
 	var H: int = am.GRID_H
 	var D: int = am.GRID_D
 	var cs: Vector3 = am.cell_size
 	var mid: Vector3 = (low + high) * 0.5
 	var half: Vector3 = (high - low).abs() * 0.5 + Vector3.ONE * max_sprite_height
-	var cx := clampi(int(mid.x / cs.x), 0, W - 1)
-	var cz := clampi(int(mid.z / cs.z), 0, D - 1)
+	var vm := WorldWrap.view_mask()
+	var wrap_x := vm.x > 0.0
+	var wrap_z := vm.z > 0.0
+	var mid_w := WorldWrap.wrap_into(mid) if WorldWrap.visual else mid
+	var cx := clampi(int(mid_w.x / cs.x), 0, W - 1)
+	var cz := clampi(int(mid_w.z / cs.z), 0, D - 1)
 	var nx := mini(ceili(half.x / cs.x), max_search_cells)
 	var nz := mini(ceili(half.z / cs.z), max_search_cells)
+	if wrap_x: nx = mini(nx, (W - 1) / 2)             # don't visit a column twice
+	if wrap_z: nz = mini(nz, (D - 1) / 2)
 
 	var cell_start: PackedInt32Array = am.cell_start
 	var cell_items: PackedInt32Array = am.cell_items
@@ -400,9 +525,16 @@ func _pick_at(screen_pos: Vector2) -> Array:
 	var best := -1
 	var best_depth := INF
 	var cam_pos := cam.global_position
-	for z in range(maxi(cz - nz, 0), mini(cz + nz, D - 1) + 1):
+	var center := camera.get_wrap_center()
+	for zz in range(cz - nz, cz + nz + 1):
+		var z := posmod(zz, D) if wrap_z else zz
+		if z < 0 or z >= D:
+			continue
 		for y in H:
-			for x in range(maxi(cx - nx, 0), mini(cx + nx, W - 1) + 1):
+			for xx in range(cx - nx, cx + nx + 1):
+				var x := posmod(xx, W) if wrap_x else xx
+				if x < 0 or x >= W:
+					continue
 				var cell := x + W * (y + H * z)
 				for k in range(cell_start[cell], cell_start[cell + 1]):
 					var j: int = cell_items[k]
@@ -412,7 +544,8 @@ func _pick_at(screen_pos: Vector2) -> Array:
 					var q: Vector2 = quads[s]
 					var size: float = am.species_array[s].current_size[j - offs[s]]
 
-					var foot: Vector3 = sorted_pos[k]
+					# The copy of the agent that is actually drawn
+					var foot: Vector3 = WorldWrap.nearest_image(sorted_pos[k], center)
 					var top := foot + Vector3(0.0, q.y * size, 0.0)
 					if cam.is_position_behind(foot) and cam.is_position_behind(top):
 						continue
@@ -487,7 +620,7 @@ func _update_arrow() -> void:
 	var s := maxf(q.x * sp.current_size[i], 0.3) * arrow_scale
 	var angle := atan2(_facing.x, _facing.z)
 	var basis := Basis(Vector3.UP, angle).scaled(Vector3.ONE * s)
-	var p: Vector3 = sp.position_array[i]
+	var p := WorldWrap.nearest_image(sp.position_array[i], camera.get_wrap_center())
 	_arrow.global_transform = Transform3D(basis, p + Vector3(0.0, 0.03, 0.0))
 	_arrow.visible = true
 
@@ -514,16 +647,24 @@ func _update_energy_bar() -> void:
 		return
 
 	var i := controlled_index
-	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
-	var size: float = sp.current_size[i]
-	var above: Vector3 = sp.position_array[i] + Vector3(0.0, q.y * size + 0.2, 0.0)
-	if cam.is_position_behind(above):
-		_bar_bg.visible = false
-		return
-
 	var ratio := clampf(sp.current_energy_array[i] / sp.max_energy, 0.0, 1.0)
 	_bar_fill.size.x = energy_bar_size.x * ratio
 	_bar_fill.color = Color.RED.lerp(Color.GREEN, ratio)
+
+	# First person: the head is the camera, so show the bar as a HUD at the bottom
+	if control_view == ControlView.FIRST_PERSON:
+		var screen := get_viewport().get_visible_rect().size
+		_bar_bg.position = Vector2(screen.x * 0.5 - _bar_bg.size.x * 0.5, screen.y - 40.0)
+		_bar_bg.visible = true
+		return
+
+	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
+	var size: float = sp.current_size[i]
+	var foot := WorldWrap.nearest_image(sp.position_array[i], camera.get_wrap_center())
+	var above: Vector3 = foot + Vector3(0.0, q.y * size + 0.2, 0.0)
+	if cam.is_position_behind(above):
+		_bar_bg.visible = false
+		return
 	_bar_bg.position = cam.unproject_position(above) - Vector2(_bar_bg.size.x * 0.5, _bar_bg.size.y)
 	_bar_bg.visible = true
 
@@ -548,9 +689,12 @@ func _update_status() -> void:
 	if controlled_species == null:
 		_status.visible = false
 		return
-	var view := "[1] North view" if control_view == ControlView.NORTH else "[2] Camera view"
+	var view: String = ["[1] North view", "[2] Camera view", "[3] First person"][control_view]
 	_status.text = "Controlling %s #%d   ·   %s   ·   C  release" % [
 			controlled_species.species_name, controlled_index, view]
+	if held_species != null:
+		_status.text += "\nCarrying %s #%d   ·   Q  drop   ·   E  eat" % [
+				held_species.species_name, held_index]
 	_status.visible = true
 
 
@@ -572,9 +716,15 @@ const HELP := [
 	["", ""],
 	["CONTROL", ""],
 	["WASD", "move the agent"],
-	["Space", "interact with the outlined agent"],
+	["Shift", "run"],
+	["Space", "jump"],
+	["Left click", "pick up the outlined agent"],
+	["Q", "drop what you carry"],
+	["E", "eat what you carry"],
 	["1", "north view: W = north"],
 	["2", "camera view: W = forward"],
+	["3", "first person"],
+	["Esc", "free the cursor (2 / 3)"],
 	["C", "release the agent"],
 	["", ""],
 	["OTHER", ""],

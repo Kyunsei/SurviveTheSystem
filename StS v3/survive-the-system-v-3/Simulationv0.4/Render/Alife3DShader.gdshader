@@ -16,7 +16,7 @@ uniform float alpha_cutoff : hint_range(0.0, 1.0) = 0.5;
 uniform sampler2D agent_data : filter_nearest, repeat_disable;
 uniform int tex_width = 1024;
 uniform float world_height = 48.0;
-
+global uniform vec3 wrap_center;
 // Used when an agent has no color set (packed color == 0)
 uniform vec4 alive_color : source_color = vec4(0.31, 0.66, 0.40, 1.0);
 uniform vec4 corpse_color : source_color = vec4(0.49, 0.08, 0.15, 1.0);
@@ -27,7 +27,7 @@ uniform int selected_id = -1;
 uniform vec4 outline_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
 uniform int outline_px : hint_range(1, 8) = 1;
 
-
+uniform int hidden_id = -1;     // agent not drawn (the first-person agent)
 
 varying flat int state;
 varying flat int action;
@@ -122,7 +122,8 @@ void vertex() {
 
 	is_selected = 0.0;
 
-	if (state == 0) {
+	if (state == 0) { 
+		//|| INSTANCE_ID == hidden_id) {
 		// FREE slot: all 4 corners on the same point -> zero-area quad, not drawn
 		VERTEX = vec3(0.0);
 	} else {
@@ -143,8 +144,8 @@ void vertex() {
 		}
 
 		vec3 cam_pos = MAIN_CAM_INV_VIEW_MATRIX[3].xyz;
-		vec3 agent = nearest_image(MODEL_MATRIX[3].xyz + vec3(d.x, y, d.y), cam_pos);
-
+		vec3 agent = nearest_image(MODEL_MATRIX[3].xyz + vec3(d.x, y, d.y), wrap_center);
+		//float dist = distance(agent.xz, wrap_center.xz);     // if you use max_draw_distance
 		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
 				vec4(right, 0.0),
 				vec4(up, 0.0),

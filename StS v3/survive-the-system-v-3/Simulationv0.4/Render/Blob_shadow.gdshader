@@ -2,6 +2,7 @@ shader_type spatial;
 // Multiply blend: order-independent, so overlapping shadows never need sorting
 render_mode unshaded, blend_mul, depth_draw_never, cull_disabled, shadows_disabled;
 
+global uniform vec3 wrap_center;
 // Same agent_data texture as the sprite shader (test3d.gdshader)
 uniform sampler2D agent_data : filter_nearest, repeat_disable;
 uniform int tex_width = 1024;
@@ -44,7 +45,8 @@ void vertex() {
 		v_strength = clamp(1.0 - h / fade_height, 0.0, 1.0);
 		vec2 c = vec2(d.x, d.y) + sun_offset * h;      // shift with the sun direction
 		vec3 cam_pos = MAIN_CAM_INV_VIEW_MATRIX[3].xyz;
-		vec3 spot = nearest_image(MODEL_MATRIX[3].xyz + vec3(c.x, ground_y + 0.01, c.y), cam_pos);
+		//vec3 spot = nearest_image(MODEL_MATRIX[3].xyz + vec3(c.x, ground_y + 0.01, c.y), cam_pos);
+		vec3 spot = nearest_image(MODEL_MATRIX[3].xyz + vec3(c.x, ground_y + 0.01, c.y), wrap_center);
 		MODELVIEW_MATRIX = VIEW_MATRIX * mat4(
 				vec4(1.0, 0.0, 0.0, 0.0),
 				vec4(0.0, 0.0, 1.0, 0.0),

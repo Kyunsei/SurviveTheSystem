@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://5miluxbvow84"]
+
+[ext_resource type="PackedScene" uid="uid://chtr6unxbbpef" path="res://Collector/collector_model.tscn" id="1_4462r"]
+[ext_resource type="Script" uid="uid://fpucj6lnbnpf" path="res://Simulationv0.4/Machine/collector_2.gd" id="1_b7k8n"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_b7k8n"]
+size = Vector3(4, 7, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dwx45"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+albedo_color = Color(0.33333334, 0.73333335, 0.4745098, 0.53333336)
+
+[sub_resource type="BoxMesh" id="BoxMesh_otlq5"]
+material = SubResource("StandardMaterial3D_dwx45")
+size = Vector3(2.8, 7.8, 2.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_84hyi"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.30800003)
+
+[sub_resource type="BoxMesh" id="BoxMesh_aatvm"]
+material = SubResource("StandardMaterial3D_84hyi")
+size = Vector3(3.6, 0.6, 0.1)
+
+[node name="collector2" type="Node3D" unique_id=945651988]
+script = ExtResource("1_b7k8n")
+
+[node name="Collector_model" parent="." unique_id=812750137 instance=ExtResource("1_4462r")]
+
+[node name="Collecting_Area3D" type="Area3D" parent="." unique_id=1212469477]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.29999995, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collecting_Area3D" unique_id=1172752237]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9000001, 0)
+shape = SubResource("BoxShape3D_b7k8n")
+
+[node name="collected_amount_Label3D" type="Label3D" parent="." unique_id=1416782498]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.051, 0.3, 1.8)
+text = "etetretetetetete"
+font_size = 100
+
+[node name="InsideMesh" type="MeshInstance3D" parent="." unique_id=123592715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0000002, 0)
+mesh = SubResource("BoxMesh_otlq5")
+
+[node name="sign" type="MeshInstance3D" parent="." unique_id=1503502370]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.1999998, 4.5)
+mesh = SubResource("BoxMesh_aatvm")
+
+[node name="signlabel" type="Label3D" parent="sign" unique_id=1130109741]
+text = "Next Reward at 1000 Biomass"
+font_size = 48
+outline_size = 16
