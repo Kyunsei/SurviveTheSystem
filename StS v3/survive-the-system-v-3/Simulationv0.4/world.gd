@@ -1,12 +1,12 @@
 extends Node
 class_name WorldManager
 
-@export var picker : Node
+@export var controller : PlayerController
 #------------Planete General
 var size : Vector3
 #var default_size = Vector3(240,20,240) 
 #var default_size = Vector3(60,20,60)
-var default_size = Vector3(240,20,240) 
+var default_size = Vector3(340,20,340) 
 
 
 enum Border { WRAP, WALL }
@@ -19,7 +19,7 @@ var border_type_z := Border.WRAP
 var sun_usec := 0.0
 var SUN_energy := 1.0
 var SUN_GRID : PackedFloat32Array
-var SUN_cell_size := Vector3(1.0,10.0,1.0) #/5
+var SUN_cell_size := Vector3(1.5,10.0,1.5) #/5
 var SUN_GRID_W : int          # cells along x
 var SUN_GRID_H : int          # cells along y
 var SUN_GRID_D : int          # cells along z
@@ -40,7 +40,7 @@ var render3D :  WorldRender3D
 #------------------SET_UP-----------------------------------------------
 
 func init():
-	$Render_World3D.setup(picker)
+	$Render_World3D.setup(controller)
 	
 	_init_worldsize()
 	_init_SUN()

@@ -259,3 +259,7 @@ wrap_center={
 "type": "vec3",
 "value": Vector3(0, 0, 0)
 }
+planet_radius={
+"type": "float",
+"value": 0.0
+}

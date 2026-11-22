@@ -13,7 +13,10 @@ class_name WorldWrap
 
 static var size := Vector3(100.0, 100.0, 100.0)
 static var mask := Vector3.ZERO      # 1.0 on wrapped axes, 0.0 otherwise
-static var visual := false           # wrap-around display on / off (set by the picker)
+static var visual := false           # wrap-around display on / off (set by the controller)
+## Little-planet look: the world is drawn bent down with distance (0 = flat).
+## Same value as the `planet_radius` shader global (set by the controller).
+static var planet_radius := 0.0
 
 
 static func configure(world_size: Vector3, wrap_x: bool, wrap_y: bool, wrap_z: bool) -> void:
@@ -40,6 +43,32 @@ static func wrap_into(p: Vector3) -> Vector3:
 	if mask.y > 0.0: p.y = fposmod(p.y, size.y)
 	if mask.z > 0.0: p.z = fposmod(p.z, size.z)
 	return p
+
+
+## Where `p` is DRAWN on the little planet around `center` (same formula as the shaders).
+## The flat world is wrapped onto a sphere of radius planet_radius that touches the
+## ground (y = 0) at `center`; heights above the ground stay heights.
+## Use it for anything placed on screen from GDScript (picking, bars, arrows...).
+static func curve(p: Vector3, center: Vector3) -> Vector3:
+	if planet_radius <= 0.0:
+		return p
+	var dx := p.x - center.x
+	var dz := p.z - center.z
+	var dist := sqrt(dx * dx + dz * dz)
+	if dist < 1e-5:
+		return p
+	var a := dist / planet_radius
+	var r := planet_radius + p.y
+	var s := sin(a) * r / dist
+	return Vector3(center.x + dx * s, cos(a) * r - planet_radius, center.z + dz * s)
+
+
+## Visible radius on the planet: a circle of half the world (not a square), and never past
+## the far side of the ball. 0 = no limit (flat world).
+static func planet_view_limit() -> float:
+	if planet_radius <= 0.0:
+		return 0.0
+	return minf(minf(size.x, size.z) * 0.5, PI * planet_radius * 0.97)
 
 
 ## The copy of `p` the camera shows near `ref` (shortest way through the borders).

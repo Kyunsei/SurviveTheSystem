@@ -1,6 +1,9 @@
 extends Node
-class_name InfrastructureManager
+class_name ArtefactManager
 
+
+var global_positions : PackedVector3Array
+var global_size : PackedVector3Array
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

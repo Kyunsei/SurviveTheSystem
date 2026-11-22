@@ -1,12 +1,51 @@
 extends ALIFE
 class_name ALIFE_SPIDERCRAB
+## Spidercrab: ambush hunter.
+##
+## Hunt, per crab, stored in current_action (also sent to the shader for visuals):
+##   0 IDLE      not hunting (not enough prey in the world)
+##   1 APPROACH  follow the prey's scent field, then walk toward the best prey in sight
+##   2 CHARGE    prey within strike_range: stop and aim for charge_time (the "tell")
+##   3 DASH      rush in a straight line, direction LOCKED when the charge ends.
+##               Any prey within catch_radius during the dash is eaten.
+##               -> prey that moves sideways at the right moment is missed
+##   4 RECOVER   out of breath for recover_time, then back to APPROACH
+##
+## Prey: several species, each with an affinity (1 = favourite). The scent fields are
+## mixed by affinity, and the target is the prey with the best distance / affinity.
+##
+## Visuals: call setup_hunt_visuals() once the renderer exists (sprite shader action_* uniforms).
+##
+## IMPORTANT: the hunt arrays must be sized like the other per-agent arrays:
+##   call ensure_hunt_arrays(capacity) wherever this species' arrays are resized
+##   (main thread), and reset_hunt(i) when an agent is spawned in slot i.
 
+enum Hunt { IDLE, APPROACH, CHARGE, DASH, RECOVER }   # = current_action values
 
 		#debug
 var shp:=0
 var sh:= 0
 var stopp:=0
 var stop:=0
+
+#HUNT (per agent)   the state itself is current_action (Hunt)
+var hunt_timer := PackedFloat32Array()    # time left in CHARGE / DASH / RECOVER (sim time)
+var hunt_dir := PackedVector3Array()      # dash direction, locked at the end of the charge
+var hunt_target := PackedInt32Array()     # global id of the aimed prey (-1 = none)
+
+#HUNT (settings)
+var prey_species: Array[String] = []      # species names, favourite first
+var prey_affinity: Array[float] = []      # same order: 1.0 = favourite, lower = less attractive
+var strike_range := 10.0                   # starts charging when a prey is this close
+var lose_range := 15.0                     # aborts the charge if the prey gets this far
+var charge_time := 1.5                    # the "tell": how long it stands still before dashing
+var dash_speed := 10.0
+var dash_distance := 20.0                  # straight-line length of the dash
+var catch_radius := 0.9                   # how close a prey must be during the dash to be eaten
+var recover_time := 2.0                   # out of breath after a dash (hit or miss)
+var hunt_corpses := true                  # dead prey can be targeted, charged and eaten too
+var corpse_affinity := 0.8                # 0..1: how attractive a corpse is vs a living prey
+
 
 func _init() -> void:
 	photosynthesis_on = false
@@ -16,7 +55,7 @@ func _init() -> void:
 	hframes = 1
 	vframes=1
 	colour = Color(0.609, 0.09, 0.557, 1.0)
-	
+
 	max_energy = 2500
 	max_speed = 2.
 
@@ -27,16 +66,15 @@ func _init() -> void:
 	max_life_cycle = 4
 	growth_cost = [1000,1000,1000,1000,1000] #Should be size of max_life+1
 	growth_rate = 2
-	
-	
 
 	#food part
-	
+	prey_species = ["BUGSHEEP", "SECOND_PREY"]   # <- put your second species' name here
+	prey_affinity = [1.0, 0.4]                   # the second one attracts much less
+
 	#Flock par
 	#contact par
 	view_radius = 100 #19.0	 #need to be < that contact cell grid
 	separation_radius = 100# 3.0
-	
 
 	w_separation = 2.0 #dont merge
 	w_alignment =0. #follow other
@@ -44,32 +82,60 @@ func _init() -> void:
 	w_seek = 1.0# seek food
 	max_force = 2.0 #how much power has steer
 
-	
+
+# --- Hunt arrays (main thread) -------------------------------------------------
+
+func ensure_hunt_arrays(n: int) -> void:
+	var old := hunt_timer.size()
+	if n <= old:
+		return
+	hunt_timer.resize(n)
+	hunt_dir.resize(n)
+	hunt_target.resize(n)
+	for i in range(old, n):
+		reset_hunt(i)
+
+
+## Back to walking around: APPROACH if it was hunting, IDLE stays IDLE.
+func reset_hunt(i: int) -> void:
+	if current_action.size() > i and current_action[i] != Hunt.IDLE:
+		current_action[i] = Hunt.APPROACH
+	hunt_timer[i] = 0.0
+	hunt_dir[i] = Vector3.ZERO
+	hunt_target[i] = -1
+
+
+## Tell the sprite shader which current_action values are the charge / dash / recover,
+## so it can show them (flash + crouch, stretch, tired). Call once the renderer exists.
+func setup_hunt_visuals() -> void:
+	var mat: ShaderMaterial = renderer3D.material_override
+	mat.set_shader_parameter("action_charge", Hunt.CHARGE)
+	mat.set_shader_parameter("action_dash", Hunt.DASH)
+	mat.set_shader_parameter("action_recover", Hunt.RECOVER)
+
+
+# --- Simulation ------------------------------------------------------------------
+
 func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_speed:float) -> void:
 	if alifemanager.global_position_array.size()<1:
 		return #NEED At least one update before somme function
-	
+
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
-	#var mouse_target :Vector3 = alifemanager.mouse_position # Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
-	
+	var step := dt * sim_speed                # simulation time of this step
+
 	#MAP
 	var field_cell_size := alifemanager.field_cell_size
 	var world_size: Vector3 = world.size
 	var wrap_x: bool = world.border_type_x == world.Border.WRAP
 	var wrap_y: bool = world.border_type_y == world.Border.WRAP
 	var wrap_z: bool = world.border_type_z == world.Border.WRAP
-	
+
 	#FIELD GRID
 	var H := FIELD_H
 	var W := FIELD_W
 	var D := FIELD_D
-	#print(alifemanager.W)
 
-	#var fnx := W if (wrap_x and W < 3) else 3
-	#var fny := H if (wrap_y and H < 3) else 3
-	#var fnz := D if (wrap_z and D < 3) else 3
-	
 	#contact grid
 	var grid_cell_size := alifemanager.cell_size
 	var C_H := alifemanager.GRID_H
@@ -84,33 +150,39 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 	#GLOBAL ID
 	var offs: PackedInt32Array = alifemanager.global_species_offset
 	var my_end := offs[species_id + 1]
-	var base := offs[species_id]		
-	
-	#FOOD
-	var target_dist := 1.0
-	var t_sp :ALIFE= alifemanager.codex.species.get("BUGSHEEP")
-	var target_id := t_sp.species_id
-	var t_diff := t_sp.FIELD_c_diffused
-	var t_count := t_sp.FIELD_count
-	
+	var base := offs[species_id]
+
+	#FOOD: the prey species that exist in this world (missing names are skipped)
+	var preys: Array[ALIFE] = []
+	var pr_aff := PackedFloat32Array()
+	var prey_total := 0
+	for k in prey_species.size():
+		var s: ALIFE = alifemanager.codex.species.get(prey_species[k])
+		if s == null:
+			continue
+		preys.append(s)
+		pr_aff.append(prey_affinity[k] if k < prey_affinity.size() else 1.0)
+		prey_total += s.active_entity_count
+
+	# Hunt arrays not sized yet (ensure_hunt_arrays not called): no strike, simple seek
+	var strike_ok := hunt_timer.size() >= end
+
 	#Flock
 	var view_r2 := view_radius*view_radius
 	var sep_r2 := separation_radius*separation_radius
-	
-
+	var catch_r2 := catch_radius * catch_radius
 
 
 	for i in range(start, end):
 		var lifecycle := current_life_state[i]
-		var g_cost:=  growth_cost[lifecycle]
 		var _energy:= current_energy_array[i]
-		
+
 		if active_alife_array[i] == 0:
 			continue
 		if alive_array[i] == 0:
 			if active_alife_array[i] == 1:
 				var b = current_biomass[i]
-				b -= 1 * dt *sim_speed
+				b -= 1 * step
 				current_biomass[i] = b
 				if b < 0:
 					local_pending_remove_id.append(i)
@@ -121,76 +193,98 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 						local_pending_spawn_id.append(i)
 						local_pending_spawn_id.append(i)
 				continue
-		
 
-
-#EGG TIME---------		
-		'if lifecycle == 0:
-			_energy -= 2 * dt * sim_speed
-			if _energy < 0:
-				current_life_state[i]+=1
-				_energy = seed_energy
-			current_energy_array[i] = _energy
-			continue'
-			
-		var p := position_array[i]		
+		var p := position_array[i]
 		var cx := mini(int(p.x / field_cell_size.x), W - 1)
 		var cy := mini(int(p.y / field_cell_size.y), H - 1)
 		var cz := mini(int(p.z / field_cell_size.z), D - 1)
-		var c := cx + W * (cy + H * cz)	
-		var tc := t_count[c]
+		var c := cx + W * (cy + H * cz)
 		var steer := Vector3.ZERO   # sum of forces (acceleration), NOT a velocity
 		var v:Vector3= current_velocity[i]
 		var global_i := i + base
-		
-		
-	#--------MOVE & AI
-		#--------FOOD (seek: force toward a desired velocity)
+
+	#--------HUNTING ON / OFF (enough prey around the world)
 		#2500 time frame between 20 to 5, eat 15 sheep = 1500 energy
-		if t_sp.active_entity_count > 20 and current_action[i]!=1:
-			#stop = _energy
-		#if current_energy_array[i] < 1000:
-			current_action[i] = 1
-			#print("start: energy win %d" % [stop-stopp])
-			#stopp = stop
-		if t_sp.active_entity_count < 6 and current_action[i]!=0:
-		#if current_energy_array[i] > 2000:
-			#sh = _energy
-			current_action[i] = 0
+		if prey_total > 20 and current_action[i] == Hunt.IDLE:
+			current_action[i] = Hunt.APPROACH
+		if prey_total < 6 and current_action[i] != Hunt.IDLE:
+			current_action[i] = Hunt.IDLE
 			v = Vector3.ZERO
-			#print(" stop: loose %d between hunt" % [sh -stop])
-			#shp = sh
+			if strike_ok:
+				reset_hunt(i)
 
-			
-		if current_action[i] ==1:
-			if tc < 1:
-				var g := scent_gradient(t_diff, c)
-				if g.length_squared() > 1e-6:
-					steer += (g.normalized() * max_speed - v) * w_seek
-					#steer += (g.normalized() * 1 - v) * w_seek
+		var state: int = current_action[i]
+		if not strike_ok and state != Hunt.IDLE:
+			state = Hunt.APPROACH                    # no hunt arrays yet: simple seek
+		var override_v := false             # CHARGE / DASH / RECOVER set the velocity directly
+		var forced_v := Vector3.ZERO
 
-			else:
-				var me := i + base
-				var found := find_nearest(p, me, target_id, 4)
-				var prey := int(found.w)
-				if prey >= 0:
-					var delta := Vector3(found.x, found.y, found.z)
-					var dist := delta.length()
-					if dist < target_dist:
-						var sp := offs.bsearch(prey, false) - 1
-						var local := prey - offs[sp]
-						var sp_o = alifemanager.species_array[sp]
-						if sp_o.active_alife_array[local] == 1:
-							sp_o.alive_array[local] = 0
-							_energy += sp_o.current_biomass[local]
-							sp_o.current_biomass[local] = 0
-							
+	#--------MOVE & AI
+		if state != Hunt.IDLE:
+			match state:
+				Hunt.APPROACH:
+					# Prey in my field cell? Then look for one; otherwise follow the mixed scent
+					var prey_here := 0
+					for k in preys.size():
+						prey_here += preys[k].FIELD_count[c]
+					if prey_here < 1:
+						var g := Vector3.ZERO
+						for k in preys.size():
+							var gk := scent_gradient(preys[k].FIELD_c_diffused, c)
+							if gk.length_squared() > 1e-6:
+								g += gk.normalized() * pr_aff[k]     # favourite smells stronger
+						if g.length_squared() > 1e-6:
+							steer += (g.normalized() * max_speed - v) * w_seek
+					else:
+						var best := _best_prey(p, global_i, preys, pr_aff)
+						var prey := int(best.w)
+						if prey >= 0:
+							var delta := Vector3(best.x, best.y, best.z)
+							var dist := delta.length()
+							if strike_ok and dist <= strike_range:
+								current_action[i] = Hunt.CHARGE      # in range: start the tell
+								hunt_timer[i] = charge_time
+								hunt_target[i] = prey
+							elif dist > 0.0:
+								steer += (delta / dist * max_speed - v) * w_seek
 
-					elif dist > 0.0:
-						steer += (delta / dist * max_speed - v) * w_seek
+				Hunt.CHARGE:
+					# Stand still and aim; abort if the prey is gone or got too far
+					override_v = true
+					forced_v = v * 0.5                       # brake hard
+					var delta := _delta_to(hunt_target[i], p, offs, world_size, wrap_x, wrap_y, wrap_z)
+					if delta.x == INF or delta.length() > lose_range:
+						reset_hunt(i)                        # lost it
+					else:
+						hunt_timer[i] -= step
+						if hunt_timer[i] <= 0.0:
+							# Lock the direction NOW: where the prey is, not where it goes
+							delta.y = 0.0
+							hunt_dir[i] = delta.normalized() if delta.length_squared() > 1e-6 \
+									else Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)).normalized()
+							current_action[i] = Hunt.DASH
+							hunt_timer[i] = dash_distance / maxf(dash_speed, 0.01)
 
-		#--------NEIGHBOURS
-#--------NEIGHBOURS
+				Hunt.DASH:
+					override_v = true
+					forced_v = hunt_dir[i] * dash_speed
+					# Anything edible within reach is caught
+					var gained := _try_catch(p, global_i, preys, offs, catch_r2)
+					hunt_timer[i] -= step
+					if gained > 0.0 or hunt_timer[i] <= 0.0:
+						_energy += gained
+						current_action[i] = Hunt.RECOVER            # hit or miss: out of breath
+						hunt_timer[i] = recover_time
+						hunt_target[i] = -1
+
+				Hunt.RECOVER:
+					override_v = true
+					forced_v = v * 0.85                      # slow down to a stop
+					hunt_timer[i] -= step
+					if hunt_timer[i] <= 0.0:
+						current_action[i] = Hunt.APPROACH
+
+	#--------NEIGHBOURS
 		var n := 0                          # neighbours counted for alignment / cohesion (capped)
 		var sum_d := Vector3.ZERO      # cohesion: sum of offsets
 		var sum_v := Vector3.ZERO      # alignment: sum of velocities
@@ -258,57 +352,45 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		if n > 0:
 			steer += sep * w_separation
 			steer += (sum_v / n - v) * w_alignment
-			steer += (sum_d / n) * w_cohesion	
+			steer += (sum_d / n) * w_cohesion
 
 
 	#--------APPLY STEERING, once
-		#var damp :=  -Vector3(-0.5,0,-0.5) #exp(-0.5 * dt * sim_speed)
-
 		steer = steer.limit_length(max_force)      # "=" not "+="
-		var new_v := v + steer * dt *sim_speed #- damp* dt *sim_speed
+		var new_v := v + steer * step
 		new_v = new_v.limit_length(max_speed)
-		if new_v.length_squared() < 1e-8:
-			pass
-			#new_v = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) #* 0.1   # small nudge
-		
+		if override_v:
+			new_v = forced_v                       # charge / dash / recover: no steering, no speed cap
+
 		if i == player_index:
-			new_v = player_velocity #* dt *sim_speed     # player-controlled: the AI is ignored
-			#new_v = new_v.limit_length(max_speed)
+			new_v = player_velocity     # player-controlled: the AI is ignored
 
 		new_velocity[i] = new_v
 
 	#--------Growth
-
-	
 		if _energy >= 2000 and lifecycle < max_life_cycle:
 			current_size[i] += growth_rate
 			current_biomass[i] += 1000/10
 			current_life_state[i] +=1
 			_energy -= 1000
 
-
 	#--------maintain cost
-		#need to loose around 1500 energy in 2500 frames? 
-		_energy += -1. *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
-		
+		#need to loose around 1500 energy in 2500 frames?
+		_energy += -1. * step
+
 	#--------DEATH
 		if _energy < 0 :
 			alive_array[i] = 0
-			
+
 	#--------Duplicate
 		if _energy >= 5*seed_energy and lifecycle >= max_life_cycle:
 			alive_array[i] = 0
-			#_energy -= seed_energy
-			
-			
-			
-			
+
 		#update Value
-		
-		current_energy_array[i] = _energy	
+		current_energy_array[i] = _energy
 		##
 		var nv := new_velocity[i]
-		var q := p + nv * dt * sim_speed
+		var q := p + nv * step
 		# borders (world is 0..size)
 		if wrap_x: q.x = fposmod(q.x, world_size.x)
 		elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); v.x = -v.x
@@ -317,8 +399,197 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		if wrap_z: q.z = fposmod(q.z, world_size.z)
 		elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); v.z = -v.z
 		position_array[i] = q
-		current_velocity[i] = nv		
+		current_velocity[i] = nv
 
-			
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id
+
+
+# --- Hunt helpers ----------------------------------------------------------------
+
+## Best prey around p among all prey species: smallest distance / affinity
+## (corpses included when hunt_corpses, weighted by corpse_affinity).
+## Returns Vector4(dx, dy, dz, global_id), id = -1 if none.
+func _best_prey(p: Vector3, me: int, preys: Array[ALIFE], aff: PackedFloat32Array) -> Vector4:
+	var best := Vector4(0.0, 0.0, 0.0, -1.0)
+	var best_score := INF
+	var rings := ceili(strike_range / maxf(alifemanager.cell_size.x, 0.001)) + 1
+	rings = maxi(rings, 4)
+	for k in preys.size():
+		var found := _nearest_prey(p, me, preys[k], rings)
+		if int(found.w) < 0:
+			continue
+		var score := Vector3(found.x, found.y, found.z).length() / maxf(aff[k], 0.001)
+		if score < best_score:
+			best_score = score
+			best = found
+	return best
+
+
+## Like find_nearest, for agents of `prey_sp`: living ones, plus corpses when hunt_corpses
+## (a corpse counts as farther away: distance / corpse_affinity).
+## Ring search on the contact grid, wrap-aware, stops early once nothing closer can exist.
+## Returns Vector4(dx, dy, dz, global_id), id = -1 if none.
+func _nearest_prey(p: Vector3, me: int, prey_sp: ALIFE, max_rings: int) -> Vector4:
+	var am := alifemanager
+	var W: int = am.GRID_W
+	var H: int = am.GRID_H
+	var D: int = am.GRID_D
+	var cs: Vector3 = am.cell_size
+	var cell_start: PackedInt32Array = am.cell_start
+	var cell_items: PackedInt32Array = am.cell_items
+	var sorted_pos: PackedVector3Array = am.sorted_pos
+	var offs: PackedInt32Array = am.global_species_offset
+	var lo := offs[prey_sp.species_id]
+	var hi := offs[prey_sp.species_id + 1]
+	var alive := prey_sp.alive_array
+	var active := prey_sp.active_alife_array
+	var ws: Vector3 = world.size
+	var wx: bool = world.border_type_x == world.Border.WRAP
+	var wz: bool = world.border_type_z == world.Border.WRAP
+
+	var cx := clampi(int(p.x / cs.x), 0, W - 1)
+	var cz := clampi(int(p.z / cs.z), 0, D - 1)
+	var lim_x := mini(max_rings, (W - 1) / 2) if wx else max_rings
+	var lim_z := mini(max_rings, (D - 1) / 2) if wz else max_rings
+	var cmin := minf(cs.x, cs.z)
+	var corpse_w := 1.0 / maxf(clampf(corpse_affinity, 0.0, 1.0), 0.001)
+	corpse_w *= corpse_w                           # applied to the squared distance
+
+	var best := -1
+	var best_d2 := INF
+	var best_d := Vector3.ZERO
+	for r in max_rings + 1:
+		# Anything in ring r is at least (r - 1) cells away: stop if we already have closer
+		if best >= 0 and best_d2 <= pow((r - 1) * cmin, 2):
+			break
+		for dz in range(-mini(r, lim_z), mini(r, lim_z) + 1):
+			var z := cz + dz
+			if not wz and (z < 0 or z >= D): continue
+			var zw := posmod(z, D)
+			for dx in range(-mini(r, lim_x), mini(r, lim_x) + 1):
+				if maxi(absi(dx), absi(dz)) != r:
+					continue                               # only this ring's shell
+				var x := cx + dx
+				if not wx and (x < 0 or x >= W): continue
+				var xw := posmod(x, W)
+				for y in H:
+					var cell := xw + W * (y + H * zw)
+					for k in range(cell_start[cell], cell_start[cell + 1]):
+						var j: int = cell_items[k]
+						if j < lo or j >= hi or j == me:
+							continue
+						var local := j - lo
+						if active[local] == 0:
+							continue                       # free slot
+						var dead := alive[local] == 0
+						if dead and (not hunt_corpses or prey_sp.current_biomass[local] <= 0.0):
+							continue                       # not hunted, or already eaten
+						var d: Vector3 = sorted_pos[k] - p
+						if wx: d.x -= ws.x * roundf(d.x / ws.x)
+						if wz: d.z -= ws.z * roundf(d.z / ws.z)
+						var d2 := d.length_squared() * (corpse_w if dead else 1.0)
+						if d2 < best_d2:
+							best_d2 = d2
+							best = j
+							best_d = d
+	return Vector4(best_d.x, best_d.y, best_d.z, float(best))
+
+
+## Vector from p to a prey given by global id (shortest way on wrapped axes).
+## x = INF if the prey no longer exists or is dead.
+func _delta_to(target: int, p: Vector3, offs: PackedInt32Array, ws: Vector3,
+		wx: bool, wy: bool, wz: bool) -> Vector3:
+	if target < 0:
+		return Vector3(INF, 0.0, 0.0)
+	var s := offs.bsearch(target, false) - 1
+	var local := target - offs[s]
+	var sp = alifemanager.species_array[s]
+	if sp.active_alife_array[local] == 0:
+		return Vector3(INF, 0.0, 0.0)                # removed
+	if sp.alive_array[local] == 0 and not hunt_corpses:
+		return Vector3(INF, 0.0, 0.0)                # died and corpses aren't hunted
+	var d: Vector3 = sp.position_array[local] - p
+	if wx: d.x -= ws.x * roundf(d.x / ws.x)
+	if wy: d.y -= ws.y * roundf(d.y / ws.y)
+	if wz: d.z -= ws.z * roundf(d.z / ws.z)
+	return d
+
+
+## During the dash: eat the closest prey (or corpse) within catch radius. Returns the energy gained.
+func _try_catch(p: Vector3, me: int, preys: Array[ALIFE], offs: PackedInt32Array,
+		catch_r2: float) -> float:
+	for k in preys.size():
+		var found := _nearest_prey(p, me, preys[k], 1)
+		var prey := int(found.w)
+		if prey < 0 or Vector3(found.x, found.y, found.z).length_squared() > catch_r2:
+			continue
+		var s := offs.bsearch(prey, false) - 1
+		var local := prey - offs[s]
+		var sp_o = alifemanager.species_array[s]
+		if sp_o.active_alife_array[local] == 1 and sp_o.current_biomass[local] > 0.0:
+			sp_o.alive_array[local] = 0              # living: killed / corpse: stays dead
+			var gained: float = sp_o.current_biomass[local]
+			sp_o.current_biomass[local] = 0          # eaten: its species removes it
+			return gained
+	return 0.0
+
+
+func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.555, 0.215, 1.0)):
+	if alifemanager.global_entity_count >= alifemanager.maxLife and alifemanager.maxLife>0:
+		return
+
+	var i  =  find_free_index()
+	if i >= entity_count:
+		current_energy_array.append(e) #HERE MAYBE
+		active_alife_array.append(1)
+		position_array.append(pos)
+		current_color.append(col)
+		color_packed.append(0)
+		set_agent_color(i,Color(1.0, 1.0, 1.0, 1.0))
+		alive_array.append(1) 
+		current_velocity.append(Vector3.ZERO)
+		new_velocity.append(Vector3.ZERO)
+		current_life_state.append(0)
+		current_biomass.append(seed_biomass)
+		current_age.append(0)
+		current_size.append(init_size)
+		current_action.append(0)
+		
+
+		current_sungrid_id.append(get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D))
+		current_grid_id.append(get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D))
+		
+		current_cpu_cost.append(0)
+		neighbour_count.append(0)
+		#update_bin_array(i)
+		entity_count += 1
+
+		
+	else:
+		current_energy_array[i] = e
+		active_alife_array[i] = 1
+		position_array[i] = pos
+		current_color[i]=col
+		set_agent_color(i,Color(1.0, 1.0, 1.0, 1.0))
+		alive_array[i] = 1
+		current_velocity[i] = Vector3.ZERO
+		new_velocity[i] = Vector3.ZERO
+		current_sungrid_id[i] = get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
+		current_grid_id[i] = get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
+		current_life_state[i]=0
+		current_biomass[i]=seed_biomass
+		current_age[i]=0
+		current_size[i]=init_size
+		current_cpu_cost[i] = 0
+		neighbour_count[i] = 0
+		current_action[i] = 0
+
+	active_entity_count += 1
+	if photosynthesis_on:
+			var c := current_sungrid_id[i]
+			var r := photo_range#int(init_size.x)-1
+			stamp(c,r,0,photo_layer_y,1.0)
+	ensure_hunt_arrays(entity_count)
+	reset_hunt(i)                        # a reused slot must not keep a dead crab's dash
+	pending_multimesh_drawn_id.append(i)

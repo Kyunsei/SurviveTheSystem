@@ -12,13 +12,13 @@ func _init() -> void:
 	vframes=1
 	colour = Color(0.655, 0.154, 0.226, 1.0)
 	
-	max_energy = 2500
+	max_energy = 5000
 	max_speed = 6. #WIP might not work as intended
 
 	#LIFECYCLE/DUP
 	duplication_range = 2
-	seed_energy = 600
-	seed_biomass = 2000
+	seed_energy = 2500
+	seed_biomass = 500
 	max_life_cycle = 2
 	growth_cost = [1000,1000,1000] #Should be size of max_life+1
 	growth_rate = 0.5	
@@ -127,16 +127,13 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		if p.y > 0 : new_v.y -=0.8
 		new_velocity[i] = new_v
 	#--------maintain cost
-		# _energy += -1 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
+		_energy += -0.5 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
 		
 	#--------DEATH
 		if _energy < 0 :
 			alive_array[i] = 0
 			
-	#--------Duplicate
-		if _energy >= 1.5*seed_energy:
-			#local_pending_spawn_id.append(i)
-			_energy -= seed_energy
+
 			
 			
 			
@@ -156,7 +153,6 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); v.z = -v.z
 		position_array[i] = q
 		current_velocity[i] = nv
-		print(position_array[i])		
 
 			
 	spawn_per_chunk[local_id] = local_pending_spawn_id

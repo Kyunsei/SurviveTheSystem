@@ -232,9 +232,9 @@ func Release_all_alife():
 func init_default_species(worldd:WorldManager,alifem:AlifeManager):	
 	init_species_from_codex(worldd,alifem)
 	
-	SpawnRandomAlife(0,4000) #GRASS
-	#SpawnRandomAlife(1,40) #TREE
-	#SpawnRandomAlife(2,1000) #clovermoss
+	SpawnRandomAlife(0,30000) #GRASS
+	SpawnRandomAlife(1,10) #TREE
+	SpawnRandomAlife(2,1000) #clovermoss
 	#SpawnRandomAlife(3,10) #glowberry
 	#SpawnRandomAlife(4,3) #spikyflower
 	SpawnRandomAlife(5,30) #bugsheep 

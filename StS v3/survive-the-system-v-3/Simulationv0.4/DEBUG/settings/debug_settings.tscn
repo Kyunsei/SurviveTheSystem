@@ -52,7 +52,6 @@ toggle_mode = true
 text = "Rendering"
 
 [node name="Alife" type="Control" parent="Panel" unique_id=2039912141 node_paths=PackedStringArray("spawnBox")]
-visible = false
 anchors_preset = 0
 offset_left = 2.0
 offset_top = 64.0
@@ -61,14 +60,22 @@ offset_bottom = 572.0
 script = ExtResource("2_dih7y")
 spawnBox = NodePath("SpawnBox")
 
-[node name="SpawnBox" type="ScrollContainer" parent="Panel/Alife" unique_id=1659336733]
+[node name="brush_area" type="Control" parent="Panel/Alife" unique_id=872814431]
+anchors_preset = 0
+offset_left = 16.0
+offset_top = 329.0
+offset_right = 16.0
+offset_bottom = 329.0
+
+[node name="SpawnBox" type="ScrollContainer" parent="Panel/Alife" unique_id=1659336733 node_paths=PackedStringArray("controls_parent")]
 layout_mode = 0
 offset_left = 13.0
 offset_top = 104.0
 offset_right = 281.0
-offset_bottom = 460.0
+offset_bottom = 307.0
 script = ExtResource("3_4k3p1")
 show_names = false
+controls_parent = NodePath("../brush_area")
 ghost_pixel_size = 0.02
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel/Alife" unique_id=1706727379]
@@ -111,6 +118,7 @@ offset_bottom = 6.0
 text = "deselect entity  before otherwise crash"
 
 [node name="worldsettings" parent="Panel" unique_id=1459719151 instance=ExtResource("4_0i7kf")]
+visible = false
 layout_mode = 0
 anchors_preset = 0
 anchor_right = 0.0

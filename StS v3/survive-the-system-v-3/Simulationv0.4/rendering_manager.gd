@@ -54,6 +54,8 @@ func init_renderer():
 		s.rend_data.resize(s.entity_count)	
 		s.renderer3D = AlifeRenderer3D.new()
 		s.renderer3D.setup( s.rend_data,s, world.size, s.colour)
+		if s.species_name == "SPIDERCRAB":
+			s.setup_hunt_visuals()
 		add_child.call_deferred(s.renderer3D)
 
 		#s.renderer2D = AlifeRenderer2D.new()

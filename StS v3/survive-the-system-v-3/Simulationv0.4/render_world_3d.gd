@@ -10,7 +10,8 @@ func _ready() -> void:
 
 
 func setup(pciker):
-	$GROUND.picker = pciker
+	print(pciker)
+	$GROUND.controller = pciker
 	
 
 func DrawWorld(world:WorldManager):
