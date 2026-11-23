@@ -17,6 +17,7 @@ background_mode = 2
 sky = SubResource("Sky_f52ns")
 glow_enabled = true
 fog_mode = 1
+fog_density = 1.0
 fog_depth_begin = 40.0
 fog_depth_end = 120.0
 volumetric_fog_detail_spread = 6.0
