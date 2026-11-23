@@ -90,7 +90,7 @@ func start_write_rendering_buffer():
 		s.rend_data.resize(entity_count)
 		s.renderer2D.ensure_instances2D(s.entity_count)
 		s.renderer3D.ensure_instances3D(s.entity_count)
-		
+		s
 
 	renderer_count = alifemanager.species_array.size() #TODO move renderer in visualisation
 	#setup thread/chunk/jobs

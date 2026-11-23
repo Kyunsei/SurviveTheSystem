@@ -158,7 +158,7 @@ var friend_sp_id : PackedInt32Array
 var danger_max_dist : float
 
 var minEnergy : float = 5.0
-var maxEnergy : float = 20.0
+#var maxEnergy : float = 20.0
 
 #Randomness
 const JITTER_COUNT := 4096

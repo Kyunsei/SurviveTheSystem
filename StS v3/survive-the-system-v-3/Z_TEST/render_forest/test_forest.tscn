@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cew1c3fg17fvi"]
+
+[ext_resource type="Script" uid="uid://be0lpy71kipfw" path="res://Z_TEST/render_forest/test_forest.gd" id="1_40qf0"]
+
+[node name="test_forest" type="Node3D" unique_id=815025984]
+script = ExtResource("1_40qf0")

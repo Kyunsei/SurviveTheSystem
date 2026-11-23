@@ -6,20 +6,25 @@ func _init() -> void:
 	species_id = 1
 	species_name = "tree"
 	photosynthesis_on = true
-	photo_range = 7
+	photo_range = 0 #7
 	photo_layer_y = 1
-	sprite = preload("res://Alife/Plant/tree/tree.png")
+	sprite = preload("uid://xe8k30kjeyh6")
+	hframes = 3
+	vframes=1
 	colour = Color(0.678, 0.372, 0.439, 1.0)
 	photo_optimal_value  = 0.5
+	has_seed = true
 	
 	#LIFECYCLE/DUP
 	duplication_range = 40
-	init_size = 1.0
+	init_size = .5
+	
 	seed_energy = 250
-	seed_biomass = 20
-	max_energy = seed_energy
+	seed_biomass = 25
+	
+	max_energy = 1000
 	max_life_cycle = 7 #growt_cost size -1
-	growth_cost = [100,100,100,100,100,100,150,200] #Should be size of max_life
+	growth_cost = [250,350,350,350,350,350,400,500] #Should be size of max_life
 	growth_rate = 2
 
 func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_speed:float) -> void:
@@ -40,8 +45,6 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 	var photo_rate := 1.0
 	var value:= 0.0
 
-
-	#Photosynthesis(start,end,dt)
 	
 	for i in range(start, end):
 		if active_alife_array[i] == 0:
@@ -55,13 +58,30 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 					local_pending_remove_id.append(i)
 				continue
 		var _energy:= current_energy_array[i]
-		
+		var lifecycle := current_life_state[i]
+		var g_cost:=  growth_cost[lifecycle]
+		var sun_c := current_sungrid_id[i]		
+			
+		#EGG TIME---------
+		if lifecycle == 0:
+			_energy -= 2 * dt * sim_speed
+			if _energy < 0:
+				if  sun_stamp[sun_c] > 1:
+					alive_array[i] = 0
+				else:
+					current_life_state[i]+=1
+					current_size[i] += growth_rate/2
+					_energy = seed_energy
+			
+			current_energy_array[i] = _energy
+			continue
+			
+			
 		#--------EAT
 		# Photosynthesis (cached per cell for this frame)
-		if _energy < seed_energy*2:
+		if _energy < max_energy:
 			#_energy += photo(i,sun_W,sun_stamp, sun_grid) * dt
 
-			var sun_c := current_sungrid_id[i]
 			var sun_c_up := sun_c + sun_W #WORK ONLY IF THERE IS A LAYER ABOVE
 			var d:= sun_stamp[sun_c]
 			var d_up := sun_stamp[sun_c_up] +1
@@ -77,8 +97,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 			alive_array[i] = 0
 	
 	#--------Growth
-		var lifecycle := current_life_state[i]
-		var g_cost:=  growth_cost[lifecycle]
+
 	
 		if _energy >= g_cost*1.2 and lifecycle < max_life_cycle:
 			current_size[i] += growth_rate
@@ -87,7 +106,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 			_energy -= g_cost	
 			
 		#--------Duplicate
-		if _energy >= seed_energy*1.5:
+		if _energy >= seed_energy*1.5 and lifecycle == max_life_cycle:
 			local_pending_spawn_id.append(i)
 			_energy -= seed_energy
 		#update energy
@@ -99,17 +118,3 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 			
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id
-
-
-
-
-#TEST
-func photo(i:int,sun_W:int,sun_stamp:PackedFloat32Array, sun_grid:PackedFloat32Array):
-	var photo_rate:= 1.0
-	var sun_c := current_sungrid_id[i]
-	var sun_c_up := sun_c + sun_W #WORK ONLY IF THERE IS A LAYER ABOVE
-	var d:= sun_stamp[sun_c]
-	var d_up := sun_stamp[sun_c_up] +1
-	var value =  sun_grid[sun_c_up]  /   maxf(d_up, photo_rate) 
-	var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
-	return value2 /maxf(d, photo_rate) 

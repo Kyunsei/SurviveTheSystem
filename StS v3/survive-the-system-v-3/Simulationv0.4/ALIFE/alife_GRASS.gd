@@ -12,7 +12,7 @@ func _init() -> void:
 	photo_optimal_width = 0.2
 	
 	#LIFECYCLE/DUP
-	duplication_range = 10
+	duplication_range = 50
 	init_size = 0.5
 	seed_energy = 50
 	seed_biomass = 5
@@ -107,16 +107,25 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id
 
+func Build_and_remove_pendings():
+	for c in spawn_per_chunk.size():
+		pending_remove_id.append_array(remove_per_chunk[c])
+		pending_spawn_id.append_array(spawn_per_chunk[c])
+	
+	var d_range:= duplication_range
+	for i in pending_spawn_id:
+		var newpos := pick_random_position(Vector3(d_range,0,d_range),position_array[i])
+		if photosynthesis_on and !has_seed:
+			var s_c := get_cell_id(newpos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
+			var s_c_up := s_c + world.SUN_GRID_W
+			if world.SUN_stamp[s_c] > 0 or world.SUN_stamp[s_c_up] > 0:
+				continue
+		Build_New_Life(newpos,seed_energy, current_color[i])
+	
+	for i in pending_remove_id:
+		Remove_Life(i)	
 
 
 
-#TEST
-func photo(i:int,sun_W:int,sun_stamp:PackedFloat32Array, sun_grid:PackedFloat32Array):
-	var photo_rate:= 1.0
-	var sun_c := current_sungrid_id[i]
-	var sun_c_up := sun_c + sun_W #WORK ONLY IF THERE IS A LAYER ABOVE
-	var d:= sun_stamp[sun_c]
-	var d_up := sun_stamp[sun_c_up] +1
-	var value =  sun_grid[sun_c_up]  /   maxf(d_up, photo_rate) 
-	var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
-	return value2 /maxf(d, photo_rate) 
+	pending_spawn_id.clear()
+	pending_remove_id.clear()
