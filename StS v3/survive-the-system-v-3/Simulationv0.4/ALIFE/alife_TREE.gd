@@ -61,7 +61,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 
 	
 	for i in range(start, end):
-		if active_alife_array[i] == 3:
+		if active_alife_array[i] == 3: #in tree
 			continue
 		if active_alife_array[i] == 0:
 			continue
@@ -152,7 +152,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 
 
 
-func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.555, 0.215, 1.0), stored := 1):
+func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.555, 0.215, 1.0), stored := 1,parentid := -1):
 	if alifemanager.global_entity_count >= alifemanager.maxLife and alifemanager.maxLife>0:
 		return
 
@@ -174,7 +174,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		current_action.append(0)
 		current_photo_layer.append(1)
 		current_photo_range.append(0)
-
+		parent_id.append(parentid)
 		
 
 		current_sungrid_id.append(get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D))
@@ -206,9 +206,11 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		current_action[i] = 0
 		current_photo_layer[i] = 1
 		current_photo_range[i] = 0
+		parent_id[i] = parentid
+
 
 	active_entity_count += 1
-	if photosynthesis_on:
+	if photosynthesis_on and stored == 1:
 			var c := current_sungrid_id[i]
 			var r := current_photo_range[i]#int(init_size.x)-1
 			stamp(c,r,0,current_photo_layer[i],1.0)
@@ -272,15 +274,30 @@ func Build_and_remove_pendings():
 	
 	var d_range:= duplication_range
 	for i in pending_spawn_id:
-		var newpos := pick_random_position(Vector3(d_range,0,d_range),position_array[i])
+		var center := position_array[i]
+		center.y += current_size[i]/2  +1.5#*128/2
+		var newpos := pick_random_position(Vector3(3.5,2.0,3.5),center)
 		if photosynthesis_on and !has_seed:
 			var s_c := get_cell_id(newpos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 			if world.SUN_stamp[s_c] > 0 :
 				continue
-		Build_New_Life(newpos,seed_energy, current_color[i])
+		Build_New_Life(newpos,seed_energy, current_color[i],3, i )
 	
 	for i in pending_remove_id:
 		Remove_Life(i)	
 
 	pending_spawn_id.clear()
 	pending_remove_id.clear()
+
+
+func Interact(i:int, sp:ALIFE, local_id:int):
+	print("%s ID: %d interacted with %s ID: %d" %[sp.species_name, local_id, species_name, i])
+	if active_alife_array[i] == 3:
+		active_alife_array[i] = 2
+		parent_id[i] = -1
+	else:
+		for j in entity_count:
+			if parent_id[j] == i:
+				position_array[j].y = 0
+				active_alife_array[j] =1
+				parent_id[j] = -1

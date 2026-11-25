@@ -403,6 +403,7 @@ func _process_control() -> void:
 ## Left click / R in control mode, on the outlined agent: pick it up.
 func _interact(sp, i: int, target_sp, j: int) -> void:
 	print("%s #%d picks up %s #%d" % [sp.species_name, i, target_sp.species_name, j])
+	target_sp.Interact(j, sp, i)
 	#target_sp.Interact(j, sp, i)      # your previous interaction, if you still need it
 	_pick_up(target_sp, j)
 
