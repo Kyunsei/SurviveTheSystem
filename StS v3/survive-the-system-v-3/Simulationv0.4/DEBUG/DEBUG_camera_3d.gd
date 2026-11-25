@@ -2,31 +2,39 @@ class_name FlyCamera
 extends Camera3D
 ## Map-style camera (Godot 4): the mouse is visible, except in mouse-look mode.
 ##
+## All keys are Input Map actions (remappable in the Controls menu). Default keys in ():
+##
 ## Fly mode:
-##   WASD:               move parallel to the ground (relative to where the camera faces)
-##   E / Q:              up / down
-##   Shift:              faster
-##   Wheel:              zoom toward the cursor (or change height, see wheel_changes_height)
+##   up / down / left / right (WASD or left stick): move parallel to the ground
+##                       (relative to where the camera faces, analog on a stick)
+##   camera_rise / camera_lower (E / Q): up / down
+##   sprint (Shift):     faster
+##   camera_zoom_in / camera_zoom_out (wheel): zoom toward the cursor
+##                       (or change height, see wheel_changes_height)
+##   look_up / look_down / look_left / look_right (right stick): turn the view
 ##   Right click + drag: rotate the view
 ## Follow mode (start it with follow(...) from your code):
-##   Right click + drag: orbit around the entity | Wheel: distance
-##   WASD / E / Q:       stop following
+##   Right click + drag or look_*: orbit around the entity | zoom: distance
+##   Any movement key:   stop following
 ## Mouse-look mode (set_mouse_look(true), used by control modes 2 and 3):
 ##   the mouse turns the view directly, no click needed, cursor hidden
-##   Esc: give the cursor back | Esc again or left click: back to mouse look
+##   free_cursor (Esc): give the cursor back | again or left click: back to mouse look
 ## First person (set_first_person(true), used by control mode 3):
 ##   while following, the camera sits at the entity's eyes (first_person_eye_height)
 ## Wrap view (WorldWrap.visual, used by control modes 1 and 2):
 ##   the camera crosses the world's borders seamlessly. Every frame it publishes
 ##   the global shader value `wrap_center` (Project Settings > Shader Globals, vec3).
-## H: show / hide the overlay
-## Keys use physical positions, so WASD works on QWERTY, AZERTY and QWERTZ layouts.
+## overlay_toggle (H): show / hide the overlay
+##
+## camera_rise, camera_lower, free_cursor and overlay_toggle aren't in your action list
+## yet: until you add them to the Input Map, the keys in () are used.
 
 signal follow_stopped
 
 @export var speed := 10.0                    # world units per second at reference_height
 @export var sprint_multiplier := 3.0
 @export var mouse_sensitivity := 0.004
+@export var stick_look_speed := 2.5          # radians per second with the look actions fully pushed
 ## Higher camera = faster movement, so the map scrolls at the same speed on screen.
 @export var speed_scales_with_height := true
 @export var reference_height := 15.0
@@ -34,12 +42,14 @@ signal follow_stopped
 @export var min_height := 1.0                # never go below ground_y + min_height
 
 @export_group("Wheel")
-## false: the wheel zooms toward the cursor. true: the wheel only changes the height.
+## false: zoom goes toward the cursor. true: zoom only changes the height.
 @export var wheel_changes_height := false
 @export var wheel_step := 0.15               # fraction of the distance to the ground per notch
+@export var trackpad_scroll_speed := 0.15    # two-finger scroll (pan gesture) zoom speed
+@export var pinch_zoom_speed := 5.0          # trackpad pinch zoom speed
 
-## When false, WASD / E / Q don't move the camera (and don't stop following).
-## Turned off by the picker while you control an agent.
+## When false, the movement actions don't move the camera (and don't stop following).
+## Turned off by the controller while you control an agent.
 @export var move_keys_enabled := true
 ## Kept for compatibility with older scripts: the mouse is never captured anymore.
 var click_to_capture := false
@@ -55,7 +65,7 @@ var click_to_capture := false
 ## Lowest height above the ground while following: looking up stops at the angle
 ## where the camera would touch the soil (the distance never changes).
 @export var follow_min_height := 0.3
-## First person: eye height above the entity's feet. Updated every frame by the picker
+## First person: eye height above the entity's feet. Updated every frame by the controller
 ## from the agent's size.
 @export var first_person_eye_height := 0.8
 
@@ -67,9 +77,9 @@ var click_to_capture := false
 
 var _yaw := 0.0
 var _pitch := 0.0
-var _yaw_locked := false                     # true: dragging only tilts up/down (control mode 1)
+var _yaw_locked := false                     # true: turning only tilts up/down (control mode 1)
 var _mouse_look := false                     # true: the mouse turns the view without a click
-var _look_suspended := false                 # Esc: cursor given back, mouse look paused
+var _look_suspended := false                 # free_cursor: cursor given back, mouse look paused
 var _first_person := false                   # follow from the entity's eyes
 var _dragging := false
 var _drag_start := Vector2.ZERO
@@ -113,7 +123,7 @@ func is_following() -> bool:
 	return _follow_target.is_valid()
 
 
-## Lock the horizontal direction (dragging then only tilts up/down). yaw = 0 looks north (-Z).
+## Lock the horizontal direction (turning then only tilts up/down). yaw = 0 looks north (-Z).
 func set_yaw_lock(locked: bool, yaw: float = 0.0) -> void:
 	_yaw_locked = locked
 	if locked:
@@ -129,7 +139,7 @@ func set_mouse_look(on: bool) -> void:
 	_apply_mouse_mode()
 
 
-## True while the mouse is actually turning the view (on, and not paused with Esc).
+## True while the mouse is actually turning the view (on, and not paused with free_cursor).
 func is_mouse_look() -> bool:
 	return _mouse_look and not _look_suspended
 
@@ -166,12 +176,38 @@ func _apply_mouse_mode() -> void:
 	_update_overlay()
 
 
+# --- Action helpers ----------------------------------------------------------------
+
+## Pressed this event: the Input Map action if it exists, else the fallback key.
+func _act_pressed(event: InputEvent, action: String, fallback_key: Key) -> bool:
+	if InputMap.has_action(action):
+		return event.is_action_pressed(action)
+	return event is InputEventKey and event.pressed and not event.echo \
+			and event.physical_keycode == fallback_key
+
+
+## How much an action is held (0..1): the Input Map action if it exists, else the fallback key.
+func _strength(action: String, fallback_key: Key) -> float:
+	if InputMap.has_action(action):
+		return Input.get_action_strength(action)
+	return 1.0 if Input.is_physical_key_pressed(fallback_key) else 0.0
+
+
+## Name of the key bound to an action, for the overlay.
+func _key(action: String, fallback := "") -> String:
+	if not InputMap.has_action(action):
+		return fallback
+	var e := ConfigurationSettings.get_event(action, ConfigurationSettings.Slot.KEYBOARD_MOUSE)
+	if e == null:
+		e = ConfigurationSettings.get_event(action, ConfigurationSettings.Slot.CONTROLLER)
+	return ConfigurationSettings.event_to_text(e)
+
+
 # --- Input ---------------------------------------------------------------------
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo \
-			and event.physical_keycode == KEY_ESCAPE and _mouse_look:
-		_look_suspended = not _look_suspended          # Esc: cursor back / mouse look again
+	if _mouse_look and _act_pressed(event, "free_cursor", KEY_ESCAPE):
+		_look_suspended = not _look_suspended          # cursor back / mouse look again
 		_apply_mouse_mode()
 		get_viewport().set_input_as_handled()
 
@@ -197,36 +233,61 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 	elif event is InputEventMouseMotion and (_dragging or is_mouse_look()):
-		if not _yaw_locked:
-			_yaw -= event.relative.x * mouse_sensitivity
-		_pitch -= event.relative.y * mouse_sensitivity
-		_pitch = clamp(_pitch, deg_to_rad(-89.0), deg_to_rad(89.0))
-		rotation = Vector3(_pitch, _yaw, 0.0)
+		_turn(event.relative * mouse_sensitivity)
 
-	# Wheel: zoom (or distance in follow mode)
-	elif event is InputEventMouseButton and event.pressed:
-		match event.button_index:
-			MOUSE_BUTTON_WHEEL_UP:
-				_zoom(1.0, event.position)
-				get_viewport().set_input_as_handled()
-			MOUSE_BUTTON_WHEEL_DOWN:
-				_zoom(-1.0, event.position)
-				get_viewport().set_input_as_handled()
+	# Trackpad, always on: two-finger scroll (sent as a pan gesture on macOS) and pinch
+	elif event is InputEventPanGesture:
+		_zoom(-event.delta.y * trackpad_scroll_speed, event.position)
+		get_viewport().set_input_as_handled()
 
-	elif event is InputEventKey and event.pressed and not event.echo \
-			and event.physical_keycode == KEY_H:
+	elif event is InputEventMagnifyGesture:
+		_zoom((event.factor - 1.0) * pinch_zoom_speed, event.position)
+		get_viewport().set_input_as_handled()
+
+	# Zoom (or distance in follow mode). Echo allowed: holding a key keeps zooming.
+	elif event.is_action_pressed("Camera_zoom_in", true):
+		_zoom(_zoom_amount(event), _zoom_point(event))
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("Camera_zoom_out", true):
+		_zoom(-_zoom_amount(event), _zoom_point(event))
+		get_viewport().set_input_as_handled()
+
+	elif _act_pressed(event, "overlay_toggle", KEY_H):
 		show_overlay = not show_overlay
 		_overlay.visible = show_overlay
 
 
+## Turn the view by an amount in radians (x = yaw, y = pitch). Mouse and look actions.
+func _turn(amount: Vector2) -> void:
+	if not _yaw_locked:
+		_yaw -= amount.x
+	_pitch -= amount.y
+	_pitch = clamp(_pitch, deg_to_rad(-89.0), deg_to_rad(89.0))
+	rotation = Vector3(_pitch, _yaw, 0.0)
+
+
+## One notch = 1. Smooth-scrolling trackpads send many small wheel events (factor < 1).
+func _zoom_amount(event: InputEvent) -> float:
+	if event is InputEventMouseButton and event.factor > 0.0:
+		return minf(event.factor, 1.0)
+	return 1.0
+
+
+## Where to zoom toward: the cursor for mouse events, else the screen center.
+func _zoom_point(event: InputEvent) -> Vector2:
+	if event is InputEventMouse:
+		return event.position
+	return get_viewport().get_visible_rect().size * 0.5
+
+
+## direction: +1 = one notch in, -1 = one notch out (fractions for trackpads).
 func _zoom(direction: float, mouse_pos: Vector2) -> void:
 	if is_following() and _first_person:
 		return                                     # no zoom from the eyes
 	if is_following():
-		if direction > 0.0:
-			follow_distance = maxf(follow_distance / follow_distance_step, follow_min_distance)
-		else:
-			follow_distance = minf(follow_distance * follow_distance_step, follow_max_distance)
+		follow_distance = clampf(follow_distance / pow(follow_distance_step, direction),
+				follow_min_distance, follow_max_distance)
 		_update_overlay()
 		return
 
@@ -243,9 +304,16 @@ func _zoom(direction: float, mouse_pos: Vector2) -> void:
 # --- Per frame -------------------------------------------------------------------
 
 func _process(delta: float) -> void:
+	# Look actions (right stick, arrow keys...): turn the view, like the mouse does
+	var look := Input.get_vector("look_left", "look_right", "look_up", "look_down")
+	if look != Vector2.ZERO:
+		_turn(look * stick_look_speed * delta)
+
 	_process_move(delta)
 	# Shared with every shader that wraps (Project Settings > Shader Globals: wrap_center, vec3)
 	RenderingServer.global_shader_parameter_set("wrap_center", get_wrap_center())
+	if show_overlay:
+		_update_overlay()                          # keys may have been remapped
 
 
 func _process_move(delta: float) -> void:
@@ -259,7 +327,7 @@ func _process_move(delta: float) -> void:
 			return
 
 	if input == Vector3.ZERO:
-		_wrap_camera()                             # the wheel may have moved it
+		_wrap_camera()                             # the zoom may have moved it
 		return
 
 	# Move on a plane parallel to the ground, relative to where the camera faces
@@ -270,16 +338,14 @@ func _process_move(delta: float) -> void:
 	fwd = fwd.normalized()
 	var right := Vector3(b.x.x, 0.0, b.x.z).normalized()
 
-	var dir := right * input.x + fwd * (-input.z)
-	if dir != Vector3.ZERO:
-		dir = dir.normalized()
+	var dir := (right * input.x + fwd * (-input.z)).limit_length(1.0)   # analog on a stick
 	dir.y = input.y
 
 	var current_speed := speed
 	if speed_scales_with_height:
 		var height := maxf(global_position.y - ground_y, min_height)
 		current_speed *= clampf(height / reference_height, 0.2, 20.0)
-	if Input.is_physical_key_pressed(KEY_SHIFT):
+	if Input.is_action_pressed("sprint"):
 		current_speed *= sprint_multiplier
 
 	global_position += dir * current_speed * delta
@@ -343,14 +409,12 @@ func _wrap_camera() -> Vector3:
 	return after - before
 
 
+## x = right, y = up, z = backward (-z = forward). Analog values on a stick.
 func _read_move_input() -> Vector3:
 	var input := Vector3.ZERO
-	if Input.is_physical_key_pressed(KEY_W): input.z -= 1.0
-	if Input.is_physical_key_pressed(KEY_S): input.z += 1.0
-	if Input.is_physical_key_pressed(KEY_A): input.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_D): input.x += 1.0
-	if Input.is_physical_key_pressed(KEY_E): input.y += 1.0
-	if Input.is_physical_key_pressed(KEY_Q): input.y -= 1.0
+	input.x = Input.get_axis("left", "right")
+	input.z = Input.get_axis("up", "down")
+	input.y = _strength("camera_rise", KEY_E) - _strength("camera_lower", KEY_Q)
 	return input
 
 
@@ -392,28 +456,36 @@ func _build_overlay() -> void:
 func _update_overlay() -> void:
 	if _overlay == null:
 		return
+	var free_key := _key("free_cursor", "Esc")
+	var hide_line := "%s  hide" % _key("overlay_toggle", "H")
 	if is_following() and _first_person:
 		_overlay.text = "\n".join([
 			"First person",
-			("Mouse  look around   Esc  free cursor" if is_mouse_look()
-					else "Esc / click  mouse look"),
-			"H  hide",
+			("Mouse  look around   %s  free cursor" % free_key if is_mouse_look()
+					else "%s / click  mouse look" % free_key),
+			hide_line,
 		])
 		return
 	if is_following():
 		_overlay.text = "\n".join([
 			"Following",
-			("Mouse  look around   Esc  free cursor" if is_mouse_look()
-					else ("Esc / click  mouse look" if _mouse_look else "Right drag  orbit")),
-			"Wheel  distance %.1f" % follow_distance,
-			"H  hide",
+			("Mouse  look around   %s  free cursor" % free_key if is_mouse_look()
+					else ("%s / click  mouse look" % free_key if _mouse_look else "Right drag  orbit")),
+			"%s / %s  distance %.1f" % [_key("camera_zoom_in"), _key("camera_zoom_out"),
+					follow_distance],
+			hide_line,
 		])
 		return
+
+	var move := PackedStringArray([_key("up"), _key("left"), _key("down"), _key("right")])
+	var short := true
+	for k in move:
+		short = short and k.length() == 1
 	_overlay.text = "\n".join([
-		"WASD  move",
-		"E / Q  up / down",
-		"Shift  faster",
-		"Wheel  zoom",
+		"%s  move" % ("" if short else " ").join(move),
+		"%s / %s  up / down" % [_key("camera_rise", "E"), _key("camera_lower", "Q")],
+		"%s  faster" % _key("sprint"),
+		"%s / %s  zoom" % [_key("camera_zoom_in"), _key("camera_zoom_out")],
 		"Right drag  rotate view",
-		"H  hide",
+		hide_line,
 	])

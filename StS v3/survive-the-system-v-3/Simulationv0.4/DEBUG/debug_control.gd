@@ -3,11 +3,14 @@ extends Node
 ## Observing the world (works with PlayerController and FlyCamera).
 ##
 ## Hover:        the mouse is always visible: hovering an agent outlines it + tooltip
-## F:            follow the hovered agent | while following: stop following
-## K:            kill the hovered agent
-## P:            pause / resume the simulation
-## O:            open / close the menu
-## F1 or "?" button (top right): show / hide the controls help
+## agent_follow  (F):  follow the hovered agent | while following: stop following
+## agent_kill    (K):  kill the hovered agent
+## sim_pause     (P):  pause / resume the simulation
+## menu_toggle   (O):  open / close the menu
+## controls_open (F1) or "Controls" button (top right): open the key remap menu
+##
+## The keys are Input Map actions, so they can be changed in the remap menu
+## (add them to Settings.REMAPPABLE).
 ##
 ## Also owns the outline (one per species material), so it decides what is outlined:
 ##   controller's target > carried agent > hovered agent > followed agent
@@ -20,7 +23,7 @@ signal agent_killed(species, index: int)
 @export var alifemanager: AlifeManager
 @export var camera: FlyCamera
 @export var controller: PlayerController
-@export var menu: CanvasLayer                  # opened / closed with O
+@export var menu: CanvasLayer                  # opened / closed with menu_toggle
 @export var sim_manager: SimulationManager
 
 @export_group("Picking")
@@ -41,15 +44,14 @@ var _outlined_index := -1
 var _layer := CanvasLayer.new()
 var _tooltip := PanelContainer.new()
 var _tooltip_label := Label.new()
-var _help_button := Button.new()
-var _help_panel := PanelContainer.new()
-
+var _controls_button := Button.new()
+var _controls_menu: SettingsRemapMenu
 
 func _ready() -> void:
 	_layer.layer = 90
 	add_child(_layer)
 	_build_tooltip()
-	_build_help()
+	_build_controls_button()
 	camera.follow_stopped.connect(_on_follow_stopped)
 	if menu != null:
 		menu.visible = false
@@ -78,46 +80,50 @@ func split_id(id: int) -> Array:
 # --- Input ---------------------------------------------------------------------
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not (event is InputEventKey and event.pressed and not event.echo):
-		return
+	if event.is_action_pressed("menu_toggle"):
+		_toggle_menu()
+		get_viewport().set_input_as_handled()
 
-	match event.physical_keycode:
-		KEY_O:
-			_toggle_menu()
+	elif event.is_action_pressed("controls_open"):
+		_toggle_controls()
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("agent_follow"):
+		if controller.is_controlling():
+			return                                     # the camera already follows it
+		if camera.is_following():
+			camera.stop_follow()
+		elif hovered_species != null:
+			follow(hovered_species, hovered_index)
+		get_viewport().set_input_as_handled()
+
+	elif event.is_action_pressed("agent_kill"):
+		if hovered_species != null:
+			_kill(hovered_species, hovered_index)
 			get_viewport().set_input_as_handled()
-
-		KEY_F1:
-			_help_button.button_pressed = not _help_button.button_pressed
+	elif event.is_action_pressed("agent_remove"):
+		if hovered_species != null:
+			_remove(hovered_species, hovered_index)
 			get_viewport().set_input_as_handled()
-
-		KEY_F:
-			if controller.is_controlling():
-				return                                 # the camera already follows it
-			if camera.is_following():
-				camera.stop_follow()
-			elif hovered_species != null:
-				follow(hovered_species, hovered_index)
-			get_viewport().set_input_as_handled()
-
-		KEY_K:
-			if hovered_species != null:
-				_kill(hovered_species, hovered_index)
-				get_viewport().set_input_as_handled()
-
-		KEY_P:
-			if sim_manager.simulation_speed == 0:
-				sim_manager.simulation_speed = old_speed
-			else:
-				old_speed = sim_manager.simulation_speed
-				sim_manager.simulation_speed = 0
-			get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("sim_pause"):
+		if sim_manager.simulation_speed == 0:
+			sim_manager.simulation_speed = old_speed
+		else:
+			old_speed = sim_manager.simulation_speed
+			sim_manager.simulation_speed = 0
+		get_viewport().set_input_as_handled()
 
 
 func _toggle_menu() -> void:
 	if menu == null:
 		return
 	menu.visible = not menu.visible
-	camera.set_mouse_look(controller.wants_mouse_look() and not menu.visible)
+	_update_mouse_look()
+
+
+func _update_mouse_look() -> void:
+	var menu_open := menu != null and menu.visible
+	camera.set_mouse_look(controller.wants_mouse_look() and not menu_open)
 
 
 # --- Per frame -----------------------------------------------------------------
@@ -162,6 +168,10 @@ func _kill(sp, i: int) -> void:
 	# Through energy, so the simulation handles death and removal as usual
 	sp.current_energy_array[i] = -1.0
 	agent_killed.emit(sp, i)
+	
+func _remove(sp, i: int) -> void:
+	# Through energy, so the simulation handles death and removal as usual
+	sp.Remove_Life(i)
 
 
 func _set_outline(sp, i: int) -> void:
@@ -277,89 +287,39 @@ func _dist_to_segment(p: Vector2, a: Vector2, b: Vector2) -> float:
 	return p.distance_to(a + ab * t)
 
 
-# --- Help ("?" button, top right) -------------------------------------------------
+# --- Controls (button top right -> key remap menu) ---------------------------------
 
-const HELP := [
-	["CAMERA", ""],
-	["WASD", "move over the ground"],
-	["E / Q", "up / down"],
-	["Shift", "faster"],
-	["Wheel", "zoom (distance when following)"],
-	["Right drag", "rotate the view"],
-	["", ""],
-	["AGENTS", ""],
-	["Hover", "outline + info"],
-	["F", "follow / stop following"],
-	["K", "kill"],
-	["C", "take control / release"],
-	["", ""],
-	["CONTROL", ""],
-	["WASD", "move the agent"],
-	["Shift", "run"],
-	["Space", "jump"],
-	["Left click / R", "pick up the outlined agent"],
-	["Q", "drop what you carry"],
-	["G (hold)", "charge and throw what you carry"],
-	["T", "attack (box in front)"],
-	["E", "eat what you carry"],
-	["1", "north view: W = north"],
-	["2", "camera view: W = forward"],
-	["3", "first person"],
-	["Esc", "free the cursor (2 / 3)"],
-	["C", "release the agent"],
-	["", ""],
-	["OTHER", ""],
-	["P", "pause / resume"],
-	["O", "menu"],
-	["H", "camera overlay"],
-	["F1", "this help"],
-]
+func _build_controls_button() -> void:
+	_controls_button.text = "Controls"
+	_controls_button.tooltip_text = "Controls (F1)"
+	_controls_button.focus_mode = Control.FOCUS_NONE   # never steals Space / Enter
+	_controls_button.custom_minimum_size = Vector2(28, 28)
+	_controls_button.pressed.connect(_toggle_controls)
+	_layer.add_child(_controls_button)
+	_controls_button.set_anchors_and_offsets_preset(
+			Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 12)
+	_controls_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 
 
-func _build_help() -> void:
-	var box := VBoxContainer.new()
-	box.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 12)
-	box.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-	box.alignment = BoxContainer.ALIGNMENT_BEGIN
-	_layer.add_child(box)
+func _toggle_controls() -> void:
+	# Already open: close it
+	if is_instance_valid(_controls_menu):
+		_controls_menu._on_back()
+		return
 
-	_help_button.text = "?"
-	_help_button.tooltip_text = "Controls (F1)"
-	_help_button.toggle_mode = true
-	_help_button.focus_mode = Control.FOCUS_NONE       # never steals Space / Enter
-	_help_button.custom_minimum_size = Vector2(28, 28)
-	_help_button.size_flags_horizontal = Control.SIZE_SHRINK_END
-	_help_button.toggled.connect(func(on: bool): _help_panel.visible = on)
-	box.add_child(_help_button)
+	_tooltip.visible = false                           # _process stops while paused
+	camera.set_mouse_look(false)                       # free the cursor to click the menu
 
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color(0, 0, 0, 0.75)
-	style.set_corner_radius_all(6)
-	style.set_content_margin_all(12)
-	_help_panel.add_theme_stylebox_override("panel", style)
-	_help_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_help_panel.visible = false
-	box.add_child(_help_panel)
+	_controls_menu = SettingsRemapMenu.open(self)
+	# Draw above this node's own layer (90), so the button and tooltip stay underneath
+	(_controls_menu.get_parent() as CanvasLayer).layer = _layer.layer + 10
 
-	var grid := GridContainer.new()
-	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 16)
-	grid.add_theme_constant_override("v_separation", 2)
-	_help_panel.add_child(grid)
-
-	for row in HELP:
-		var key := Label.new()
-		var action := Label.new()
-		key.text = row[0]
-		action.text = row[1]
-		var is_title: bool = row[1] == "" and row[0] != ""
-		key.add_theme_font_size_override("font_size", 12)
-		action.add_theme_font_size_override("font_size", 12)
-		key.add_theme_color_override("font_color",
-				Color(1.0, 0.85, 0.4) if is_title else Color(1, 1, 1, 0.95))
-		action.add_theme_color_override("font_color", Color(1, 1, 1, 0.7))
-		grid.add_child(key)
-		grid.add_child(action)
+	# Freeze the game so the keys pressed while rebinding don't move anything
+	var was_paused := get_tree().paused
+	get_tree().paused = true
+	_controls_menu.closed.connect(func():
+		get_tree().paused = was_paused
+		_update_mouse_look())
 
 
 # --- Hover tooltip -------------------------------------------------------------
@@ -406,5 +366,10 @@ func _agent_text(sp, i: int) -> String:
 	lines.append("LifeCycle  %d" % sp.current_life_state[i])
 	if sp.alive_array[i] == 0:
 		lines.append("(dead)")
-	lines.append("F follow   C control   K kill")
+	lines.append("%s follow   %s control   %s kill   %s remove" % [_key_name("agent_follow"), _key_name("agent_control"), _key_name("agent_kill"), _key_name("agent_remove")])
 	return "\n".join(lines)
+
+
+## Current keyboard/mouse key of an action, for on-screen hints
+func _key_name(action: String) -> String:
+	return ConfigurationSettings.event_to_text(ConfigurationSettings.get_event(action, ConfigurationSettings.Slot.KEYBOARD_MOUSE))

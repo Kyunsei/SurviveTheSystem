@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dpf0rggtlqol8"]
+
+[ext_resource type="Script" uid="uid://basgqew0jd1fv" path="res://Simulationv0.4/settings_player/control_remap_menu.gd" id="1_kmu6s"]
+
+[node name="remapMenu" type="Control" unique_id=1897876614]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_kmu6s")

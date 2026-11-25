@@ -180,6 +180,9 @@ func update_alife() -> void:
 	global_position_array.clear()
 	global_active.clear()
 	var total := 0
+	
+	update_carried()
+	
 	for si in species_count:
 		var sp: ALIFE = species_array[si] #TODO CHANGE TYPE HERE
 		sp.Build_and_remove_pendings()
@@ -323,5 +326,103 @@ func set_field_cell(key: String, value:float):
 		sp._init_field_grid()
 	sim_manager.set_simulation_speed(c_speed)
 
+## Local index -> global id
+func g_id(sp, i: int) -> int:
+	return global_species_offset[species_array.find(sp)] + i
+
+
+## Global id -> [species, local index]
+func split_id(id: int) -> Array:
+	var s :=  global_species_offset.bsearch(id, false) - 1
+	return [ species_array[s], id -  global_species_offset[s]]
 
 	
+
+const ACTIVE := 1
+const HELD := 2
+const FLYING := 4
+
+var carriers: Array[int] = []                    # global ids of agents carrying something
+
+
+func pick_up(c_sp, c: int, i_sp, i: int) -> bool:
+	#c = carrier
+	if c_sp.holding[c] != -1 or i_sp.active_alife_array[i] != ACTIVE:
+		return false     
+								# hands full, or item not free in the world
+	c_sp.holding[c] = g_id(i_sp, i)
+	i_sp.held_by[i] = g_id(c_sp, c)
+	i_sp.Stock_Life(i)
+	#i_sp.active_alife_array[i] = HELD                         # simulation stops moving / colliding it
+	carriers.append(g_id(c_sp, c))
+	return true
+
+
+func drop(c_sp, c: int, at: Vector3) -> void:
+	var item: int = c_sp.holding[c]
+	if item == -1:
+		return
+	var t := split_id(item)
+	t[0].held_by[t[1]] = -1
+	t[0].Release_Life(t[1])
+	#t[0].active_alife_array[t[1]] = ACTIVE
+	t[0].position_array[t[1]] = at
+	c_sp.holding[c] = -1
+	carriers.erase(g_id(c_sp, c))
+
+
+## Call from Remove_Life and on death
+func unlink(sp, i: int) -> void:
+	if sp.holding[i] != -1:                      # I carried something: it falls here
+		drop(sp, i, sp.position_array[i])
+	var c: int = sp.held_by[i]
+	if c != -1:                                  # I was carried: free my carrier's hands
+		var t := split_id(c)
+		t[0].holding[t[1]] = -1
+		carriers.erase(c)
+		sp.held_by[i] = -1
+
+
+## Once per tick, AFTER the movement pass
+func update_carried() -> void:
+	for c in carriers:
+		var t := split_id(c)
+		var item := split_id(t[0].holding[t[1]])
+		item[0].position_array[item[1]] = carry_position(t[0], t[1])
+
+
+## In front of the carrier (its movement direction), at half its height
+func carry_position(sp, i: int) -> Vector3:
+	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
+	var h := maxf(q.y * sp.current_size[i], 0.2)
+	var v: Vector3 = sp.current_velocity[i]
+	v.y = 0.0
+	var fwd := v.normalized() if v.length_squared() > 1e-6 else Vector3.FORWARD
+	var p: Vector3 = sp.position_array[i] + fwd * 0.5 * h + Vector3.UP * 0.5 * h
+	return WorldWrap.wrap_into(p)
+	
+	
+## Let go of the carried item without putting it back in the world (throws).
+## Returns [species, local index] of the item, or [] if the hands were empty.
+func release_flying(c_sp, c: int) -> Array:
+	var t := _let_go(c_sp, c)
+	if not t.is_empty():
+		t[0].active_alife_array[t[1]] = FLYING
+	return t
+
+
+## A thrown item touches the ground: back in the world.
+func land(sp, i: int, at: Vector3) -> void:
+	sp.active_alife_array[i] = ACTIVE
+	sp.position_array[i] = at
+
+
+func _let_go(c_sp, c: int) -> Array:
+	var item: int = c_sp.holding[c]
+	if item == -1:
+		return []
+	var t := split_id(item)
+	t[0].held_by[t[1]] = -1
+	c_sp.holding[c] = -1
+	carriers.erase(g_id(c_sp, c))
+	return t

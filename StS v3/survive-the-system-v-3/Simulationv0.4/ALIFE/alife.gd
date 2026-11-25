@@ -55,6 +55,11 @@ var init_size := 1.0
 var current_sungrid_id : PackedInt32Array
 var current_grid_id : PackedInt32Array  
 
+
+#interaction
+var holding := PackedInt32Array()   # global id of the item I carry, -1 = none
+var held_by := PackedInt32Array()   # global id of who carries me, -1 = none
+
 #not in use
 var current_cpu_cost : PackedInt32Array
 var current_color :PackedColorArray
@@ -264,6 +269,9 @@ func _init_alife_par():
 	current_age= []
 	current_size= []
 	current_action=[]
+	
+	holding = []
+	held_by = []
 	
 	current_cpu_cost = []
 	
@@ -497,11 +505,31 @@ func scent_gradient(a:PackedFloat32Array, c: int) -> Vector3:
 	return Vector3(xp - xm, yp - ym, zp - zm)
 	
 ##########################################################################################
-#### Main loop function
+#### callable interspecies
 ##########################################################################################
 
 func Interact(i:int, sp:ALIFE, local_id:int):
 	print("%s ID: %d interacted with %s ID: %d" %[sp.species_name, local_id, species_name, i])
+
+func getHurt(i:int, sp:ALIFE, local_id:int):
+	print("%s ID: %d interacted with %s ID: %d" %[sp.species_name, local_id, species_name, i])
+
+func getPickUp(i:int, sp:ALIFE, local_id:int):
+	print("%s ID: %d interacted with %s ID: %d" %[sp.species_name, local_id, species_name, i])
+
+func getDropped(i:int, sp:ALIFE, local_id:int):
+	print("%s ID: %d interacted with %s ID: %d" %[sp.species_name, local_id, species_name, i])
+
+func Interact2(i:int, sp:ALIFE, local_id:int):
+	print("%s ID: %d interacted with %s ID: %d" %[sp.species_name, local_id, species_name, i])
+
+# --- Carry ---------------------------------------------------------------------
+
+	
+##########################################################################################
+#### Main loop function
+##########################################################################################
+
 
 func Eat(start:int,end:int):
 	pass
@@ -1203,7 +1231,8 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		current_age.append(0)
 		current_size.append(init_size)
 		current_action.append(0)
-		
+		holding.append(-1)
+		held_by.append(-1)	
 
 		current_sungrid_id.append(get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D))
 		current_grid_id.append(get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D))
@@ -1232,7 +1261,9 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		current_cpu_cost[i] = 0
 		neighbour_count[i] = 0
 		current_action[i] = 0
-
+		holding[i] = -1
+		held_by[i] = -1
+		
 	active_entity_count += 1
 	if photosynthesis_on:
 			var c := current_sungrid_id[i]

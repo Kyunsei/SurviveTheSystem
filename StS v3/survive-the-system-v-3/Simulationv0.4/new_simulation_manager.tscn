@@ -3,11 +3,11 @@
 [ext_resource type="Script" uid="uid://bb7fqful0tfra" path="res://Simulationv0.4/simulation_manager.gd" id="1_tnrjr"]
 [ext_resource type="Script" path="res://Simulationv0.4/world/world.gd" id="2_n8m0f"]
 [ext_resource type="PackedScene" uid="uid://ctgprx0q6hu1g" path="res://Simulationv0.4/DEBUG/ui_simulation.tscn" id="3_se6q8"]
-[ext_resource type="Script" path="res://Simulationv0.4/ALIFE/alife_manager.gd" id="3_u0fto"]
+[ext_resource type="Script" uid="uid://dht5a0fts2itw" path="res://Simulationv0.4/ALIFE/alife_manager.gd" id="3_u0fto"]
 [ext_resource type="PackedScene" uid="uid://cve3fjbgy61t7" path="res://Simulationv0.4/world/render_world3D.tscn" id="3_uyr7n"]
 [ext_resource type="Script" uid="uid://2l27ex6lbnsg" path="res://Simulationv0.4/AlifeRender/rendering_manager.gd" id="5_oxs6a"]
 [ext_resource type="Script" uid="uid://clujs5mkf4ysr" path="res://Simulationv0.4/DEBUG/debug_control.gd" id="6_gytwx"]
-[ext_resource type="Script" path="res://Simulationv0.4/DEBUG/DEBUG_camera_3d.gd" id="6_ii0et"]
+[ext_resource type="Script" uid="uid://edndstn7d2e7" path="res://Simulationv0.4/DEBUG/DEBUG_camera_3d.gd" id="6_ii0et"]
 [ext_resource type="Script" uid="uid://cl3q2rgl5b6oq" path="res://Simulationv0.4/sound_manager.gd" id="9_di811"]
 [ext_resource type="Script" uid="uid://dvyha3fg7ljvk" path="res://Simulationv0.4/Machine/machine.gd" id="9_qijgx"]
 [ext_resource type="Script" uid="uid://ckvt014hdkps8" path="res://Simulationv0.4/player_control.gd" id="12_qijgx"]
@@ -89,11 +89,40 @@ script = ExtResource("12_qijgx")
 alifemanager = NodePath("../../AlifeManager")
 camera = NodePath("DebugCamera3D")
 picker = NodePath("../AgentPicker")
+control_speed = null
+sprint_multiplier = null
+target_range = null
+target_search_rings = null
+energy_bar_size = null
+arrow_color = null
+arrow_scale = null
+eye_ratio = null
+dash_multiplier = null
+dash_time = null
+dash_cooldown = null
 planet_radius = 120.0
+throw_min_speed = null
+throw_max_speed = null
+throw_charge_time = null
+throw_angle_deg = null
+throw_gravity = null
+ground_y = null
+show_key_hints = null
+hint_font_size = null
 attack_width = 3.0
+attack_length = null
 attack_height = 1.5
+attack_damage = null
 attack_cooldown = 0.2
+attack_kills_at_zero = null
+show_hitbox = null
 hitbox_show_time = 0.2
+eat_hold_time = 0.5
+eat_circle_radius = 12.0
+eat_circle_color = null
+carry_forward = null
+carry_height = null
+control_view = null
 
 [node name="DebugCamera3D" type="Camera3D" parent="Control/PlayerControl" unique_id=2122777896]
 transform = Transform3D(-0.70710677, 0.02467767, -0.706676, 0, 0.99939084, 0.034899496, 0.70710677, 0.02467767, -0.706676, -10, 28, -10)

@@ -2,20 +2,30 @@ class_name PlayerController
 extends Node
 ## Playing an agent (works with AgentPicker and FlyCamera).
 ##
-## C:            take control of the hovered (or followed) agent | C again: release it
+## All keys are Input Map actions (remappable in the Controls menu). Default keys in ():
+##
+## agent_control (C): take control of the hovered (or followed) agent | again: release it
 ## In control:
-##   WASD        move the agent, Shift runs, Space jumps
-##   Left click  (or R) pick up the outlined agent (the closest one in range)
-##               near a machine (ring on the ground): feed it what you carry,
-##               or start / stop it with empty hands
-##   Q / E       drop / eat what you carry (one item at a time)
-##   G (hold)    charge a throw, release to launch what you carry (arc + gravity)
-##   T           attack: every agent in a box in front of you loses biomass
-##               (debug: the box is drawn as a red wireframe for a moment)
-##   1           north view (default): camera faces north, W = north, right drag only tilts
-##   2           camera view: the mouse turns the view, W = where the camera looks
-##   3           first person: from the agent's eyes, the mouse turns the view
-##   Esc         (modes 2 / 3) give the cursor back
+##   up / down / left / right (WASD or left stick)  move the agent (analog on a stick)
+##   sprint (Shift)   run            jump (Space)    jump
+##   dash             short burst of speed (in the direction you move, else forward)
+##   pick_up          pick up the outlined agent (the closest one in range)
+##   use              near a machine (ring on the ground): feed it what you carry,
+##                    or start / stop it with empty hands
+##                    (bind pick_up and use to the same key to get one "interact" key)
+##   Drop / eat       drop / eat what you carry (one item at a time)
+##   throw (hold)     charge a throw, release to launch what you carry (arc + gravity)
+##   attack           every agent in a box in front of you loses biomass
+##                    (debug: the box is drawn as a red wireframe for a moment)
+##   view_north (1)   north view (default): camera faces north, up = north, right drag only tilts
+##   view_camera (2)  camera view: the mouse turns the view, up = where the camera looks
+##   view_first_person (3)  first person: from the agent's eyes, the mouse turns the view
+##   free_cursor (Esc) (modes 2 / 3) give the cursor back (handled by FlyCamera)
+##
+## The view_* actions aren't in your action list yet: until you add
+## them to the Input Map, the keys in () are used. Add them to Settings.REMAPPABLE to
+## make them remappable too.
+##
 ## Shows: an energy bar above the agent (HUD in first person), a facing arrow on the
 ## ground and a status line at the top of the screen.
 ##
@@ -23,8 +33,12 @@ extends Node
 ##   var player_index := -1                 # local index of the controlled agent (-1 = none)
 ##   var player_velocity := Vector3.ZERO    # velocity chosen by the player
 ##   var player_jump_buffer := 0.0, player_jump_held := false (jump)
-## Carrying, for species the simulation moves:
-##   var held_index := -1, held_position := Vector3.ZERO
+## Carrying goes through AlifeManager (pick_up / drop / release_flying / land / unlink),
+## the same functions AI agents use, so the player is just one more carrier:
+##   holding / held_by arrays in each species, items in state HELD or FLYING are not
+##   moved by the simulation, AlifeManager.update_carried() runs after the movement pass.
+##   Optional: a `facing` PackedVector3Array in the species, written here for the player,
+##   so the carried item stays in front even when standing still.
 ## First person needs `uniform int hidden_id = -1;` in the sprite shader.
 
 signal control_started(species, index: int)
@@ -35,6 +49,7 @@ signal agent_thrown(species, index: int, item_species, item_index: int, speed: f
 signal item_landed(item_species, item_index: int, position: Vector3)
 ## hits: Array of [species, local_index] that were inside the box
 signal agent_attacked(species, index: int, hits: Array)
+signal agent_dashed(species, index: int)
 
 @export var alifemanager: AlifeManager
 @export var camera: FlyCamera
@@ -42,6 +57,7 @@ signal agent_attacked(species, index: int, hits: Array)
 
 @export_group("Control")
 @export var control_speed := 3.0             # world units per second
+@export var sprint_multiplier := 2.0
 @export var target_range := 3.0              # max distance for the outlined / pick-up target
 @export var target_search_rings := 2         # grid rings searched for the closest agent
 @export var energy_bar_size := Vector2(36, 5)
@@ -49,14 +65,19 @@ signal agent_attacked(species, index: int, hits: Array)
 @export var arrow_scale := 1.0               # relative to the agent's width
 @export var eye_ratio := 0.8                 # first person: eye height / sprite height
 
+@export_group("Dash")
+@export var dash_multiplier := 4.0           # speed during the dash (x control_speed)
+@export var dash_time := 0.15                # seconds the dash lasts
+@export var dash_cooldown := 0.8             # seconds between dashes (real time)
+
 @export_group("Planet")
 ## Little-planet look while controlling an agent: the world is drawn bent down with
 ## distance. Smaller = rounder planet. 0 = flat. Drop at distance d = d² / (2 × radius).
 @export var planet_radius := 60.0
 
 @export_group("Throw")
-@export var throw_min_speed := 3.0           # tap G
-@export var throw_max_speed := 14.0          # G held for throw_charge_time
+@export var throw_min_speed := 3.0           # tap throw
+@export var throw_max_speed := 14.0          # throw held for throw_charge_time
 @export var throw_charge_time := 1.0         # seconds to reach full power
 @export var throw_angle_deg := 35.0          # launch angle above the ground
 @export var throw_gravity := 20.0            # world units / s²
@@ -76,9 +97,10 @@ signal agent_attacked(species, index: int, hits: Array)
 @export var show_hitbox := true              # debug: draw the box when attacking
 @export var hitbox_show_time := 0.25         # seconds the debug box stays visible
 
-@export_group("Carry")
-@export var carry_forward := 0.5             # how far in front of the carrier (x its height)
-@export var carry_height := 0.5              # how high (fraction of the carrier's height)
+@export_group("Eat")
+@export var eat_hold_time := 1.0             # seconds eat must be held before eating
+@export var eat_circle_radius := 8.0         # pixels
+@export var eat_circle_color := Color(0.45, 1.0, 0.45, 0.95)
 
 enum ControlView { NORTH, CAMERA, FIRST_PERSON }
 @export var control_view := ControlView.NORTH
@@ -87,16 +109,29 @@ var controlled_species = null
 var controlled_index := -1
 var target_species = null                    # closest agent in range (outlined)
 var target_index := -1
-var held_species = null                      # the carried agent (one at a time)
-var held_index := -1
 var target_machine: Machine = null           # closest machine in range (ring shown)
 var sprint := 1.0
 
 var _highlighted_machine: Machine = null
 
-var _charging := false                       # G held
+var _charging := false                       # throw held
 var _charge := 0.0                           # 0..1 throw power
 var _flights: Array[Dictionary] = []         # thrown items in the air: {sp, j, pos, vel}
+
+## What the controlled agent carries, read from the carry system (never stored here)
+var held_species:
+	get:
+		return _held()[0]
+var held_index: int:
+	get:
+		return _held()[1]
+
+var _eating := false                         # eat held
+var _eat_progress := 0.0                     # 0..1, eats at 1
+var _eat_circle := Control.new()
+
+var _dash_left := 0.0                        # dash time remaining
+var _dash_cd := 0.0                          # dash cooldown left
 
 var _attack_cd := 0.0                        # cooldown left
 var _hitbox := MeshInstance3D.new()
@@ -122,6 +157,7 @@ func _ready() -> void:
 	_build_status()
 	_build_hitbox()
 	_build_hints()
+	_build_eat_circle()
 
 
 # --- Public ----------------------------------------------------------------------
@@ -135,105 +171,117 @@ func wants_mouse_look() -> bool:
 	return is_controlling() and control_view != ControlView.NORTH
 
 
+## [species, local index] of what the controlled agent carries, or [null, -1].
+func _held() -> Array:
+	if not is_controlling():
+		return [null, -1]
+	var id: int = controlled_species.holding[controlled_index]
+	if id == -1:
+		return [null, -1]
+	return alifemanager.split_id(id)
+
+
+# --- Action helpers ----------------------------------------------------------------
+
+## Pressed this event: the Input Map action if it exists, else one of the fallback keys.
+func _act_pressed(event: InputEvent, action: String, fallback_keys: Array = []) -> bool:
+	if InputMap.has_action(action):
+		return event.is_action_pressed(action)
+	return event is InputEventKey and event.pressed and not event.echo \
+			and event.physical_keycode in fallback_keys
+
+
+## Name of the key bound to an action, for the hints / status line.
+## Keyboard/mouse binding first, else the controller one.
+func _key(action: String, fallback := "") -> String:
+	if not InputMap.has_action(action):
+		return fallback
+	var e := ConfigurationSettings.get_event(action, ConfigurationSettings.Slot.KEYBOARD_MOUSE)
+	if e == null:
+		e = ConfigurationSettings.get_event(action, ConfigurationSettings.Slot.CONTROLLER)
+	return ConfigurationSettings.event_to_text(e)
+
+
 # --- Input -----------------------------------------------------------------------
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Left click in control mode: use the machine, or pick up the outlined agent
-	if event is InputEventMouseButton and event.pressed \
-			and event.button_index == MOUSE_BUTTON_LEFT:
-		if _use_target():
-			get_viewport().set_input_as_handled()
-		return
-
-	# G released: launch
-	if event is InputEventKey and not event.pressed and event.physical_keycode == KEY_G:
+	# Throw released: launch
+	if event.is_action_released("throw"):
 		if _charging:
 			_charging = false
 			_throw()
 			get_viewport().set_input_as_handled()
 		return
 
-	if not (event is InputEventKey and event.pressed and not event.echo):
+	# Eat released before the circle is full: cancel
+	if event.is_action_released("eat"):
+		if _eating:
+			_cancel_eat()
+			get_viewport().set_input_as_handled()
 		return
 
-	match event.physical_keycode:
-		KEY_C:
-			if is_controlling():
-				release_control()
-			elif picker.hovered_species != null:
-				take_control(picker.hovered_species, picker.hovered_index)
-			elif picker.followed_species != null:
-				take_control(picker.followed_species, picker.followed_index)
-			else:
-				return
+	if _act_pressed(event, "agent_control", [KEY_C]):
+		if _toggle_control():
 			get_viewport().set_input_as_handled()
+		return
 
-		KEY_1, KEY_KP_1:
-			if is_controlling():
-				set_control_view(ControlView.NORTH)
-				get_viewport().set_input_as_handled()
+	if not is_controlling():
+		return
 
-		KEY_2, KEY_KP_2:
-			if is_controlling():
-				set_control_view(ControlView.CAMERA)
-				get_viewport().set_input_as_handled()
+	if _act_pressed(event, "view_north", [KEY_1, KEY_KP_1]):
+		set_control_view(ControlView.NORTH)
+	elif _act_pressed(event, "view_camera", [KEY_2, KEY_KP_2]):
+		set_control_view(ControlView.CAMERA)
+	elif _act_pressed(event, "view_first_person", [KEY_3, KEY_KP_3]):
+		set_control_view(ControlView.FIRST_PERSON)
+	elif event.is_action_pressed("jump"):
+		controlled_species.player_jump_buffer = 0.12    # jump buffering
+	elif event.is_action_pressed("dash"):
+		_dash()
+	elif event.is_action_pressed("attack"):
+		_attack()
+	# use and pick_up never both apply (the machine or the agent is the target, not both),
+	# so they can share a key
+	elif event.is_action_pressed("use") and target_machine != null:
+		_use_machine()
+	elif event.is_action_pressed("pick_up") and _can_pick_up():
+		_pick_up(controlled_species, controlled_index, target_species, target_index)
+	elif event.is_action_pressed("throw") and held_species != null:
+		_charging = true                             # charge while held, throw on release
+		_charge = 0.0
+	elif event.is_action_pressed("Drop") and held_species != null:
+		_drop()
+	elif event.is_action_pressed("eat") and held_species != null:
+		_eating = true                               # the circle fills while held
+		_eat_progress = 0.0
+	else:
+		return
+	get_viewport().set_input_as_handled()
 
-		KEY_3, KEY_KP_3:
-			if is_controlling():
-				set_control_view(ControlView.FIRST_PERSON)
-				get_viewport().set_input_as_handled()
 
-		KEY_SPACE:
-			if is_controlling():
-				controlled_species.player_jump_buffer = 0.12    # jump buffering
-				get_viewport().set_input_as_handled()
-
-		KEY_R:
-			if _use_target():
-				get_viewport().set_input_as_handled()
-
-		KEY_T:
-			if is_controlling():
-				_attack()
-				get_viewport().set_input_as_handled()
-
-		KEY_G:
-			if is_controlling() and held_species != null:
-				_charging = true                     # charge while held, throw on release
-				_charge = 0.0
-				get_viewport().set_input_as_handled()
-
-		KEY_Q:
-			if is_controlling() and held_species != null:
-				_drop()
-				get_viewport().set_input_as_handled()
-
-		KEY_E:
-			if is_controlling() and held_species != null:
-				_eat(controlled_species, controlled_index, held_species, held_index)
-				get_viewport().set_input_as_handled()
+## agent_control: release, or take the hovered (else followed) agent. True if something happened.
+func _toggle_control() -> bool:
+	if is_controlling():
+		release_control()
+	elif picker.hovered_species != null:
+		take_control(picker.hovered_species, picker.hovered_index)
+	elif picker.followed_species != null:
+		take_control(picker.followed_species, picker.followed_index)
+	else:
+		return false
+	return true
 
 
 func _can_pick_up() -> bool:
-	return is_controlling() and held_species == null and target_species != null \
-			and not _species_has_flight(target_species)
+	return is_controlling() and held_species == null and target_species != null
 
 
-## Left click / R: the machine in range first (feed it / start-stop it), else pick up.
-## Returns true if something happened.
-func _use_target() -> bool:
-	if not is_controlling():
-		return false
-	if target_machine != null:
-		var used := target_machine.interact(controlled_species, controlled_index,
-				held_species, held_index)
-		if used:
-			_clear_held()                        # the carried item went into the machine
-		return true
-	if _can_pick_up():
-		_interact(controlled_species, controlled_index, target_species, target_index)
-		return true
-	return false
+## use: feed the machine in range what you carry, or start / stop it with empty hands.
+func _use_machine() -> void:
+	var item := _held()
+	var used := target_machine.interact(controlled_species, controlled_index, item[0], item[1])
+	if used and item[0] != null:
+		alifemanager.unlink(item[0], item[1])        # the carried item went into the machine
 
 
 # --- Per frame -------------------------------------------------------------------
@@ -244,17 +292,21 @@ func _process(delta: float) -> void:
 			_charging = false                        # item eaten / dropped while charging
 		else:
 			_charge = minf(_charge + delta / maxf(throw_charge_time, 0.01), 1.0)
+	_process_eat(delta)
 	_process_flights(delta)
 	_update_planet()
 	_attack_cd = maxf(_attack_cd - delta, 0.0)
+	_dash_cd = maxf(_dash_cd - delta, 0.0)
+	_dash_left = maxf(_dash_left - delta, 0.0)
 	_update_hitbox(delta)
 	_update_hints()
 	_update_wrap_view()
 	if is_controlling():
 		_process_control()
-	_process_carry()
+	# The carried item is placed by AlifeManager.update_carried(), like for every carrier
 	_update_machine_highlight()
 	_update_energy_bar()
+	_update_eat_circle()                         # after the bar: it sits just above it
 	_update_arrow()
 	_update_status()
 
@@ -276,7 +328,7 @@ func take_control(sp, i: int) -> void:
 	v.y = 0.0
 	_facing = v.normalized() if v.length_squared() > 1e-6 else Vector3.FORWARD
 
-	camera.move_keys_enabled = false                 # WASD moves the agent, not the camera
+	camera.move_keys_enabled = false                 # movement keys move the agent, not the camera
 	picker.follow(sp, i)
 	set_control_view(control_view)
 	control_started.emit(sp, i)
@@ -296,6 +348,7 @@ func release_control() -> void:
 	target_species = null
 	target_index = -1
 	target_machine = null
+	_dash_left = 0.0
 	camera.move_keys_enabled = true
 	camera.set_yaw_lock(false)
 	camera.set_mouse_look(false)
@@ -345,25 +398,28 @@ func _process_control() -> void:
 	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
 	camera.first_person_eye_height = q.y * sp.current_size[i] * eye_ratio
 
-	# WASD: x = right, y = forward
-	var input := Vector2.ZERO
-	if Input.is_physical_key_pressed(KEY_W): input.y += 1.0
-	if Input.is_physical_key_pressed(KEY_S): input.y -= 1.0
-	if Input.is_physical_key_pressed(KEY_A): input.x -= 1.0
-	if Input.is_physical_key_pressed(KEY_D): input.x += 1.0
-	sprint = 2.0 if Input.is_physical_key_pressed(KEY_SHIFT) else 1.0
-	sp.player_jump_held = Input.is_physical_key_pressed(KEY_SPACE)
+	# Movement: x = right, y = forward. Analog on a stick, deadzone from the Input Map.
+	var input := Input.get_vector("left", "right", "down", "up")
+	sprint = sprint_multiplier if Input.is_action_pressed("sprint") else 1.0
+	sp.player_jump_held = Input.is_action_pressed("jump")
 
 	var dir := Vector3.ZERO
 	if control_view == ControlView.NORTH:
-		dir = Vector3(input.x, 0.0, -input.y)        # W = north (-Z), D = east (+X)
+		dir = Vector3(input.x, 0.0, -input.y)        # up = north (-Z), right = east (+X)
 	else:
 		# Modes 2 and 3: relative to where the camera looks, flattened on the ground
 		var b := camera.global_transform.basis
 		var fwd := Vector3(-b.z.x, 0.0, -b.z.z).normalized()
 		var right := Vector3(b.x.x, 0.0, b.x.z).normalized()
 		dir = right * input.x + fwd * input.y
-	sp.player_velocity = dir.normalized() * control_speed * sprint
+	dir = dir.limit_length(1.0)                      # half-pushed stick = half speed
+
+	if _dash_left > 0.0:
+		# Dash: full speed burst, in the direction pressed, else straight ahead
+		var d := dir if dir.length_squared() > 1e-6 else _facing
+		sp.player_velocity = d.normalized() * control_speed * dash_multiplier
+	else:
+		sp.player_velocity = dir * control_speed * sprint
 
 	# Machine whose zone we're in (also while carrying: that's how you feed it).
 	# Each machine has its own interact_range. If several zones overlap, the one
@@ -387,123 +443,101 @@ func _process_control() -> void:
 	target_index = -1
 	if held_species != null:
 		return
-	var me: int = alifemanager.global_species_offset[alifemanager.species_array.find(sp)] + i
+	var me := alifemanager.g_id(sp, i)
 	var found: Vector4 = sp.find_nearest(pos, me, -1, target_search_rings)
 	var id := int(found.w)
 	var agent_dist := Vector3(found.x, found.y, found.z).length()
 	# Agent vs machine: compared relative to their ranges, like machines between them
 	var agent_score := agent_dist / maxf(target_range, 0.001)
 	if id >= 0 and agent_dist <= target_range and agent_score < best_score:
-		var t := picker.split_id(id)
+		var t := alifemanager.split_id(id)
 		target_species = t[0]
 		target_index = t[1]
 		target_machine = null                       # the agent is closer than the machine
 
 
-## Left click / R in control mode, on the outlined agent: pick it up.
-func _interact(sp, i: int, target_sp, j: int) -> void:
-	print("%s #%d picks up %s #%d" % [sp.species_name, i, target_sp.species_name, j])
-	#target_sp.Interact(j, sp, i)      # your previous interaction, if you still need it
-	_pick_up(target_sp, j)
+## dash: a short burst of speed, with a cooldown.
+func _dash() -> void:
+	if _dash_cd > 0.0:
+		return
+	_dash_cd = dash_cooldown
+	_dash_left = dash_time
+	agent_dashed.emit(controlled_species, controlled_index)
 
 
-# --- Carry -----------------------------------------------------------------------
+# --- Carry (through AlifeManager, like any other carrier) ---------------------------
 
-func _pick_up(item_sp, j: int) -> void:
-	if held_species != null:
-		return                                       # one item at a time
-	held_species = item_sp
-	held_index = j
-	if "held_index" in item_sp:
-		item_sp.held_index = j
-		item_sp.held_position = _carry_position()
+## pick_up on the outlined agent.
+func _pick_up(sp, i: int, item_sp, j: int) -> void:
+	if not alifemanager.pick_up(sp, i, item_sp, j):
+		return                                       # hands full, or item not free in the world
+	print("%s #%d picks up %s #%d" % [sp.species_name, i, item_sp.species_name, j])
 	target_species = null
 	target_index = -1
-	agent_picked_up.emit(controlled_species, controlled_index, item_sp, j)
+	agent_picked_up.emit(sp, i, item_sp, j)
 
 
-## Q while carrying: put the item down in front of the carrier, on its feet level.
+## Drop: put the item down in front of the carrier, on its feet level.
 func _drop() -> void:
-	if held_species == null:
+	var item := _held()
+	if item[0] == null:
 		return
-	var item_sp = held_species
-	var j := held_index
-	if is_controlling() and item_sp.active_alife_array[j] != 0:
-		var p := _carry_position()
-		p.y = controlled_species.position_array[controlled_index].y
-		item_sp.position_array[j] = p
-	_clear_held()
-	agent_dropped.emit(controlled_species, controlled_index, item_sp, j)
+	var cs = controlled_species
+	var ci := controlled_index
+	var p := alifemanager.carry_position(cs, ci)
+	p.y = cs.position_array[ci].y
+	alifemanager.drop(cs, ci, p)
+	agent_dropped.emit(cs, ci, item[0], item[1])
 
 
-## E while carrying.
-## If the eaten agent is removed, the carry ends on its own.
+## eat held: fill the circle, eat when it's full.
+func _process_eat(delta: float) -> void:
+	if not _eating:
+		return
+	if held_species == null or not is_controlling():
+		_cancel_eat()                                # dropped / thrown / released meanwhile
+		return
+	_eat_progress += delta / maxf(eat_hold_time, 0.01)
+	if _eat_progress >= 1.0:
+		_cancel_eat()
+		var item := _held()
+		_eat(controlled_species, controlled_index, item[0], item[1])
+
+
+func _cancel_eat() -> void:
+	_eating = false
+	_eat_progress = 0.0
+
+
+## Called when the eat circle is full.
 func _eat(sp, i: int, food_sp, j: int) -> void:
 	print("%s #%d eats %s #%d" % [sp.species_name, i, food_sp.species_name, j])
 	sp.current_energy_array[i] += food_sp.current_biomass[j]
+	alifemanager.unlink(food_sp, j)                  # free the hands before the slot is reused
 	food_sp.Remove_Life(j)
-
-
-## Every frame: keep the carried agent in the carrier's hands.
-func _process_carry() -> void:
-	if held_species == null:
-		return
-	var item_sp = held_species
-	var j := held_index
-	if not is_controlling() or item_sp.active_alife_array[j] == 0:
-		_clear_held()                                # item gone (eaten, removed) or no carrier
-		return
-	var p := _carry_position()
-	if "held_index" in item_sp:
-		item_sp.held_position = p                    # the simulation places it there
-	item_sp.position_array[j] = p                    # and right now, for plants / no simulation
-
-
-## In front of the carrier (along its facing arrow), at a fraction of its height.
-func _carry_position() -> Vector3:
-	var sp = controlled_species
-	var i := controlled_index
-	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
-	var h := maxf(q.y * sp.current_size[i], 0.2)
-	var p: Vector3 = sp.position_array[i] + _facing * carry_forward * h + Vector3.UP * h * carry_height
-	return WorldWrap.wrap_into(p)                    # stays inside the world near a border
-
-
-func _clear_held() -> void:
-	if held_species != null and "held_index" in held_species:
-		held_species.held_index = -1
-	held_species = null
-	held_index = -1
 
 
 # --- Throw -------------------------------------------------------------------------
 
-## G released: launch the carried item, power from how long G was held.
+## throw released: launch the carried item, power from how long it was held.
 func _throw() -> void:
 	if not is_controlling() or held_species == null:
 		return
-	var item_sp = held_species
-	var j := held_index
+	var cs = controlled_species
+	var ci := controlled_index
 
-	# Direction: where the camera looks (modes 2 / 3), else the facing arrow (mode 1)
-	var dir := _facing
-	if control_view != ControlView.NORTH:
-		var b := camera.global_transform.basis
-		dir = Vector3(-b.z.x, 0.0, -b.z.z)
-	dir = dir.normalized() if dir.length_squared() > 1e-6 else Vector3.FORWARD
-
+	var dir := _aim_dir()
 	var speed := lerpf(throw_min_speed, throw_max_speed, _charge)
 	var a := deg_to_rad(throw_angle_deg)
 	var vel := dir * cos(a) * speed + Vector3.UP * sin(a) * speed
-	var pos := _carry_position()
+	var pos := alifemanager.carry_position(cs, ci)
 
-	_clear_held()
-	# Animals: keep the simulation's hands off it while it flies
-	if "held_index" in item_sp:
-		item_sp.held_index = j
-		item_sp.held_position = pos
-	_flights.append({"sp": item_sp, "j": j, "pos": pos, "vel": vel})
-	agent_thrown.emit(controlled_species, controlled_index, item_sp, j, speed)
+	# Out of the hands, but not back in the world yet: the simulation leaves it alone
+	var item: Array = alifemanager.release_flying(cs, ci)
+	if item.is_empty():
+		return
+	_flights.append({"sp": item[0], "j": item[1], "pos": pos, "vel": vel})
+	agent_thrown.emit(cs, ci, item[0], item[1], speed)
 
 
 ## Every frame (real time, so it works while paused too): move items in the air.
@@ -512,7 +546,7 @@ func _process_flights(delta: float) -> void:
 		var sp = f["sp"]
 		var j: int = f["j"]
 		if sp.active_alife_array[j] == 0:            # removed mid-air
-			_end_flight(f, false)
+			_flights.erase(f)
 			continue
 
 		var vel: Vector3 = f["vel"]
@@ -532,29 +566,10 @@ func _process_flights(delta: float) -> void:
 		f["vel"] = vel
 		f["pos"] = pos
 		sp.position_array[j] = pos
-		if "held_index" in sp:
-			sp.held_position = pos
 		if landed:
-			_end_flight(f, true)
-
-
-func _end_flight(f: Dictionary, landed: bool) -> void:
-	_flights.erase(f)
-	var sp = f["sp"]
-	if "held_index" in sp and sp.held_index == f["j"]:
-		sp.held_index = -1                           # the simulation moves it again
-	if landed:
-		item_landed.emit(sp, f["j"], f["pos"])
-
-
-## One flying item per species (it uses the species' held_index slot).
-func _species_has_flight(sp) -> bool:
-	if not ("held_index" in sp):
-		return false
-	for f in _flights:
-		if f["sp"] == sp:
-			return true
-	return false
+			_flights.erase(f)
+			alifemanager.land(sp, j, pos)            # back in the world: the simulation moves it again
+			item_landed.emit(sp, j, pos)
 
 
 # --- Key hints (top of the screen, in control mode) --------------------------------
@@ -566,24 +581,37 @@ func _build_hints() -> void:
 	_layer.add_child(_hints)
 
 
-## All control keys, always the same: [key, action]
-const KEY_HINTS := [
-	["WASD", "move"],
-	["Shift", "run"],
-	["Space", "jump"],
-	["T", "attack"],
-	["Click / R", "pick up / use"],
-	["Q", "drop"],
-	["E", "eat"],
-	["G", "hold to throw"],
-	["1 2 3", "view"],
-	["Esc", "cursor"],
-	["C", "release"],
-]
-
-
+## All control keys, with the keys currently bound: [key, action]
 func _current_hints() -> Array:
-	return KEY_HINTS
+	# "WASD" when every movement key is one letter, else "W A S D" / "Up Left Down Right"
+	var move := PackedStringArray([_key("up"), _key("left"), _key("down"), _key("right")])
+	var short := true
+	for k in move:
+		short = short and k.length() == 1
+	var hints := [
+		[("" if short else " ").join(move), "move"],
+		[_key("sprint"), "run"],
+		[_key("jump"), "jump"],
+		[_key("dash"), "dash"],
+		[_key("attack"), "attack"],
+	]
+	var pick := _key("pick_up")
+	var use := _key("use")
+	if pick == use:
+		hints.append([pick, "pick up / use"])
+	else:
+		hints.append([pick, "pick up"])
+		hints.append([use, "use"])
+	hints.append_array([
+		[_key("Drop"), "drop"],
+		[_key("eat"), "hold to eat"],
+		[_key("throw"), "hold to throw"],
+		["%s %s %s" % [_key("view_north", "1"), _key("view_camera", "2"),
+				_key("view_first_person", "3")], "view"],
+		[_key("free_cursor", "Esc"), "cursor"],
+		[_key("agent_control", "C"), "release"],
+	])
+	return hints
 
 
 func _update_hints() -> void:
@@ -652,7 +680,7 @@ func _aim_dir() -> Vector3:
 	return dir.normalized() if dir.length_squared() > 1e-6 else Vector3.FORWARD
 
 
-## T: hit every agent inside a box in front of the controlled agent.
+## attack: hit every agent inside a box in front of the controlled agent.
 func _attack() -> void:
 	if _attack_cd > 0.0:
 		return
@@ -734,7 +762,7 @@ func _agents_in_box(origin: Vector3, right: Vector3, fwd: Vector3, me_sp, me_i: 
 						continue
 					if d.y < -0.5 or d.y > attack_height:
 						continue
-					var t := picker.split_id(j)
+					var t := alifemanager.split_id(j)
 					if t[0].alive_array[t[1]] == 0:
 						continue                             # corpses aren't hit
 					hits.append(t)
@@ -832,6 +860,8 @@ func _update_arrow() -> void:
 	v.y = 0.0
 	if v.length_squared() > 1e-6:
 		_facing = v.normalized()                     # standing still: keep the last direction
+	if "facing" in sp:
+		sp.facing[i] = _facing                       # the carry system places the item with it
 
 	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
 	var s := maxf(q.x * sp.current_size[i], 0.3) * arrow_scale
@@ -888,6 +918,45 @@ func _update_energy_bar() -> void:
 	_bar_bg.visible = true
 
 
+# --- Eat circle (above the energy bar, fills while eat is held) ---------------------
+
+func _build_eat_circle() -> void:
+	_eat_circle.size = Vector2.ONE * (eat_circle_radius * 2.0 + 4.0)
+	_eat_circle.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_eat_circle.visible = false
+	_eat_circle.draw.connect(_draw_eat_circle)
+	_layer.add_child(_eat_circle)
+
+
+func _update_eat_circle() -> void:
+	if not _eating or not _bar_bg.visible:
+		_eat_circle.visible = false
+		return
+	# Centered above the energy bar
+	var above_bar := _bar_bg.position + Vector2(_bar_bg.size.x * 0.5, -eat_circle_radius - 6.0)
+	_eat_circle.position = above_bar - _eat_circle.size * 0.5
+	_eat_circle.visible = true
+	_eat_circle.queue_redraw()
+
+
+func _draw_eat_circle() -> void:
+	var c := _eat_circle.size * 0.5
+	var r := eat_circle_radius
+	_eat_circle.draw_circle(c, r, Color(0, 0, 0, 0.55))           # background
+
+	# Pie filling clockwise from the top
+	var p := clampf(_eat_progress, 0.0, 1.0)
+	if p > 0.0:
+		var pts := PackedVector2Array([c])
+		var segments := maxi(2, ceili(32.0 * p))
+		for s in segments + 1:
+			var a := -PI * 0.5 + TAU * p * s / segments
+			pts.append(c + Vector2(cos(a), sin(a)) * r)
+		_eat_circle.draw_colored_polygon(pts, eat_circle_color)
+
+	_eat_circle.draw_arc(c, r, 0.0, TAU, 32, Color(1, 1, 1, 0.8), -1, true)   # outline
+
+
 # --- Status line (top center) ------------------------------------------------------
 
 func _build_status() -> void:
@@ -908,16 +977,22 @@ func _update_status() -> void:
 	if not is_controlling():
 		_status.visible = false
 		return
-	var view: String = ["[1] North view", "[2] Camera view", "[3] First person"][control_view]
-	_status.text = "Controlling %s #%d   ·   %s   ·   C  release" % [
-			controlled_species.species_name, controlled_index, view]
+	var view: String = [
+		"[%s] North view" % _key("view_north", "1"),
+		"[%s] Camera view" % _key("view_camera", "2"),
+		"[%s] First person" % _key("view_first_person", "3"),
+	][control_view]
+	_status.text = "Controlling %s #%d   ·   %s   ·   %s  release" % [
+			controlled_species.species_name, controlled_index, view,
+			_key("agent_control", "C")]
 	if held_species != null:
-		_status.text += "\nCarrying %s #%d   ·   Q  drop   ·   E  eat   ·   G  throw" % [
-				held_species.species_name, held_index]
+		_status.text += "\nCarrying %s #%d   ·   %s  drop   ·   hold %s  eat   ·   %s  throw" % [
+				held_species.species_name, held_index,
+				_key("Drop"), _key("eat"), _key("throw")]
 	if target_machine != null:
 		var action := "feed it" if held_species != null \
 				else ("stop" if target_machine.running else "start")
-		_status.text += "\n%s   ·   Click / R  %s" % [target_machine.status_text(), action]
+		_status.text += "\n%s   ·   %s  %s" % [target_machine.status_text(), _key("use"), action]
 	if _charging:
 		var filled := roundi(_charge * 10.0)
 		_status.text += "\nThrow  [%s%s]  %d%%" % ["■".repeat(filled), "□".repeat(10 - filled),
