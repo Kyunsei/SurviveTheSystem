@@ -21,6 +21,8 @@ func _init():
 	#apparently object are here too...
 	#build_species(ALIFE_SEEDBAG.new())
 	build_species(ALIFE_VACUUM.new())
+	build_species(ALIFE_GOLD_VACUUM.new())
+	build_species(ALIFE_CAT_RATION.new())
 
 
 

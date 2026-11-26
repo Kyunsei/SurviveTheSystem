@@ -67,6 +67,19 @@ func can_be_carried(_i: int) -> bool:
 	return true
 
 
+#EATING (set in _init): tools aren't food, food items set edible = true
+var edible := true
+
+func can_be_eaten(_i: int) -> bool:
+	return edible
+
+
+## Item i is eaten by agent eater_i of species eater_sp. Override for special effects.
+## Default: the eater gains the item's biomass as energy. The caller removes the item.
+func on_eaten(i: int, eater_sp: ALIFE, eater_i: int) -> void:
+	eater_sp.current_energy_array[eater_i] += maxf(current_biomass[i], 0.0)
+
+
 ## Uses item i, held by agent user_i of species user_sp. Returns true if it was used.
 ## Checks: it must be held by that agent, off cooldown, with uses left.
 func use(i: int, user_sp: ALIFE, user_i: int) -> bool:

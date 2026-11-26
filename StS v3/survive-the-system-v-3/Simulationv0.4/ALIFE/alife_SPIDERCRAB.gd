@@ -83,7 +83,7 @@ func _init() -> void:
 	# hunt_stop_energy must stay above the duplication energy (5 * seed_energy = 5000),
 	# or adults stop eating before they can reproduce
 	hunt_start_energy = 1500.0
-	hunt_stop_energy = 5500.0
+	hunt_stop_energy = 3500.0
 
 	#Flock par
 	#contact par

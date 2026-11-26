@@ -11,11 +11,11 @@ signal toggled(i: int, on: bool)                    # e.g. sounds / animations
 signal sucked(i: int, sp: ALIFE, j: int)
 
 #VACUUM (set in _init)
-var suck_range := 4.0                # how far in front it reaches
-var suck_angle_deg := 60.0           # half-angle of the cone
+var suck_range := 2.0                # how far in front it reaches
+var suck_angle_deg := 45.0           # half-angle of the cone
 var suck_interval := 0.15            # seconds between two sucks
 var max_per_suck := 10                # agents per suck
-var capacity := 500                   # agents the tank holds (-1 = endless)
+var capacity := 50                   # agents the tank holds (-1 = endless)
 var max_durability := 100.0
 var durability_per_suck := 0.0# 0.33      # lost per agent sucked
 var ignore_species: Array[String] = ["CATRONAUTE", "VACUUM"]   # never sucked
@@ -34,13 +34,13 @@ var _last_suck := PackedFloat64Array()
 func _init() -> void:
 	super()
 	species_name = "VACUUM"
-	sprite = preload("res://assets/assets kyun/gold_vacuum1.png")   # TODO: your vacuum sprite
+	sprite = preload("res://assets/assets kyun/vacuum3.png")   # TODO: your vacuum sprite
 	colour = Color(0.55, 0.6, 0.7, 1.0)
 	max_uses = -1                    # the on / off switch never runs out
 	use_cooldown = 0.25
 
 	#Held look: 3D model on the carrier's back instead of the sprite
-	held_scene = preload("res://Simulationv0.4/Object/alifeitem_gold_vacuum.tscn")
+	held_scene = preload("res://Simulationv0.4/Object/alifeitem_vacuum.tscn")
 	held_scene_scale = 1.0                         # size of the model
 	held_on_body = true                            # from the carrier's body, not the hands
 	held_scene_offset = Vector3(0.0, 0.3, 0.0)     # right, up, forward (-z = behind)

@@ -12,13 +12,13 @@ func _init() -> void:
 	vframes=1
 	colour = Color(0.655, 0.154, 0.226, 1.0)
 	
-	max_energy = 5000
+	max_energy = 2000
 	max_speed = 6. #WIP might not work as intended
 
 	#LIFECYCLE/DUP
 	duplication_range = 2
-	seed_energy = 2500
-	seed_biomass = 500
+	seed_energy = 1000
+	seed_biomass = 100
 	max_life_cycle = 2
 	growth_cost = [1000,1000,1000] #Should be size of max_life+1
 	growth_rate = 0.5	
@@ -127,7 +127,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		if p.y > ground_y : new_v.y -=0.8
 		new_velocity[i] = new_v
 	#--------maintain cost
-		_energy += -0.5 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
+		_energy += -2 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
 		
 	#--------DEATH
 		if _energy < 0 or current_health[i] <0 :

@@ -234,45 +234,67 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not is_controlling():
 		return
 
+	# Views / movement-type keys: one at a time, as before
 	if _act_pressed(event, "view_north", [KEY_1, KEY_KP_1]):
 		set_control_view(ControlView.NORTH)
+		get_viewport().set_input_as_handled()
+		return
 	elif _act_pressed(event, "view_camera", [KEY_2, KEY_KP_2]):
 		set_control_view(ControlView.CAMERA)
+		get_viewport().set_input_as_handled()
+		return
 	elif _act_pressed(event, "view_first_person", [KEY_3, KEY_KP_3]):
 		set_control_view(ControlView.FIRST_PERSON)
-	elif event.is_action_pressed("jump"):
+		get_viewport().set_input_as_handled()
+		return
+
+	# Every other action is checked on its own: several actions bound to the same key
+	# all fire on one press. What each may do is decided BEFORE any of them runs,
+	# so one press doesn't chain (e.g. pick up then use what was just picked up).
+	var holding := held_species != null
+	var item := _held()
+	var can_use := target_machine != null or _held_usable()
+	var can_pick := _can_pick_up()
+	var can_eat :bool= holding and not (item[0].has_method("can_be_eaten") \
+			and not item[0].can_be_eaten(item[1]))
+	var did := false
+
+	if event.is_action_pressed("jump"):
 		controlled_species.player_jump_buffer = 0.12    # jump buffering
-	elif event.is_action_pressed("dash"):
+		did = true
+	if event.is_action_pressed("dash"):
 		_dash()
-	elif event.is_action_pressed("attack"):
+		did = true
+	if event.is_action_pressed("attack"):
 		_attack()
-	
-	elif event.is_action_pressed("Action"):
-		_use_machine()
+		did = true
+	if event.is_action_pressed("Action"):
 		var t := _interact_target()
 		_interact(controlled_species, controlled_index, t[0], t[1])
-	# use and pick_up never both apply (the machine or the agent is the target, not both),
-	# so they can share a key
-	elif event.is_action_pressed("use") and (target_machine != null or _held_usable()):
+		did = true
+	if event.is_action_pressed("use") and can_use:
 		if target_machine != null:
 			_use_machine()                           # near a machine: feed it / start / stop
 		else:
-			var item := _held()
 			item[0].use(item[1], controlled_species, controlled_index)
-
-	elif event.is_action_pressed("pick_up") and _can_pick_up():
+		did = true
+	if event.is_action_pressed("pick_up") and can_pick:
 		_pick_up(controlled_species, controlled_index, target_species, target_index)
-	elif event.is_action_pressed("throw") and held_species != null:
+		did = true
+	if event.is_action_pressed("throw") and holding:
 		_charging = true                             # charge while held, throw on release
 		_charge = 0.0
-	elif event.is_action_pressed("Drop") and held_species != null:
+		did = true
+	if event.is_action_pressed("Drop") and holding:
 		_drop()
-	elif event.is_action_pressed("eat") and held_species != null:
+		did = true
+	if event.is_action_pressed("eat") and can_eat:
 		_eating = true                               # the circle fills while held
 		_eat_progress = 0.0
-	else:
-		return
-	get_viewport().set_input_as_handled()
+		did = true
+
+	if did:
+		get_viewport().set_input_as_handled()
 
 
 ## agent_control: release, or take the hovered (else followed) agent. True if something happened.
@@ -585,11 +607,12 @@ func _cancel_eat() -> void:
 ## Called when the eat circle is full.
 func _eat(sp, i: int, food_sp, j: int) -> void:
 	print("%s #%d eats %s #%d" % [sp.species_name, i, food_sp.species_name, j])
-	sp.current_energy_array[i] += food_sp.current_biomass[j]
+	if food_sp.has_method("on_eaten"):
+		food_sp.on_eaten(j, sp, i)                   # items: their own effect (energy, health...)
+	else:
+		sp.current_energy_array[i] += food_sp.current_biomass[j]   # creatures / plants: biomass
 	alifemanager.unlink(food_sp, j)                  # free the hands before the slot is reused
 	food_sp.Remove_Life(j)
-
-
 # --- Throw -------------------------------------------------------------------------
 
 ## throw released: launch the carried item, power from how long it was held.
