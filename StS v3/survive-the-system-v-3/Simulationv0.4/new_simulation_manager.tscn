@@ -126,6 +126,9 @@ interact_range = 5.0
 [node name="machine_shop" parent="ArtefactManager" unique_id=1575499750 instance=ExtResource("14_rqu2l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0, 130)
 
+[node name="machine_shop2" parent="ArtefactManager" unique_id=945088910 instance=ExtResource("14_rqu2l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 116.01536, 22, 128.5035)
+
 [node name="Control" type="Node" parent="." unique_id=344251585]
 
 [node name="PlayerControl" type="Node" parent="Control" unique_id=938769931 node_paths=PackedStringArray("alifemanager", "camera", "picker")]

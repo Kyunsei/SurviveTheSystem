@@ -22,7 +22,7 @@ extends Machine
 signal threshold_reached(index: int, reward: int)
 signal mission_completed(max_biomass: float)
 
-@export var factor := 0.01                     # collected = biomass x factor
+@export var factor := 0.001                     # collected = biomass x factor
 @export var thresholds: Array[float] = [50.0, 200.0, 1000.0, 2000.0]   # stage sizes, stacked
 @export var rewards: Array[int] = [20, 30, 40, 50]   # credits per stage (same order)
 @export var final_reward := 60                 # extra, on top of the last stage's reward
