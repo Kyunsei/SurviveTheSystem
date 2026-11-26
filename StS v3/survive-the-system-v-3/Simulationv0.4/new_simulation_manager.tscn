@@ -133,9 +133,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 116.01536, 22, 128.5035)
 
 [node name="PlayerControl" type="Node" parent="Control" unique_id=938769931 node_paths=PackedStringArray("alifemanager", "camera", "picker")]
 script = ExtResource("12_qijgx")
-alifemanager = NodePath("../../AlifeManager")
-camera = NodePath("DebugCamera3D")
-picker = NodePath("../AgentPicker")
 planet_radius = 120.0
 attack_width = 3.0
 attack_height = 1.5
@@ -143,6 +140,9 @@ attack_cooldown = 0.2
 hitbox_show_time = 0.2
 eat_hold_time = 0.5
 eat_circle_radius = 12.0
+alifemanager = NodePath("../../AlifeManager")
+camera = NodePath("DebugCamera3D")
+picker = NodePath("../AgentPicker")
 
 [node name="DebugCamera3D" type="Camera3D" parent="Control/PlayerControl" unique_id=2122777896]
 transform = Transform3D(-0.70710677, 0.02467767, -0.706676, 0, 0.99939084, 0.034899496, 0.70710677, 0.02467767, -0.706676, -10, 28, -10)

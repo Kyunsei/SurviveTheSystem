@@ -50,9 +50,11 @@ func _process(delta: float) -> void:
 		var t0 := Time.get_ticks_usec()
 		if simulation_speed > 0:
 			 
-			world.run_world_simulation(dt, simulation_speed)
+			world.run_world_simulation(dt, simulation_speed) #Original
+			#world.run_world_simulation(delta, simulation_speed)
 			var t1 := Time.get_ticks_usec()
-			alifemanager.run_simulation(dt, simulation_speed)
+			#alifemanager.run_simulation(delta, simulation_speed)
+			alifemanager.run_simulation(dt, simulation_speed)#Original
 			var t2 := Time.get_ticks_usec()
 			render_manager.run_visualisation()
 			var t3 := Time.get_ticks_usec()

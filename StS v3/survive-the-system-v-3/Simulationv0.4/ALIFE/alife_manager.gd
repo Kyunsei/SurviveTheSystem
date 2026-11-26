@@ -279,9 +279,9 @@ func Release_all_alife():
 
 func init_default_species(worldd:WorldManager,alifem:AlifeManager):	
 	SpawnRandomAlife(3,10,2000,4) #glowberry
-	SpawnRandomAlife(1,6) #TREE
+	SpawnRandomAlife(1,3) #TREE
 	sim_manager.set_simulation_speed(10000)
-	await get_tree().create_timer(.8).timeout
+	await get_tree().create_timer(.5).timeout
 	sim_manager.set_simulation_speed(100)
 	SpawnRandomAlife(0,3000,100,2) #GRASS
 	await get_tree().create_timer(3.0).timeout
