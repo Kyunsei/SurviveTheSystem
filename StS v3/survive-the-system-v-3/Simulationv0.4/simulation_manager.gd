@@ -26,6 +26,10 @@ class_name SimulationManager
 var running = false
 var total_time := 0                 # ticks done since start
 
+## Real seconds the simulation has been running (stops while paused, NOT slowed by
+## freezes). Read by species for timers that must last a fixed real time (spider charge).
+var real_time := 0.0
+
 var _accum := 0.0                   # ticks owed but not run yet
 var interp_alpha := 0.0             # 0..1, between the last tick and the next (for smooth rendering)
 
@@ -71,6 +75,7 @@ func DrawSimulation():
 
 func _process(delta: float) -> void:
 	if running and simulation_speed > 0.0:
+		real_time += delta                  # before the clamp: a 1 s freeze counts as 1 s
 		delta = minf(delta, max_frame_delta)
 		_accum += delta * ticks_per_second
 
@@ -81,7 +86,7 @@ func _process(delta: float) -> void:
 		alife_usec = 0.0
 
 		while _accum >= 1.0 and ticks < max_ticks_per_frame:
-			_tick(delta)
+			_tick()
 			_accum -= 1.0
 			ticks += 1
 			if Time.get_ticks_usec() - frame_start > budget_usec:
@@ -111,12 +116,18 @@ func _process(delta: float) -> void:
 	ui_simulation.display_performance(alife_usec, world_usec, render_usec)
 
 
-func _tick(delta:float) -> void:
-	var tick_time := 1.0 / ticks_per_second      # real time one tick stands for
+## One fixed step of the whole simulation.
+## Three clocks:
+##   tick_time        = 1 / ticks_per_second, the same for EVERY tick: movement, action timers
+##   dt * sim_speed   = simulated time: metabolism
+##   real_time        = wall clock (above): timers that must last fixed real seconds
+## The frame's delta is never passed in: a frame runs 0..n ticks, so it means nothing per tick.
+func _tick() -> void:
+	var tick_time := 1.0 / ticks_per_second
 	var t0 := Time.get_ticks_usec()
-	world.run_world_simulation(delta, dt, simulation_speed)
+	world.run_world_simulation(tick_time, dt, simulation_speed)
 	var t1 := Time.get_ticks_usec()
-	alifemanager.run_simulation(delta, dt, simulation_speed)   # same order as your run_chunk_simulation
+	alifemanager.run_simulation(tick_time, dt, simulation_speed)
 	var t2 := Time.get_ticks_usec()
 	world_usec += t1 - t0
 	alife_usec += t2 - t1
@@ -130,7 +141,6 @@ func _measure_speed(delta: float, ticks: int) -> void:
 		effective_tps = _speed_ticks / _speed_time
 		_speed_ticks = 0
 		_speed_time = 0.0
-	#print(effective_tps)
 
 func set_simulation_speed(newvalue: float):
 	simulation_speed = maxf(newvalue, 0.0)

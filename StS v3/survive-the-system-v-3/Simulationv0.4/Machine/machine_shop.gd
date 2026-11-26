@@ -17,7 +17,8 @@ signal bought(species_name: String, price: int)
 
 static var credits := 0.0                     # the bank, shared by every shop
 
-@export var catalog := {"CAT_RATION":10, "VACUUM": 50, "GOLD_VACUUM": 1000, "SEEDBAG": 10}
+@export var catalog := {"CAT_RATION":10, "VACUUM": 50, "GOLD_VACUUM": 1000, "SEEDBAG": 10,
+"CLAWS": 0, "POWER_FRUIT":0}
 @export var credits_per_biomass := .10        # credits for one unit of biomass
 @export var close_distance_margin := 0.5      # menu closes when you walk out of range
 

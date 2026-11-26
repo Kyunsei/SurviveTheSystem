@@ -23,6 +23,9 @@ func _init():
 	build_species(ALIFE_VACUUM.new())
 	build_species(ALIFE_GOLD_VACUUM.new())
 	build_species(ALIFE_CAT_RATION.new())
+	build_species(ALIFE_WEAPON.new())
+	build_species(ALIFE_POWER_FRUIT.new())
+	build_species(ALIFE_SEEDBAG.new())
 
 
 

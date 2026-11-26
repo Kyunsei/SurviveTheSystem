@@ -25,6 +25,7 @@ var fruit_height_min := 0.15                 # branches zone, in fractions of th
 var fruit_height_max := 0.45
 var fruit_spread := 0.3                     # how far out in the branches (1 = sprite edge)
 var damage_drop_chance := 1.0 #5                # chance each fruit falls when the tree is hit
+var damage_reduction := 20.0                 # removed from every hit it takes (bark)
 var fruit_gravity := 9.8
 #var ground_y := 0.0
 

@@ -9,7 +9,7 @@ var plant_spread := 0.5              # random offset around the feet
 func _init() -> void:
 	super()
 	species_name = "SEEDBAG"
-	sprite = preload("res://Alife/Plant/Grass/grass.png")   # TODO: your seed bag sprite
+	sprite =preload("res://assets/Art from STS2/poop_star.png")   # TODO: your seed bag sprite
 	colour = Color(0.75, 0.6, 0.35, 1.0)
 	max_uses = 5
 	consumed_when_empty = true

@@ -94,7 +94,7 @@ signal agent_dashed(species, index: int)
 @export var attack_width := 1.5              # across, centered on the agent
 @export var attack_length := 2.0             # forward, starting at the agent
 @export var attack_height := 2.0             # up from the agent's feet (and a bit below)
-@export var attack_damage := 20.0            # biomass removed from each agent hit
+@export var attack_damage := 20.0            # health removed per hit, for species without get_damage (strength)
 @export var attack_cooldown := 0.4           # seconds between attacks (real time)
 @export var attack_kills_at_zero := true     # biomass reaching 0 kills the agent
 @export var show_hitbox := true              # debug: draw the box when attacking
@@ -538,7 +538,11 @@ func _pick_up(sp, i: int, item_sp, j: int) -> void:
 		item_sp.detach_fruit(j)                      # a fruit grabbed from its branch
 	
 	if not alifemanager.pick_up(sp, i, item_sp, j):
-		return                                       # hands full, or item not free in the world
+		if sp.has_method("can_carry") and not sp.can_carry(i, item_sp, j):
+			print("%s #%d: too big to carry (size %.1f needs power %d, has %d)" % [
+					sp.species_name, i, item_sp.current_size[j],
+					alifemanager.item_carry_class(item_sp, j), sp.carrying_power[i]])
+		return                                       # hands full, too big, or item not free
 	print("%s #%d picks up %s #%d" % [sp.species_name, i, item_sp.species_name, j])
 	target_species = null
 	target_index = -1
@@ -793,17 +797,32 @@ func _attack() -> void:
 	var right := Vector3.UP.cross(fwd).normalized()     # perpendicular, on the ground
 	_facing = fwd
 
+	# Damage: the attacker's strength (else attack_damage), + the carried weapon's bonus.
+	# Area: the attack box, scaled by the carried weapon.
+	var damage: float = sp.get_damage(i) if sp.has_method("get_damage") else attack_damage
+	var area := 1.0
+	var weapon := _held()
+	if weapon[0] != null and weapon[0].has_method("weapon_damage_bonus"):
+		damage += weapon[0].weapon_damage_bonus(weapon[1])
+		area = weapon[0].weapon_area_scale(weapon[1])
+	var width := attack_width * area
+	var length := attack_length * area
+
 	# Debug box: x = width (centered), y = height, z = length (forward)
 	_hitbox_origin = origin
-	_hitbox_basis = Basis(right * attack_width, Vector3.UP * attack_height, fwd * attack_length)
+	_hitbox_basis = Basis(right * width, Vector3.UP * attack_height, fwd * length)
 	_hitbox_time = hitbox_show_time
 
-	var hits := _agents_in_box(origin, right, fwd, sp, i)
+	var hits := _agents_in_box(origin, right, fwd, sp, i, width, length)
 	for h in hits:
 		var hsp = h[0]
 		var j: int = h[1]
 		var before: float = hsp.current_health[j]
-		var b: float = before - attack_damage
+		# Armour: the target's species removes a flat amount from every hit (never below 0)
+		var taken := damage
+		if "damage_reduction" in hsp:
+			taken = maxf(damage - hsp.damage_reduction, 0.0)
+		var b: float = before - taken
 		hsp.current_health[j] = maxf(b, 0.0)
 		DamageEffects.hit(hsp, j, before - hsp.current_health[j])   # flash + number
 		hsp.on_damaged(j, sp, i)                         # e.g. a tree drops some fruits
@@ -814,7 +833,8 @@ func _attack() -> void:
 
 ## Every living agent whose position is inside the box (wrap-aware), except the attacker.
 ## Uses the contact grid: only the cells around the box are checked.
-func _agents_in_box(origin: Vector3, right: Vector3, fwd: Vector3, me_sp, me_i: int) -> Array:
+func _agents_in_box(origin: Vector3, right: Vector3, fwd: Vector3, me_sp, me_i: int,
+		width := attack_width, length := attack_length) -> Array:
 	var am := alifemanager
 	var hits: Array = []
 	var W: int = am.GRID_W
@@ -832,8 +852,8 @@ func _agents_in_box(origin: Vector3, right: Vector3, fwd: Vector3, me_sp, me_i: 
 	var ws := WorldWrap.size
 
 	# Cells covering a circle around the box center, big enough to contain the whole box
-	var center := origin + fwd * attack_length * 0.5
-	var reach := Vector2(attack_width * 0.5, attack_length * 0.5).length()
+	var center := origin + fwd * length * 0.5
+	var reach := Vector2(width * 0.5, length * 0.5).length()
 	var cx := clampi(int(fposmod(center.x, ws.x) / cs.x) if wx else int(center.x / cs.x), 0, W - 1)
 	var cz := clampi(int(fposmod(center.z, ws.z) / cs.z) if wz else int(center.z / cs.z), 0, D - 1)
 	var rx := ceili(reach / cs.x) + 1
@@ -841,7 +861,7 @@ func _agents_in_box(origin: Vector3, right: Vector3, fwd: Vector3, me_sp, me_i: 
 	if wx: rx = mini(rx, (W - 1) / 2)
 	if wz: rz = mini(rz, (D - 1) / 2)
 
-	var half_w := attack_width * 0.5
+	var half_w := width * 0.5
 	for zz in range(cz - rz, cz + rz + 1):
 		var z := posmod(zz, D) if wz else zz
 		if z < 0 or z >= D:
@@ -861,7 +881,7 @@ func _agents_in_box(origin: Vector3, right: Vector3, fwd: Vector3, me_sp, me_i: 
 					if wz: d.z -= ws.z * roundf(d.z / ws.z)
 					var along := d.dot(fwd)
 					var across := d.dot(right)
-					if along < 0.0 or along > attack_length or absf(across) > half_w:
+					if along < 0.0 or along > length or absf(across) > half_w:
 						continue
 					if d.y < -0.5 or d.y > attack_height:
 						continue

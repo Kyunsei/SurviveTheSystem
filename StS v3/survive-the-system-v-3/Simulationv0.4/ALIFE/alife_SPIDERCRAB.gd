@@ -32,19 +32,21 @@ enum Hunt { IDLE, APPROACH, CHARGE, DASH, RECOVER }   # = current_action values
 const REF_TPS := 60.0
 
 #HUNT (per agent)   the state itself is current_action (Hunt)
-var hunt_timer := PackedFloat32Array()    # time left in CHARGE / DASH / RECOVER (tick time, s)
+var hunt_timer := PackedFloat32Array()    # time left in DASH / RECOVER (tick time, s)
+var charge_end := PackedFloat64Array()    # CHARGE: real time (sim_manager.real_time) when it dashes
 var hunt_dir := PackedVector3Array()      # dash direction, locked at the end of the charge
 var hunt_target := PackedInt32Array()     # global id of the aimed prey (-1 = none)
 
 #HUNT (settings)
 var prey_species: Array[String] = []      # species names, favourite first
 var prey_affinity: Array[float] = []      # same order: 1.0 = favourite, lower = less attractive
-var strike_range := 15.0                  # starts charging when a prey is this close
-var lose_range := 17.0                    # aborts the charge if the prey gets this far
-var charge_time := 0.25                    # the "tell": seconds standing still before dashing
-var dash_speed := 150.0                   # units / s
-var dash_distance := 18.0                 # straight-line length of the dash
-var catch_radius := 1.5                   # how close a prey must be during the dash to be eaten
+var strike_range := 10.0                  # starts charging when a prey is this close
+var lose_range := 15.0                    # aborts the charge if the prey gets this far
+var charge_time := 0.5                    # the "tell": REAL seconds standing still before dashing
+										  # (always 0.5 s on the clock, even when the game freezes)
+var dash_speed := 100.0                   # units / s
+var dash_distance := 20.0                 # straight-line length of the dash
+var catch_radius := 0.9                   # how close a prey must be during the dash to be eaten
 var recover_time := 1.0                   # seconds out of breath after a dash (hit or miss)
 var hunt_corpses := true                  # dead prey can be targeted, charged and eaten too
 var hunt_eggs := false                    # eggs (life cycle 0) can be targeted and eaten
@@ -52,6 +54,9 @@ var hunt_start_energy := 1500.0           # IDLE -> hunting when energy drops be
 #EAT 10 sheep = 60 (tny), 160(big) *10
 var hunt_stop_energy := 2500.0            # hunting -> IDLE once energy reaches this
 var corpse_affinity := 0.8                # 0..1: how attractive a corpse is vs a living prey
+
+#DEFENCE
+var damage_reduction := 20.0              # removed from every hit it takes (armoured shell)
 
 # Braking: velocity kept per tick at REF_TPS (0.85 = keeps 85 % each 1/60 s)
 var no_food_brake := 0.85                 # no prey nor scent anywhere: slows to a stop
@@ -108,6 +113,7 @@ func ensure_hunt_arrays(n: int) -> void:
 	if n <= old:
 		return
 	hunt_timer.resize(n)
+	charge_end.resize(n)
 	hunt_dir.resize(n)
 	hunt_target.resize(n)
 	for i in range(old, n):
@@ -119,6 +125,7 @@ func reset_hunt(i: int) -> void:
 	if current_action.size() > i and current_action[i] != Hunt.IDLE:
 		current_action[i] = Hunt.APPROACH
 	hunt_timer[i] = 0.0
+	charge_end[i] = 0.0
 	hunt_dir[i] = Vector3.ZERO
 	hunt_target[i] = -1
 
@@ -141,6 +148,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 	var local_pending_remove_id: PackedInt32Array
 
 	var step := dt * sim_speed                  # simulated time: metabolism only
+	var now: float = alifemanager.sim_manager.real_time   # real time: the charge only
 	var k_tick := delta * REF_TPS               # 1.0 at 60 ticks / s: scales per-tick tuning
 	# Braking, once per chunk: the same slowdown per second whatever the tick rate
 	var keep_no_food := pow(no_food_brake, k_tick)
@@ -269,7 +277,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 							var dist := _delta.length()
 							if strike_ok and dist <= strike_range:
 								current_action[i] = Hunt.CHARGE      # in range: start the tell
-								hunt_timer[i] = charge_time
+								charge_end[i] = now + charge_time    # real clock
 								hunt_target[i] = prey
 							elif dist > 0.0:
 								steer += (_delta / dist * max_speed - v) * w_seek
@@ -288,15 +296,13 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 					var _delta := _delta_to(hunt_target[i], p, offs, world_size, wrap_x, wrap_y, wrap_z)
 					if _delta.x == INF or _delta.length() > lose_range:
 						reset_hunt(i)                        # lost it
-					else:
-						hunt_timer[i] -= delta
-						if hunt_timer[i] <= 0.0:
-							# Lock the direction NOW: where the prey is, not where it goes
-							_delta.y = 0.0
-							hunt_dir[i] = _delta.normalized() if _delta.length_squared() > 1e-6 \
-									else Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)).normalized()
-							current_action[i] = Hunt.DASH
-							hunt_timer[i] = dash_distance / maxf(dash_speed, 0.01)
+					elif now >= charge_end[i]:            # real time, not ticks
+						# Lock the direction NOW: where the prey is, not where it goes
+						_delta.y = 0.0
+						hunt_dir[i] = _delta.normalized() if _delta.length_squared() > 1e-6 \
+								else Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)).normalized()
+						current_action[i] = Hunt.DASH
+						hunt_timer[i] = dash_distance / maxf(dash_speed, 0.01)
 
 				Hunt.DASH:
 					override_v = true

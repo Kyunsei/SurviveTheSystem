@@ -5,6 +5,17 @@ class_name ALIFE_CATRONAUTE
 ## 8 = the old "-0.8 per tick" at dt 0.1, so the feel at speed 1 is unchanged.
 @export var gravity := 8.0
 
+# ---- STATS (per agent, ECS arrays like position_array) ----------------------------
+## Biggest size each cat can pick up: an item of size s needs carrying power >= ceil(s).
+## (power 1: size up to 1.0 / power 2: up to 2.0 ...). See AlifeManager.pick_up.
+var carrying_power := PackedInt32Array()
+## Damage of one attack: each agent hit loses this much health.
+var strength := PackedFloat32Array()
+
+## Values given to every new cat (change them per cat afterwards, e.g. with growth or mutation)
+@export var base_carrying_power := 2            # = a cat's own size (init_size 2.0)
+@export var base_strength := 20.0              # = the old attack_damage
+
 
 func _init() -> void:
 	photosynthesis_on = false
@@ -16,7 +27,7 @@ func _init() -> void:
 	colour = Color(0.655, 0.154, 0.226, 1.0)
 
 	max_energy = 2000
-	max_speed = 6. #for ccontrol is in control script
+	max_speed = 6. #WIP might not work as intended
 
 	#LIFECYCLE/DUP
 	duplication_range = 2
@@ -38,7 +49,40 @@ func _init() -> void:
 	max_force = 2.0 #how much power has steer
 
 
-func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:float, sim_speed:float) -> void:
+# ---- Stats --------------------------------------------------------------------------
+
+func _init_alife_par():
+	super()
+	carrying_power = []
+	strength = []
+
+
+## Same as every species, then the stats of the new cat.
+func Build_New_Life(pos: Vector3, e: float = seed_energy, lc := 0, col := Color(0.159, 0.555, 0.215, 1.0)):
+	var i: int = free_indices[free_indices.size() - 1] if free_indices.size() > 0 else entity_count
+	var before := active_entity_count
+	super(pos, e, lc, col)
+	if active_entity_count == before:
+		return                               # world full (maxLife): nothing spawned
+	if i >= carrying_power.size():           # new slot: grow the arrays
+		carrying_power.append(base_carrying_power)
+		strength.append(base_strength)
+	else:                                    # reused slot: reset it
+		carrying_power[i] = base_carrying_power
+		strength[i] = base_strength
+
+
+## Asked by AlifeManager.pick_up: can cat i lift this item?
+func can_carry(i: int, item_sp, j: int) -> bool:
+	return alifemanager.item_carry_class(item_sp, j) <= carrying_power[i]
+
+
+## Asked by attacks: damage done by cat i.
+func get_damage(i: int) -> float:
+	return strength[i]
+
+
+func run_chunk_simulation( start: int, end: int,local_id:int,delta:float, dt: float, sim_speed:float) -> void:
 	if alifemanager.global_position_array.size()<1:
 		return #NEED At least one update before somme function
 
@@ -48,7 +92,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 	# Simulated time of this tick. Every rate below (per second) is multiplied by it,
 	# and nothing is applied "per tick", so changing dt, sim_speed or the tick rate
 	# never changes how fast things happen in simulated time.
-	var step := dt * sim_speed 
+	var step := dt * sim_speed
 
 	#MAP
 	var field_cell_size := alifemanager.field_cell_size
@@ -118,7 +162,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 			# Player-controlled: the AI is ignored. Horizontal speed from the keys,
 			# vertical from jump + gravity (_player_vertical has its own gravity).
 			new_v = player_velocity
-			new_v.y = _player_vertical(p.y, delta)
+			new_v.y = _player_vertical(p.y, step)
 		else:
 			steer = steer.limit_length(max_force)
 			new_v = v + steer * step                # acceleration x time
@@ -138,7 +182,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 		current_energy_array[i] = _energy
 
 	#--------MOVE
-		var q := p + new_v    *delta              # velocity x time
+		var q := p + new_v * step                   # velocity x time
 		# borders (world is 0..size): wrap, or stop at the wall and bounce
 		if wrap_x: q.x = fposmod(q.x, world_size.x)
 		elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); new_v.x = -new_v.x

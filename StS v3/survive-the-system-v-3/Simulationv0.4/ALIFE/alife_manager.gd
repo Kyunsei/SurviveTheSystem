@@ -112,13 +112,13 @@ func compute_chunk(total:int) -> int:
 
 #main loop -------------------------------------------------------------------------------------------
 
-func run_simulation(delta:float,dt: float, sim_speed: float):
+func run_simulation(delta:float, dt: float, sim_speed: float):
 	
 	var t0:= Time.get_ticks_usec()
 	build_grid(global_position_array, global_active)
 	var t1:= Time.get_ticks_usec()
 
-	start_simulation(delta,dt,sim_speed)
+	start_simulation(delta, dt,sim_speed)
 	var t2:= Time.get_ticks_usec()
 
 	wait_simulation()
@@ -236,7 +236,7 @@ func init_default_species(worldd:WorldManager,alifem:AlifeManager):
 	SpawnRandomAlife(3,10,2000,4) #glowberry
 	SpawnRandomAlife(1,3) #TREE
 	sim_manager.set_simulation_speed(5000)
-	await get_tree().create_timer(1.5).timeout
+	await get_tree().create_timer(.5).timeout
 	sim_manager.set_simulation_speed(100)
 	SpawnRandomAlife(0,3000,100,2) #GRASS
 	await get_tree().create_timer(3.0).timeout
@@ -397,6 +397,8 @@ func pick_up(carrier_sp, carrier: int, item_sp, item: int) -> bool:
 		return false                             # can't carry yourself
 	if carrier_sp.holding[carrier] != -1 or item_sp.active_alife_array[item] != ACTIVE:
 		return false                             # hands full, or item not free in the world
+	if carrier_sp.has_method("can_carry") and not carrier_sp.can_carry(carrier, item_sp, item):
+		return false                             # too heavy for this carrier
 	carrier_sp.holding[carrier] = cid(item_sp, item)
 	item_sp.held_by[item] = cid(carrier_sp, carrier)
 	item_sp.Stock_Life(item)                     # your own "leave the world" logic
@@ -404,6 +406,12 @@ func pick_up(carrier_sp, carrier: int, item_sp, item: int) -> bool:
 												 # simulation, and update_carried knows it's carried
 	carriers.append(cid(carrier_sp, carrier))
 	return true
+
+
+## Carry class of an agent: the carrying_power needed to lift it = its size, rounded up.
+## (size 0.5 -> 1, size 1.0 -> 1, size 1.5 -> 2, size 2.0 -> 2, size 3.5 -> 4)
+func item_carry_class(sp, j: int) -> int:
+	return ceili(sp.current_size[j])
 
 
 ## Put the carried item back in the world at `at`.
