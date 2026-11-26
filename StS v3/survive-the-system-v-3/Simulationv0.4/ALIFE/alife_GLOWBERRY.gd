@@ -35,7 +35,7 @@ func _init() -> void:
 	has_seed = true  #just allow to spam even if not light available
 
 
-func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_speed:float) -> void:
+func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:float, sim_speed:float) -> void:
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
 

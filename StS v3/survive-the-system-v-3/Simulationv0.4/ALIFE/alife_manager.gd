@@ -112,13 +112,13 @@ func compute_chunk(total:int) -> int:
 
 #main loop -------------------------------------------------------------------------------------------
 
-func run_simulation(dt: float, sim_speed: float):
+func run_simulation(delta:float,dt: float, sim_speed: float):
 	
 	var t0:= Time.get_ticks_usec()
 	build_grid(global_position_array, global_active)
 	var t1:= Time.get_ticks_usec()
 
-	start_simulation(dt,sim_speed)
+	start_simulation(delta,dt,sim_speed)
 	var t2:= Time.get_ticks_usec()
 
 	wait_simulation()
@@ -128,29 +128,7 @@ func run_simulation(dt: float, sim_speed: float):
 	#print("build: %f, start : %f, wait %f, update %f"  % [t1-t0,t2-t1,t3-t2,t4-t3])
 
 
-func start_simulation(dt: float, sim_speed: float):
-	_prepare_tick()
-	_start_species(species_array, dt, sim_speed)
-
-
-## Tick, first half (split mode): grid, fields, and the first group of species.
-func run_tick_first_half(dt: float, sim_speed: float) -> void:
-	build_grid(global_position_array, global_active)
-	_prepare_tick()
-	_split_species()
-	_start_species(_group_a, dt, sim_speed)
-	wait_simulation()
-
-
-## Tick, second half (split mode): the other species, then births / removals / carrying.
-func run_tick_second_half(dt: float, sim_speed: float) -> void:
-	_start_species(_group_b, dt, sim_speed)
-	wait_simulation()
-	update_alife()
-
-
-## Counts, mouse, scent fields: before any species runs.
-func _prepare_tick() -> void:
+func start_simulation(delta:float,dt: float, sim_speed: float):
 	var m := get_viewport().get_mouse_position()
 	var mouse := Vector3(m.x, 0.0, m.y)
 
@@ -166,37 +144,14 @@ func _prepare_tick() -> void:
 		s.mouse_target =  mouse
 		s.build_field() #TODO call in thread?
 
-
-## Two groups of species with about the same number of agents each (biggest first).
-var _group_a: Array[ALIFE] = []
-var _group_b: Array[ALIFE] = []
-
-func _split_species() -> void:
-	var order := species_array.duplicate()
-	order.sort_custom(func(a, b): return a.entity_count > b.entity_count)
-	_group_a.clear()
-	_group_b.clear()
-	var load_a := 0
-	var load_b := 0
-	for s in order:
-		if load_a <= load_b:
-			_group_a.append(s)
-			load_a += s.entity_count
-		else:
-			_group_b.append(s)
-			load_b += s.entity_count
-
-
-## Starts the chunks of these species on the worker threads (wait_simulation() waits).
-func _start_species(list: Array, dt: float, sim_speed: float) -> void:
 	#setup thread/chunk/jobs
 	jobs.clear()
 	chunk_size = compute_chunk(global_entity_count) #need full entity count to work
-	for s in list:
+	for s in species_array:
 		var local_id:= 0
 		var n: int = s.entity_count
 		for start in range(0, n, chunk_size):
-			jobs.append([s, start, mini(start + chunk_size, n),local_id, dt, sim_speed])
+			jobs.append([s, start, mini(start + chunk_size, n),local_id,delta, dt, sim_speed])
 			local_id += 1
 		s.set_chunk(local_id)
 	
@@ -208,7 +163,7 @@ func _start_species(list: Array, dt: float, sim_speed: float) -> void:
 #SEND JOBS TO DNA
 func run_chunk(k: int) -> void:
 	var job = jobs[k]
-	job[0].run_chunk_simulation(job[1], job[2],job[3], job[4], job[5])
+	job[0].run_chunk_simulation(job[1], job[2],job[3], job[4], job[5],job[6])
 
 func wait_simulation() -> void:
 	if gid != -1:
@@ -280,8 +235,8 @@ func Release_all_alife():
 func init_default_species(worldd:WorldManager,alifem:AlifeManager):	
 	SpawnRandomAlife(3,10,2000,4) #glowberry
 	SpawnRandomAlife(1,3) #TREE
-	sim_manager.set_simulation_speed(10000)
-	await get_tree().create_timer(.5).timeout
+	sim_manager.set_simulation_speed(5000)
+	await get_tree().create_timer(1.5).timeout
 	sim_manager.set_simulation_speed(100)
 	SpawnRandomAlife(0,3000,100,2) #GRASS
 	await get_tree().create_timer(3.0).timeout

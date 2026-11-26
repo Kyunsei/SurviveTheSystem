@@ -13,8 +13,8 @@ func _init() -> void:
 	photo_range = 1
 	photo_layer_y = 0
 
-func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_speed:float) -> void:
-	var dt := 0.16 * sim_speed #TODO
+func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:float, sim_speed:float) -> void:
+	#var dt := 0.16 * sim_speed #TODO
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
 	#var mouse_target :Vector3 = alifemanager.mouse_position # Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)

@@ -76,7 +76,7 @@ func _init() -> void:
 	colour = Color(0.772, 0.772, 0.772, 1.0)
 
 	max_energy = 2500
-	max_speed = 3.
+	max_speed = 12.
 
 	#LIFECYCLE/DUP
 	duplication_range = 2
@@ -143,7 +143,7 @@ func _next_state(state: int, energy: float, threat_d: float) -> int:
 	return action.IDLE
 
 
-func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_speed:float) -> void:
+func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:float, sim_speed:float) -> void:
 	if alifemanager.global_position_array.size()<1:
 		return #NEED At least one update before somme function
 
@@ -400,12 +400,12 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 						var id := int(found.w)
 						if id < 0:
 							continue
-						var delta := Vector3(found.x, found.y, found.z)
-						if delta.length_squared() < best_d2:
-							best_d2 = delta.length_squared()
+						var _delta := Vector3(found.x, found.y, found.z)
+						if _delta.length_squared() < best_d2:
+							best_d2 = _delta.length_squared()
 							best_sp = food_sps[k]
 							best_local = id - offs[food_sps[k].species_id]
-							best_delta = delta
+							best_delta = _delta
 					if best_sp != null:
 						var dist := sqrt(best_d2)
 						if dist < eat_distance:
@@ -436,7 +436,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		# Normal forces are capped; separation and fleeing come on top (they must win)
 		steer = steer.limit_length(max_force) + urgent
 		steer = steer.limit_length(max_force * (3.0 if state == action.AVOID else 2.0))
-		var new_v := v + steer * step
+		var new_v := v + steer #* delta
 		new_v = new_v.limit_length(max_speed)
 		if idle_nudge > 0.0 and new_v.length_squared() < 1e-6:
 			new_v = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) * idle_nudge   # small nudge
@@ -478,7 +478,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		current_energy_array[i] = _energy
 
 	#--------MOVE (velocity is per second: dt only here)
-		_move(i, p, new_v, step, world_size, wrap_x, wrap_y, wrap_z, is_player)
+		_move(i, p, new_v, delta, world_size, wrap_x, wrap_y, wrap_z, is_player)
 
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id
@@ -486,9 +486,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 
 ## Moves agent i by velocity v for this step: wraps or bounces off the world's borders,
 ## keeps ground animals on the ground. Stores the new position and velocity.
-func _move(i: int, p: Vector3, v: Vector3, step: float, world_size: Vector3,
+func _move(i: int, p: Vector3, v: Vector3, delta: float, world_size: Vector3,
 		wrap_x: bool, wrap_y: bool, wrap_z: bool, is_player: bool) -> void:
-	var q := p + v * step 
+	var q := p + v * delta 
 	if wrap_x: q.x = fposmod(q.x, world_size.x)
 	elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); v.x = -v.x
 	if ground_animal and not is_player:

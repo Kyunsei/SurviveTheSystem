@@ -36,7 +36,7 @@ func _init() -> void:
 	max_health = 5
 	growth_cost = [30,10,10,10] #Should be size of max_life
 	growth_rate = 0.4
-func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_speed:float) -> void:
+func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:float, sim_speed:float) -> void:
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
 	#var mouse_target :Vector3 = alifemanager.mouse_position # Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)

@@ -338,6 +338,9 @@ func _process(delta: float) -> void:
 	_attack_cd = maxf(_attack_cd - delta, 0.0)
 	_dash_cd = maxf(_dash_cd - delta, 0.0)
 	_dash_left = maxf(_dash_left - delta, 0.0)
+	if is_controlling():                         # jump buffer counts down in real time
+		controlled_species.player_jump_buffer = maxf(controlled_species.player_jump_buffer - delta, 0.0)
+	
 	_update_hitbox(delta)
 	_update_hints()
 	_update_wrap_view()

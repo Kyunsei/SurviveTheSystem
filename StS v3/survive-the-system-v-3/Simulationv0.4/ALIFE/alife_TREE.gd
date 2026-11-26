@@ -88,8 +88,8 @@ func _init() -> void:
 	sapling_field = add_field("sapling", FieldSource.COUNT, -1.0, -1.0, true, 1, 1)
 	tree_field = add_field("tree", FieldSource.COUNT, -1.0, -1.0, true, 2)      # 2 and above
 
-func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_speed:float) -> void:
-	var dt := delta * sim_speed                              # fixed simulated time per tick (speed = more ticks)
+func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:float, sim_speed:float) -> void:
+	var step :=  dt * sim_speed                              # fixed simulated time per tick (speed = more ticks)
 												 # (trees keep their own 0.16: same pace as before)
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
@@ -115,7 +115,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 		if alive_array[i] == 0:
 			if active_alife_array[i] == 1:
 				var b = current_biomass[i]
-				b -= 0.1 * dt
+				b -= 0.1 * step
 				current_biomass[i] = b
 				if b < 0:
 					local_pending_remove_id.append(i)
@@ -128,7 +128,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 			
 		#EGG TIME---------
 		if lifecycle == 0:
-			_energy -= 1 * dt
+			_energy -= 1 * step
 			if _energy < 0:
 				if  sun_stamp[sun_c] > 1 or sun_stamp[sun_c+sun_W] > 0:
 					alive_array[i] = 0
@@ -157,10 +157,10 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_
 			var d_up := sun_stamp[sun_c_up] +1
 			value =  sun_grid[sun_c_up]  /   maxf(d_up, photo_rate) 
 			var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
-			_energy += value2 /maxf(d, photo_rate) *dt
+			_energy += value2 /maxf(d, photo_rate) *step
 
 		#--------maintain cost
-		_energy += -0.7  * dt # - (side * side - side) *dt #* active_alife_array[i]
+		_energy += -0.7  * step # - (side * side - side) *dt #* active_alife_array[i]
 		#--------DEATH
 		if _energy < 0 or current_health[i] <0 :
 			alive_array[i] = 0

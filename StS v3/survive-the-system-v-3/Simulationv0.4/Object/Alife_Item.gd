@@ -57,7 +57,7 @@ func _init() -> void:
 
 ## Items don't live: nothing to simulate. (Override if an item should do something
 ## on its own, e.g. a lamp running out.)
-func run_chunk_simulation(start: int, end: int, local_id: int, dt: float, sim_speed: float) -> void:
+func run_chunk_simulation(start: int, end: int, local_id: int, delta:float,dt: float, sim_speed: float) -> void:
 	spawn_per_chunk[local_id] = PackedInt32Array()
 	remove_per_chunk[local_id] = PackedInt32Array()
 

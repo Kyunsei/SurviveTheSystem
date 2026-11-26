@@ -249,7 +249,7 @@ var player_air_time := 0.0         # time since leaving the ground (coyote time)
 
 @export_group("JUMP")
 @export var jump_height := 8.0
-@export var time_to_jump_apex := 3.5
+@export var time_to_jump_apex := .45
 @export var fall_multiplier := 2.0        # falls faster than it rises
 @export var low_jump_multiplier := 2.5    # key released early: shorter jump
 @export var coyote_time := 0.12
@@ -273,7 +273,6 @@ func _player_vertical(y: float, dt: float) -> float:
 		player_jump_buffer = 0.0
 		player_air_time = coyote_time + 1.0     # no second jump in the air
 		grounded = false
-	player_jump_buffer = maxf(player_jump_buffer - dt, 0.0)
 
 	# Gravity: stronger when falling, or when the key was released early
 	if not grounded:
@@ -379,8 +378,8 @@ func set_chunk(n:int):
 ##############################################################################################
 
 
-func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_speed:float) -> void:
-	var dt := delta                              # fixed simulated time per tick
+func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:float, sim_speed:float) -> void:
+	2#var dt := delta                              # fixed simulated time per tick
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
 	#var mouse_target :Vector3 = alifemanager.mouse_position # Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
