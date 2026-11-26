@@ -1,16 +1,30 @@
 [gd_scene format=3 uid="uid://y8ehmcitqo7p"]
 
 [ext_resource type="Script" uid="uid://bb7fqful0tfra" path="res://Simulationv0.4/simulation_manager.gd" id="1_tnrjr"]
-[ext_resource type="Script" path="res://Simulationv0.4/world/world.gd" id="2_n8m0f"]
+[ext_resource type="Script" uid="uid://cvjfonwy8nib8" path="res://Simulationv0.4/world/world.gd" id="2_n8m0f"]
 [ext_resource type="PackedScene" uid="uid://ctgprx0q6hu1g" path="res://Simulationv0.4/DEBUG/ui_simulation.tscn" id="3_se6q8"]
 [ext_resource type="Script" uid="uid://dht5a0fts2itw" path="res://Simulationv0.4/ALIFE/alife_manager.gd" id="3_u0fto"]
 [ext_resource type="PackedScene" uid="uid://cve3fjbgy61t7" path="res://Simulationv0.4/world/render_world3D.tscn" id="3_uyr7n"]
+[ext_resource type="PackedScene" uid="uid://c2k148ms3kq4q" path="res://World/spaceship/space_ship_kyunsei_from_dabols.tscn" id="4_55kx7"]
+[ext_resource type="Script" uid="uid://ofm2xt7767ao" path="res://Simulationv0.4/Machine/teleport_machine.gd" id="5_cu670"]
 [ext_resource type="Script" uid="uid://2l27ex6lbnsg" path="res://Simulationv0.4/AlifeRender/rendering_manager.gd" id="5_oxs6a"]
 [ext_resource type="Script" uid="uid://clujs5mkf4ysr" path="res://Simulationv0.4/DEBUG/debug_control.gd" id="6_gytwx"]
 [ext_resource type="Script" uid="uid://edndstn7d2e7" path="res://Simulationv0.4/DEBUG/DEBUG_camera_3d.gd" id="6_ii0et"]
+[ext_resource type="Script" uid="uid://ho84xf8t3j3k" path="res://Simulationv0.4/AlifeRender/damageeffects.gd" id="6_qijgx"]
 [ext_resource type="Script" uid="uid://cl3q2rgl5b6oq" path="res://Simulationv0.4/sound_manager.gd" id="9_di811"]
 [ext_resource type="Script" uid="uid://dvyha3fg7ljvk" path="res://Simulationv0.4/Machine/machine.gd" id="9_qijgx"]
+[ext_resource type="Script" uid="uid://cbbycsjug3oy0" path="res://Simulationv0.4/held_scene_manager.gd" id="9_ueuv1"]
+[ext_resource type="PackedScene" uid="uid://caoxvf0edd2sq" path="res://Simulationv0.4/Machine/teleport_machine.tscn" id="11_23ro3"]
 [ext_resource type="Script" uid="uid://ckvt014hdkps8" path="res://Simulationv0.4/player_control.gd" id="12_qijgx"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_buic3"]
+albedo_color = Color(0.56125396, 0.060397826, 0.65282387, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_3bbrk"]
+material = SubResource("StandardMaterial3D_buic3")
+top_radius = 1.9
+bottom_radius = 2.0
+height = 0.2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qijgx"]
 albedo_color = Color(0, 0.6806177, 0.6413741, 1)
@@ -41,15 +55,46 @@ controller = NodePath("../Control/PlayerControl")
 
 [node name="Render_World3D" parent="World" unique_id=1366239665 instance=ExtResource("3_uyr7n")]
 
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World" unique_id=1336609770]
+transform = Transform3D(1, 0, 0, 0, -4.3711385e-08, 1, 0, -0.99999994, -4.371139e-08, 0, 0, 0)
+light_color = Color(1, 0.95686275, 0.8784314, 1)
+light_energy = 2.0
+shadow_enabled = true
+
+[node name="SPACE SHIP Kyunsei" parent="World" unique_id=997132027 instance=ExtResource("4_55kx7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 20, 120)
+
+[node name="TP_machine2" type="Node3D" parent="World/SPACE SHIP Kyunsei" unique_id=45674601]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32833672, 3.33107)
+script = ExtResource("5_cu670")
+tp_pos = Vector3(120, 0, 120)
+machine_name = "Teleport"
+interact_range = 3.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="World/SPACE SHIP Kyunsei/TP_machine2" unique_id=2063132479]
+mesh = SubResource("CylinderMesh_3bbrk")
+
 [node name="AlifeManager" type="Node" parent="." unique_id=1403663435 node_paths=PackedStringArray("world", "sim_manager")]
 script = ExtResource("3_u0fto")
 world = NodePath("../World")
 sim_manager = NodePath("..")
 
-[node name="RendererManager" type="Node" parent="." unique_id=871390878 node_paths=PackedStringArray("alifemanager", "world")]
+[node name="RendererManager" type="Node" parent="." unique_id=871390878 node_paths=PackedStringArray("alifemanager", "world", "sun")]
 script = ExtResource("5_oxs6a")
 alifemanager = NodePath("../AlifeManager")
 world = NodePath("../World")
+sun = NodePath("../World/DirectionalLight3D")
+
+[node name="damaageeffect" type="Node" parent="RendererManager" unique_id=692461232 node_paths=PackedStringArray("camera")]
+script = ExtResource("6_qijgx")
+camera = NodePath("../../Control/PlayerControl/DebugCamera3D")
+show_numbers = false
+
+[node name="held_scene_manager" type="Node3D" parent="RendererManager" unique_id=431835665 node_paths=PackedStringArray("alifemanager", "camera")]
+process_mode = 3
+script = ExtResource("9_ueuv1")
+alifemanager = NodePath("../../AlifeManager")
+camera = NodePath("../../Control/PlayerControl/DebugCamera3D")
 
 [node name="UI_simulation" parent="." unique_id=2073576286 node_paths=PackedStringArray("alifemanager", "world", "render", "simulation_manager") instance=ExtResource("3_se6q8")]
 visible = false
@@ -82,6 +127,12 @@ interact_range = 5.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 mesh = SubResource("SphereMesh_23ro3")
 
+[node name="TP_machine2" parent="ArtefactManager" unique_id=827798690 instance=ExtResource("11_23ro3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 1, 120)
+tp_pos = Vector3(120, 22, 120)
+new_ground = 21.0
+interact_range = 5.0
+
 [node name="Control" type="Node" parent="." unique_id=344251585]
 
 [node name="PlayerControl" type="Node" parent="Control" unique_id=938769931 node_paths=PackedStringArray("alifemanager", "camera", "picker")]
@@ -89,40 +140,13 @@ script = ExtResource("12_qijgx")
 alifemanager = NodePath("../../AlifeManager")
 camera = NodePath("DebugCamera3D")
 picker = NodePath("../AgentPicker")
-control_speed = null
-sprint_multiplier = null
-target_range = null
-target_search_rings = null
-energy_bar_size = null
-arrow_color = null
-arrow_scale = null
-eye_ratio = null
-dash_multiplier = null
-dash_time = null
-dash_cooldown = null
 planet_radius = 120.0
-throw_min_speed = null
-throw_max_speed = null
-throw_charge_time = null
-throw_angle_deg = null
-throw_gravity = null
-ground_y = null
-show_key_hints = null
-hint_font_size = null
 attack_width = 3.0
-attack_length = null
 attack_height = 1.5
-attack_damage = null
 attack_cooldown = 0.2
-attack_kills_at_zero = null
-show_hitbox = null
 hitbox_show_time = 0.2
 eat_hold_time = 0.5
 eat_circle_radius = 12.0
-eat_circle_color = null
-carry_forward = null
-carry_height = null
-control_view = null
 
 [node name="DebugCamera3D" type="Camera3D" parent="Control/PlayerControl" unique_id=2122777896]
 transform = Transform3D(-0.70710677, 0.02467767, -0.706676, 0, 0.99939084, 0.034899496, 0.70710677, 0.02467767, -0.706676, -10, 28, -10)
@@ -137,3 +161,11 @@ camera = NodePath("../PlayerControl/DebugCamera3D")
 controller = NodePath("../PlayerControl")
 menu = NodePath("../../UI_simulation")
 sim_manager = NodePath("../..")
+
+[node name="Button" type="Button" parent="Control" unique_id=89043108]
+offset_right = 8.0
+offset_bottom = 8.0
+focus_mode = 0
+text = "PLAY"
+
+[connection signal="pressed" from="Control/Button" to="Control/PlayerControl" method="_on_button_pressed"]

@@ -12,6 +12,16 @@ uniform vec2 sun_offset = vec2(0.3, 0.2);              // shadow shift (x, z) pe
 uniform float strength : hint_range(0.0, 1.0) = 0.45;  // darkness at the center
 uniform float radius_scale = 0.5;                      // shadow radius relative to agent size
 uniform float fade_height = 10.0;                      // no shadow above this height
+uniform float softness : hint_range(0.0, 1.0) = 0.7;   // 0 = hard edge, 1 = fades from the center
+uniform float lift = 0.0;                              // disk height above the ground: anything
+                                                       // lower than this (moss, grass) gets darkened
+
+// Photo-range shadow (trees): the radius is the area the agent shades in the simulation,
+// (photo range + 0.5) sun-grid cells, instead of its size. The photo range comes in the
+// ACTION bits (4 bits, 0..15): the species writes current_action[i] = its photo range.
+uniform bool use_photo_range = false;
+uniform float sun_cell_size = 1.0;                     // world units per sun-grid cell
+uniform int min_range = 1;                             // smaller range: no shadow (fruits)
 
 // Wrap view + little planet (same as the sprite shader)
 uniform vec3 world_size = vec3(100.0);
@@ -53,19 +63,21 @@ void vertex() {
 	int v = int(d.w + 0.5);
 	int state = v & 3;
 	float size = float((v >> 6) & 255) * 0.1;         // MUST match the sprite shader's size decoding
+	int photo_range = (v >> 2) & 15;                   // the action bits (photo-range shadows)
 
 	int b = int(d.z + 0.5);
 	float y = float(b >> 12) / 4095.0 * world_height;
 
-	if (state == 0) {
-		VERTEX = vec3(0.0);                            // free slot: not drawn
+	bool too_small = use_photo_range && photo_range < min_range;
+	if (state == 0 || too_small) {
+		VERTEX = vec3(0.0);                            // free slot / no shade: not drawn
 		v_strength = 0.0;
 	} else {
 		float h = max(y - ground_y, 0.0);
 		v_strength = clamp(1.0 - h / fade_height, 0.0, 1.0);
 		vec2 c = vec2(d.x, d.y) + sun_offset * h;      // shift with the sun direction
 
-		vec3 flat_spot = nearest_image(MODEL_MATRIX[3].xyz + vec3(c.x, ground_y + 0.01, c.y), wrap_center);
+		vec3 flat_spot = nearest_image(MODEL_MATRIX[3].xyz + vec3(c.x, ground_y + 0.01 + lift, c.y), wrap_center);
 		vec3 n;
 		vec3 spot = curve(flat_spot, n);
 		if (planet_radius > 0.0 && distance(flat_spot.xz, wrap_center.xz) > planet_limit()) {
@@ -80,13 +92,16 @@ void vertex() {
 				vec4(tz, 0.0),
 				vec4(n, 0.0),
 				vec4(spot, 1.0));
-		VERTEX *= size * radius_scale * 2.0;
+		float radius = use_photo_range
+				? (float(photo_range) + 0.5) * sun_cell_size     // the shaded area
+				: size * radius_scale;                           // from the agent's size
+		VERTEX *= radius * 2.0;
 	}
 }
 
 
 void fragment() {
 	float r = length(UV - 0.5) * 2.0;                  // 0 at the center, 1 at the edge
-	float a = (1.0 - smoothstep(0.3, 1.0, r)) * strength * v_strength;
+	float a = (1.0 - smoothstep(1.0 - max(softness, 0.01), 1.0, r)) * strength * v_strength;
 	ALBEDO = vec3(1.0 - a);                            // multiplied with what's behind
 }

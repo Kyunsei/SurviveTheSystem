@@ -17,6 +17,7 @@ func _init() -> void:
 	seed_energy = 50
 	seed_biomass = 5
 	max_life_cycle = 3
+	max_health = 5
 	growth_cost = [50,50,50,50] #Should be size of max_life
 	growth_rate = 0.4
 
@@ -85,7 +86,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		_energy += -0.7  *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
 		
 		#--------DEATH
-		if _energy < 0 :
+		if _energy < 0 or current_health[i] <0 :
 			alive_array[i] = 0
 			
 		#--------Duplicate
@@ -120,7 +121,7 @@ func Build_and_remove_pendings():
 			var s_c_up := s_c + world.SUN_GRID_W
 			if world.SUN_stamp[s_c] > 0 or world.SUN_stamp[s_c_up] > 0:
 				continue
-		Build_New_Life(newpos,seed_energy, current_color[i])
+		Build_New_Life(newpos,seed_energy,0, current_color[i])
 	
 	for i in pending_remove_id:
 		Remove_Life(i)	

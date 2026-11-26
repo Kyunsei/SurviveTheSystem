@@ -15,6 +15,8 @@ extends Node
 ## Also owns the outline (one per species material), so it decides what is outlined:
 ##   controller's target > carried agent > hovered agent > followed agent
 ## Controlling an agent (C, WASD, carrying...) is in PlayerController.
+## While controlling an agent: no hover, no tooltip, no follow / kill / remove
+## (pause, menu and the Controls menu still work).
 
 signal agent_hovered(species, index: int)      # species = null when nothing is hovered
 signal agent_followed(species, index: int)
@@ -28,8 +30,8 @@ signal agent_killed(species, index: int)
 
 @export_group("Picking")
 @export var pick_margin_px := 4.0              # extra pixels around each sprite
-@export var max_sprite_height := 3.0           # world units: tallest sprite (with its size)
-@export var max_search_cells := 6              # cap on the grid area searched along the ray
+@export var max_sprite_height := 3.0           # minimum; the real tallest sprite is measured
+@export var max_pick_distance := 300.0        # world units: longest stretch of ray searched
 @export var show_tooltip := true
 
 var hovered_species = null
@@ -88,9 +90,19 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle_controls()
 		get_viewport().set_input_as_handled()
 
-	elif event.is_action_pressed("agent_follow"):
-		if controller.is_controlling():
-			return                                     # the camera already follows it
+	elif event.is_action_pressed("sim_pause"):
+		if sim_manager.simulation_speed == 0:
+			sim_manager.simulation_speed = old_speed
+		else:
+			old_speed = sim_manager.simulation_speed
+			sim_manager.simulation_speed = 0
+		get_viewport().set_input_as_handled()
+
+	# Agent actions: off in control mode (the keys stay free for the PlayerController)
+	if get_viewport().is_input_handled() or _actions_off():
+		return
+
+	if event.is_action_pressed("agent_follow"):
 		if camera.is_following():
 			camera.stop_follow()
 		elif hovered_species != null:
@@ -101,17 +113,16 @@ func _unhandled_input(event: InputEvent) -> void:
 		if hovered_species != null:
 			_kill(hovered_species, hovered_index)
 			get_viewport().set_input_as_handled()
+
 	elif event.is_action_pressed("agent_remove"):
 		if hovered_species != null:
 			_remove(hovered_species, hovered_index)
 			get_viewport().set_input_as_handled()
-	elif event.is_action_pressed("sim_pause"):
-		if sim_manager.simulation_speed == 0:
-			sim_manager.simulation_speed = old_speed
-		else:
-			old_speed = sim_manager.simulation_speed
-			sim_manager.simulation_speed = 0
-		get_viewport().set_input_as_handled()
+
+
+## True while an agent is controlled: hover, tooltip and agent actions are off.
+func _actions_off() -> bool:
+	return controller != null and controller.is_controlling()
 
 
 func _toggle_menu() -> void:
@@ -129,10 +140,10 @@ func _update_mouse_look() -> void:
 # --- Per frame -----------------------------------------------------------------
 
 func _process(_delta: float) -> void:
-	# Hover (not while the mouse turns the view)
+	# Hover (not while the mouse turns the view, not in control mode)
 	var sp = null
 	var i := -1
-	if not camera.is_dragging() and not camera.is_mouse_look():
+	if not _actions_off() and not camera.is_dragging() and not camera.is_mouse_look():
 		var hit := _pick_at(get_viewport().get_mouse_position())
 		if not hit.is_empty():
 			sp = hit[0]
@@ -188,40 +199,67 @@ func _set_outline(sp, i: int) -> void:
 # --- Picking -------------------------------------------------------------------
 
 ## Returns [species, local_index] of the front-most agent under screen_pos, or [].
+## Walks the grid cells along the cursor ray (nearest first), only where the ray is
+## between the ground and the tallest sprite, and tests each agent's sprite on screen.
 func _pick_at(screen_pos: Vector2) -> Array:
 	var am := alifemanager
 	var cam := get_viewport().get_camera_3d()
 	if cam == null or am == null or am.global_entity_count == 0:
 		return []
 
-	# 1. The part of the cursor ray where sprites can be: between the ground and max height
+	_update_sprite_sizes()
+	var max_h := maxf(_max_height, 0.1)
+
+	# 1. The part of the ray where sprites can be: 0 <= y <= tallest sprite
 	var from := cam.project_ray_origin(screen_pos)
 	var dir := cam.project_ray_normal(screen_pos)
-	var low = Plane(Vector3.UP, 0.0).intersects_ray(from, dir)
-	var high = Plane(Vector3.UP, max_sprite_height).intersects_ray(from, dir)
-	if low == null and high == null:
+	# (the camera can be any height: max_pick_distance only limits how long that part is,
+	# e.g. a ray grazing the ground far away)
+	var t0 := 0.0
+	var t1 := INF
+	if absf(dir.y) > 1e-6:
+		var ta := (0.0 - from.y) / dir.y
+		var tb := (max_h - from.y) / dir.y
+		t0 = maxf(0.0, minf(ta, tb))
+		t1 = maxf(ta, tb)
+	elif from.y < 0.0 or from.y > max_h:
+		return []                                    # level ray, above or below every sprite
+	t1 = minf(t1, t0 + max_pick_distance)
+	if t1 < t0:
 		return []
-	if low == null: low = high
-	if high == null: high = low
 
-	# 2. Grid cells covering that segment (+ one sprite of margin), capped.
-	#    With the wrap view on, the search continues through the borders.
+	# 2. Grid cells along that part, + a margin for the sprites' width
 	var W: int = am.GRID_W
 	var H: int = am.GRID_H
 	var D: int = am.GRID_D
 	var cs: Vector3 = am.cell_size
-	var mid: Vector3 = (low + high) * 0.5
-	var half: Vector3 = (high - low).abs() * 0.5 + Vector3.ONE * max_sprite_height
 	var vm := WorldWrap.view_mask()
 	var wrap_x := vm.x > 0.0
 	var wrap_z := vm.z > 0.0
-	var mid_w := WorldWrap.wrap_into(mid) if WorldWrap.visual else mid
-	var cx := clampi(int(mid_w.x / cs.x), 0, W - 1)
-	var cz := clampi(int(mid_w.z / cs.z), 0, D - 1)
-	var nx := mini(ceili(half.x / cs.x), max_search_cells)
-	var nz := mini(ceili(half.z / cs.z), max_search_cells)
-	if wrap_x: nx = mini(nx, (W - 1) / 2)             # don't visit a column twice
-	if wrap_z: nz = mini(nz, (D - 1) / 2)
+	var step := minf(cs.x, cs.z) * 0.5
+	var ring := 1 + ceili(_max_half_width / minf(cs.x, cs.z))
+	var cells: Array[int] = []
+	var seen := {}
+	var t := t0
+	while t <= t1 + step:
+		var q := from + dir * minf(t, t1)
+		var gx := floori(q.x / cs.x)
+		var gz := floori(q.z / cs.z)
+		for dz in range(-ring, ring + 1):
+			var z := gz + dz
+			if wrap_z: z = posmod(z, D)
+			elif z < 0 or z >= D: continue
+			for dx in range(-ring, ring + 1):
+				var x := gx + dx
+				if wrap_x: x = posmod(x, W)
+				elif x < 0 or x >= W: continue
+				var key := x + W * z
+				if seen.has(key):
+					continue
+				seen[key] = true
+				for y in H:
+					cells.append(x + W * (y + H * z))
+		t += step
 
 	var cell_start: PackedInt32Array = am.cell_start
 	var cell_items: PackedInt32Array = am.cell_items
@@ -229,53 +267,95 @@ func _pick_at(screen_pos: Vector2) -> Array:
 	var active: PackedInt32Array = am.global_active
 	var offs: PackedInt32Array = am.global_species_offset
 
-	var quads: Array[Vector2] = []
-	for sp in am.species_array:
-		quads.append((sp.renderer3D.multimesh.mesh as QuadMesh).size)
-
 	# 3. Test each candidate's sprite on screen; keep the one closest to the camera
 	var best := -1
 	var best_depth := INF
 	var cam_pos := cam.global_position
+	var cam_fwd := -cam.global_basis.z
+	var near := cam.near * 1.5
 	var center := camera.get_wrap_center()
-	for zz in range(cz - nz, cz + nz + 1):
-		var z := posmod(zz, D) if wrap_z else zz
-		if z < 0 or z >= D:
-			continue
-		for y in H:
-			for xx in range(cx - nx, cx + nx + 1):
-				var x := posmod(xx, W) if wrap_x else xx
-				if x < 0 or x >= W:
-					continue
-				var cell := x + W * (y + H * z)
-				for k in range(cell_start[cell], cell_start[cell + 1]):
-					var j: int = cell_items[k]
-					if active[j] == 0:
-						continue
-					var s := offs.bsearch(j, false) - 1
-					var q: Vector2 = quads[s]
-					var size: float = am.species_array[s].current_size[j - offs[s]]
+	for cell in cells:
+		for k in range(cell_start[cell], cell_start[cell + 1]):
+			var j: int = cell_items[k]
+			if active[j] == 0:
+				continue
+			var s := offs.bsearch(j, false) - 1
+			var sp = am.species_array[s]
+			var local := j - offs[s]
+			var h: float = _sprite_h[s] * (sp.current_size[local] if _scales[s] else 1.0)
+			if h <= 0.0:
+				continue
 
-					# The copy of the agent that is actually drawn
-					var foot: Vector3 = WorldWrap.curve(
-							WorldWrap.nearest_image(sorted_pos[k], center), center)
-					var top := foot + Vector3(0.0, q.y * size, 0.0)
-					if cam.is_position_behind(foot) and cam.is_position_behind(top):
-						continue
-					var a := cam.unproject_position(foot)
-					var b := cam.unproject_position(top)
-					var half_w := 0.5 * (q.x / q.y) * a.distance_to(b) + pick_margin_px
-					if _dist_to_segment(screen_pos, a, b) > half_w:
-						continue
+			# The copy of the agent that is actually drawn
+			var foot: Vector3 = WorldWrap.curve(
+					WorldWrap.nearest_image(sorted_pos[k], center), center)
+			var top := foot + Vector3(0.0, h, 0.0)
+			# Zoomed in, a tall sprite can pass behind the camera: keep only the visible
+			# part of it (cut at the near plane), else its screen position is garbage
+			var df := (foot - cam_pos).dot(cam_fwd) - near
+			var dt := (top - cam_pos).dot(cam_fwd) - near
+			if df <= 0.0 and dt <= 0.0:
+				continue                                 # all of it behind the camera
+			var p0 := foot
+			var p1 := top
+			if df <= 0.0:
+				p0 = foot.lerp(top, df / (df - dt) + 0.001)
+			elif dt <= 0.0:
+				p1 = foot.lerp(top, df / (df - dt) - 0.001)
+			var a := cam.unproject_position(p0)
+			var b := cam.unproject_position(p1)
+			var full_px := a.distance_to(b) * h / maxf(p0.distance_to(p1), 1e-6)
+			var half_w := 0.5 * _aspect[s] * full_px + pick_margin_px
+			if _dist_to_segment(screen_pos, a, b) > half_w:
+				continue
 
-					var depth := cam_pos.distance_squared_to(foot)
-					if depth < best_depth:
-						best_depth = depth
-						best = j
+			var depth := cam_pos.distance_squared_to(foot)
+			if depth < best_depth:
+				best_depth = depth
+				best = j
 
 	if best < 0:
 		return []
 	return split_id(best)
+
+
+# Per species: sprite height at size 1, width / height, grows with size; refreshed now and then
+var _sprite_h := PackedFloat32Array()
+var _aspect := PackedFloat32Array()
+var _scales: Array[bool] = []
+var _max_height := 0.0
+var _max_half_width := 0.0
+var _sizes_timer := 0.0
+
+func _update_sprite_sizes() -> void:
+	var n := alifemanager.species_array.size()
+	var now := Time.get_ticks_msec() / 1000.0
+	if _sprite_h.size() == n and now - _sizes_timer < 0.5:
+		return
+	_sizes_timer = now
+	_sprite_h.resize(n)
+	_aspect.resize(n)
+	_scales.resize(n)
+	_max_height = max_sprite_height
+	_max_half_width = 0.0
+	for s in n:
+		var sp = alifemanager.species_array[s]
+		var qs: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
+		var mat: ShaderMaterial = sp.renderer3D.material_override
+		var scales = mat.get_shader_parameter("scale_sprite_with_size")
+		_scales[s] = scales == null or scales == true      # shader default: true
+		_sprite_h[s] = qs.y * sp.sprite_scale
+		_aspect[s] = qs.x / maxf(qs.y, 1e-6)
+		# Tallest / widest sprite of this species right now
+		var big := 1.0
+		if _scales[s]:
+			big = 0.0
+			for i in sp.entity_count:
+				if sp.active_alife_array[i] != 0:
+					big = maxf(big, sp.current_size[i])
+		var hmax: float = _sprite_h[s] * big
+		_max_height = maxf(_max_height, hmax)
+		_max_half_width = maxf(_max_half_width, hmax * _aspect[s] * 0.5)
 
 
 func _dist_to_segment(p: Vector2, a: Vector2, b: Vector2) -> float:

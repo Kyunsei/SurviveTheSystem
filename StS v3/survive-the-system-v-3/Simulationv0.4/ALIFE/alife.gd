@@ -48,6 +48,8 @@ var current_life_state : PackedInt32Array
 var current_biomass : PackedFloat32Array
 var current_age : PackedInt32Array
 var current_size : PackedFloat32Array
+var current_health : PackedFloat32Array
+var current_max_health : PackedFloat32Array
 var init_size := 1.0
 
 #WORLD GRID REFERENCES
@@ -59,7 +61,7 @@ var current_grid_id : PackedInt32Array
 #interaction
 var holding := PackedInt32Array()   # global id of the item I carry, -1 = none
 var held_by := PackedInt32Array()   # global id of who carries me, -1 = none
-
+var facing := PackedVector3Array()   # last direction faced (the player's arrow), for carried items
 #not in use
 var current_cpu_cost : PackedInt32Array
 var current_color :PackedColorArray
@@ -83,8 +85,10 @@ var pending_multimesh_update_id : PackedInt32Array #check if in use
 #general
 var species_name := "Test"
 var species_id := 0
+var interactable := false                    # true: the player's Action key looks for this species
 var photosynthesis_on := false
 var photo_layer_y := 0
+var max_health := 100.0
 
 #rendering
 var sprite := preload("res://Alife/Plant/Grass/grass.png")
@@ -92,6 +96,20 @@ var colour := Color(0.193, 0.404, 0.283, 1.0)
 const CORPSE_COLOR := Color(0.488, 0.077, 0.15, 0.2)
 var hframes := 1
 var vframes := 1
+#rendering: ground sprite (null = none, the round shadow instead)
+var ground_sprite: Texture2D = null       # flat sprite on the ground under each agent
+var ground_sprite_scale := 1.0            # its width, in world units (x the agent's size)
+var ground_sprite_follows_size := true    # grows with the agent
+var ground_params := {}                   # extra ground shader settings
+
+#rendering: several standing sprites per agent (e.g. moss)
+var render_copies := 1                    # 1 to 3
+var copy_params := {}                     # extra settings for them
+var sprite_scale := 1.0       # base size of the standing sprite (x the agent's size if it scales)
+var shadow_from_photo_range := false
+var shadow_params := {}
+var native_shadow := false
+var caster_params := {}
 #LIFECYCLE
 var growth_rate := 0.25
 var duplication_range := 15
@@ -124,9 +142,55 @@ var max_neighbors := 8
 var target_density := 20.0     # agents per cell you're happy with
 
 
-# ---- GRID THINGS - mainly SCENT GRID -------------------------------------------------------
+# ---- GRID THINGS - SCENT FIELDS -------------------------------------------------------
+# Each species owns any number of fields on the field grid (alifemanager.field_cell_size).
+# Every frame build_field() lets each agent in the world deposit into every field, then
+# spreads (diffusion) and fades (decay) them. Each field has:
+#   now       what was deposited this frame only
+#   diffused  the lasting scent: deposits spread and fade over time
+#
+# Two fields always exist; older code reads them through the FIELD_* arrays below:
+#   "density"  COUNT     1 per agent         -> FIELD_count / FIELD_c_diffused
+#   "flow"     VELOCITY  the agent velocity  -> FIELD_velocity / FIELD_v_diffused
+#
+# Add your own in the species' _init, e.g. a slow-fading trail of living agents only:
+#   add_field("trail", FieldSource.COUNT, 0.1, 0.99, true)
+# or only the agents in a range of life cycle stages (min_stage, max_stage, -1 = no limit):
+#   add_field("adult", FieldSource.COUNT, -1.0, -1.0, true, 2, 2)    # stage 2 only
+#   add_field("tree", FieldSource.COUNT, -1.0, -1.0, true, 2)        # stage 2 and above
+# By default only agents standing in the world (state 1) deposit. The last argument picks
+# other states too, e.g. fruits on the ground or carried, not hanging in a tree:
+#   add_field("fruit", FieldSource.COUNT, -1.0, -1.0, true, 0, 0, [1, AlifeManager.HELD])
+# and read it, from this species or any other:
+#   sp.field_diffused(sp.field_id("trail"))[c]    sp.field_gradient(trail_id, c)
 
-####FLOW FIELD
+enum FieldSource {
+	COUNT,       # 1 per agent
+	VELOCITY,    # the agent's velocity (vector field)
+}
+const FIELD_DENSITY := "density"
+const FIELD_FLOW := "flow"
+
+class ScentField:
+	var name := ""
+	var source := 0                              # FieldSource
+	var is_vector := false                       # VELOCITY fields store Vector3
+	var diffusion := -1.0                        # < 0: the species' field_diffusion
+	var decay := -1.0                            # < 0: the species' field_decay
+	var only_alive := false                      # true: corpses don't deposit
+	var min_stage := -1                          # >= 0: only agents at this life stage or above
+	var max_stage := -1                          # >= 0: only agents at this life stage or below
+	var state_mask := 1 << 1                     # bit s set: agents in state s deposit (default: 1)
+	var now_f := PackedFloat32Array()            # float fields
+	var diffused_f := PackedFloat32Array()
+	var now_v := PackedVector3Array()            # vector fields
+	var diffused_v := PackedVector3Array()
+
+var fields: Array[ScentField] = []
+var _field_ids := {}                             # name -> index in fields
+var _agent_field_cell := PackedInt32Array()      # scratch: field cell of each agent
+
+####FLOW FIELD (the two default fields, kept for older code)
 var FIELD_count: PackedFloat32Array
 var FIELD_velocity: PackedVector3Array
 var FIELD_c_diffused: PackedFloat32Array
@@ -257,7 +321,8 @@ func _init_alife_par():
 	current_energy_array = [] 
 	current_velocity = []
 	new_velocity = []
-
+	current_health = []
+	current_max_health = []
 	active_alife_array = []   #To reuse some 
 	alive_array = []
 	current_sungrid_id = []
@@ -285,23 +350,12 @@ func _init_field_grid():
 	FIELD_H = dims.y       # cells along y
 	FIELD_D = dims.z         # cells along z
 	FIELD_NUM_CELLS = FIELD_W * FIELD_H * FIELD_D
-	
-	
-	FIELD_count.clear()
-	FIELD_count.resize(FIELD_NUM_CELLS)
-	FIELD_count.fill(0)
 
-	FIELD_velocity.clear()
-	FIELD_velocity.resize(FIELD_NUM_CELLS)
-	FIELD_velocity.fill(Vector3.ZERO)
-
-	FIELD_c_diffused.clear()
-	FIELD_c_diffused.resize(FIELD_NUM_CELLS)
-	FIELD_c_diffused.fill(0.0)
-
-	FIELD_v_diffused.clear()
-	FIELD_v_diffused.resize(FIELD_NUM_CELLS)
-	FIELD_v_diffused.fill(Vector3.ZERO)	
+	add_field(FIELD_DENSITY, FieldSource.COUNT)      # does nothing if it already exists
+	add_field(FIELD_FLOW, FieldSource.VELOCITY)
+	for f in fields:
+		_size_field(f)
+	_sync_legacy_fields()
 
 	SCENT.clear()
 	SCENT.resize(FIELD_NUM_CELLS)
@@ -326,7 +380,7 @@ func set_chunk(n:int):
 
 
 func run_chunk_simulation( start: int, end: int,local_id:int, delta: float, sim_speed:float) -> void:
-	var dt := 0.16 * 1 #TODO
+	var dt := delta                              # fixed simulated time per tick
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
 	#var mouse_target :Vector3 = alifemanager.mouse_position # Vector3(get_viewport().get_mouse_position().x,0,get_viewport().get_mouse_position().y)
@@ -433,31 +487,68 @@ func _nb(x: int, y: int, z: int, self_c: int, W: int, H: int, D: int,
 func build_field() -> void:
 	var field_cell_size := alifemanager.field_cell_size
 	var W := FIELD_W; var H := FIELD_H; var D := FIELD_D
+	var n := entity_count
+	var N := FIELD_NUM_CELLS
 
-	# 1. current-frame fields
-	FIELD_count.fill(0)
-	FIELD_velocity.fill(Vector3.ZERO)
-
-	# 2. deposit
-	for i in entity_count:
-		if not active_alife_array[i]:
+	# 1. Field cell of every agent not in the pool, once for all fields (-1 = no deposit)
+	_agent_field_cell.resize(n)
+	for i in n:
+		if active_alife_array[i] == 0:
+			_agent_field_cell[i] = -1
 			continue
 		var p := position_array[i]
-		var c := clampi(int(p.x / field_cell_size.x), 0, W - 1) \
+		_agent_field_cell[i] = clampi(int(p.x / field_cell_size.x), 0, W - 1) \
 			+ W * (clampi(int(p.y / field_cell_size.y), 0, H - 1) \
 			+ H * clampi(int(p.z / field_cell_size.z), 0, D - 1))
-		var v := current_velocity[i]
-		FIELD_count[c] += 1
-		FIELD_velocity[c] += v
-		FIELD_c_diffused[c] += 1.0
-		FIELD_v_diffused[c] += v
 
-	# 3. diffuse 
-	FIELD_c_diffused = _diffuse_f(FIELD_c_diffused)
-	FIELD_v_diffused = _diffuse_v(FIELD_v_diffused)
+	# 2. Deposit, then diffuse, field by field
+	for f in fields:
+		var rate := f.diffusion if f.diffusion >= 0.0 else field_diffusion
+		var fade := f.decay if f.decay >= 0.0 else field_decay
+
+		if f.is_vector:
+			var now := PackedVector3Array()
+			now.resize(N)
+			now.fill(Vector3.ZERO)
+			var dif := f.diffused_v
+			for i in n:
+				var c := _agent_field_cell[i]
+				if c < 0 or (f.only_alive and alive_array[i] == 0):
+					continue
+				if not _in_stages(f, current_life_state[i]):
+					continue
+				if (f.state_mask >> active_alife_array[i]) & 1 == 0:
+					continue
+				var v := current_velocity[i]
+				now[c] += v
+				dif[c] += v
+			f.now_v = now
+			f.diffused_v = _diffuse_v(dif, rate, fade)
+		else:
+			var now := PackedFloat32Array()
+			now.resize(N)
+			now.fill(0.0)
+			var dif := f.diffused_f
+			for i in n:
+				var c := _agent_field_cell[i]
+				if c < 0 or (f.only_alive and alive_array[i] == 0):
+					continue
+				if not _in_stages(f, current_life_state[i]):
+					continue
+				if (f.state_mask >> active_alife_array[i]) & 1 == 0:
+					continue
+				now[c] += 1.0
+				dif[c] += 1.0
+			f.now_f = now
+			f.diffused_f = _diffuse_f(dif, rate, fade)
+
+	_sync_legacy_fields()
 
 
-func _diffuse_f(a: PackedFloat32Array) -> PackedFloat32Array:
+## rate / fade < 0: the species' field_diffusion / field_decay
+func _diffuse_f(a: PackedFloat32Array, rate := -1.0, fade := -1.0) -> PackedFloat32Array:
+	var df := field_diffusion if rate < 0.0 else rate
+	var dc := field_decay if fade < 0.0 else fade
 	var out := PackedFloat32Array()
 	out.resize(a.size())
 	for c in a.size():
@@ -470,11 +561,13 @@ func _diffuse_f(a: PackedFloat32Array) -> PackedFloat32Array:
 			if o >= 0:
 				sum += a[o]
 				k += 1
-		out[c] = ((s + (sum / k - s) * field_diffusion) if k > 0 else s) * field_decay
+		out[c] = ((s + (sum / k - s) * df) if k > 0 else s) * dc
 	return out
 
 
-func _diffuse_v(a: PackedVector3Array) -> PackedVector3Array:
+func _diffuse_v(a: PackedVector3Array, rate := -1.0, fade := -1.0) -> PackedVector3Array:
+	var df := field_diffusion if rate < 0.0 else rate
+	var dc := field_decay if fade < 0.0 else fade
 	var out := PackedVector3Array()
 	out.resize(a.size())
 	for c in a.size():
@@ -487,7 +580,7 @@ func _diffuse_v(a: PackedVector3Array) -> PackedVector3Array:
 			if o >= 0:
 				sum += a[o]
 				k += 1
-		out[c] = ((s + (sum / k - s) * field_diffusion) if k > 0 else s) * field_decay
+		out[c] = ((s + (sum / k - s) * df) if k > 0 else s) * dc
 	return out
 
 
@@ -503,6 +596,105 @@ func scent_gradient(a:PackedFloat32Array, c: int) -> Vector3:
 	o = _nbr[b + 4]; var zp := a[o] if o >= 0 else s
 	o = _nbr[b + 5]; var zm := a[o] if o >= 0 else s
 	return Vector3(xp - xm, yp - ym, zp - zm)
+
+
+#---- Fields API ------------------------------------------------------------------------
+
+## Adds a field (call it in the species' _init). Returns its id; an existing name
+## returns the existing id. diffusion / decay < 0: the species' field_diffusion / field_decay.
+## only_alive: corpses don't deposit.
+## min_stage / max_stage: only agents in this range of life cycle stages (-1 = no limit).
+## states: agent states that deposit (active_alife_array values). Default: in the world.
+func add_field(fname: String, source: int, diffusion := -1.0, decay := -1.0,
+		only_alive := false, min_stage := -1, max_stage := -1, states: Array = [1]) -> int:
+	if _field_ids.has(fname):
+		return _field_ids[fname]
+	var f := ScentField.new()
+	f.name = fname
+	f.source = source
+	f.is_vector = source == FieldSource.VELOCITY
+	f.diffusion = diffusion
+	f.decay = decay
+	f.only_alive = only_alive
+	f.min_stage = min_stage
+	f.max_stage = max_stage
+	f.state_mask = 0
+	for st in states:
+		f.state_mask |= 1 << int(st)
+	fields.append(f)
+	_field_ids[fname] = fields.size() - 1
+	if FIELD_NUM_CELLS > 0:
+		_size_field(f)                           # added after the grid exists
+	return fields.size() - 1
+
+
+## Id of a field by name, -1 if this species doesn't have it.
+func field_id(fname: String) -> int:
+	return _field_ids.get(fname, -1)
+
+
+## Lasting scent of a field (spread + faded). Read-only.
+func field_diffused(fid: int) -> PackedFloat32Array:
+	return fields[fid].diffused_f
+
+
+## What was deposited this frame only. Read-only.
+func field_now(fid: int) -> PackedFloat32Array:
+	return fields[fid].now_f
+
+
+## Vector fields (VELOCITY): lasting / this frame.
+func field_diffused_v(fid: int) -> PackedVector3Array:
+	return fields[fid].diffused_v
+
+func field_now_v(fid: int) -> PackedVector3Array:
+	return fields[fid].now_v
+
+
+## Direction toward more of this field's scent, at field cell c.
+func field_gradient(fid: int, c: int) -> Vector3:
+	return scent_gradient(fields[fid].diffused_f, c)
+
+
+## True when a life cycle stage is inside the field's stage range.
+func _in_stages(f: ScentField, stage: int) -> bool:
+	if f.min_stage >= 0 and stage < f.min_stage:
+		return false
+	if f.max_stage >= 0 and stage > f.max_stage:
+		return false
+	return true
+
+
+## Field cell of a position.
+func field_cell(p: Vector3) -> int:
+	var fcs := alifemanager.field_cell_size
+	return clampi(int(p.x / fcs.x), 0, FIELD_W - 1) \
+		+ FIELD_W * (clampi(int(p.y / fcs.y), 0, FIELD_H - 1) \
+		+ FIELD_H * clampi(int(p.z / fcs.z), 0, FIELD_D - 1))
+
+
+func _size_field(f: ScentField) -> void:
+	var N := FIELD_NUM_CELLS
+	if f.is_vector:
+		f.now_v.resize(N)
+		f.now_v.fill(Vector3.ZERO)
+		f.diffused_v.resize(N)
+		f.diffused_v.fill(Vector3.ZERO)
+	else:
+		f.now_f.resize(N)
+		f.now_f.fill(0.0)
+		f.diffused_f.resize(N)
+		f.diffused_f.fill(0.0)
+
+
+## The two default fields, under the names older code uses.
+func _sync_legacy_fields() -> void:
+	var d: ScentField = fields[_field_ids[FIELD_DENSITY]]
+	FIELD_count = d.now_f
+	FIELD_c_diffused = d.diffused_f
+	var fl: ScentField = fields[_field_ids[FIELD_FLOW]]
+	FIELD_velocity = fl.now_v
+	FIELD_v_diffused = fl.diffused_v
 	
 ##########################################################################################
 #### callable interspecies
@@ -511,7 +703,8 @@ func scent_gradient(a:PackedFloat32Array, c: int) -> Vector3:
 func Interact(i:int, sp:ALIFE, local_id:int):
 	print("%s ID: %d interacted with %s ID: %d" %[sp.species_name, local_id, species_name, i])
 
-func getHurt(i:int, sp:ALIFE, local_id:int):
+## Agent i was damaged by agent local_id of species sp.
+func on_damaged(i:int, sp:ALIFE, local_id:int):
 	print("%s ID: %d interacted with %s ID: %d" %[sp.species_name, local_id, species_name, i])
 
 func getPickUp(i:int, sp:ALIFE, local_id:int):
@@ -1200,7 +1393,7 @@ func Build_and_remove_pendings():
 			var s_c := get_cell_id(newpos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 			if world.SUN_stamp[s_c] > 0 :
 				continue
-		Build_New_Life(newpos,seed_energy, current_color[i])
+		Build_New_Life(newpos,seed_energy,0, current_color[i])
 	
 	for i in pending_remove_id:
 		Remove_Life(i)	
@@ -1211,7 +1404,7 @@ func Build_and_remove_pendings():
 	pending_remove_id.clear()
 
 
-func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.555, 0.215, 1.0)):
+func Build_New_Life(pos: Vector3, e: float = seed_energy,lc:= 0, col := Color(0.159, 0.555, 0.215, 1.0)):
 	if alifemanager.global_entity_count >= alifemanager.maxLife and alifemanager.maxLife>0:
 		return
 
@@ -1221,12 +1414,14 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		active_alife_array.append(1)
 		position_array.append(pos)
 		current_color.append(col)
+		current_health.append(max_health)
+		current_max_health.append(max_health)
 		color_packed.append(0)
 		set_agent_color(i,Color(1.0, 1.0, 1.0, 1.0))
 		alive_array.append(1) 
 		current_velocity.append(Vector3.ZERO)
 		new_velocity.append(Vector3.ZERO)
-		current_life_state.append(0)
+		current_life_state.append(lc)
 		current_biomass.append(seed_biomass)
 		current_age.append(0)
 		current_size.append(init_size)
@@ -1239,6 +1434,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		
 		current_cpu_cost.append(0)
 		neighbour_count.append(0)
+
 		#update_bin_array(i)
 		entity_count += 1
 
@@ -1247,6 +1443,9 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		current_energy_array[i] = e
 		active_alife_array[i] = 1
 		position_array[i] = pos
+		current_health[i] = max_health
+		current_max_health[i] = max_health
+
 		current_color[i]=col
 		set_agent_color(i,Color(1.0, 1.0, 1.0, 1.0))
 		alive_array[i] = 1
@@ -1254,7 +1453,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		new_velocity[i] = Vector3.ZERO
 		current_sungrid_id[i] = get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 		current_grid_id[i] = get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
-		current_life_state[i]=0
+		current_life_state[i]=lc
 		current_biomass[i]=seed_biomass
 		current_age[i]=0
 		current_size[i]=init_size

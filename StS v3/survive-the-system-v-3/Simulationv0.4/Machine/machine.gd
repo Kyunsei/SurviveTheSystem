@@ -49,6 +49,16 @@ func _ready() -> void:
 
 ## Left click / R near the machine. Returns true if the carried item was used.
 func interact(agent_species, agent_index: int, held_species, held_index: int) -> bool:
+	if held_species != null and held_species.has_method("empty_tank"):
+		var biomass: float = held_species.empty_tank(held_index)
+		print("Machine got %.1f biomass from the vacuum" % biomass)
+		var gained := minf(biomass * energy_per_biomass, max_energy - energy)
+		energy += gained
+		_update_label()
+
+		# ... use it: fuel, credits, progress ...
+		return false                     # the vacuum stays in your hands, empty
+	# ... your existing behaviour for other items ...
 	if held_species != null:
 		return feed(held_species, held_index)
 	if running:

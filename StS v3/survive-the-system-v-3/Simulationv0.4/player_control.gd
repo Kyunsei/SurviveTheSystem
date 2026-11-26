@@ -9,7 +9,9 @@ extends Node
 ##   up / down / left / right (WASD or left stick)  move the agent (analog on a stick)
 ##   sprint (Shift)   run            jump (Space)    jump
 ##   dash             short burst of speed (in the direction you move, else forward)
-##   pick_up          pick up the outlined agent (the closest one in range)
+##   pick_up          pick up the outlined agent (the closest one in range), including a
+##                    fruit hanging in a tree (jump to bring the higher ones in range)
+##   Action           interact with the outlined agent (a grown tree drops its fruits)
 ##   use              near a machine (ring on the ground): feed it what you carry,
 ##                    or start / stop it with empty hands
 ##                    (bind pick_up and use to the same key to get one "interact" key)
@@ -35,8 +37,9 @@ extends Node
 ##   var player_jump_buffer := 0.0, player_jump_held := false (jump)
 ## Carrying goes through AlifeManager (pick_up / drop / release_flying / land / unlink),
 ## the same functions AI agents use, so the player is just one more carrier:
-##   holding / held_by arrays in each species, items in state HELD or FLYING are not
-##   moved by the simulation, AlifeManager.update_carried() runs after the movement pass.
+##   `var holding := PackedInt32Array()` and `var held_by := PackedInt32Array()` in the
+##   species script (AlifeManager sizes them). Items in state HELD (2) or FLYING (4) must
+##   not be moved by the simulation. AlifeManager.update_carried() places carried items.
 ##   Optional: a `facing` PackedVector3Array in the species, written here for the player,
 ##   so the carried item stays in front even when standing still.
 ## First person needs `uniform int hidden_id = -1;` in the sprite shader.
@@ -170,7 +173,10 @@ func is_controlling() -> bool:
 func wants_mouse_look() -> bool:
 	return is_controlling() and control_view != ControlView.NORTH
 
-
+## True when the carried item can be used (an ALIFE_ITEM).
+func _held_usable() -> bool:
+	var item := _held()
+	return item[0] != null and item[0].has_method("use")
 ## [species, local index] of what the controlled agent carries, or [null, -1].
 func _held() -> Array:
 	if not is_controlling():
@@ -178,7 +184,7 @@ func _held() -> Array:
 	var id: int = controlled_species.holding[controlled_index]
 	if id == -1:
 		return [null, -1]
-	return alifemanager.split_id(id)
+	return alifemanager.split_cid(id)               # carry ids, not global ids
 
 
 # --- Action helpers ----------------------------------------------------------------
@@ -240,10 +246,20 @@ func _unhandled_input(event: InputEvent) -> void:
 		_dash()
 	elif event.is_action_pressed("attack"):
 		_attack()
+	
+	elif event.is_action_pressed("Action"):
+		_use_machine()
+		var t := _interact_target()
+		_interact(controlled_species, controlled_index, t[0], t[1])
 	# use and pick_up never both apply (the machine or the agent is the target, not both),
 	# so they can share a key
-	elif event.is_action_pressed("use") and target_machine != null:
-		_use_machine()
+	elif event.is_action_pressed("use") and (target_machine != null or _held_usable()):
+		if target_machine != null:
+			_use_machine()                           # near a machine: feed it / start / stop
+		else:
+			var item := _held()
+			item[0].use(item[1], controlled_species, controlled_index)
+
 	elif event.is_action_pressed("pick_up") and _can_pick_up():
 		_pick_up(controlled_species, controlled_index, target_species, target_index)
 	elif event.is_action_pressed("throw") and held_species != null:
@@ -279,9 +295,11 @@ func _can_pick_up() -> bool:
 ## use: feed the machine in range what you carry, or start / stop it with empty hands.
 func _use_machine() -> void:
 	var item := _held()
-	var used := target_machine.interact(controlled_species, controlled_index, item[0], item[1])
-	if used and item[0] != null:
-		alifemanager.unlink(item[0], item[1])        # the carried item went into the machine
+	if target_machine:
+		if target_machine.has_method("interact"):
+			var used := target_machine.interact(controlled_species, controlled_index, item[0], item[1])
+			if used and item[0] != null:
+				alifemanager.unlink(item[0], item[1])        # the carried item went into the machine
 
 
 # --- Per frame -------------------------------------------------------------------
@@ -370,6 +388,7 @@ func set_control_view(view: ControlView) -> void:
 ## Little planet: on while controlling (where the endless ground is shown), flat otherwise.
 ## Needs the `planet_radius` Shader Global (float) in the Project Settings.
 func _update_planet() -> void:
+	planet_radius = WorldWrap.size.x/2
 	var r := planet_radius if is_controlling() else 0.0
 	if r == WorldWrap.planet_radius:
 		return
@@ -454,7 +473,23 @@ func _process_control() -> void:
 		target_species = t[0]
 		target_index = t[1]
 		target_machine = null                       # the agent is closer than the machine
+		best_score = agent_score
 
+	# Fruits hanging in trees aren't in the contact grid: same range and scoring, asked
+	# to the species that have them. Jumping brings the higher ones in range.
+	for fsp in alifemanager.species_array:
+		if not fsp.has_method("find_hanging_fruit"):
+			continue
+		var f: int = fsp.find_hanging_fruit(pos, target_range)
+		if f < 0:
+			continue
+		var fruit_dist: float = WorldWrap.nearest_image(fsp.position_array[f], pos).distance_to(pos)
+		var fruit_score := fruit_dist / maxf(target_range, 0.001)
+		if fruit_score < best_score:
+			best_score = fruit_score
+			target_species = fsp
+			target_index = f
+			target_machine = null
 
 ## dash: a short burst of speed, with a cooldown.
 func _dash() -> void:
@@ -463,12 +498,20 @@ func _dash() -> void:
 	_dash_cd = dash_cooldown
 	_dash_left = dash_time
 	agent_dashed.emit(controlled_species, controlled_index)
-
-
+	
 # --- Carry (through AlifeManager, like any other carrier) ---------------------------
 
 ## pick_up on the outlined agent.
 func _pick_up(sp, i: int, item_sp, j: int) -> void:
+	if item_sp.has_method("harvest") and item_sp.harvest(j, sp, i):
+		target_species = null                        # ripe bush: the berry is now in hand
+		target_index = -1
+		return
+	if item_sp.has_method("can_be_carried") and not item_sp.can_be_carried(j):
+		return                                       # e.g. a grown tree
+	if item_sp.has_method("detach_fruit"):
+		item_sp.detach_fruit(j)                      # a fruit grabbed from its branch
+	
 	if not alifemanager.pick_up(sp, i, item_sp, j):
 		return                                       # hands full, or item not free in the world
 	print("%s #%d picks up %s #%d" % [sp.species_name, i, item_sp.species_name, j])
@@ -476,6 +519,36 @@ func _pick_up(sp, i: int, item_sp, j: int) -> void:
 	target_index = -1
 	agent_picked_up.emit(sp, i, item_sp, j)
 
+
+## Closest agent of an `interactable` species within target_range, or [null, -1].
+## Searched on its own: the outlined target is often grass or a fruit right next to the tree.
+func _interact_target() -> Array:
+	var sp = controlled_species
+	var i := controlled_index
+	var pos: Vector3 = sp.position_array[i]
+	var me := alifemanager.g_id(sp, i)
+	var best: Array = [null, -1]
+	var best_d := target_range
+	for isp in alifemanager.species_array:
+		'if not isp.interactable:
+			continue'
+		var found: Vector4 = sp.find_nearest(pos, me, isp.species_id, target_search_rings)
+		var id := int(found.w)
+		if id < 0:
+			continue
+		var d := Vector3(found.x, found.y, found.z).length()
+		if d <= best_d:
+			best_d = d
+			best = alifemanager.split_id(id)
+	return best
+
+
+## Action on an agent: it reacts in its own way (a tree drops its fruits).
+func _interact(sp, i: int, target_sp, j: int) -> void:
+	if target_sp == null or not target_sp.has_method("Interact"):
+		return
+	print("%s #%d interacts with %s #%d" % [sp.species_name, i, target_sp.species_name, j])
+	target_sp.Interact(j, sp, i)                     # (target index, who, who's index)
 
 ## Drop: put the item down in front of the carrier, on its feet level.
 func _drop() -> void:
@@ -603,6 +676,7 @@ func _current_hints() -> Array:
 		hints.append([pick, "pick up"])
 		hints.append([use, "use"])
 	hints.append_array([
+		[_key("Action"), "interact"],
 		[_key("Drop"), "drop"],
 		[_key("eat"), "hold to eat"],
 		[_key("throw"), "hold to throw"],
@@ -702,8 +776,11 @@ func _attack() -> void:
 	for h in hits:
 		var hsp = h[0]
 		var j: int = h[1]
-		var b: float = hsp.current_biomass[j] - attack_damage
-		hsp.current_biomass[j] = maxf(b, 0.0)
+		var before: float = hsp.current_health[j]
+		var b: float = before - attack_damage
+		hsp.current_health[j] = maxf(b, 0.0)
+		DamageEffects.hit(hsp, j, before - hsp.current_health[j])   # flash + number
+		hsp.on_damaged(j, sp, i)                         # e.g. a tree drops some fruits
 		if attack_kills_at_zero and b <= 0.0:
 			hsp.alive_array[j] = 0                       # the simulation handles the corpse
 	agent_attacked.emit(sp, i, hits)
@@ -751,7 +828,7 @@ func _agents_in_box(origin: Vector3, right: Vector3, fwd: Vector3, me_sp, me_i: 
 				var cell := x + W * (y + H * z)
 				for k in range(cell_start[cell], cell_start[cell + 1]):
 					var j: int = cell_items[k]
-					if j == me or active[j] == 0:
+					if j == me or active[j] != AlifeManager.ACTIVE:
 						continue
 					var d: Vector3 = sorted_pos[k] - origin
 					if wx: d.x -= ws.x * roundf(d.x / ws.x)
@@ -998,3 +1075,48 @@ func _update_status() -> void:
 		_status.text += "\nThrow  [%s%s]  %d%%" % ["■".repeat(filled), "□".repeat(10 - filled),
 				roundi(_charge * 100.0)]
 	_status.visible = true
+
+
+func _on_button_pressed() -> void:
+	spawn_and_control(spawn_species,WorldWrap.size/2)
+
+
+
+@export_group("Spawn")
+@export var spawn_species := "CATRONAUTE"      # species_name of what spawn_and_control makes
+@export var spawn_as_adult := true             # starts at its max life cycle
+@export var spawn_zoom := 6.0                  # camera distance to the spawned agent (0 = keep)
+
+## Spawns an agent of species `sname` (default: spawn_species) and takes control of it.
+## at = Vector3.INF: where the camera looks (on the ground). Returns its index, -1 if it failed.
+func spawn_and_control(sname := "", at := Vector3.INF) -> int:
+	if sname == "":
+		sname = spawn_species
+	var sp = alifemanager.codex.species.get(sname)
+	if sp == null:
+		push_warning("spawn_and_control: no species named %s" % sname)
+		return -1
+
+	if at == Vector3.INF:
+		at = camera.get_wrap_center()                # the point the camera looks at
+	at.y = ground_y
+	at = alifemanager.keep_in_world(at)
+
+	# Build_New_Life doesn't return the index: it's the next free slot
+	var i: int = sp.free_indices[sp.free_indices.size() - 1] if sp.free_indices.size() > 0 \
+			else sp.entity_count
+	var before: int = sp.active_entity_count
+	sp.Build_New_Life(at, sp.seed_energy)
+	if sp.active_entity_count == before:
+		push_warning("spawn_and_control: world is full (maxLife)")
+		return -1
+
+	if spawn_as_adult:
+		sp.current_life_state[i] = sp.max_life_cycle
+		sp.current_energy_array[i] = sp.max_energy * 0.8
+
+	take_control(sp, i)
+	if spawn_zoom > 0.0:
+		camera.follow_distance = clampf(spawn_zoom,
+				camera.follow_min_distance, camera.follow_max_distance)
+	return i

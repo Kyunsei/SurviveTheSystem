@@ -3,7 +3,7 @@ class_name ALIFE_SPIDERCRAB
 ## Spidercrab: ambush hunter.
 ##
 ## Hunt, per crab, stored in current_action (also sent to the shader for visuals):
-##   0 IDLE      not hunting (not enough prey in the world)
+##   0 IDLE      not hunting: full (see hunt_start_energy / hunt_stop_energy)
 ##   1 APPROACH  follow the prey's scent field, then walk toward the best prey in sight
 ##   2 CHARGE    prey within strike_range: stop and aim for charge_time (the "tell")
 ##   3 DASH      rush in a straight line, direction LOCKED when the charge ends.
@@ -13,6 +13,9 @@ class_name ALIFE_SPIDERCRAB
 ##
 ## Prey: several species, each with an affinity (1 = favourite). The scent fields are
 ## mixed by affinity, and the target is the prey with the best distance / affinity.
+## Eggs are never food: not smelled, not targeted, not caught. A prey species has eggs
+## when it has an "egg" field (+ "juvenile" / "adult", smelled instead of its density).
+## A species with only its default field (e.g. cats) has no eggs: every agent is food.
 ##
 ## Visuals: call setup_hunt_visuals() once the renderer exists (sprite shader action_* uniforms).
 ##
@@ -44,6 +47,11 @@ var dash_distance := 20.0                  # straight-line length of the dash
 var catch_radius := 0.9                   # how close a prey must be during the dash to be eaten
 var recover_time := 2.0                   # out of breath after a dash (hit or miss)
 var hunt_corpses := true                  # dead prey can be targeted, charged and eaten too
+var hunt_eggs := false                    # eggs (life cycle 0) can be targeted and eaten
+var hunt_start_energy := 1500.0           # IDLE -> hunting when energy drops below this
+#EAT 10 sheep = 60 (tny), 160(big) *10
+var hunt_stop_energy := 2500.0            # hunting -> IDLE once energy reaches this
+var no_food_brake := 0.85                 # no prey nor scent anywhere: velocity kept per step (stops)
 var corpse_affinity := 0.8                # 0..1: how attractive a corpse is vs a living prey
 
 
@@ -57,7 +65,7 @@ func _init() -> void:
 	colour = Color(0.609, 0.09, 0.557, 1.0)
 
 	max_energy = 2500
-	max_speed = 2.
+	max_speed = 6.
 
 	#LIFECYCLE/DUP
 	duplication_range = 1
@@ -68,8 +76,14 @@ func _init() -> void:
 	growth_rate = 2
 
 	#food part
-	prey_species = ["BUGSHEEP", "SECOND_PREY"]   # <- put your second species' name here
-	prey_affinity = [1.0, 0.4]                   # the second one attracts much less
+	prey_species = ["BUGSHEEP", "CATRONAUTE"]
+	prey_affinity = [1.0, 0.6]                   # cats attract much less than sheep
+
+	#Hunger: hunts below hunt_start_energy, keeps hunting until hunt_stop_energy.
+	# hunt_stop_energy must stay above the duplication energy (5 * seed_energy = 5000),
+	# or adults stop eating before they can reproduce
+	hunt_start_energy = 1500.0
+	hunt_stop_energy = 5500.0
 
 	#Flock par
 	#contact par
@@ -122,7 +136,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 
 	var local_pending_spawn_id : PackedInt32Array
 	var local_pending_remove_id: PackedInt32Array
-	var step := dt * sim_speed                # simulation time of this step
+	var step := dt                            # fixed simulated time per tick (speed = more ticks)
 
 	#MAP
 	var field_cell_size := alifemanager.field_cell_size
@@ -154,6 +168,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 
 	#FOOD: the prey species that exist in this world (missing names are skipped)
 	var preys: Array[ALIFE] = []
+	var prey_fields: Array[PackedInt32Array] = []   # per prey: the fields to smell / count
 	var pr_aff := PackedFloat32Array()
 	var prey_total := 0
 	for k in prey_species.size():
@@ -163,6 +178,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		preys.append(s)
 		pr_aff.append(prey_affinity[k] if k < prey_affinity.size() else 1.0)
 		prey_total += s.active_entity_count
+		prey_fields.append(_prey_field_ids(s))
 
 	# Hunt arrays not sized yet (ensure_hunt_arrays not called): no strike, simple seek
 	var strike_ok := hunt_timer.size() >= end
@@ -182,7 +198,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		if alive_array[i] == 0:
 			if active_alife_array[i] == 1:
 				var b = current_biomass[i]
-				b -= 1 * step
+				b -= 2 * step
 				current_biomass[i] = b
 				if b < 0:
 					local_pending_remove_id.append(i)
@@ -203,15 +219,14 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		var v:Vector3= current_velocity[i]
 		var global_i := i + base
 
-	#--------HUNTING ON / OFF (enough prey around the world)
-		#2500 time frame between 20 to 5, eat 15 sheep = 1500 energy
-		if prey_total > 20 and current_action[i] == Hunt.IDLE:
-			current_action[i] = Hunt.APPROACH
-		if prey_total < 6 and current_action[i] != Hunt.IDLE:
-			current_action[i] = Hunt.IDLE
-			v = Vector3.ZERO
+	#--------HUNTING ON / OFF (hunger, with two thresholds so it doesn't flicker)
+		if current_action[i] == Hunt.IDLE and _energy < hunt_start_energy:
+			current_action[i] = Hunt.APPROACH            # hungry: start hunting
+		elif current_action[i] != Hunt.IDLE and _energy >= hunt_stop_energy:
 			if strike_ok:
 				reset_hunt(i)
+			current_action[i] = Hunt.IDLE                # full: stop, even mid-charge
+			v = Vector3.ZERO
 
 		var state: int = current_action[i]
 		if not strike_ok and state != Hunt.IDLE:
@@ -224,21 +239,27 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 			match state:
 				Hunt.APPROACH:
 					# Prey in my field cell? Then look for one; otherwise follow the mixed scent
-					var prey_here := 0
+					var found_food := false              # a scent to follow or a prey in sight
+					var prey_here := 0.0
 					for k in preys.size():
-						prey_here += preys[k].FIELD_count[c]
-					if prey_here < 1:
+						for fid in prey_fields[k]:
+							prey_here += preys[k].field_now(fid)[c]
+					if prey_here < 1.0:
 						var g := Vector3.ZERO
 						for k in preys.size():
-							var gk := scent_gradient(preys[k].FIELD_c_diffused, c)
+							var gk := Vector3.ZERO
+							for fid in prey_fields[k]:
+								gk += preys[k].field_gradient(fid, c)
 							if gk.length_squared() > 1e-6:
 								g += gk.normalized() * pr_aff[k]     # favourite smells stronger
 						if g.length_squared() > 1e-6:
 							steer += (g.normalized() * max_speed - v) * w_seek
+							found_food = true
 					else:
 						var best := _best_prey(p, global_i, preys, pr_aff)
 						var prey := int(best.w)
 						if prey >= 0:
+							found_food = true
 							var delta := Vector3(best.x, best.y, best.z)
 							var dist := delta.length()
 							if strike_ok and dist <= strike_range:
@@ -247,6 +268,13 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 								hunt_target[i] = prey
 							elif dist > 0.0:
 								steer += (delta / dist * max_speed - v) * w_seek
+
+					# Nothing to eat anywhere: slow down to a stop instead of drifting on
+					if not found_food:
+						override_v = true
+						forced_v = v * no_food_brake
+						if forced_v.length_squared() < 0.0025:
+							forced_v = Vector3.ZERO
 
 				Hunt.CHARGE:
 					# Stand still and aim; abort if the prey is gone or got too far
@@ -368,11 +396,12 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		new_velocity[i] = new_v
 
 	#--------Growth
-		if _energy >= 2000 and lifecycle < max_life_cycle:
-			current_size[i] += growth_rate
-			current_biomass[i] += 1000/10
-			current_life_state[i] +=1
-			_energy -= 1000
+		if current_action[i] == Hunt.IDLE:
+			if _energy >= growth_cost[lifecycle]*1.2 and lifecycle < max_life_cycle:
+				current_size[i] += growth_rate
+				current_biomass[i] += growth_cost[lifecycle]/10
+				current_life_state[i] +=1
+				_energy -= growth_cost[lifecycle]
 
 	#--------maintain cost
 		#need to loose around 1500 energy in 2500 frames?
@@ -406,6 +435,20 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 
 
 # --- Hunt helpers ----------------------------------------------------------------
+
+## Fields of a prey species that show hunt-worthy agents: "juvenile" + "adult" when it
+## has them (no eggs), else its whole density field.
+func _prey_field_ids(prey_sp: ALIFE) -> PackedInt32Array:
+	var ids := PackedInt32Array()
+	if not hunt_eggs:
+		for fname in ["juvenile", "adult"]:
+			var fid := prey_sp.field_id(fname)
+			if fid >= 0:
+				ids.append(fid)
+	if ids.is_empty():
+		ids.append(prey_sp.field_id(FIELD_DENSITY))
+	return ids
+
 
 ## Best prey around p among all prey species: smallest distance / affinity
 ## (corpses included when hunt_corpses, weighted by corpse_affinity).
@@ -444,6 +487,9 @@ func _nearest_prey(p: Vector3, me: int, prey_sp: ALIFE, max_rings: int) -> Vecto
 	var hi := offs[prey_sp.species_id + 1]
 	var alive := prey_sp.alive_array
 	var active := prey_sp.active_alife_array
+	var life := prey_sp.current_life_state
+	# Life cycle 0 = egg only for species that have eggs (an "egg" field)
+	var skip_eggs := not hunt_eggs and prey_sp.field_id("egg") >= 0
 	var ws: Vector3 = world.size
 	var wx: bool = world.border_type_x == world.Border.WRAP
 	var wz: bool = world.border_type_z == world.Border.WRAP
@@ -482,6 +528,8 @@ func _nearest_prey(p: Vector3, me: int, prey_sp: ALIFE, max_rings: int) -> Vecto
 						var local := j - lo
 						if active[local] == 0:
 							continue                       # free slot
+						if skip_eggs and life[local] == 0:
+							continue                       # eggs aren't food
 						var dead := alive[local] == 0
 						if dead and (not hunt_corpses or prey_sp.current_biomass[local] <= 0.0):
 							continue                       # not hunted, or already eaten
@@ -527,7 +575,8 @@ func _try_catch(p: Vector3, me: int, preys: Array[ALIFE], offs: PackedInt32Array
 		var s := offs.bsearch(prey, false) - 1
 		var local := prey - offs[s]
 		var sp_o = alifemanager.species_array[s]
-		if sp_o.active_alife_array[local] == 1 and sp_o.current_biomass[local] > 0.0:
+		if sp_o.active_alife_array[local] != 0 and sp_o.current_biomass[local] > 0.0:
+			# in the world, carried or thrown: all catchable (a carried one dies in the hands)
 			sp_o.alive_array[local] = 0              # living: killed / corpse: stays dead
 			var gained: float = sp_o.current_biomass[local]
 			sp_o.current_biomass[local] = 0          # eaten: its species removes it
@@ -535,7 +584,7 @@ func _try_catch(p: Vector3, me: int, preys: Array[ALIFE], offs: PackedInt32Array
 	return 0.0
 
 
-func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.555, 0.215, 1.0)):
+func Build_New_Life(pos: Vector3, e: float = seed_energy, lc:int =0, col := Color(0.159, 0.555, 0.215, 1.0)):
 	if alifemanager.global_entity_count >= alifemanager.maxLife and alifemanager.maxLife>0:
 		return
 
@@ -550,7 +599,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		alive_array.append(1) 
 		current_velocity.append(Vector3.ZERO)
 		new_velocity.append(Vector3.ZERO)
-		current_life_state.append(0)
+		current_life_state.append(lc)
 		current_biomass.append(seed_biomass)
 		current_age.append(0)
 		current_size.append(init_size)
@@ -577,7 +626,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, col := Color(0.159, 0.
 		new_velocity[i] = Vector3.ZERO
 		current_sungrid_id[i] = get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 		current_grid_id[i] = get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
-		current_life_state[i]=0
+		current_life_state[i]=lc
 		current_biomass[i]=seed_biomass
 		current_age[i]=0
 		current_size[i]=init_size

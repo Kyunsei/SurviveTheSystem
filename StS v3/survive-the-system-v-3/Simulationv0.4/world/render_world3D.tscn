@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cve3fjbgy61t7"]
 
-[ext_resource type="Script" uid="uid://bkabb206qph0o" path="res://Simulationv0.4/world/render_world_3d.gd" id="1_xmjed"]
+[ext_resource type="Script" path="res://Simulationv0.4/world/render_world_3d.gd" id="1_xmjed"]
 [ext_resource type="Shader" uid="uid://bhtkrkvcjuv5u" path="res://Simulationv0.4/world/skybox.gdshader" id="2_vojrr"]
 [ext_resource type="PackedScene" uid="uid://br0id6ya8hqd2" path="res://assets/asset dabols/Hoover.fbx" id="3_2t87l"]
 [ext_resource type="MeshLibrary" uid="uid://d2g7jknxpebte" path="res://World/grid_map_3d/meshlibraries/base_world_v5.meshlib" id="3_igj41"]
@@ -161,13 +161,6 @@ inner_radius = 1.2
 
 [node name="Render_World3D" type="Node3D" unique_id=646974276]
 script = ExtResource("1_xmjed")
-metadata/_custom_type_script = "uid://bkabb206qph0o"
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1670679103]
-transform = Transform3D(0.8660254, 0.3213938, -0.38302222, 0, 0.76604444, 0.6427876, 0.5, -0.55667037, 0.66341394, 0, 28, 0)
-light_color = Color(1, 0.95686275, 0.8784314, 1)
-light_energy = 2.0
-shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=19569398]
 environment = SubResource("Environment_76o36")

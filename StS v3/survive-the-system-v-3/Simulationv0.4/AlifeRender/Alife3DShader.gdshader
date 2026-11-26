@@ -1,5 +1,7 @@
 shader_type spatial;
-render_mode cull_disabled, unshaded;
+render_mode cull_disabled, ambient_light_disabled, specular_disabled;
+// Lit only to receive the sun's shadow (see light() at the end): in the sun the sprite looks
+// exactly as before (unshaded), in shadow it is multiplied by shade_color.
 
 // ---------------------------------------------------------------------------
 // agent_data texture: 1 texel (RGBA32F) per agent
@@ -16,6 +18,11 @@ render_mode cull_disabled, unshaded;
 
 uniform sampler2D sprite_texture : source_color, filter_nearest;
 uniform float alpha_cutoff : hint_range(0.0, 1.0) = 0.5;
+
+// Shadow from the sun (DirectionalLight3D with shadows on). Colour of the sprite in full
+// shadow, relative to its sunlit colour. receive_shadow off: always as in the sun.
+uniform bool receive_shadow = true;
+uniform vec4 shade_color : source_color = vec4(0.45, 0.48, 0.62, 1.0);
 
 uniform sampler2D agent_data : filter_nearest, repeat_disable;
 uniform int tex_width = 1024;
@@ -38,6 +45,32 @@ uniform int vframes = 1;
 // 0 = life_cycle is directly the column index.
 // > 0 = life_cycle goes from 0 to life_span and is spread across the columns.
 uniform int life_span = 0;
+
+// Several sprites per agent (e.g. moss). The multimesh then has `copies` instances per
+// agent: instance = agent * copies + k. How many are shown grows with the life cycle
+// (1, then 2 from stage_for_2, 3 from stage_for_3); each sits at its own spot around the
+// agent (copy_offset_k, world units x the agent's size) and can be mirrored at random.
+// copies = 1 (default): one sprite per agent, as before.
+uniform int copies = 1;                          // 1 to 3
+uniform int stage_for_2 = 2;
+uniform int stage_for_3 = 4;
+uniform vec2 copy_offset_0 = vec2(0.0, 0.0);
+uniform vec2 copy_offset_1 = vec2(0.3, 0.2);
+uniform vec2 copy_offset_2 = vec2(-0.3, 0.25);
+uniform bool copy_rotate_layout = true;          // turn the layout randomly per agent
+uniform bool copy_random_flip = true;            // mirror some copies (random "orientation")
+uniform bool copy_offsets_with_size = true;      // false: copies stay put as the agent grows
+// Random layout instead of copy_offset_k: each agent gets its own random spots within
+// copy_radius of its centre (spread around it, so copies don't pile up)
+uniform bool copy_random_layout = false;
+uniform float copy_radius = 0.35;                // world units (x size if copy_offsets_with_size)
+uniform bool copy_first_centered = true;         // copy 0 stays on the centre
+
+// Sprite size = sprite_scale (per species, set by the renderer from ALIFE.sprite_scale)
+//             x the agent's size, if scale_sprite_with_size (default)
+// scale_sprite_with_size off (e.g. moss): only sprite_scale, the sprite never grows
+uniform float sprite_scale = 1.0;
+uniform bool scale_sprite_with_size = true;
 
 // Wrap view (set by the renderer's set_wrap_view(): wrap_axes = 0 means off)
 uniform vec3 world_size = vec3(100.0);
@@ -63,6 +96,19 @@ uniform float charge_crouch : hint_range(0.0, 0.5) = 0.25;   // how much it squa
 uniform float dash_stretch : hint_range(0.0, 1.0) = 0.35;
 uniform vec4 recover_tint : source_color = vec4(0.55, 0.55, 0.65, 1.0);
 
+// Damage feedback (written by DamageEffects: a small ring of recent hits per species).
+// HIT_SLOTS must match DamageEffects.SLOTS.
+#define HIT_SLOTS 16
+uniform bool hit_active = false;              // false = no recent hit: skip the loop
+uniform int hit_ids[HIT_SLOTS];               // agent index (-1 = empty slot)
+uniform float hit_start[HIT_SLOTS];           // when it was hit (DamageEffects clock)
+uniform float hit_strength[HIT_SLOTS];        // 0..1
+uniform float hit_now = 0.0;                  // DamageEffects clock, now
+uniform float hit_time = 0.35;                // seconds the effect lasts
+uniform vec4 hit_color : source_color = vec4(1.0, 0.12, 0.08, 1.0);
+uniform float hit_shake = 0.12;               // sideways shake, relative to the sprite width
+uniform float hit_squash : hint_range(0.0, 0.6) = 0.2;
+
 varying flat int state;
 varying flat int action;
 varying flat int life_cycle;
@@ -70,6 +116,8 @@ varying float size;
 varying flat vec3 agent_color;
 varying float is_selected;
 varying flat vec2 frame;      // (column, row) of the current frame
+varying flat float hit_amount;   // 0..1, fades out after a hit
+varying vec3 v_up;               // ground's up (world), used as the normal for lighting
 
 
 // --- Helpers -----------------------------------------------------------------
@@ -133,10 +181,28 @@ float planet_limit() {
 }
 
 
+// 0..1: how hurt this agent looks right now (1 = just hit hard, fades to 0)
+float hit_level(int id) {
+	float h = 0.0;
+	for (int k = 0; k < HIT_SLOTS; k++) {
+		if (hit_ids[k] == id) {
+			float age = hit_now - hit_start[k];
+			if (age >= 0.0 && age < hit_time) {
+				h = max(h, hit_strength[k] * (1.0 - age / hit_time));
+			}
+		}
+	}
+	return h;
+}
+
+
 // --- Vertex ------------------------------------------------------------------
 
 void vertex() {
-	ivec2 px = ivec2(INSTANCE_ID % tex_width, INSTANCE_ID / tex_width);
+	int n_copies = clamp(copies, 1, 3);
+	int agent_id = INSTANCE_ID / n_copies;           // the agent this sprite belongs to
+	int k = INSTANCE_ID % n_copies;                  // which of its copies
+	ivec2 px = ivec2(agent_id % tex_width, agent_id / tex_width);
 	vec4 d = texelFetch(agent_data, px, 0);
 
 	// A: state, action, size, life cycle
@@ -161,15 +227,50 @@ void vertex() {
 	}
 
 	is_selected = 0.0;
+	hit_amount = hit_active ? hit_level(agent_id) : 0.0;
+
+	// Several sprites per agent: how many at this life stage, and where this one sits
+	vec2 copy_off = vec2(0.0);
+	bool copy_hidden = false;
+	if (n_copies > 1) {
+		int shown = 1;
+		if (life_cycle >= stage_for_2) shown = 2;
+		if (life_cycle >= stage_for_3) shown = 3;
+		copy_hidden = k >= min(shown, n_copies);
+		if (copy_random_layout) {
+			if (k == 0 && copy_first_centered) {
+				copy_off = vec2(0.0);
+			} else {
+				// A third of a turn apart (+ some jitter), at a random distance in the radius
+				float a = hash1(agent_id * 7 + 3) * 6.2832 + float(k) * 2.0944
+						+ (hash1(agent_id * 31 + k * 7) - 0.5) * 1.4;
+				float r = copy_radius * mix(0.4, 1.0, hash1(agent_id * 19 + k * 11));
+				copy_off = vec2(cos(a), sin(a)) * r;
+			}
+		} else {
+			copy_off = (k == 0) ? copy_offset_0 : ((k == 1) ? copy_offset_1 : copy_offset_2);
+			if (copy_rotate_layout) {
+				float a = hash1(agent_id * 7 + 3) * 6.2832;
+				copy_off = mat2(vec2(cos(a), sin(a)), vec2(-sin(a), cos(a))) * copy_off;
+			}
+		}
+		if (copy_offsets_with_size) {
+			copy_off *= size;                        // spread out as the agent grows
+		}                                            // else: world units, never move
+		if (copy_random_flip && hash1(INSTANCE_ID * 13 + 5) > 0.5) {
+			UV.x = 1.0 - UV.x;                       // mirrored copy
+		}
+	}
 
 	// Where the agent is drawn: the copy near the view (wrap), bent onto the little planet
-	vec3 flat_pos = nearest_image(MODEL_MATRIX[3].xyz + vec3(d.x, y, d.y), wrap_center);
+	vec3 flat_pos = nearest_image(MODEL_MATRIX[3].xyz + vec3(d.x + copy_off.x, y, d.y + copy_off.y), wrap_center);
 	vec3 up;
 	vec3 agent = curve(flat_pos, up);
+	v_up = up;
 	bool past_horizon = planet_radius > 0.0
 			&& distance(flat_pos.xz, wrap_center.xz) > planet_limit();
 
-	if (state == 0 || INSTANCE_ID == hidden_id || past_horizon) {
+	if (state == 0 || agent_id == hidden_id || past_horizon || copy_hidden) {
 		// FREE slot, first-person agent, or outside the planet's circle: not drawn
 		VERTEX = vec3(0.0);
 	} else {
@@ -215,9 +316,16 @@ void vertex() {
 			VERTEX.y *= 0.85 + 0.05 * breath;
 		}
 
-		VERTEX *= size;
+		// Hit: squashed by the blow, then shaking sideways while it fades
+		if (hit_amount > 0.0) {
+			VERTEX.y *= 1.0 - hit_squash * hit_amount;
+			VERTEX.x *= 1.0 + hit_squash * 0.5 * hit_amount;
+			VERTEX.x += sin(hit_now * 70.0 + float(INSTANCE_ID)) * hit_shake * hit_amount;
+		}
 
-		is_selected = (INSTANCE_ID == selected_id) ? 1.0 : 0.0;
+		VERTEX *= sprite_scale * (scale_sprite_with_size ? size : 1.0);
+
+		is_selected = (agent_id == selected_id) ? 1.0 : 0.0;
 		if (is_selected > 0.5) {
 			vec2 grow = 1.0 + 2.0 * float(outline_px) / frame_px();
 			VERTEX.xy *= grow;
@@ -254,6 +362,12 @@ void fragment() {
 		}
 	}
 
+	// Hit flash: white at the impact, then red, fading out
+	if (hit_amount > 0.0) {
+		vec3 flash = mix(hit_color.rgb, vec3(1.0), smoothstep(0.7, 1.0, hit_amount));
+		base = mix(base, flash, 0.85 * hit_amount);
+	}
+
 	ALBEDO = base;
 	ALPHA = a;
 
@@ -276,4 +390,18 @@ void fragment() {
 	}
 
 	ALPHA_SCISSOR_THRESHOLD = alpha_cutoff;   // hard edges, no sorting issues
+
+	// Shadow: the shaded part is emission, the sun adds the rest (see light())
+	EMISSION = ALBEDO * (receive_shadow ? shade_color.rgb : vec3(1.0));
+	NORMAL = normalize((VIEW_MATRIX * vec4(v_up, 0.0)).xyz);   // flat: no side shading
+	ROUGHNESS = 1.0;
+}
+
+
+// Sun only, no N.L: in the sun = ALBEDO (like unshaded), in shadow = ALBEDO x shade_color.
+// The light's energy and color are ignored on purpose, to keep the pixel-art colors.
+void light() {
+	if (receive_shadow && LIGHT_IS_DIRECTIONAL) {
+		DIFFUSE_LIGHT += (vec3(1.0) - shade_color.rgb) * ATTENUATION;
+	}
 }

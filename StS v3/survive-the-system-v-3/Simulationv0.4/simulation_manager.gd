@@ -31,6 +31,7 @@ func init():
 	#$Visual.init($World,$AlifeManager)
 	#$simulation_UI/PopTracker.init($AlifeManager)
 	running = true
+	#alifemanager.init_default_species(world,alifemanager)
 	DrawSimulation()
 	total_time = 0
 

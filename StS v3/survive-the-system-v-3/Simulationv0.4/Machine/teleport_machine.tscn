@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://caoxvf0edd2sq"]
+
+[ext_resource type="Script" uid="uid://ofm2xt7767ao" path="res://Simulationv0.4/Machine/teleport_machine.gd" id="1_buic3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_buic3"]
+albedo_color = Color(0.17157471, 0.42557824, 0.19181928, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_7gfue"]
+material = SubResource("StandardMaterial3D_buic3")
+top_radius = 3.8
+bottom_radius = 4.0
+height = 0.2
+
+[node name="TP_machine" type="Node3D" unique_id=45674601]
+script = ExtResource("1_buic3")
+machine_name = "Teleport"
+interact_range = 4.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=2063132479]
+mesh = SubResource("CylinderMesh_7gfue")

@@ -41,7 +41,7 @@ uv1_triplanar = true
 
 [node name="SPACE SHIP Kyunsei" unique_id=997132027 instance=ExtResource("1_2rujo")]
 
-[node name="Dispenser " parent="." index="4" unique_id=2050094590]
+[node name="Dispenser " parent="." index="4" unique_id=1784633528]
 surface_material_override/0 = SubResource("StandardMaterial3D_ndadc")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Dispenser " index="0" unique_id=1901389154]
@@ -50,7 +50,7 @@ surface_material_override/0 = SubResource("StandardMaterial3D_ndadc")
 transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, -1.4210855e-14, 0, 1.4210855e-14, 1.0000001, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_byl75")
 
-[node name="Dispenser door" parent="." index="5" unique_id=1153622499]
+[node name="Dispenser door" parent="." index="5" unique_id=1308116005]
 surface_material_override/0 = SubResource("StandardMaterial3D_uanhj")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Dispenser door" index="0" unique_id=1544989947]
@@ -59,10 +59,10 @@ surface_material_override/0 = SubResource("StandardMaterial3D_uanhj")
 transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, -1.4210855e-14, 0, 1.4210855e-14, 1.0000001, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_5jw7v")
 
-[node name="Indoor lights" parent="." index="7" unique_id=491423109]
+[node name="Indoor lights" parent="." index="7" unique_id=54087748]
 surface_material_override/0 = SubResource("StandardMaterial3D_22d5k")
 
-[node name="Ship" parent="." index="9" unique_id=1895867947]
+[node name="Ship" parent="." index="9" unique_id=1029106589]
 surface_material_override/0 = SubResource("StandardMaterial3D_5jw7v")
 surface_material_override/1 = ExtResource("3_5jw7v")
 
@@ -73,17 +73,17 @@ transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, -1.4210855e-14, 0, 1.4210
 transform = Transform3D(0.9999999, 0, 0, 0, 0.9999998, 7.1054274e-15, 0, -7.1054274e-15, 0.9999998, 0, 0, 0)
 shape = SubResource("ConcavePolygonShape3D_2rujo")
 
-[node name="Shutter Front" parent="." index="10" unique_id=1732417114]
+[node name="Shutter Front" parent="." index="10" unique_id=688502407]
 transform = Transform3D(100, 0, 0, 0, -1.1920929e-05, 99.99999, 0, -99.99999, -1.1920929e-05, 0.20000029, 15, 0)
 visible = false
 
-[node name="Thrusters" parent="." index="11" unique_id=478740963]
+[node name="Thrusters" parent="." index="11" unique_id=1275535620]
 surface_material_override/0 = SubResource("StandardMaterial3D_oq6jc")
 
-[node name="Window Back" parent="." index="12" unique_id=375836726]
+[node name="Window Back" parent="." index="12" unique_id=1812095244]
 surface_material_override/0 = ExtResource("3_5jw7v")
 
-[node name="Window Front" parent="." index="13" unique_id=984055474]
+[node name="Window Front" parent="." index="13" unique_id=520932947]
 surface_material_override/0 = ExtResource("3_5jw7v")
 
 [node name="Lights" type="Node3D" parent="." index="15" unique_id=600527771]

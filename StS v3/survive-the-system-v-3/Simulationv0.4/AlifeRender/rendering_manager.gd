@@ -5,6 +5,8 @@ class_name AlifeRendererManager
 
 @export var alifemanager : AlifeManager
 @export var world : WorldManager
+@export var sun: DirectionalLight3D
+
 
 
 #var activated := true
@@ -35,6 +37,9 @@ var activated := true
 #init part -------------------------------------------
 
 func init():
+	if sun:
+		sun.shadow_enabled = true
+
 	entity_count = 0
 	renderer_count = 0
 	nThread_max = OS.get_processor_count()
@@ -48,7 +53,8 @@ func init():
 
 func init_renderer():
 	for c in get_children():
-		c.queue_free()
+		if c is AlifeRenderer3D:
+			c.queue_free()
 	for s in alifemanager.species_array:
 		s.rend_data = AlifeRenderingData.new()
 		s.rend_data.resize(s.entity_count)	
@@ -87,10 +93,10 @@ func start_write_rendering_buffer():
 	#RESIZE CHUNK and renderdata and multimesh
 	for s in alifemanager.species_array:
 		entity_count += s.entity_count
-		s.rend_data.resize(entity_count)
+		s.rend_data.resize(s.entity_count)
 		s.renderer2D.ensure_instances2D(s.entity_count)
 		s.renderer3D.ensure_instances3D(s.entity_count)
-		s
+		
 
 	renderer_count = alifemanager.species_array.size() #TODO move renderer in visualisation
 	#setup thread/chunk/jobs

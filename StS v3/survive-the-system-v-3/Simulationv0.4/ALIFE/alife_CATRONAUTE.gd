@@ -122,15 +122,15 @@ func run_chunk_simulation( start: int, end: int,local_id:int, dt: float, sim_spe
 		if i == player_index:
 			new_v = player_velocity # player-controlled: the AI is ignored
 			new_v.y = _player_vertical(position_array[i].y, dt*sim_speed)  # jump + gravity
-
+			
 			#new_v = new_v.limit_length(max_speed)
-		if p.y > 0 : new_v.y -=0.8
+		if p.y > ground_y : new_v.y -=0.8
 		new_velocity[i] = new_v
 	#--------maintain cost
 		_energy += -0.5 *  dt * sim_speed  # - (side * side - side) *dt #* active_alife_array[i]
 		
 	#--------DEATH
-		if _energy < 0 :
+		if _energy < 0 or current_health[i] <0 :
 			alive_array[i] = 0
 			
 

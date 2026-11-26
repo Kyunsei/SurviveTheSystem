@@ -85,7 +85,9 @@ func init():
 	global_species_offset = []
 	global_active = []
 	init_GRID(world.size)
-	init_default_species(world,self)
+	init_species_from_codex(world,self)
+
+	#init_default_species(world,self)
 	
 
 
@@ -127,13 +129,33 @@ func run_simulation(dt: float, sim_speed: float):
 
 
 func start_simulation(dt: float, sim_speed: float):
-	#update 
+	_prepare_tick()
+	_start_species(species_array, dt, sim_speed)
+
+
+## Tick, first half (split mode): grid, fields, and the first group of species.
+func run_tick_first_half(dt: float, sim_speed: float) -> void:
+	build_grid(global_position_array, global_active)
+	_prepare_tick()
+	_split_species()
+	_start_species(_group_a, dt, sim_speed)
+	wait_simulation()
+
+
+## Tick, second half (split mode): the other species, then births / removals / carrying.
+func run_tick_second_half(dt: float, sim_speed: float) -> void:
+	_start_species(_group_b, dt, sim_speed)
+	wait_simulation()
+	update_alife()
+
+
+## Counts, mouse, scent fields: before any species runs.
+func _prepare_tick() -> void:
 	var m := get_viewport().get_mouse_position()
 	var mouse := Vector3(m.x, 0.0, m.y)
-	
+
 	#COUNT NEW NUMBER OF ENTITY 
 	#UPDATE BEFORE RUNING FOR EACH SPECIES 
-	#TODO maybe move this 5 lines in new function for clarity
 	global_entity_count = 0
 	global_active_entity_count = 0
 
@@ -143,12 +165,34 @@ func start_simulation(dt: float, sim_speed: float):
 
 		s.mouse_target =  mouse
 		s.build_field() #TODO call in thread?
-	
 
+
+## Two groups of species with about the same number of agents each (biggest first).
+var _group_a: Array[ALIFE] = []
+var _group_b: Array[ALIFE] = []
+
+func _split_species() -> void:
+	var order := species_array.duplicate()
+	order.sort_custom(func(a, b): return a.entity_count > b.entity_count)
+	_group_a.clear()
+	_group_b.clear()
+	var load_a := 0
+	var load_b := 0
+	for s in order:
+		if load_a <= load_b:
+			_group_a.append(s)
+			load_a += s.entity_count
+		else:
+			_group_b.append(s)
+			load_b += s.entity_count
+
+
+## Starts the chunks of these species on the worker threads (wait_simulation() waits).
+func _start_species(list: Array, dt: float, sim_speed: float) -> void:
 	#setup thread/chunk/jobs
 	jobs.clear()
 	chunk_size = compute_chunk(global_entity_count) #need full entity count to work
-	for s in species_array:
+	for s in list:
 		var local_id:= 0
 		var n: int = s.entity_count
 		for start in range(0, n, chunk_size):
@@ -186,6 +230,7 @@ func update_alife() -> void:
 	for si in species_count:
 		var sp: ALIFE = species_array[si] #TODO CHANGE TYPE HERE
 		sp.Build_and_remove_pendings()
+		_ensure_carry_arrays(sp)                 # new lives: grow holding / held_by / facing
 
 		assert(sp.position_array.size() == sp.entity_count)
 		assert(sp.active_alife_array.size() == sp.entity_count)
@@ -233,15 +278,26 @@ func Release_all_alife():
 
 
 func init_default_species(worldd:WorldManager,alifem:AlifeManager):	
-	init_species_from_codex(worldd,alifem)
-	
-	SpawnRandomAlife(0,30000) #GRASS
-	SpawnRandomAlife(1,10) #TREE
-	SpawnRandomAlife(2,1000) #clovermoss
-	#SpawnRandomAlife(3,10) #glowberry
-	#SpawnRandomAlife(4,3) #spikyflower
-	SpawnRandomAlife(5,30) #bugsheep 
+	SpawnRandomAlife(3,10,2000,4) #glowberry
+	SpawnRandomAlife(1,3) #TREE
+	sim_manager.set_simulation_speed(5000)
+	await get_tree().create_timer(.5).timeout
+	sim_manager.set_simulation_speed(100)
+	SpawnRandomAlife(0,3000,100,2) #GRASS
+	await get_tree().create_timer(3.0).timeout
+	#sim_manager.set_simulation_speed(10)
+	SpawnRandomAlife(2,1000,100,2) #clovermoss
+	#await get_tree().create_timer(10.0).timeout
+	#sim_manager.set_simulation_speed(5)
+	await get_tree().create_timer(2.0).timeout
+	SpawnRandomAlife(5,20,1000,2) #bugsheep 
 	SpawnRandomAlife(6,1) #spidercrab
+	sim_manager.set_simulation_speed(1)
+	print("finished")
+
+	#SpawnRandomAlife(4,3) #spikyflower
+
+	#SpawnRandomAlife(6,1) #spidercrab
 
 
 
@@ -254,13 +310,16 @@ func init_species_from_codex(worldd:WorldManager,alifem:AlifeManager):
 
 
 
-func SpawnRandomAlife(alifeID : int, nb:int):
+func SpawnRandomAlife(alifeID : int, nb:int, e:float=0.0, lc:int=0.0):
 	var Alife := species_array[alifeID]
 	for n in nb:# 100:
 		var pos :Vector3= Alife.pick_random_position(Vector3(world.size.x/2,0,world.size.z/2),
 											Vector3(world.size.x/2,0,world.size.z/2))
 		#var energy := randf_range(0,5)
-		Alife.Build_New_Life(pos)
+		if e == 0:
+			e = Alife.seed_energy
+			print(e)
+		Alife.Build_New_Life(pos,e,lc)
 
 
 #Contact GRID-------------------------------------------------------------------------------------------
@@ -275,18 +334,23 @@ func build_grid(positions: PackedVector3Array, active: PackedInt32Array) -> void
 	sorted_pos.resize(n)
 	cell_start.fill(0)
 
+	# Cells are numbered in 3D, like every reader of the grid
+	# (find_nearest, picker, neighbours, food search, attack box):
+	#   cell = x + GRID_W * (y + GRID_H * z)
 	var inv := Vector3.ONE / cell_size
 	var last_x := GRID_W - 1
+	var last_y := GRID_H - 1
 	var last_z := GRID_D - 1
 
-	# 1. Cell id + count per cell (inactive agents skipped)
-	#Can be moved in multihtread
+	# 1. Cell id + count per cell (pooled agents skipped; held / thrown ones are in)
 	for i in n:
 		if active[i] == 0:
 			current_cell_id[i] = -1
 			continue
 		var p := positions[i]
-		var c :int = clampi(int(p.x * inv.x), 0, last_x) + GRID_W * clampi(int(p.z * inv.z), 0, last_z)		
+		var c: int = clampi(int(p.x * inv.x), 0, last_x) \
+				+ GRID_W * (clampi(int(p.y * inv.y), 0, last_y) \
+				+ GRID_H * clampi(int(p.z * inv.z), 0, last_z))
 		current_cell_id[i] = c
 		cell_start[c + 1] += 1
 
@@ -326,7 +390,8 @@ func set_field_cell(key: String, value:float):
 		sp._init_field_grid()
 	sim_manager.set_simulation_speed(c_speed)
 
-## Local index -> global id
+## Local index -> global id (contact grid ids, find_nearest...)
+## Only valid for the current tick: offsets move when a species grows.
 func g_id(sp, i: int) -> int:
 	return global_species_offset[species_array.find(sp)] + i
 
@@ -336,93 +401,176 @@ func split_id(id: int) -> Array:
 	var s :=  global_species_offset.bsearch(id, false) - 1
 	return [ species_array[s], id -  global_species_offset[s]]
 
-	
+
+#Carry-------------------------------------------------------------------------------------------
+# One agent (the carrier) holds another (the item). The link is stored on both sides:
+#   carrier_sp.holding[carrier] = carry id of the item     (-1 = empty hands)
+#   item_sp.held_by[item]       = carry id of the carrier  (-1 = not carried)
+# Carry ids pack (species_id, local index) in one int. Unlike global ids they never
+# change: global_species_offset moves every time a species earlier in the list grows.
+#
+# States in active_alife_array: 0 pool, 1 in the world, 2 held, 4 flying (thrown).
+# The species simulation must only move / run AI for agents in state ACTIVE (1),
+# and the renderer should still draw states 2 and 4.
 
 const ACTIVE := 1
 const HELD := 2
 const FLYING := 4
 
-var carriers: Array[int] = []                    # global ids of agents carrying something
+const CARRY_SHIFT := 20                          # up to ~1 million agents per species
+const CARRY_MASK := (1 << CARRY_SHIFT) - 1
+
+@export var carry_forward := 0.5                 # how far in front of the carrier (x its height)
+@export var carry_height := 0.5                  # how high (fraction of the carrier's height)
+
+var carriers: Array[int] = []                    # carry ids of agents carrying something
 
 
-func pick_up(c_sp, c: int, i_sp, i: int) -> bool:
-	#c = carrier
-	if c_sp.holding[c] != -1 or i_sp.active_alife_array[i] != ACTIVE:
-		return false     
-								# hands full, or item not free in the world
-	c_sp.holding[c] = g_id(i_sp, i)
-	i_sp.held_by[i] = g_id(c_sp, c)
-	i_sp.Stock_Life(i)
-	#i_sp.active_alife_array[i] = HELD                         # simulation stops moving / colliding it
-	carriers.append(g_id(c_sp, c))
+## Local index -> carry id (stable)
+func cid(sp, i: int) -> int:
+	return (sp.species_id << CARRY_SHIFT) | i
+
+
+## Carry id -> [species, local index]
+func split_cid(id: int) -> Array:
+	return [species_array[id >> CARRY_SHIFT], id & CARRY_MASK]
+
+
+## The carrier picks up the item. False if its hands are full or the item isn't free.
+func pick_up(carrier_sp, carrier: int, item_sp, item: int) -> bool:
+	if carrier_sp == item_sp and carrier == item:
+		return false                             # can't carry yourself
+	if carrier_sp.holding[carrier] != -1 or item_sp.active_alife_array[item] != ACTIVE:
+		return false                             # hands full, or item not free in the world
+	carrier_sp.holding[carrier] = cid(item_sp, item)
+	item_sp.held_by[item] = cid(carrier_sp, carrier)
+	item_sp.Stock_Life(item)                     # your own "leave the world" logic
+	item_sp.active_alife_array[item] = HELD      # then marked held: out of the grid and the
+												 # simulation, and update_carried knows it's carried
+	carriers.append(cid(carrier_sp, carrier))
 	return true
 
 
-func drop(c_sp, c: int, at: Vector3) -> void:
-	var item: int = c_sp.holding[c]
-	if item == -1:
-		return
-	var t := split_id(item)
-	t[0].held_by[t[1]] = -1
-	t[0].Release_Life(t[1])
-	#t[0].active_alife_array[t[1]] = ACTIVE
-	t[0].position_array[t[1]] = at
-	c_sp.holding[c] = -1
-	carriers.erase(g_id(c_sp, c))
+## Put the carried item back in the world at `at`.
+func drop(carrier_sp, carrier: int, at: Vector3) -> void:
+	var t := _let_go(carrier_sp, carrier)
+	if not t.is_empty():
+		land(t[0], t[1], at)
 
 
-## Call from Remove_Life and on death
-func unlink(sp, i: int) -> void:
-	if sp.holding[i] != -1:                      # I carried something: it falls here
-		drop(sp, i, sp.position_array[i])
-	var c: int = sp.held_by[i]
-	if c != -1:                                  # I was carried: free my carrier's hands
-		var t := split_id(c)
-		t[0].holding[t[1]] = -1
-		carriers.erase(c)
-		sp.held_by[i] = -1
-
-
-## Once per tick, AFTER the movement pass
-func update_carried() -> void:
-	for c in carriers:
-		var t := split_id(c)
-		var item := split_id(t[0].holding[t[1]])
-		item[0].position_array[item[1]] = carry_position(t[0], t[1])
-
-
-## In front of the carrier (its movement direction), at half its height
-func carry_position(sp, i: int) -> Vector3:
-	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
-	var h := maxf(q.y * sp.current_size[i], 0.2)
-	var v: Vector3 = sp.current_velocity[i]
-	v.y = 0.0
-	var fwd := v.normalized() if v.length_squared() > 1e-6 else Vector3.FORWARD
-	var p: Vector3 = sp.position_array[i] + fwd * 0.5 * h + Vector3.UP * 0.5 * h
-	return WorldWrap.wrap_into(p)
-	
-	
 ## Let go of the carried item without putting it back in the world (throws).
 ## Returns [species, local index] of the item, or [] if the hands were empty.
-func release_flying(c_sp, c: int) -> Array:
-	var t := _let_go(c_sp, c)
+func release_flying(carrier_sp, carrier: int) -> Array:
+	var t := _let_go(carrier_sp, carrier)
 	if not t.is_empty():
 		t[0].active_alife_array[t[1]] = FLYING
 	return t
 
 
-## A thrown item touches the ground: back in the world.
+## A thrown (or dropped) item is back in the world.
 func land(sp, i: int, at: Vector3) -> void:
+	sp.position_array[i] = keep_in_world(at)
+	sp.Release_Life(i)                           # your own "back in the world" logic
 	sp.active_alife_array[i] = ACTIVE
-	sp.position_array[i] = at
 
 
-func _let_go(c_sp, c: int) -> Array:
-	var item: int = c_sp.holding[c]
+func _let_go(carrier_sp, carrier: int) -> Array:
+	var item: int = carrier_sp.holding[carrier]
 	if item == -1:
 		return []
-	var t := split_id(item)
+	var t := split_cid(item)
 	t[0].held_by[t[1]] = -1
-	c_sp.holding[c] = -1
-	carriers.erase(g_id(c_sp, c))
+	carrier_sp.holding[carrier] = -1
+	carriers.erase(cid(carrier_sp, carrier))
 	return t
+
+
+## Breaks every link of this agent. Call it before removing an agent
+## (update_carried also cleans up on its own if you forget).
+func unlink(sp, i: int) -> void:
+	if sp.holding[i] != -1:                      # I carried something: it falls here
+		drop(sp, i, sp.position_array[i])
+	var c: int = sp.held_by[i]
+	if c != -1:                                  # I was carried: free my carrier's hands
+		var t := split_cid(c)
+		if t[0].holding[t[1]] == cid(sp, i):
+			t[0].holding[t[1]] = -1
+			carriers.erase(c)
+		sp.held_by[i] = -1
+
+
+## Once per tick, after the simulation: carried items follow their carrier.
+## Also cleans up links broken by deaths and removals.
+func update_carried() -> void:
+	for c in carriers.duplicate():
+		var t := split_cid(c)
+		var c_sp = t[0]
+		var ci: int = t[1]
+		var item_id: int = c_sp.holding[ci]
+		if item_id == -1:
+			carriers.erase(c)                    # hands emptied elsewhere
+			continue
+
+		var it := split_cid(item_id)
+		var i_sp = it[0]
+		var ii: int = it[1]
+		if i_sp.active_alife_array[ii] != HELD:
+			# The item was removed (or its slot reused) while carried: forget it
+			c_sp.holding[ci] = -1
+			if i_sp.held_by[ii] == c:
+				i_sp.held_by[ii] = -1
+			carriers.erase(c)
+			continue
+
+		if c_sp.active_alife_array[ci] != ACTIVE or c_sp.alive_array[ci] == 0:
+			drop(c_sp, ci, c_sp.position_array[ci])   # carrier removed or dead: item falls
+			continue
+
+		i_sp.position_array[ii] = carry_position(c_sp, ci)
+
+
+## In front of the carrier, at a fraction of its height.
+## Direction: the species' `facing` array if it has one, else where it moves.
+func carry_position(sp, i: int) -> Vector3:
+	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
+	var h := maxf(q.y * sp.current_size[i], 0.2)
+	var fwd := Vector3.ZERO
+	if "facing" in sp:
+		fwd = sp.facing[i]
+	if fwd.length_squared() < 1e-6:
+		fwd = sp.current_velocity[i]
+	fwd.y = 0.0
+	fwd = fwd.normalized() if fwd.length_squared() > 1e-6 else Vector3.FORWARD
+	var p: Vector3 = sp.position_array[i] + fwd * carry_forward * h + Vector3.UP * h * carry_height
+	return WorldWrap.wrap_into(p)                # stays inside the world near a border
+
+
+## Brings a position back inside the world: wrapped on WRAP borders, clamped on walls.
+func keep_in_world(p: Vector3) -> Vector3:
+	var s: Vector3 = world.size
+	p.x = fposmod(p.x, s.x) if world.border_type_x == world.Border.WRAP else clampf(p.x, 0.0, s.x)
+	p.y = fposmod(p.y, s.y) if world.border_type_y == world.Border.WRAP else clampf(p.y, 0.0, s.y)
+	p.z = fposmod(p.z, s.z) if world.border_type_z == world.Border.WRAP else clampf(p.z, 0.0, s.z)
+	return p
+
+
+## Keeps holding / held_by (and facing, if the species has it) as long as the species'
+## arrays: new lives get -1 (nothing carried, not carried).
+func _ensure_carry_arrays(sp) -> void:
+	var n: int = sp.entity_count
+	if sp.holding.size() != n:
+		sp.holding = _grow_ints(sp.holding, n)   # packed arrays are copies: assign back
+	if sp.held_by.size() != n:
+		sp.held_by = _grow_ints(sp.held_by, n)
+	if "facing" in sp and sp.facing.size() != n:
+		var f: PackedVector3Array = sp.facing
+		f.resize(n)                              # new entries are Vector3.ZERO
+		sp.facing = f
+
+
+func _grow_ints(arr: PackedInt32Array, n: int) -> PackedInt32Array:
+	var old := arr.size()
+	arr.resize(n)
+	for k in range(old, n):
+		arr[k] = -1
+	return arr
