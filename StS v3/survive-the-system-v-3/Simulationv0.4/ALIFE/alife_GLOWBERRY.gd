@@ -127,10 +127,8 @@ func harvest(i: int, carrier_sp: ALIFE = null, carrier: int = -1) -> bool:
 	Build_New_Life(at, seed_energy,0, current_color[i])
 	if active_entity_count == count_before:
 		return false                             # world full (maxLife): no berry
-
 	current_life_state[i] -= 1                  # the bush ripens again later
-	current_energy_array[i] -= seed_energy
-	print(current_life_state[i])
+	current_energy_array[i] -= 1000
 	# Straight into the hand; if it fails (hands full), it just stays on the ground
 	if carrier_sp != null and carrier >= 0:
 		alifemanager.pick_up(carrier_sp, carrier, self, j)

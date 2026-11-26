@@ -11,13 +11,13 @@ signal toggled(i: int, on: bool)                    # e.g. sounds / animations
 signal sucked(i: int, sp: ALIFE, j: int)
 
 #VACUUM (set in _init)
-var suck_range := 2.0                # how far in front it reaches
-var suck_angle_deg := 45.0           # half-angle of the cone
+var suck_range := 4.0                # how far in front it reaches
+var suck_angle_deg := 60.0           # half-angle of the cone
 var suck_interval := 0.15            # seconds between two sucks
-var max_per_suck := 3                # agents per suck
+var max_per_suck := 10                # agents per suck
 var capacity := 500                   # agents the tank holds (-1 = endless)
 var max_durability := 100.0
-var durability_per_suck := 0.33      # lost per agent sucked
+var durability_per_suck := 0.0# 0.33      # lost per agent sucked
 var ignore_species: Array[String] = ["CATRONAUTE", "VACUUM"]   # never sucked
 var suck_dead := true                # corpses too
 var only_carriable := true           # respects the species' can_be_carried (no grown trees)

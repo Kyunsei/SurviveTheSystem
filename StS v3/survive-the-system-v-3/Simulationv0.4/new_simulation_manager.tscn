@@ -16,6 +16,8 @@
 [ext_resource type="Script" uid="uid://cbbycsjug3oy0" path="res://Simulationv0.4/held_scene_manager.gd" id="9_ueuv1"]
 [ext_resource type="PackedScene" uid="uid://caoxvf0edd2sq" path="res://Simulationv0.4/Machine/teleport_machine.tscn" id="11_23ro3"]
 [ext_resource type="Script" uid="uid://ckvt014hdkps8" path="res://Simulationv0.4/player_control.gd" id="12_qijgx"]
+[ext_resource type="PackedScene" uid="uid://np3kssy27l53" path="res://Simulationv0.4/Machine/machine_collector.tscn" id="13_8rlw2"]
+[ext_resource type="PackedScene" uid="uid://bcgucsk1xjnrv" path="res://Simulationv0.4/Machine/machine_shop.tscn" id="14_rqu2l"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_buic3"]
 albedo_color = Color(0.56125396, 0.060397826, 0.65282387, 1)
@@ -31,14 +33,6 @@ albedo_color = Color(0, 0.6806177, 0.6413741, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_qijgx"]
 material = SubResource("StandardMaterial3D_qijgx")
-radius = 5.0
-height = 10.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_55kx7"]
-albedo_color = Color(0.79811704, 0.47722888, 0.6124339, 1)
-
-[sub_resource type="SphereMesh" id="SphereMesh_23ro3"]
-material = SubResource("StandardMaterial3D_55kx7")
 radius = 5.0
 height = 10.0
 
@@ -118,20 +112,19 @@ interact_range = 5.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 mesh = SubResource("SphereMesh_qijgx")
 
-[node name="TEST2" type="Node3D" parent="ArtefactManager" unique_id=901707218]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-script = ExtResource("9_qijgx")
-interact_range = 5.0
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="ArtefactManager/TEST2" unique_id=1000109455]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
-mesh = SubResource("SphereMesh_23ro3")
+[node name="collector" parent="ArtefactManager" unique_id=496319087 instance=ExtResource("13_8rlw2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 140, 1, 120)
+factor = 1.0
+interact_range = 8.0
 
 [node name="TP_machine2" parent="ArtefactManager" unique_id=827798690 instance=ExtResource("11_23ro3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 1, 120)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 1, 120)
 tp_pos = Vector3(120, 22, 120)
 new_ground = 21.0
 interact_range = 5.0
+
+[node name="machine_shop" parent="ArtefactManager" unique_id=1575499750 instance=ExtResource("14_rqu2l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0, 130)
 
 [node name="Control" type="Node" parent="." unique_id=344251585]
 

@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://bcgucsk1xjnrv"]
+
+[ext_resource type="Script" uid="uid://65w263wl7y0c" path="res://Simulationv0.4/Machine/machine_shop.gd" id="1_mpexx"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_mpexx"]
+size = Vector3(1, 4, 1)
+
+[node name="machine_shop" type="Node3D" unique_id=1575499750]
+script = ExtResource("1_mpexx")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=917662480]
+mesh = SubResource("BoxMesh_mpexx")

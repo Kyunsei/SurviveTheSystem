@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://np3kssy27l53"]
+
+[ext_resource type="Script" uid="uid://p05u16067bwd" path="res://Simulationv0.4/Machine/machine_collector.gd" id="1_nmnwv"]
+[ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="2_py3nu"]
+[ext_resource type="Texture2D" uid="uid://ckj205v7mv1kx" path="res://assets/assets kyun/stripe_collector.png" id="3_6m6nh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r5pjn"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 1
+albedo_color = Color(0.31764707, 0.8745098, 0.84313726, 0.20392157)
+albedo_texture = ExtResource("2_py3nu")
+roughness = 0.1
+backlight_enabled = true
+backlight = Color(0.8862616, 0.88626146, 0.8862615, 1)
+refraction_enabled = true
+uv1_scale = Vector3(2.7, 2, 2.7)
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_kfdt6"]
+material = SubResource("StandardMaterial3D_r5pjn")
+size = Vector3(3, 8, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v7jog"]
+albedo_texture = ExtResource("2_py3nu")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_6jxyh"]
+material = SubResource("StandardMaterial3D_v7jog")
+size = Vector3(8, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hiybh"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 2
+albedo_texture = ExtResource("3_6m6nh")
+uv1_scale = Vector3(0.1, 2.01, 0.1)
+uv1_triplanar = true
+texture_filter = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_g0nff"]
+material = SubResource("StandardMaterial3D_hiybh")
+size = Vector3(1.6, 4.1, 1.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sgtir"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 1
+albedo_color = Color(0.31764707, 0.8745098, 0.84313726, 0.20392157)
+albedo_texture = ExtResource("2_py3nu")
+roughness = 0.1
+backlight_enabled = true
+backlight = Color(0.8862616, 0.88626146, 0.8862615, 1)
+refraction_enabled = true
+uv1_scale = Vector3(2.7, 2, 2.7)
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="BoxMesh" id="BoxMesh_ryxjr"]
+material = SubResource("StandardMaterial3D_sgtir")
+size = Vector3(3, 8, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cbb5h"]
+albedo_texture = ExtResource("2_py3nu")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_bhxvg"]
+material = SubResource("StandardMaterial3D_cbb5h")
+size = Vector3(8, 0.5, 8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dwx45"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+albedo_color = Color(0.33333334, 0.73333335, 0.4745098, 0.53333336)
+
+[sub_resource type="BoxMesh" id="BoxMesh_py3nu"]
+material = SubResource("StandardMaterial3D_dwx45")
+size = Vector3(2.8, 7.8, 2.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_84hyi"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.30800003)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6m6nh"]
+material = SubResource("StandardMaterial3D_84hyi")
+size = Vector3(3.6, 0.6, 0.1)
+
+[node name="collector" type="Node3D" unique_id=496319087]
+script = ExtResource("1_nmnwv")
+
+[node name="Collectormesh" type="MeshInstance3D" parent="." unique_id=1055898094]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.27, 0)
+layers = 2
+mesh = SubResource("BoxMesh_kfdt6")
+
+[node name="Platform" type="MeshInstance3D" parent="." unique_id=673966283]
+mesh = SubResource("BoxMesh_6jxyh")
+
+[node name="grid_exterior" type="MeshInstance3D" parent="." unique_id=2048526772]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0000002, 0)
+visible = false
+mesh = SubResource("BoxMesh_g0nff")
+
+[node name="Collectormesh2" type="MeshInstance3D" parent="." unique_id=932986871]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.27, 0)
+layers = 2
+mesh = SubResource("BoxMesh_ryxjr")
+
+[node name="Platform2" type="MeshInstance3D" parent="." unique_id=423196398]
+mesh = SubResource("BoxMesh_bhxvg")
+
+[node name="InsideMesh" type="MeshInstance3D" parent="." unique_id=80171174]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0000002, 0)
+mesh = SubResource("BoxMesh_py3nu")
+
+[node name="sign" type="MeshInstance3D" parent="." unique_id=417272921]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.1999998, 4.5)
+mesh = SubResource("BoxMesh_6m6nh")
+
+[node name="signlabel" type="Label3D" parent="sign" unique_id=1477266756]
+text = "Next Reward at 1000 Biomass"
+font_size = 48
+outline_size = 16
+
+[node name="collected_amount_Label3D" type="Label3D" parent="." unique_id=370920845]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.051, 0.3, 1.8)
+text = "etetretetetetete"
+font_size = 100
