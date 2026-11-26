@@ -4,8 +4,8 @@ class_name WorldManager
 @export var controller : PlayerController
 #------------Planete General
 var size : Vector3
-var default_size = Vector3(180,60,180) 
-#var default_size = Vector3(240,60,240)
+#var default_size = Vector3(180,60,180) 
+var default_size = Vector3(240,60,240)
 #var default_size = Vector3(340,60,340) 
 
 
