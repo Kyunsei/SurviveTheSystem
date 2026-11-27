@@ -434,6 +434,8 @@ func pick_up(carrier_sp, carrier: int, item_sp, item: int) -> bool:
 	item_sp.active_alife_array[item] = HELD      # then marked held: out of the grid and the
 												 # simulation, and update_carried knows it's carried
 	carriers.append(cid(carrier_sp, carrier))
+	print("pickup")
+
 	return true
 
 
@@ -448,6 +450,7 @@ func drop(carrier_sp, carrier: int, at: Vector3) -> void:
 	var t := _let_go(carrier_sp, carrier)
 	if not t.is_empty():
 		land(t[0], t[1], at)
+	#print("drop")
 
 
 ## Let go of the carried item without putting it back in the world (throws).
@@ -456,6 +459,8 @@ func release_flying(carrier_sp, carrier: int) -> Array:
 	var t := _let_go(carrier_sp, carrier)
 	if not t.is_empty():
 		t[0].active_alife_array[t[1]] = FLYING
+	#print("release flying")
+
 	return t
 
 
@@ -464,9 +469,12 @@ func land(sp, i: int, at: Vector3) -> void:
 	sp.position_array[i] = keep_in_world(at)
 	sp.Release_Life(i)                           # your own "back in the world" logic
 	sp.active_alife_array[i] = ACTIVE
+	#print("land")
 
 
 func _let_go(carrier_sp, carrier: int) -> Array:
+	#print("let go")
+
 	var item: int = carrier_sp.holding[carrier]
 	if item == -1:
 		return []
@@ -489,7 +497,7 @@ func unlink(sp, i: int) -> void:
 			t[0].holding[t[1]] = -1
 			carriers.erase(c)
 		sp.held_by[i] = -1
-
+	#print("unlink")
 
 ## Once per tick, after the simulation: carried items follow their carrier.
 ## Also cleans up links broken by deaths and removals.
@@ -519,7 +527,7 @@ func update_carried() -> void:
 			continue
 
 		i_sp.position_array[ii] = carry_position(c_sp, ci)
-
+		#print(i_sp.position_array[ii])
 
 ## In front of the carrier, at a fraction of its height.
 ## Direction: the species' `facing` array if it has one, else where it moves.

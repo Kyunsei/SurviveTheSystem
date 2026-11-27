@@ -86,7 +86,7 @@ func _process(delta: float) -> void:
 		alife_usec = 0.0
 
 		while _accum >= 1.0 and ticks < max_ticks_per_frame:
-			_tick()
+			_tick(delta)
 			_accum -= 1.0
 			ticks += 1
 			if Time.get_ticks_usec() - frame_start > budget_usec:
@@ -122,12 +122,12 @@ func _process(delta: float) -> void:
 ##   dt * sim_speed   = simulated time: metabolism
 ##   real_time        = wall clock (above): timers that must last fixed real seconds
 ## The frame's delta is never passed in: a frame runs 0..n ticks, so it means nothing per tick.
-func _tick() -> void:
+func _tick(delta) -> void:
 	var tick_time := 1.0 / ticks_per_second
 	var t0 := Time.get_ticks_usec()
-	world.run_world_simulation(tick_time, dt, simulation_speed)
+	world.run_world_simulation(delta, dt, simulation_speed)
 	var t1 := Time.get_ticks_usec()
-	alifemanager.run_simulation(tick_time, dt, simulation_speed)
+	alifemanager.run_simulation(delta, dt, simulation_speed)
 	var t2 := Time.get_ticks_usec()
 	world_usec += t1 - t0
 	alife_usec += t2 - t1

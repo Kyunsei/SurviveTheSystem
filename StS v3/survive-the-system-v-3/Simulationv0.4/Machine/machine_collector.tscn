@@ -115,11 +115,11 @@ mesh = SubResource("BoxMesh_ryxjr")
 mesh = SubResource("BoxMesh_bhxvg")
 
 [node name="InsideMesh" type="MeshInstance3D" parent="." unique_id=80171174]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0000002, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2771235, 0)
 mesh = SubResource("BoxMesh_py3nu")
 
 [node name="sign" type="MeshInstance3D" parent="." unique_id=417272921]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.1999998, 4.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.54967403, 4.5)
 mesh = SubResource("BoxMesh_6m6nh")
 
 [node name="signlabel" type="Label3D" parent="sign" unique_id=1477266756]
@@ -128,6 +128,6 @@ font_size = 48
 outline_size = 16
 
 [node name="collected_amount_Label3D" type="Label3D" parent="." unique_id=370920845]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.051, 0.3, 1.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.051, 0.5757039, 1.8)
 text = "etetretetetetete"
 font_size = 100

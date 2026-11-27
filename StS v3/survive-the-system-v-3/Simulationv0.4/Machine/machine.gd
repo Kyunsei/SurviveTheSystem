@@ -15,6 +15,7 @@ signal started
 signal stopped
 signal fed(species, index: int, energy_gained: float)
 
+@export var follow_view := true
 @export var machine_name := "Machine"
 @export var energy := 0.0
 @export var max_energy := 100.0
@@ -110,7 +111,8 @@ func status_text() -> String:
 # --- Running -----------------------------------------------------------------------
 
 func _process(delta: float) -> void:
-	_follow_view()
+	if follow_view:
+		_follow_view()
 	if not running:
 		return
 	var used := minf(consumption * delta, energy)

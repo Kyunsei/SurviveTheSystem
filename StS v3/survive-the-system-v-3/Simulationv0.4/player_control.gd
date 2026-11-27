@@ -413,7 +413,9 @@ func set_control_view(view: ControlView) -> void:
 ## Little planet: on while controlling (where the endless ground is shown), flat otherwise.
 ## Needs the `planet_radius` Shader Global (float) in the Project Settings.
 func _update_planet() -> void:
-	planet_radius = WorldWrap.size.x/2
+	planet_radius = WorldWrap.size.x/4
+	var r_planet := sqrt( WorldWrap.size.x * WorldWrap.size.z / (4* PI))
+	planet_radius = r_planet
 	var r := planet_radius if is_controlling() else 0.0
 	if r == WorldWrap.planet_radius:
 		return

@@ -15,7 +15,7 @@ extends Machine
 signal credits_changed(credits: float)
 signal bought(species_name: String, price: int)
 
-static var credits := 0.0                     # the bank, shared by every shop
+static var credits := 4000.0                     # the bank, shared by every shop
 
 @export var catalog := {"CAT_RATION":10, "VACUUM": 50, "GOLD_VACUUM": 1000, "SEEDBAG": 10,
 "CLAWS": 0, "POWER_FRUIT":0}
@@ -34,6 +34,7 @@ func _ready() -> void:
 	machine_name = machine_name if machine_name != "Machine" else "Shop"
 	super()
 	_build_menu()
+
 
 
 # --- Machine overrides -------------------------------------------------------------

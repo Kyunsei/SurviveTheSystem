@@ -249,7 +249,7 @@ var player_air_time := 0.0         # time since leaving the ground (coyote time)
 
 @export_group("JUMP")
 @export var jump_height := 8.0
-@export var time_to_jump_apex := 1.5
+@export var time_to_jump_apex := 2.5
 @export var fall_multiplier := 2.0        # falls faster than it rises
 @export var low_jump_multiplier := 2.5    # key released early: shorter jump
 @export var coyote_time := 0.12
@@ -320,6 +320,7 @@ func _init_alife_par():
 	current_energy_array = [] 
 	current_velocity = []
 	new_velocity = []
+	facing = []
 	current_health = []
 	current_max_health = []
 	active_alife_array = []   #To reuse some 
@@ -1523,6 +1524,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy,lc:= 0, col := Color(0.
 		alive_array.append(1) 
 		current_velocity.append(Vector3.ZERO)
 		new_velocity.append(Vector3.ZERO)
+		facing.append(Vector3.ZERO)
 		current_life_state.append(lc)
 		current_biomass.append(seed_biomass)
 		current_age.append(0)
@@ -1553,6 +1555,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy,lc:= 0, col := Color(0.
 		alive_array[i] = 1
 		current_velocity[i] = Vector3.ZERO
 		new_velocity[i] = Vector3.ZERO
+		facing[i] = Vector3.ZERO
 		current_sungrid_id[i] = get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 		current_grid_id[i] = get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
 		current_life_state[i]=lc

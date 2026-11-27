@@ -31,6 +31,9 @@ signal mission_completed(max_biomass: float)
 @export var sim_manager: SimulationManager     # optional: time warp after the mission
 @export var warp_speed := 600.0
 @export var warp_seconds := 5.0                # real seconds of warp (0 = no warp)
+@export_group("Win screen")
+@export var show_win_screen := true            # false: next mission starts on its own
+@export var win_title := "Mission complete!"
 @export_group("Inside mesh")
 @export var inside_init_height := 3.8
 @export var inside_offset := -3.7
@@ -39,6 +42,11 @@ var biomass_collected := 0.0
 var max_biomass := 0.0                         # goal: sum of the stages (computed)
 var collecting := true
 var _next := 0                                 # next threshold index
+var mission := 1                               # mission number (1, 2, 3...)
+var _credits_this_mission := 0                 # shown on the win screen
+
+signal win_screen_closed
+var _win_layer: CanvasLayer = null
 
 @onready var _sign: Label3D = get_node_or_null("sign/signlabel")
 @onready var _amount: Label3D = get_node_or_null("collected_amount_Label3D")
@@ -130,13 +138,17 @@ func _check_thresholds() -> void:
 func _pay(credits: int) -> void:
 	if credits <= 0:
 		return
+	_credits_this_mission += credits
 	Shop.credits += credits
 	print("COLLECTOR: +%d credits  ->  %d" % [credits, roundi(Shop.credits)])
 
 
 ## Mission done: optional time warp, then a bigger mission.
 func _after_mission() -> void:
-	_update_texts()
+	_update_texts()                              # tank full
+	if show_win_screen:
+		show_win()
+		await win_screen_closed                  # waits for Continue
 	if sim_manager != null and warp_seconds > 0.0:
 		var old :float= sim_manager.simulation_speed
 		sim_manager.simulation_speed = warp_speed
@@ -147,6 +159,8 @@ func _after_mission() -> void:
 		thresholds[k] *= next_max_mult           # every stage bigger
 	_compute_goal()
 	_next = 0
+	mission += 1
+	_credits_this_mission = 0
 	collecting = true
 	_update_texts()
 
@@ -167,11 +181,88 @@ func _update_texts() -> void:
 	if _inside:
 		var fill := clampf(biomass_collected / maxf(max_biomass, 0.001), 0.0, 1.0)
 		_inside.scale.y = maxf(fill, 0.001)        # never 0: a zero scale breaks the mesh
-		var natural := inside_offset + inside_init_height * fill
-		var y := (natural + inside_init_height * fill) / 2.0
-		_inside.position.y = y
+		# Mesh centered on its origin (Box / Cylinder): bottom stays at inside_offset,
+		# top rises to inside_offset + inside_init_height when full
+		_inside.position.y = inside_offset + inside_init_height * fill * 0.5
 		_base_pos[_inside] = _inside.position      # keep it when the machine follows the view
 
 
 func _update_label() -> void:
 	pass                                       # base label hidden: texts above instead
+
+
+# --- Win screen ----------------------------------------------------------------------
+
+## Shows the win screen (mission number, biomass, credits). Continue closes it and
+## emits win_screen_closed. Built in code: no scene needed.
+func show_win() -> void:
+	if _win_layer != null:
+		return                                     # already shown
+	_win_layer = CanvasLayer.new()
+	_win_layer.layer = 100                         # above the HUD
+	_win_layer.process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().root.add_child(_win_layer)
+
+	# Dark background over the whole screen (also blocks clicks to the game)
+	var dim := ColorRect.new()
+	dim.color = Color(0, 0, 0, 0.6)
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_win_layer.add_child(dim)
+
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_win_layer.add_child(center)
+
+	var panel := PanelContainer.new()
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.08, 0.1, 0.14, 0.95)
+	style.border_color = Color(1.0, 0.85, 0.4)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(10)
+	style.set_content_margin_all(28)
+	panel.add_theme_stylebox_override("panel", style)
+	center.add_child(panel)
+
+	var box := VBoxContainer.new()
+	box.add_theme_constant_override("separation", 14)
+	panel.add_child(box)
+
+	var title := Label.new()
+	title.text = win_title
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 36)
+	title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.4))
+	box.add_child(title)
+
+	var stats := Label.new()
+	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stats.add_theme_font_size_override("font_size", 18)
+	stats.text = "Mission %d\nBiomass collected: %d\nCredits earned: +%d   (total %d)\n\nNext mission: %d biomass" % [
+			mission, roundi(max_biomass), _credits_this_mission, roundi(Shop.credits),
+			roundi(max_biomass * next_max_mult)]
+	box.add_child(stats)
+
+	var button := Button.new()
+	button.text = "Continue"
+	button.custom_minimum_size = Vector2(160, 40)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	button.pressed.connect(close_win)
+	box.add_child(button)
+
+	# The cursor may be captured (camera / first person views): give it back
+	_win_prev_mouse = Input.mouse_mode
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	button.grab_focus.call_deferred()             # Enter / Space also continues
+
+
+var _win_prev_mouse := Input.MOUSE_MODE_VISIBLE
+
+
+## Closes the win screen (Continue button, or call it from code).
+func close_win() -> void:
+	if _win_layer == null:
+		return
+	_win_layer.queue_free()
+	_win_layer = null
+	Input.mouse_mode = _win_prev_mouse
+	win_screen_closed.emit()

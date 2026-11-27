@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://dht5a0fts2itw" path="res://Simulationv0.4/ALIFE/alife_manager.gd" id="3_u0fto"]
 [ext_resource type="PackedScene" uid="uid://cve3fjbgy61t7" path="res://Simulationv0.4/world/render_world3D.tscn" id="3_uyr7n"]
 [ext_resource type="PackedScene" uid="uid://c2k148ms3kq4q" path="res://World/spaceship/space_ship_kyunsei_from_dabols.tscn" id="4_55kx7"]
+[ext_resource type="Script" uid="uid://dxxowmncrmrvp" path="res://Simulationv0.4/Machine/space_ship.gd" id="5_1bjow"]
 [ext_resource type="Script" uid="uid://ofm2xt7767ao" path="res://Simulationv0.4/Machine/teleport_machine.gd" id="5_cu670"]
 [ext_resource type="Script" uid="uid://2l27ex6lbnsg" path="res://Simulationv0.4/AlifeRender/rendering_manager.gd" id="5_oxs6a"]
 [ext_resource type="Shader" uid="uid://bumvosvqkpook" path="res://Simulationv0.4/world/cloud_shader.gdshader" id="6_7gkeh"]
@@ -70,13 +71,15 @@ light_energy = 2.0
 shadow_enabled = true
 
 [node name="SPACE SHIP Kyunsei" parent="World" unique_id=997132027 instance=ExtResource("4_55kx7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 20, 120)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 40, 120)
+script = ExtResource("5_1bjow")
 
 [node name="TP_machine2" type="Node3D" parent="World/SPACE SHIP Kyunsei" unique_id=45674601 node_paths=PackedStringArray("walkarea")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32833672, 3.33107)
 script = ExtResource("5_cu670")
 tp_pos = Vector3(120, 0, 120)
 walkarea = NodePath("../walkarea")
+follow_view = false
 machine_name = "Teleport"
 interact_range = 3.0
 
@@ -88,6 +91,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.11476898, 7.9609222)
 script = ExtResource("6_bk4o6")
 enabled = false
 size = Vector2(8, 20)
+species_names = PackedStringArray("CATRONAUTE")
 show_in_game = true
 
 [node name="cloud" type="MeshInstance3D" parent="World" unique_id=1787707122 node_paths=PackedStringArray("camera", "sim_manager")]
@@ -139,8 +143,8 @@ interact_range = 8.0
 
 [node name="TP_machine2" parent="ArtefactManager" unique_id=827798690 node_paths=PackedStringArray("walkarea") instance=ExtResource("11_23ro3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 1, 120)
-tp_pos = Vector3(120, 22, 120)
-new_ground = 21.0
+tp_pos = Vector3(120, 42, 120)
+new_ground = 41.0
 walkarea = NodePath("../../World/SPACE SHIP Kyunsei/walkarea")
 interact_range = 5.0
 
@@ -148,7 +152,8 @@ interact_range = 5.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0, 130)
 
 [node name="machine_shop2" parent="ArtefactManager" unique_id=945088910 instance=ExtResource("14_rqu2l")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 116.01536, 22, 128.5035)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 116.015, 42, 128.503)
+follow_view = false
 
 [node name="Control" type="Node" parent="." unique_id=344251585]
 
@@ -157,8 +162,8 @@ script = ExtResource("12_qijgx")
 alifemanager = NodePath("../../AlifeManager")
 camera = NodePath("DebugCamera3D")
 picker = NodePath("../AgentPicker")
-control_speed = 5.0
-planet_radius = 120.0
+control_speed = 6.0
+planet_radius = 200.0
 attack_width = 3.0
 attack_height = 1.5
 attack_cooldown = 0.2
