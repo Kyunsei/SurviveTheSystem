@@ -43,6 +43,7 @@ var falling : PackedInt32Array               # fruits dropping
 var _last_dt := 0.16
 
 func _init() -> void:
+	moves = false
 	species_id = 1
 	species_name = "tree"
 	photosynthesis_on = true

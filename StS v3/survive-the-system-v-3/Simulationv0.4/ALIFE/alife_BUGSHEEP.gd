@@ -76,7 +76,7 @@ func _init() -> void:
 	colour = Color(0.772, 0.772, 0.772, 1.0)
 
 	max_energy = 2500
-	max_speed = 8.
+	max_speed = 10.
 
 	#LIFECYCLE/DUP
 	duplication_range = 2

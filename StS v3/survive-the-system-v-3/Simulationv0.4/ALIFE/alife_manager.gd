@@ -92,6 +92,8 @@ func init():
 
 
 	
+var _grid_dirty := true                     # grid must be rebuilt before the next use
+
 func init_GRID(world_size):
 	var dims := Vector3i((world_size / cell_size).ceil())
 	GRID_W = dims.x         # cells along x
@@ -99,6 +101,7 @@ func init_GRID(world_size):
 	GRID_D = dims.z         # cells along z
 	NUM_CELLS = GRID_W * GRID_H * GRID_D
 	cell_start.resize(NUM_CELLS + 1)
+	_grid_dirty = true                       # new cell layout: old cell ids are meaningless
 	write_pos.resize(NUM_CELLS)
 
 
@@ -115,7 +118,10 @@ func compute_chunk(total:int) -> int:
 func run_simulation(delta:float, dt: float, sim_speed: float):
 	
 	var t0:= Time.get_ticks_usec()
-	build_grid(global_position_array, global_active)
+	# The grid is rebuilt at the end of update_alife (same ids as the offsets).
+	# Only rebuilt here if something invalidated it in between (grid resized...).
+	if _grid_dirty:
+		build_grid(global_position_array, global_active)
 	var t1:= Time.get_ticks_usec()
 
 	start_simulation(delta, dt,sim_speed)
@@ -137,13 +143,22 @@ func start_simulation(delta:float,dt: float, sim_speed: float):
 	global_entity_count = 0
 	global_active_entity_count = 0
 
-	for s in species_array:
+	'for s in species_array:
 		global_entity_count += s.entity_count
 		global_active_entity_count += s.active_entity_count
 
 		s.mouse_target =  mouse
-		s.build_field() #TODO call in thread?
+		#var t := Time.get_ticks_usec()
+		s.build_field()'
+	for s in species_array:
+		global_entity_count += s.entity_count
+		global_active_entity_count += s.active_entity_count
+		s.mouse_target = mouse
 
+	# one job per species, run at the same time on the worker threads
+	var fgid := WorkerThreadPool.add_group_task(_build_field_job, species_array.size(), -1, true, "species_fields")
+	WorkerThreadPool.wait_for_group_task_completion(fgid)
+		#print(s.species_name, " field: ", Time.get_ticks_usec() - t)
 	#setup thread/chunk/jobs
 	jobs.clear()
 	chunk_size = compute_chunk(global_entity_count) #need full entity count to work
@@ -160,6 +175,8 @@ func start_simulation(delta:float,dt: float, sim_speed: float):
 	if jobs.size() > 0:
 		gid = WorkerThreadPool.add_group_task(run_chunk, jobs.size(), nThreads, true, "species_update")
 
+func _build_field_job(k: int) -> void:
+	species_array[k].build_field()
 #SEND JOBS TO DNA
 func run_chunk(k: int) -> void:
 	var job = jobs[k]
@@ -179,7 +196,12 @@ func update_alife() -> void:
 	global_position_array.clear()
 	global_active.clear()
 	var total := 0
-	
+
+	# Walk areas: agents that stepped out are put back inside (before the carried items
+	# follow their carriers, and before the grid is rebuilt)
+	for area in get_tree().get_nodes_in_group("walk_areas"):
+		area.constrain(self)
+
 	update_carried()
 	
 	for si in species_count:
@@ -196,6 +218,13 @@ func update_alife() -> void:
 		total += sp.entity_count
 
 	global_species_offset[species_count] = total
+
+	# Grid ids ARE global ids: rebuild the grid now, with the new offsets.
+	# Built at the start of the next tick instead, it would be correct during the tick
+	# but wrong between ticks (player pick up / attack / picker), because births shift
+	# the offsets of every species after them: a close agent's id would point to
+	# another agent, far away.
+	build_grid(global_position_array, global_active)
 
 func Store_all_alife():
 	for sp in species_array:
@@ -233,9 +262,9 @@ func Release_all_alife():
 
 
 func init_default_species(worldd:WorldManager,alifem:AlifeManager):	
-	SpawnRandomAlife(3,10,2000,4) #glowberry
+	SpawnRandomAlife(3,10,2000,4) #glowberry5
 	SpawnRandomAlife(1,3) #TREE
-	sim_manager.set_simulation_speed(10000)
+	sim_manager.set_simulation_speed(5000)
 	await get_tree().create_timer(1.5).timeout
 	sim_manager.set_simulation_speed(100)
 	SpawnRandomAlife(0,3000,100,2) #GRASS
@@ -273,7 +302,6 @@ func SpawnRandomAlife(alifeID : int, nb:int, e:float=0.0, lc:int=0.0):
 		#var energy := randf_range(0,5)
 		if e == 0:
 			e = Alife.seed_energy
-			print(e)
 		Alife.Build_New_Life(pos,e,lc)
 
 
@@ -323,6 +351,7 @@ func build_grid(positions: PackedVector3Array, active: PackedInt32Array) -> void
 		cell_items[w] = i
 		sorted_pos[w] = positions[i]
 		write_pos[c] = w + 1
+	_grid_dirty = false
 #Helper function-------------------------------------------------------------------------------------------
 
 func set_contact_cell_size(new_size:Vector3):

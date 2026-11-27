@@ -52,7 +52,7 @@ var hunt_corpses := true                  # dead prey can be targeted, charged a
 var hunt_eggs := false                    # eggs (life cycle 0) can be targeted and eaten
 var hunt_start_energy := 1500.0           # IDLE -> hunting when energy drops below this
 #EAT 10 sheep = 60 (tny), 160(big) *10
-var hunt_stop_energy := 2500.0            # hunting -> IDLE once energy reaches this
+var hunt_stop_energy := 2100.0            # hunting -> IDLE once energy reaches this
 var corpse_affinity := 0.8                # 0..1: how attractive a corpse is vs a living prey
 
 #DEFENCE

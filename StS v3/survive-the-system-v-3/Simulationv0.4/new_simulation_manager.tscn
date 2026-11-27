@@ -8,6 +8,9 @@
 [ext_resource type="PackedScene" uid="uid://c2k148ms3kq4q" path="res://World/spaceship/space_ship_kyunsei_from_dabols.tscn" id="4_55kx7"]
 [ext_resource type="Script" uid="uid://ofm2xt7767ao" path="res://Simulationv0.4/Machine/teleport_machine.gd" id="5_cu670"]
 [ext_resource type="Script" uid="uid://2l27ex6lbnsg" path="res://Simulationv0.4/AlifeRender/rendering_manager.gd" id="5_oxs6a"]
+[ext_resource type="Shader" uid="uid://bumvosvqkpook" path="res://Simulationv0.4/world/cloud_shader.gdshader" id="6_7gkeh"]
+[ext_resource type="Script" uid="uid://diu7eeimg7aq6" path="res://Simulationv0.4/cloud.gd" id="6_8rlw2"]
+[ext_resource type="Script" uid="uid://2a2su4k5gpia" path="res://Simulationv0.4/walkarea.gd" id="6_bk4o6"]
 [ext_resource type="Script" uid="uid://clujs5mkf4ysr" path="res://Simulationv0.4/DEBUG/debug_control.gd" id="6_gytwx"]
 [ext_resource type="Script" uid="uid://edndstn7d2e7" path="res://Simulationv0.4/DEBUG/DEBUG_camera_3d.gd" id="6_ii0et"]
 [ext_resource type="Script" uid="uid://ho84xf8t3j3k" path="res://Simulationv0.4/AlifeRender/damageeffects.gd" id="6_qijgx"]
@@ -26,6 +29,26 @@ material = SubResource("StandardMaterial3D_buic3")
 top_radius = 1.9
 bottom_radius = 2.0
 height = 0.2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bk4o6"]
+render_priority = 0
+shader = ExtResource("6_7gkeh")
+shader_parameter/wrap_center = Vector3(0, 0, 0)
+shader_parameter/world_size = Vector2(240, 240)
+shader_parameter/cloud_offset = Vector2(0, 0)
+shader_parameter/cloud_scale = 60.0
+shader_parameter/coverage = 0.45
+shader_parameter/softness = 0.12
+shader_parameter/octaves = 4
+shader_parameter/detail = 0.5
+shader_parameter/light_color = Color(1, 1, 1, 1)
+shader_parameter/shade_color = Color(0.6, 0.64, 0.74, 1)
+shader_parameter/opacity = 0.85
+shader_parameter/sun_dir = Vector2(0.6, 0.4)
+shader_parameter/self_shadow = 1.0
+shader_parameter/clear_radius = 18.0
+shader_parameter/fade_start = 130.0
+shader_parameter/fade_end = 220.0
 
 [node name="NewSimulationManager" type="Node" unique_id=1440062817 node_paths=PackedStringArray("world", "alifemanager", "render_manager", "ui_simulation")]
 script = ExtResource("1_tnrjr")
@@ -49,15 +72,31 @@ shadow_enabled = true
 [node name="SPACE SHIP Kyunsei" parent="World" unique_id=997132027 instance=ExtResource("4_55kx7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 20, 120)
 
-[node name="TP_machine2" type="Node3D" parent="World/SPACE SHIP Kyunsei" unique_id=45674601]
+[node name="TP_machine2" type="Node3D" parent="World/SPACE SHIP Kyunsei" unique_id=45674601 node_paths=PackedStringArray("walkarea")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32833672, 3.33107)
 script = ExtResource("5_cu670")
 tp_pos = Vector3(120, 0, 120)
+walkarea = NodePath("../walkarea")
 machine_name = "Teleport"
 interact_range = 3.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="World/SPACE SHIP Kyunsei/TP_machine2" unique_id=2063132479]
 mesh = SubResource("CylinderMesh_3bbrk")
+
+[node name="walkarea" type="Node3D" parent="World/SPACE SHIP Kyunsei" unique_id=162871874]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.11476898, 7.9609222)
+script = ExtResource("6_bk4o6")
+enabled = false
+size = Vector2(8, 20)
+show_in_game = true
+
+[node name="cloud" type="MeshInstance3D" parent="World" unique_id=1787707122 node_paths=PackedStringArray("camera", "sim_manager")]
+material_override = SubResource("ShaderMaterial_bk4o6")
+script = ExtResource("6_8rlw2")
+camera = NodePath("../../Control/PlayerControl/DebugCamera3D")
+sim_manager = NodePath("../..")
+height = 60.0
+radius = 120.0
 
 [node name="AlifeManager" type="Node" parent="." unique_id=1403663435 node_paths=PackedStringArray("world", "sim_manager")]
 script = ExtResource("3_u0fto")
@@ -98,10 +137,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 140, 1, 120)
 factor = 1.0
 interact_range = 8.0
 
-[node name="TP_machine2" parent="ArtefactManager" unique_id=827798690 instance=ExtResource("11_23ro3")]
+[node name="TP_machine2" parent="ArtefactManager" unique_id=827798690 node_paths=PackedStringArray("walkarea") instance=ExtResource("11_23ro3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 1, 120)
 tp_pos = Vector3(120, 22, 120)
 new_ground = 21.0
+walkarea = NodePath("../../World/SPACE SHIP Kyunsei/walkarea")
 interact_range = 5.0
 
 [node name="machine_shop" parent="ArtefactManager" unique_id=1575499750 instance=ExtResource("14_rqu2l")]
@@ -117,7 +157,7 @@ script = ExtResource("12_qijgx")
 alifemanager = NodePath("../../AlifeManager")
 camera = NodePath("DebugCamera3D")
 picker = NodePath("../AgentPicker")
-control_speed = 8.0
+control_speed = 5.0
 planet_radius = 120.0
 attack_width = 3.0
 attack_height = 1.5

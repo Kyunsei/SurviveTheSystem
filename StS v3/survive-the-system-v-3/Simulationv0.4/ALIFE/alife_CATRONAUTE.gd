@@ -13,7 +13,7 @@ var carrying_power := PackedInt32Array()
 var strength := PackedFloat32Array()
 
 ## Values given to every new cat (change them per cat afterwards, e.g. with growth or mutation)
-@export var base_carrying_power := 2            # = a cat's own size (init_size 2.0)
+@export var base_carrying_power := 5           # = a cat's own size (init_size 2.0)
 @export var base_strength := 20.0              # = the old attack_damage
 
 

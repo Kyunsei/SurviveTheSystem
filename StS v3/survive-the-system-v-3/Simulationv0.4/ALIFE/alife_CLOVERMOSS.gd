@@ -3,6 +3,8 @@ class_name ALIFE_CLOVERMOSS
 
 
 func _init() -> void:
+	moves = false
+
 	species_name = "CLOVERMOSS"
 	sprite = preload("res://Alife/Plant/Moss/moss.png")
 	ground_sprite = preload("res://Alife/Plant/Moss/moss_ground.png")

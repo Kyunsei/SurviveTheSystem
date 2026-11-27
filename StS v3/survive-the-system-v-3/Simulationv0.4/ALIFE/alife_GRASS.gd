@@ -3,6 +3,8 @@ class_name ALIFE_GRASS
 
 
 func _init() -> void:
+	moves = false
+
 	species_name = "GRASS"
 	#PHOT
 	photosynthesis_on = true

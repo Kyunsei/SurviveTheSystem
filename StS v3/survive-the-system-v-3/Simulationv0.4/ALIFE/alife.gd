@@ -249,7 +249,7 @@ var player_air_time := 0.0         # time since leaving the ground (coyote time)
 
 @export_group("JUMP")
 @export var jump_height := 8.0
-@export var time_to_jump_apex := .5
+@export var time_to_jump_apex := 1.5
 @export var fall_multiplier := 2.0        # falls faster than it rises
 @export var low_jump_multiplier := 2.5    # key released early: shorter jump
 @export var coyote_time := 0.12
@@ -483,7 +483,110 @@ func _nb(x: int, y: int, z: int, self_c: int, W: int, H: int, D: int,
 	return -1 if o == self_c else o      # wrapping onto itself (axis of size 1) = no neighbor
 
 
+# =====================================================================================
+# PASTE INTO THE BASE ALIFE SCRIPT: replaces build_field(), adds 3 settings.
+# =====================================================================================
+
+## false: this species has no scent at all (items, tools...): build_field does nothing.
+var uses_fields := true
+## false: this species never moves (plants): its VELOCITY fields ("flow") stay at zero,
+## so they are neither filled nor diffused.
+var moves := true
+## Build / spread the fields only every Nth tick (scent changes slowly).
+## Species are staggered (species_id) so they don't all work on the same tick.
+## Deposits and fade are scaled by N, so the scent keeps about the same strength.
+var field_every := 1
+
+var _field_tick := 0
+var _fields_quiet := false          # no agents and fields already cleared: nothing to do
+
+
 func build_field() -> void:
+	if not uses_fields:
+		return
+
+	# Nobody left: clear the fields once, then skip until agents come back
+	if active_entity_count == 0:
+		if not _fields_quiet:
+			for f in fields:
+				_size_field(f)                   # back to zero
+			_sync_legacy_fields()
+			_fields_quiet = true
+		return
+	_fields_quiet = false
+
+	# Only every Nth tick, staggered between species
+	_field_tick += 1
+	var every := maxi(field_every, 1)
+	if every > 1 and (_field_tick + species_id) % every != 0:
+		return
+	var weight := float(every)                   # N ticks of deposits in one go
+
+	var field_cell_size := alifemanager.field_cell_size
+	var W := FIELD_W; var H := FIELD_H; var D := FIELD_D
+	var n := entity_count
+	var N := FIELD_NUM_CELLS
+	var inv := Vector3.ONE / field_cell_size
+
+	# 1. Field cell of every agent not in the pool, once for all fields (-1 = no deposit)
+	_agent_field_cell.resize(n)
+	for i in n:
+		if active_alife_array[i] == 0:
+			_agent_field_cell[i] = -1
+			continue
+		var p := position_array[i]
+		_agent_field_cell[i] = clampi(int(p.x * inv.x), 0, W - 1) \
+			+ W * (clampi(int(p.y * inv.y), 0, H - 1) \
+			+ H * clampi(int(p.z * inv.z), 0, D - 1))
+
+	# 2. Deposit, then diffuse, field by field
+	for f in fields:
+		if f.is_vector and not moves:
+			continue                             # plants: flow stays zero, nothing to spread
+		var rate := f.diffusion if f.diffusion >= 0.0 else field_diffusion
+		var fade := f.decay if f.decay >= 0.0 else field_decay
+		if every > 1:
+			fade = pow(fade, every)              # N ticks of fading in one go
+		var check_stage := f.min_stage >= 0 or f.max_stage >= 0
+		var mask := f.state_mask
+
+		if f.is_vector:
+			var now := f.now_v
+			now.fill(Vector3.ZERO)
+			var dif := f.diffused_v
+			for i in n:
+				var c := _agent_field_cell[i]
+				if c < 0 or (mask >> active_alife_array[i]) & 1 == 0:
+					continue
+				if f.only_alive and alive_array[i] == 0:
+					continue
+				if check_stage and not _in_stages(f, current_life_state[i]):
+					continue
+				var v := current_velocity[i] * weight
+				now[c] += v
+				dif[c] += v
+			f.now_v = now
+			f.diffused_v = _diffuse_v(dif, rate, fade)
+		else:
+			var now := f.now_f
+			now.fill(0.0)
+			var dif := f.diffused_f
+			for i in n:
+				var c := _agent_field_cell[i]
+				if c < 0 or (mask >> active_alife_array[i]) & 1 == 0:
+					continue
+				if f.only_alive and alive_array[i] == 0:
+					continue
+				if check_stage and not _in_stages(f, current_life_state[i]):
+					continue
+				now[c] += weight
+				dif[c] += weight
+			f.now_f = now
+			f.diffused_f = _diffuse_f(dif, rate, fade)
+
+	_sync_legacy_fields()
+
+'func build_field() -> void:
 	var field_cell_size := alifemanager.field_cell_size
 	var W := FIELD_W; var H := FIELD_H; var D := FIELD_D
 	var n := entity_count
@@ -541,7 +644,7 @@ func build_field() -> void:
 			f.now_f = now
 			f.diffused_f = _diffuse_f(dif, rate, fade)
 
-	_sync_legacy_fields()
+	_sync_legacy_fields()'
 
 
 ## rate / fade < 0: the species' field_diffusion / field_decay
