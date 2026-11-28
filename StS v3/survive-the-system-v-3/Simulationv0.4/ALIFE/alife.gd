@@ -207,6 +207,32 @@ var FIELD_NUM_CELLS : int
 
 
 #for player control---------------
+## Which Pilot controls each agent (its slot in PilotSystem.pilots), -1 = the AI.
+## Several agents of the same species can be controlled at once (one per player).
+var pilot_id := PackedInt32Array()
+var pilot_system = null                # set by PilotSystem when a pilot is added
+## true: this species reads its pilots itself in its tick (get_pilot / control_velocity).
+## false (older species): PilotSystem drives player_index / player_velocity for one pilot.
+var uses_pilots := false
+## Actions this species can do when controlled (PlayerInput bits). The others do nothing,
+## and their key hints aren't shown. e.g. PlayerInput.ALL & ~PlayerInput.THROW
+var control_actions := PlayerInput.ALL
+
+## Per species: how it moves when controlled (same keys, different feel).
+var control_speed := 3.0               # world units / s
+var sprint_multiplier := 2.0
+var can_jump := true                   # false: jump does nothing (uses the JUMP group below)
+var dash_multiplier := 4.0             # speed during the dash (x control_speed)
+var dash_time := 0.15                  # seconds the dash lasts
+var dash_cooldown := 0.8               # seconds between dashes (real time)
+## Per species: its attack when controlled.
+var attack_width := 1.5                # across, centered on the agent
+var attack_length := 2.0               # forward, starting at the agent
+var attack_height := 2.0               # up from the agent's feet
+var attack_damage := 20.0              # if the species has no get_damage()
+var attack_cooldown := 0.4             # seconds (real time)
+
+# OLD single-player control: only for species with uses_pilots = false (set by PilotSystem)
 var player_index := -1                 # local index of the controlled agent (-1 = none)
 var player_velocity := Vector3.ZERO    # velocity chosen by the player
 
@@ -257,7 +283,73 @@ var player_air_time := 0.0         # time since leaving the ground (coyote time)
 @export var ground_y := 0.0
 
 
-## Vertical physics of the controlled agent. Returns its vertical speed for this step.
+# ---- PILOTS (player control) ----------------------------------------------------------
+
+## The Pilot controlling agent i, or null (AI). Safe in the chunk tick (read only).
+func get_pilot(i: int) -> Pilot:
+	var pid := pilot_id[i] if i < pilot_id.size() else -1
+	if pid < 0 or pilot_system == null:
+		return null
+	return pilot_system.pilots[pid]
+
+
+## Velocity of agent i controlled by pilot pl, for this step (called in the chunk tick).
+## Default: walks at control_speed (sprint, dash), jumps with the JUMP settings on the
+## floor floor_h. Override it in a species for another way of moving (fly, hop, swim...).
+## vertical = false: horizontal only (y = 0).
+func control_velocity(pl: Pilot, i: int, p: Vector3, floor_h: float, delta: float,
+		vertical := true) -> Vector3:
+	var dir := Vector3(pl.input.move.x, 0.0, pl.input.move.y).limit_length(1.0)
+	var v: Vector3
+	if pl.dash_left > 0.0:
+		var d := dir if dir.length_squared() > 1e-6 else pl.facing
+		v = Vector3(d.x, 0.0, d.z).normalized() * control_speed * dash_multiplier
+	else:
+		var sprint := sprint_multiplier if pl.input.is_held(PlayerInput.SPRINT) \
+				and control_actions & PlayerInput.SPRINT != 0 else 1.0
+		v = dir * control_speed * sprint
+	if vertical:
+		v.y = pilot_vertical(pl, p.y, delta, floor_h)
+	return v
+
+
+## Jump + gravity of a controlled agent on the floor floor_h (lands on / falls off ledges).
+## The state is in the pilot, so several players never share it.
+func pilot_vertical(pl: Pilot, y: float, dt: float, floor_h: float) -> float:
+	var g := 2.0 * jump_height / (time_to_jump_apex * time_to_jump_apex)
+	var grounded := y <= floor_h + 0.001 and pl.vy <= 0.0
+	if grounded:
+		pl.vy = 0.0
+		pl.air_time = 0.0
+	else:
+		pl.air_time += dt
+
+	# Jump: pressed recently (buffer) + on the floor or just left it (coyote)
+	if can_jump and pl.jump_buffer > 0.0 and pl.air_time <= coyote_time:
+		pl.vy = 2.0 * jump_height / time_to_jump_apex
+		pl.jump_buffer = 0.0
+		pl.air_time = coyote_time + 1.0     # no second jump in the air
+		grounded = false
+
+	# Gravity: stronger when falling, or when the key was released early
+	if not grounded:
+		var m := 1.0
+		if pl.vy < 0.0:
+			m = fall_multiplier
+		elif not pl.input.is_held(PlayerInput.JUMP):
+			m = low_jump_multiplier
+		pl.vy = maxf(pl.vy - g * m * dt, -max_fall_speed)
+	return pl.vy
+
+
+## A controlled agent pressed `action` (a PlayerInput bit). Return true when the species
+## did its own thing (e.g. a spider's charge on ATTACK); false = the default action runs.
+## Main thread, before the tick: safe to change any array.
+func on_control_action(pl: Pilot, action: int) -> bool:
+	return false
+
+
+## OLD: vertical physics of the controlled agent (species with uses_pilots = false).
 func _player_vertical(y: float, dt: float) -> float:
 	var g := 2.0 * jump_height / (time_to_jump_apex * time_to_jump_apex) #gravity 
 	var grounded := y <= ground_y + 0.001 and player_vy <= 0.0
@@ -283,6 +375,10 @@ func _player_vertical(y: float, dt: float) -> float:
 			m = low_jump_multiplier
 		player_vy = maxf(player_vy - g * m * dt, -max_fall_speed)
 	return player_vy
+
+## Only seeds / fruits can be picked up, not grown trees.
+func can_be_carried(i: int) -> bool:
+	return true #current_life_state[i] == 0
 
 #Init part--------------------------------------------------------------------
 
@@ -337,6 +433,7 @@ func _init_alife_par():
 	
 	holding = []
 	held_by = []
+	pilot_id = []
 	
 	current_cpu_cost = []
 	
@@ -1532,6 +1629,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy,lc:= 0, col := Color(0.
 		current_action.append(0)
 		holding.append(-1)
 		held_by.append(-1)	
+		pilot_id.append(-1)
 
 		current_sungrid_id.append(get_cell_id(pos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D))
 		current_grid_id.append(get_cell_id(pos,alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D))
@@ -1567,6 +1665,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy,lc:= 0, col := Color(0.
 		current_action[i] = 0
 		holding[i] = -1
 		held_by[i] = -1
+		pilot_id[i] = -1                   # a reused slot is never still controlled
 		
 	active_entity_count += 1
 	if photosynthesis_on:

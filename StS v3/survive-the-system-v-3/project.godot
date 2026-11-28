@@ -21,6 +21,7 @@ config/icon="res://icon.svg"
 GlobalSimulationParameter="*uid://cs1kg38iymtos"
 ConfigurationSettings="*uid://b4cg34gwe4jl1"
 DialogueBox="*uid://da0jnyttrnl3f"
+Network="*uid://b4upeetipki1f"
 
 [display]
 

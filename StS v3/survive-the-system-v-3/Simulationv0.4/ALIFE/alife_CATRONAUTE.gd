@@ -32,7 +32,7 @@ func _init() -> void:
 	colour = Color(0.655, 0.154, 0.226, 1.0)
 
 	max_energy = 2000
-	max_speed = 6. #WIP might not work as intended
+	max_speed = 12. #WIP might not work as intended
 
 	#LIFECYCLE/DUP
 	duplication_range = 2
@@ -52,6 +52,13 @@ func _init() -> void:
 	w_cohesion = 0.5# stay in group
 	w_seek = 1.0# seek food
 	max_force = 2.0 #how much power has steer
+
+	#CONTROL (when a player plays a cat): walks, runs, jumps, dashes, does every action
+	uses_pilots = true
+	control_speed = 6.0
+	sprint_multiplier = 2.0
+	can_jump = true
+	control_actions = PlayerInput.ALL
 
 
 # ---- Stats --------------------------------------------------------------------------
@@ -167,16 +174,15 @@ func run_chunk_simulation( start: int, end: int,local_id:int,delta:float, dt: fl
 		var v:Vector3= current_velocity[i]           # a real velocity (units / s)
 		var _global_i := i + base
 		# Surface under the cat (from the last tick), or the flat ground without a walk area
-		var in_area := hg != null and (not hg.player_only or i == player_index)
+		var pl: Pilot = get_pilot(i) if pilot_id[i] >= 0 else null   # null = the AI plays this cat
+		var in_area := hg != null and (not hg.player_only or pl != null)
 		var fl: float = floor_y[i] if in_area else ground_y
 
 	#--------VELOCITY
 		var new_v: Vector3
-		if i == player_index:
-			# Player-controlled: the AI is ignored. Horizontal speed from the keys,
-			# vertical from jump + gravity (_player_vertical has its own gravity).
-			new_v = player_velocity
-			new_v.y = _player_vertical_on(p.y, delta, fl)
+		if pl != null:
+			# Player-controlled: the AI is ignored. Keys -> speed / jump (ALIFE.control_velocity)
+			new_v = control_velocity(pl, i, p, fl, delta)
 		else:
 			steer = steer.limit_length(max_force)
 			new_v = v + steer * delta                # acceleration x time
@@ -233,40 +239,11 @@ func run_chunk_simulation( start: int, end: int,local_id:int,delta:float, dt: fl
 				q.y = maxf(ceil_y, fl)
 				if new_v.y > 0.0:
 					new_v.y = 0.0
-				if i == player_index:
-					player_vy = minf(player_vy, 0.0)  # bumped the head: the jump ends
+				if pl != null:
+					pl.vy = minf(pl.vy, 0.0)        # bumped the head: the jump ends
 		position_array[i] = q
 		new_velocity[i] = new_v
 		current_velocity[i] = new_v                 # store the velocity, not the displacement
 
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id
-
-
-## Jump + gravity of the controlled cat, like ALIFE._player_vertical but with the floor
-## under it (floor_h) instead of the flat ground_y: it can land on, and fall off, ledges.
-func _player_vertical_on(y: float, dt: float, floor_h: float) -> float:
-	var g := 2.0 * jump_height / (time_to_jump_apex * time_to_jump_apex)
-	var grounded := y <= floor_h + 0.001 and player_vy <= 0.0
-	if grounded:
-		player_vy = 0.0
-		player_air_time = 0.0
-	else:
-		player_air_time += dt
-
-	# Jump: pressed recently (buffer) + on the floor or just left it (coyote)
-	if player_jump_buffer > 0.0 and player_air_time <= coyote_time:
-		player_vy = 2.0 * jump_height / time_to_jump_apex
-		player_jump_buffer = 0.0
-		player_air_time = coyote_time + 1.0     # no second jump in the air
-		grounded = false
-
-	# Gravity: stronger when falling, or when the key was released early
-	if not grounded:
-		var m := 1.0
-		if player_vy < 0.0:
-			m = fall_multiplier
-		elif not player_jump_held:
-			m = low_jump_multiplier
-		player_vy = maxf(player_vy - g * m * dt, -max_fall_speed)
-	return player_vy

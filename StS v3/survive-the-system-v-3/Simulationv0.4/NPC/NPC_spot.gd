@@ -36,6 +36,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if Engine.is_editor_hint() or alifemanager == null or npc_data == null:
 		return
+	if not multiplayer.is_server():
+		return                                 # network client: the host spawns, we mirror
 	if not sim_is_ready:
 		if wait_for_ready and not _simulation_ready():
 			return                             # not ready yet

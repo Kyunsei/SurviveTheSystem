@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://cvjfonwy8nib8" path="res://Simulationv0.4/world/world.gd" id="2_628pp"]
 [ext_resource type="Script" uid="uid://dht5a0fts2itw" path="res://Simulationv0.4/ALIFE/alife_manager.gd" id="3_c2p7u"]
 [ext_resource type="Script" uid="uid://edndstn7d2e7" path="res://Simulationv0.4/DEBUG/DEBUG_camera_3d.gd" id="4_psskn"]
-[ext_resource type="Script" uid="uid://ckvt014hdkps8" path="res://Simulationv0.4/player_control.gd" id="5_fvrnt"]
+[ext_resource type="Script" uid="uid://ckvt014hdkps8" path="res://Simulationv0.4/player/player_control.gd" id="5_fvrnt"]
 [ext_resource type="Script" uid="uid://2l27ex6lbnsg" path="res://Simulationv0.4/AlifeRender/rendering_manager.gd" id="6_s1cn7"]
 [ext_resource type="PackedScene" uid="uid://dcfk2dckkhkeh" path="res://Simulationv0.4/world/cat_station/cat_station.tscn" id="7_ioeaw"]
 [ext_resource type="Script" uid="uid://cb1dy5r8oilmj" path="res://Simulationv0.4/world/nav_world.gd" id="8_keavj"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://bj0i0kftcoaef" path="res://Simulationv0.4/ALIFE/spawner.gd" id="10_5ksak"]
 [ext_resource type="Script" uid="uid://o4eblhgpwess" path="res://Simulationv0.4/NPC/NPC_spot.gd" id="11_8idim"]
 [ext_resource type="Script" uid="uid://dvi2ch66j1xpt" path="res://Simulationv0.4/NPC/NPCdata.gd" id="12_5pm1s"]
+[ext_resource type="Script" uid="uid://cl7etd8s32kjr" path="res://Simulationv0.4/Network/netsession.gd" id="13_628pp"]
 
 [sub_resource type="Resource" id="Resource_601sg"]
 script = ExtResource("12_5pm1s")
@@ -52,12 +53,12 @@ cell_size = 0.1
 agent_height = 1.0
 agent_radius = 0.0
 
-[node name="Node" type="Node" unique_id=705045066 node_paths=PackedStringArray("playercontrol", "world", "alifemanager", "render_manager")]
+[node name="Node" type="Node" unique_id=705045066 node_paths=PackedStringArray("world", "alifemanager", "render_manager", "playercontrol")]
 script = ExtResource("1_wtrsx")
-playercontrol = NodePath("PlayerController")
 world = NodePath("WorldManager")
 alifemanager = NodePath("AlifeManager")
 render_manager = NodePath("AlifeRendererManager")
+playercontrol = NodePath("PlayerController")
 
 [node name="WorldManager" type="Node" parent="." unique_id=1919047462 node_paths=PackedStringArray("controller")]
 script = ExtResource("2_628pp")
@@ -77,7 +78,6 @@ metadata/_custom_type_script = "uid://dht5a0fts2itw"
 script = ExtResource("5_fvrnt")
 alifemanager = NodePath("../AlifeManager")
 camera = NodePath("DebugCamera3D")
-control_speed = 6.0
 planet_view = false
 metadata/_custom_type_script = "uid://ckvt014hdkps8"
 
@@ -113,7 +113,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.726, 25.96022, 74.652954)
 script = ExtResource("11_8idim")
 alifemanager = NodePath("../../AlifeManager")
 npc_data = SubResource("Resource_601sg")
-wait_for_ready = null
 metadata/_custom_type_script = "uid://o4eblhgpwess"
 
 [node name="NpcSpot2" type="Node3D" parent="SPAWNERS" unique_id=1173871870 node_paths=PackedStringArray("alifemanager")]
@@ -121,7 +120,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 58.726, 25.96022, 52.642765)
 script = ExtResource("11_8idim")
 alifemanager = NodePath("../../AlifeManager")
 npc_data = SubResource("Resource_bhyg7")
-wait_for_ready = null
 metadata/_custom_type_script = "uid://o4eblhgpwess"
 
 [node name="NpcSpot3" type="Node3D" parent="SPAWNERS" unique_id=2008491550 node_paths=PackedStringArray("alifemanager")]
@@ -129,7 +127,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 69.35193, 25.96022, 24.693485
 script = ExtResource("11_8idim")
 alifemanager = NodePath("../../AlifeManager")
 npc_data = SubResource("Resource_y610k")
-wait_for_ready = null
 metadata/_custom_type_script = "uid://o4eblhgpwess"
 
 [node name="NpcSpot4" type="Node3D" parent="SPAWNERS" unique_id=1959068323 node_paths=PackedStringArray("alifemanager")]
@@ -137,7 +134,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 98.86936, 25.96022, 47.979725
 script = ExtResource("11_8idim")
 alifemanager = NodePath("../../AlifeManager")
 npc_data = SubResource("Resource_bclta")
-wait_for_ready = null
 metadata/_custom_type_script = "uid://o4eblhgpwess"
 
 [node name="spawner" type="Node3D" parent="SPAWNERS" unique_id=14306424 node_paths=PackedStringArray("alifemanager", "sim_manager")]
@@ -148,7 +144,6 @@ sim_manager = NodePath("../..")
 species_name = "CATTLE"
 count = 20
 energy = 100.0
-wait_for_ready = null
 interval = 100
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SPAWNERS/spawner" unique_id=1940734974]
@@ -162,7 +157,6 @@ alifemanager = NodePath("../../AlifeManager")
 sim_manager = NodePath("../..")
 species_name = "CAT_RATIO"
 energy = 100.0
-wait_for_ready = null
 interval = 100
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="SPAWNERS/spawner2" unique_id=231187243]
@@ -188,5 +182,13 @@ min_layer_gap = 0.2
 agent_height = 1.0
 baked_grid = ExtResource("9_gc7do")
 grid_file = "uid://cphg0yod00shg"
+
+[node name="NetSession" type="Node" parent="." unique_id=1287259427 node_paths=PackedStringArray("alifemanager", "sim_manager", "controller", "spawn_point")]
+script = ExtResource("13_628pp")
+alifemanager = NodePath("../AlifeManager")
+sim_manager = NodePath("..")
+controller = NodePath("../PlayerController")
+spawn_point = NodePath("../SPAWNERS/NpcSpot")
+metadata/_custom_type_script = "uid://cl7etd8s32kjr"
 
 [connection signal="pressed" from="Button" to="PlayerController" method="spawn_and_control"]

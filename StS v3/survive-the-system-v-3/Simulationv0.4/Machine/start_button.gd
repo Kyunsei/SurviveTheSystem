@@ -22,12 +22,13 @@ func _ready() -> void:
 
 # --- Called by the player controller ------------------------------------------------
 
-## Left click / R near the machine. Returns true if the carried item was used.
 func interact(agent_species, agent_index: int, held_species, held_index: int) -> bool:
 	if next_scene != null:
-		#get_tree().change_scene_to_packed(next_scene)
-		get_tree().change_scene_to_packed.call_deferred(next_scene)
-
+		var net := get_node_or_null("/root/Network")
+		if net != null:
+			net.change_scene(next_scene.resource_path)
+		else:
+			get_tree().change_scene_to_packed.call_deferred(next_scene)
 	return false
 
 ## Turn a carried agent into energy. Refused when the machine is full.

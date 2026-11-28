@@ -4,17 +4,19 @@ extends Node
 ##
 ## Hover:        the mouse is always visible: hovering an agent outlines it + tooltip
 ## agent_follow  (F):  follow the hovered agent | while following: stop following
+## agent_control (C):  take control of the hovered (else followed) agent | again: release it
 ## agent_kill    (K):  kill the hovered agent
 ## sim_pause     (P):  pause / resume the simulation
 ## menu_toggle   (O):  open / close the menu
-## controls_open (F1) or "Controls" button (top right): open the key remap menu
 ##
+## The Controls button / remap menu (F1) is in PlayerController.
 ## The keys are Input Map actions, so they can be changed in the remap menu
 ## (add them to Settings.REMAPPABLE).
 ##
 ## Also owns the outline (one per species material), so it decides what is outlined:
 ##   controller's target > carried agent > hovered agent > followed agent
-## Controlling an agent (C, WASD, carrying...) is in PlayerController.
+## Taking / releasing control (C) is here; playing the agent (WASD, carrying...) is in
+## PlayerController.
 ## While controlling an agent: no hover, no tooltip, no follow / kill / remove
 ## (pause, menu and the Controls menu still work).
 
@@ -46,14 +48,11 @@ var _outlined_index := -1
 var _layer := CanvasLayer.new()
 var _tooltip := PanelContainer.new()
 var _tooltip_label := Label.new()
-var _controls_button := Button.new()
-var _controls_menu: SettingsRemapMenu
 
 func _ready() -> void:
 	_layer.layer = 90
 	add_child(_layer)
 	_build_tooltip()
-	_build_controls_button()
 	camera.follow_stopped.connect(_on_follow_stopped)
 	if menu != null:
 		menu.visible = false
@@ -86,10 +85,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		_toggle_menu()
 		get_viewport().set_input_as_handled()
 
-	elif event.is_action_pressed("controls_open"):
-		_toggle_controls()
-		get_viewport().set_input_as_handled()
-
 	elif event.is_action_pressed("sim_pause"):
 		if sim_manager.simulation_speed == 0:
 			sim_manager.simulation_speed = old_speed
@@ -97,6 +92,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			old_speed = sim_manager.simulation_speed
 			sim_manager.simulation_speed = 0
 		get_viewport().set_input_as_handled()
+
+	# Take / release control (works in control mode too, to release)
+	if not get_viewport().is_input_handled() and event.is_action_pressed("agent_control"):
+		if _toggle_control():
+			get_viewport().set_input_as_handled()
+		return
 
 	# Agent actions: off in control mode (the keys stay free for the PlayerController)
 	if get_viewport().is_input_handled() or _actions_off():
@@ -118,6 +119,21 @@ func _unhandled_input(event: InputEvent) -> void:
 		if hovered_species != null:
 			_remove(hovered_species, hovered_index)
 			get_viewport().set_input_as_handled()
+
+
+## agent_control: release, or take the hovered (else followed) agent. True if something happened.
+func _toggle_control() -> bool:
+	if controller == null or DialogueBox.is_open:
+		return false                               # no controller, or talking
+	if controller.is_controlling():
+		controller.release_control()
+	elif hovered_species != null:
+		controller.take_control(hovered_species, hovered_index)
+	elif followed_species != null:
+		controller.take_control(followed_species, followed_index)
+	else:
+		return false
+	return true
 
 
 ## True while an agent is controlled: hover, tooltip and agent actions are off.
@@ -365,41 +381,6 @@ func _dist_to_segment(p: Vector2, a: Vector2, b: Vector2) -> float:
 		return p.distance_to(a)
 	var t := clampf((p - a).dot(ab) / len2, 0.0, 1.0)
 	return p.distance_to(a + ab * t)
-
-
-# --- Controls (button top right -> key remap menu) ---------------------------------
-
-func _build_controls_button() -> void:
-	_controls_button.text = "Controls"
-	_controls_button.tooltip_text = "Controls (F1)"
-	_controls_button.focus_mode = Control.FOCUS_NONE   # never steals Space / Enter
-	_controls_button.custom_minimum_size = Vector2(28, 28)
-	_controls_button.pressed.connect(_toggle_controls)
-	_layer.add_child(_controls_button)
-	_controls_button.set_anchors_and_offsets_preset(
-			Control.PRESET_TOP_RIGHT, Control.PRESET_MODE_MINSIZE, 12)
-	_controls_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
-
-
-func _toggle_controls() -> void:
-	# Already open: close it
-	if is_instance_valid(_controls_menu):
-		_controls_menu._on_back()
-		return
-
-	_tooltip.visible = false                           # _process stops while paused
-	camera.set_mouse_look(false)                       # free the cursor to click the menu
-
-	_controls_menu = SettingsRemapMenu.open(self)
-	# Draw above this node's own layer (90), so the button and tooltip stay underneath
-	(_controls_menu.get_parent() as CanvasLayer).layer = _layer.layer + 10
-
-	# Freeze the game so the keys pressed while rebinding don't move anything
-	var was_paused := get_tree().paused
-	get_tree().paused = true
-	_controls_menu.closed.connect(func():
-		get_tree().paused = was_paused
-		_update_mouse_look())
 
 
 # --- Hover tooltip -------------------------------------------------------------

@@ -49,6 +49,17 @@ func _init() -> void:
 	w_seek = 1.0# seek food
 	max_force = 2.0 #how much power has steer
 
+	#CONTROL (when a player plays it): slow and heavy, no jump, can't carry or throw
+	uses_pilots = true
+	control_speed = 2.0
+	sprint_multiplier = 1.5
+	can_jump = false
+	control_actions = PlayerInput.SPRINT | PlayerInput.ACTION | PlayerInput.ATTACK
+	attack_width = 2.5                    # a wide headbutt
+	attack_length = 2.5
+	attack_damage = 10.0
+	attack_cooldown = 1.0
+
 
 
 
@@ -136,7 +147,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 		var g_cost:=  growth_cost[lifecycle]
 		var _energy:= current_energy_array[i]
 		var is_egg := lifecycle == 0
-		var is_player := i == player_index
+		var pl: Pilot = get_pilot(i) if pilot_id[i] >= 0 else null   # null = the AI
+		var is_player := pl != null
 
 		var p := position_array[i]
 		var v:Vector3= current_velocity[i]
@@ -145,7 +157,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 	
 		var new_v := _wander(v, delta)
 		if is_player:
-			new_v = player_velocity               # controlled: the keys decide
+			new_v = control_velocity(pl, i, p, 0.0, delta, false)   # keys; _move does gravity
 	#--------maintain cost
 		#_energy += -1 * step * sim_speed
 

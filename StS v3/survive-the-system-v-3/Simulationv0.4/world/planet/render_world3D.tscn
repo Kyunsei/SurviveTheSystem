@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://cve3fjbgy61t7"]
 
-[ext_resource type="Script" path="res://Simulationv0.4/world/render_world_3d.gd" id="1_xmjed"]
-[ext_resource type="Shader" uid="uid://bhtkrkvcjuv5u" path="res://Simulationv0.4/world/skybox.gdshader" id="2_vojrr"]
+[ext_resource type="Script" uid="uid://bkabb206qph0o" path="res://Simulationv0.4/world/planet/render_world_3d.gd" id="1_xmjed"]
+[ext_resource type="Shader" uid="uid://bhtkrkvcjuv5u" path="res://Simulationv0.4/world/planet/skybox.gdshader" id="2_vojrr"]
 [ext_resource type="MeshLibrary" uid="uid://d2g7jknxpebte" path="res://World/grid_map_3d/meshlibraries/base_world_v5.meshlib" id="3_igj41"]
-[ext_resource type="Script" uid="uid://crbaymfwveajf" path="res://Simulationv0.4/world/ground.gd" id="7_ph3yl"]
+[ext_resource type="Script" uid="uid://crbaymfwveajf" path="res://Simulationv0.4/world/planet/ground.gd" id="7_ph3yl"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_mv5wp"]
 shader = ExtResource("2_vojrr")

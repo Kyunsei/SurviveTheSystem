@@ -118,6 +118,8 @@ func _simulation_ready() -> bool:
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint() or not enabled or sim_manager == null or alifemanager == null:
 		return
+	if not multiplayer.is_server():
+		return                                 # network client: the host spawns, we mirror
 	if not sim_is_ready:
 		if wait_for_ready and not _simulation_ready():
 			return                                 # not ready yet: don't start counting
