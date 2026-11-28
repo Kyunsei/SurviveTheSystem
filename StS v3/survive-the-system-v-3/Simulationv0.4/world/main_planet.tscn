@@ -81,6 +81,7 @@ radius = 120.0
 script = ExtResource("6_v40n0")
 world = NodePath("../World")
 sim_manager = NodePath("..")
+print_timings = true
 
 [node name="RendererManager" type="Node" parent="." unique_id=871390878 node_paths=PackedStringArray("alifemanager", "world", "sun")]
 script = ExtResource("7_uav8h")
@@ -165,9 +166,6 @@ alifemanager = NodePath("../AlifeManager")
 sim_manager = NodePath("..")
 controller = NodePath("../Control/PlayerControl")
 spawn_point = NodePath("")
-snapshot_rate = 60.0
-interest_radius = 10.0
-max_agents_per_snapshot = 1000
 predict_own_agent = false
 correction_rate = 0.0
 metadata/_custom_type_script = "uid://cl7etd8s32kjr"

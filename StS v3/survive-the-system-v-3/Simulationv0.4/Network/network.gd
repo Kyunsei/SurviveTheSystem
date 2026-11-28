@@ -19,7 +19,7 @@ signal player_left(peer_id: int)
 const DEFAULT_PORT := 7777
 const MAX_CLIENTS := 8
 const CHANNELS := 2                           # 0: reliable messages + inputs, 1: snapshots
-const PROTOCOL := 6                           # bump when messages change: old clients are refused
+const PROTOCOL := 7                           # bump when messages change: old clients are refused
 
 ## peer_id -> {"name": String, "slot": int (pilot slot on the host, -1 = none)}
 var players := {}
@@ -256,7 +256,8 @@ func _dialogue_closed(species_name: String, index: int) -> void:
 		return
 	var sp = session.alifemanager.codex.species.get(species_name)
 	if sp != null and sp.has_method("remote_dialogue_closed"):
-		sp.remote_dialogue_closed(index, multiplayer.get_remote_sender_id())
+		var peer := multiplayer.get_remote_sender_id()
+		session.alifemanager.when_free(func(): sp.remote_dialogue_closed(index, peer))
 
 
 ## Host -> client: close the dialogue on screen (walked away, the NPC was carried off...).

@@ -63,6 +63,11 @@ var no_food_brake := 0.85                 # no prey nor scent anywhere: slows to
 var charge_brake := 0.5                   # standing still to aim
 var recover_brake := 0.85                 # out of breath after the dash
 
+#WALKABLE AREA (given by NavWorld; null = flat ground at ground_y, no walls)
+var height_grid: HeightGrid = null
+var floor_y := PackedFloat32Array()       # height of the floor under each crab
+var gravity := 20.0                       # falling off a ledge (units / s²)
+
 
 func _init() -> void:
 	photosynthesis_on = false
@@ -104,6 +109,45 @@ func _init() -> void:
 	w_cohesion = 0.# stay in group
 	w_seek = 1.0# seek food
 	max_force = 2.0 #how much power has steer (per tick at REF_TPS)
+
+	#CONTROL (when a player plays a crab): fast, no jump; ATTACK = its real hunt move:
+	# charge (stand still charge_time), dash where you aim, catch prey on the way, recover
+	uses_pilots = true
+	control_speed = 8.0
+	sprint_multiplier = 1.5
+	can_jump = false
+	control_actions = PlayerInput.SPRINT | PlayerInput.ATTACK | PlayerInput.ACTION
+
+
+func _init_alife_par():
+	super()
+	floor_y = []
+
+
+# --- Player control -----------------------------------------------------------------
+
+## A player crab pressed a button (main thread). ATTACK starts the charge (same tell,
+## dash and recover as the AI); the other buttons do the default action.
+func on_control_action(pl: Pilot, action: int) -> bool:
+	if action != PlayerInput.ATTACK:
+		return false
+	var i := pl.index
+	if hunt_timer.size() <= i:
+		return true                              # hunt arrays not sized yet
+	var st := current_action[i]
+	if st == Hunt.CHARGE or st == Hunt.DASH or st == Hunt.RECOVER:
+		return true                              # already busy
+	current_action[i] = Hunt.CHARGE
+	charge_end[i] = alifemanager.sim_manager.real_time + charge_time
+	hunt_target[i] = -1
+	return true
+
+
+## Network, client authority: the client only knows how to walk. During the charge, dash
+## and recover the host moves the crab (and the client follows it).
+func client_can_drive(i: int) -> bool:
+	return i >= current_action.size() or current_action[i] == Hunt.IDLE \
+			or current_action[i] == Hunt.APPROACH
 
 
 # --- Hunt arrays (main thread) -------------------------------------------------
@@ -223,6 +267,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 						local_pending_spawn_id.append(i)
 			continue
 
+		var pl: Pilot = get_pilot(i) if pilot_id[i] >= 0 else null   # null = the AI
+		var fl := _floor_of(i)
 		var p := position_array[i]
 		var cx := mini(int(p.x / field_cell_size.x), W - 1)
 		var cy := mini(int(p.y / field_cell_size.y), H - 1)
@@ -233,7 +279,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 		var global_i := i + base
 
 	#--------HUNTING ON / OFF (hunger, with two thresholds so it doesn't flicker)
-		if current_action[i] == Hunt.IDLE and _energy < hunt_start_energy:
+		if pl != null:
+			pass                                         # a player decides when to hunt
+		elif current_action[i] == Hunt.IDLE and _energy < hunt_start_energy:
 			current_action[i] = Hunt.APPROACH            # hungry: start hunting
 		elif current_action[i] != Hunt.IDLE and _energy >= hunt_stop_energy:
 			if strike_ok:
@@ -244,6 +292,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 		var state: int = current_action[i]
 		if not strike_ok and state != Hunt.IDLE:
 			state = Hunt.APPROACH                    # no hunt arrays yet: simple seek
+		if pl != null:
+			state = Hunt.IDLE                        # a player crab: no AI hunt (see below)
 		var override_v := false             # CHARGE / DASH / RECOVER set the velocity directly
 		var forced_v := Vector3.ZERO
 
@@ -398,8 +448,14 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 		new_v = new_v.limit_length(max_speed)
 		if override_v:
 			new_v = forced_v                       # charge / dash / recover: no steering, no speed cap
-		if i == player_index:
-			new_v = player_velocity     # player-controlled: the AI is ignored
+		if pl != null and strike_ok:
+			# Player-controlled: walking, or its charge / dash / recover (ATTACK)
+			var gained := [0.0]
+			new_v = _player_velocity(pl, i, p, fl, delta, keep_charge, keep_recover,
+					now, preys, offs, catch_r2, gained)
+			_energy += gained[0]
+		elif pl != null:
+			new_v = control_velocity(pl, i, p, fl, delta)
 
 	#--------Growth (simulated time: happens when enough energy, no timer)
 		if current_action[i] == Hunt.IDLE:
@@ -422,18 +478,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 
 		current_energy_array[i] = _energy
 
-	#--------MOVE (tick time)
-		var q := p + new_v * delta
-		# borders (world is 0..size): wrap, or stop at the wall and bounce
-		if wrap_x: q.x = fposmod(q.x, world_size.x)
-		elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); new_v.x = -new_v.x
-		if wrap_y: q.y = fposmod(q.y, world_size.y)
-		elif q.y < 0.0 or q.y > world_size.y: q.y = clampf(q.y, 0.0, world_size.y); new_v.y = 0.0
-		if wrap_z: q.z = fposmod(q.z, world_size.z)
-		elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); new_v.z = -new_v.z
-		position_array[i] = q
-		new_velocity[i] = new_v
-		current_velocity[i] = new_v
+	#--------MOVE (tick time): on the height grid floors (walls, ledges, ceilings)
+		_ground_move(i, p, new_v, delta, world_size, wrap_x, wrap_y, wrap_z, pl)
 
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id
@@ -599,3 +645,111 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, lc := 0, col := Color(
 		return                               # world full (maxLife): nothing spawned
 	ensure_hunt_arrays(entity_count)
 	reset_hunt(i)                            # a reused slot must not keep a dead crab's dash
+	if i >= floor_y.size():
+		floor_y.append(pos.y)
+	else:
+		floor_y[i] = pos.y
+
+
+## Velocity of a player crab for this tick: walking, or its charge / dash / recover.
+## Worker thread: only this crab's arrays are written. Energy caught -> gained[0].
+func _player_velocity(pl: Pilot, i: int, p: Vector3, fl: float, delta: float,
+		keep_charge: float, keep_recover: float, now: float, preys: Array[ALIFE],
+		offs: PackedInt32Array, catch_r2: float, gained: Array) -> Vector3:
+	var v: Vector3 = current_velocity[i]
+	var out: Vector3
+	match current_action[i]:
+		Hunt.CHARGE:
+			out = v * keep_charge                    # stand still and aim
+			if now >= charge_end[i]:
+				hunt_dir[i] = pl.aim_dir()           # where you aim, locked now
+				current_action[i] = Hunt.DASH
+				hunt_timer[i] = dash_distance / maxf(dash_speed, 0.01)
+		Hunt.DASH:
+			out = hunt_dir[i] * dash_speed
+			var g := _try_catch(p, i + offs[species_id], preys, offs, catch_r2)
+			hunt_timer[i] -= delta
+			if g > 0.0 or hunt_timer[i] <= 0.0:
+				gained[0] = g
+				current_action[i] = Hunt.RECOVER     # hit or miss: out of breath
+				hunt_timer[i] = recover_time
+		Hunt.RECOVER:
+			out = v * keep_recover
+			hunt_timer[i] -= delta
+			if hunt_timer[i] <= 0.0:
+				current_action[i] = Hunt.IDLE
+		_:
+			current_action[i] = Hunt.IDLE
+			return control_velocity(pl, i, p, fl, delta)   # just walking
+	out.y = pilot_vertical(pl, p.y, delta, fl)       # falls off ledges during the moves too
+	return out
+
+
+# --- Walking on the height grid (same as cattle / catronaute) -----------------------------
+
+## Moves agent i by velocity v for this step. Borders: wrap, or bounce off the world's walls.
+## With a height grid (given by NavWorld): walks on the real floors, walls block (slides
+## along them; the AI turns away when stuck), falls off ledges, head stops under things.
+## Without one: stays on the flat ground (ground_y).
+## pl = its pilot (player-controlled): then v.y is the jump / fall from control_velocity.
+func _ground_move(i: int, p: Vector3, v: Vector3, delta: float, world_size: Vector3,
+		wrap_x: bool, wrap_y: bool, wrap_z: bool, pl: Pilot) -> void:
+	var hg := height_grid
+	var in_area := hg != null and (not hg.player_only or pl != null) and i < floor_y.size()
+	var fl: float = floor_y[i] if in_area else ground_y
+
+	# Vertical: AI falls when above its floor; a pilot's v.y already has jump + gravity
+	if pl == null:
+		v.y = current_velocity[i].y
+		if p.y > fl + 0.001:
+			v.y = maxf(v.y - gravity * delta, -max_fall_speed)
+		else:
+			v.y = maxf(v.y, 0.0)
+
+	var q := p + v * delta
+	if wrap_x: q.x = fposmod(q.x, world_size.x)
+	elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); v.x = -v.x
+	if wrap_z: q.z = fposmod(q.z, world_size.z)
+	elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); v.z = -v.z
+
+	if in_area:
+		var r := hg.move(p, q, fl)                 # (x, floor, z): walls, edges, slides
+		if pl == null:
+			var wanted := Vector2(q.x - p.x, q.z - p.z)
+			var got := Vector2(r.x - p.x, r.z - p.z)
+			if wanted.length_squared() > 1e-8 and got.length_squared() < wanted.length_squared() * 0.25:
+				# Blocked (or mostly): turn away in a new random direction
+				var a := randf() * TAU
+				var spd := Vector2(v.x, v.z).length()
+				v.x = cos(a) * spd
+				v.z = sin(a) * spd
+		q.x = r.x
+		q.z = r.z
+		fl = maxf(r.y, hg.solid_top_under(q.x, q.z, p.y))   # lands on solid tops too
+		floor_y[i] = fl
+		if q.y < fl:
+			q.y = fl                               # on the floor (or stepped up onto it)
+			v.y = maxf(v.y, 0.0)
+		var ceil_y := hg.ceiling_at(q.x, q.z, maxf(fl, p.y))
+		if q.y > ceil_y and ceil_y >= fl:
+			q.y = maxf(ceil_y, fl)                 # head under something
+			v.y = minf(v.y, 0.0)
+			if pl != null:
+				pl.vy = minf(pl.vy, 0.0)           # bumped the head: the jump ends
+	else:
+		if q.y < fl:
+			q.y = fl                               # flat ground
+			v.y = 0.0
+		if wrap_y: q.y = fposmod(q.y, world_size.y)
+		elif q.y > world_size.y:
+			q.y = world_size.y
+			v.y = 0.0
+
+	position_array[i] = q
+	new_velocity[i] = v
+	current_velocity[i] = v                  # the VELOCITY, not the step's displacement
+
+
+## The floor under agent i (last tick), or ground_y without a height grid.
+func _floor_of(i: int) -> float:
+	return floor_y[i] if height_grid != null and i < floor_y.size() else ground_y

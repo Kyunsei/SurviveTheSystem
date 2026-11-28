@@ -193,12 +193,11 @@ func _on_follow_stopped() -> void:
 
 func _kill(sp, i: int) -> void:
 	# Through energy, so the simulation handles death and removal as usual
-	sp.current_energy_array[i] = -1.0
+	alifemanager.when_free(func(): sp.current_energy_array[i] = -1.0)   # not mid-tick
 	agent_killed.emit(sp, i)
 	
 func _remove(sp, i: int) -> void:
-	# Through energy, so the simulation handles death and removal as usual
-	sp.Remove_Life(i)
+	alifemanager.when_free(func(): sp.Remove_Life(i))   # a pipelined tick may be running
 
 
 func _set_outline(sp, i: int) -> void:

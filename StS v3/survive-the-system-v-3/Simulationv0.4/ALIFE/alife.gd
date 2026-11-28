@@ -185,6 +185,37 @@ class ScentField:
 	var diffused_f := PackedFloat32Array()
 	var now_v := PackedVector3Array()            # vector fields
 	var diffused_v := PackedVector3Array()
+	# Diffusion in slices (see ALIFE.field_diffuse_slice): the result is written here,
+	# then swapped with diffused_*. Fresh every tick (so no other reference shares it).
+	var next_f := PackedFloat32Array()
+	var next_v := PackedVector3Array()
+	var run_skip := false                        # this tick: nothing to build (plants' flow)
+	var run_rate := 0.0                          # this tick: diffusion / fade used
+	var run_fade := 1.0
+
+	## Diffuses cells [start, end) of diffused_* into next_* (thread-safe: each slice
+	## writes its own cells, reads only diffused_*). nbr6: the 6 neighbours of each cell,
+	## a missing one replaced by the cell itself; kinv = 1 / real neighbours; miss = 6 - real.
+	func diffuse_slice(nbr6: PackedInt32Array, kinv: PackedFloat32Array, miss: PackedFloat32Array,
+			start: int, end: int) -> void:
+		var df := run_rate
+		var dc := run_fade
+		if is_vector:
+			var a := diffused_v
+			for c in range(start, end):
+				var sv := a[c]
+				var b := c * 6
+				var sum := a[nbr6[b]] + a[nbr6[b + 1]] + a[nbr6[b + 2]] \
+						+ a[nbr6[b + 3]] + a[nbr6[b + 4]] + a[nbr6[b + 5]]
+				next_v[c] = (sv + ((sum - sv * miss[c]) * kinv[c] - sv) * df) * dc
+		else:
+			var a := diffused_f
+			for c in range(start, end):
+				var sf := a[c]
+				var b := c * 6
+				var sum := a[nbr6[b]] + a[nbr6[b + 1]] + a[nbr6[b + 2]] \
+						+ a[nbr6[b + 3]] + a[nbr6[b + 4]] + a[nbr6[b + 5]]
+				next_f[c] = (sf + ((sum - sf * miss[c]) * kinv[c] - sf) * df) * dc
 
 var fields: Array[ScentField] = []
 var _field_ids := {}                             # name -> index in fields
@@ -299,6 +330,8 @@ func get_pilot(i: int) -> Pilot:
 ## vertical = false: horizontal only (y = 0).
 func control_velocity(pl: Pilot, i: int, p: Vector3, floor_h: float, delta: float,
 		vertical := true) -> Vector3:
+	if pl.client_driven:
+		return Vector3.ZERO               # network: its player's client moves it (NetSession)
 	var dir := Vector3(pl.input.move.x, 0.0, pl.input.move.y).limit_length(1.0)
 	var v: Vector3
 	if pl.dash_left > 0.0:
@@ -342,6 +375,13 @@ func pilot_vertical(pl: Pilot, y: float, dt: float, floor_h: float) -> float:
 	return pl.vy
 
 
+## Network, client authority: may the player's client move agent i itself right now?
+## false: the host moves it from the inputs (e.g. during a special move the client
+## doesn't simulate, like the spider's dash).
+func client_can_drive(_i: int) -> bool:
+	return true
+
+
 ## A controlled agent pressed `action` (a PlayerInput bit). Return true when the species
 ## did its own thing (e.g. a spider's charge on ATTACK); false = the default action runs.
 ## Main thread, before the tick: safe to change any array.
@@ -375,10 +415,6 @@ func _player_vertical(y: float, dt: float) -> float:
 			m = low_jump_multiplier
 		player_vy = maxf(player_vy - g * m * dt, -max_fall_speed)
 	return player_vy
-
-## Only seeds / fruits can be picked up, not grown trees.
-func can_be_carried(i: int) -> bool:
-	return true #current_life_state[i] == 0
 
 #Init part--------------------------------------------------------------------
 
@@ -545,6 +581,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 @export_range(0.8, 1.0, 0.001) var field_decay := 0.95
 
 var _nbr := PackedInt32Array()      # 6 neighbors per field cell, -1 = wall
+var _nbr6 := PackedInt32Array()     # same, a missing neighbour = the cell itself (no branch)
+var _nbr_kinv := PackedFloat32Array()   # per cell: 1 / number of real neighbours
+var _nbr_miss := PackedFloat32Array()   # per cell: 6 - number of real neighbours
 
 ## Call once at start, and again when the field size or border types change.
 func build_field_neighbors() -> void:
@@ -564,6 +603,20 @@ func build_field_neighbors() -> void:
 				_nbr[b + 3] = _nb(x, y - 1, z, c, W, H, D, wx, wy, wz)
 				_nbr[b + 4] = _nb(x, y, z + 1, c, W, H, D, wx, wy, wz)
 				_nbr[b + 5] = _nb(x, y, z - 1, c, W, H, D, wx, wy, wz)
+	# Branch-free copy for the sliced diffusion
+	var n := W * H * D
+	_nbr6.resize(n * 6)
+	_nbr_kinv.resize(n)
+	_nbr_miss.resize(n)
+	for c in n:
+		var k := 0
+		for j in 6:
+			var o := _nbr[c * 6 + j]
+			_nbr6[c * 6 + j] = o if o >= 0 else c
+			if o >= 0:
+				k += 1
+		_nbr_kinv[c] = 1.0 / k if k > 0 else 0.0
+		_nbr_miss[c] = 6.0 - k
 
 
 func _nb(x: int, y: int, z: int, self_c: int, W: int, H: int, D: int,
@@ -599,9 +652,25 @@ var _field_tick := 0
 var _fields_quiet := false          # no agents and fields already cleared: nothing to do
 
 
+## Builds every field of this species, in one go (one thread). AlifeManager runs the same
+## three steps in parallel instead (fields_begin per species, field_build_one per field,
+## fields_end), so species and fields are built at the same time on the worker threads.
 func build_field() -> void:
-	if not uses_fields:
+	if not fields_begin():
 		return
+	for k in fields.size():
+		field_build_one(k)
+	fields_end()
+
+
+var _fb_every := 1                   # set by fields_begin for field_build_one
+var _fb_weight := 1.0
+
+## Fields, step 1 (thread-safe, one call per species): the checks, then the field cell of
+## every agent (shared by all its fields). Returns true if this species builds this tick.
+func fields_begin() -> bool:
+	if not uses_fields:
+		return false
 
 	# Nobody left: clear the fields once, then skip until agents come back
 	if active_entity_count == 0:
@@ -610,23 +679,23 @@ func build_field() -> void:
 				_size_field(f)                   # back to zero
 			_sync_legacy_fields()
 			_fields_quiet = true
-		return
+		return false
 	_fields_quiet = false
 
 	# Only every Nth tick, staggered between species
 	_field_tick += 1
 	var every := maxi(field_every, 1)
 	if every > 1 and (_field_tick + species_id) % every != 0:
-		return
-	var weight := float(every)                   # N ticks of deposits in one go
+		return false
+	_fb_every = every
+	_fb_weight = float(every)                    # N ticks of deposits in one go
 
 	var field_cell_size := alifemanager.field_cell_size
 	var W := FIELD_W; var H := FIELD_H; var D := FIELD_D
 	var n := entity_count
-	var N := FIELD_NUM_CELLS
 	var inv := Vector3.ONE / field_cell_size
 
-	# 1. Field cell of every agent not in the pool, once for all fields (-1 = no deposit)
+	# Field cell of every agent not in the pool, once for all fields (-1 = no deposit)
 	_agent_field_cell.resize(n)
 	for i in n:
 		if active_alife_array[i] == 0:
@@ -636,52 +705,101 @@ func build_field() -> void:
 		_agent_field_cell[i] = clampi(int(p.x * inv.x), 0, W - 1) \
 			+ W * (clampi(int(p.y * inv.y), 0, H - 1) \
 			+ H * clampi(int(p.z * inv.z), 0, D - 1))
+	return true
 
-	# 2. Deposit, then diffuse, field by field
-	for f in fields:
-		if f.is_vector and not moves:
-			continue                             # plants: flow stays zero, nothing to spread
-		var rate := f.diffusion if f.diffusion >= 0.0 else field_diffusion
-		var fade := f.decay if f.decay >= 0.0 else field_decay
-		if every > 1:
-			fade = pow(fade, every)              # N ticks of fading in one go
-		var check_stage := f.min_stage >= 0 or f.max_stage >= 0
-		var mask := f.state_mask
 
-		if f.is_vector:
-			var now := f.now_v
-			now.fill(Vector3.ZERO)
-			var dif := f.diffused_v
-			for i in n:
-				var c := _agent_field_cell[i]
-				if c < 0 or (mask >> active_alife_array[i]) & 1 == 0:
-					continue
-				if f.only_alive and alive_array[i] == 0:
-					continue
-				if check_stage and not _in_stages(f, current_life_state[i]):
-					continue
-				var v := current_velocity[i] * weight
-				now[c] += v
-				dif[c] += v
-			f.now_v = now
-			f.diffused_v = _diffuse_v(dif, rate, fade)
-		else:
-			var now := f.now_f
-			now.fill(0.0)
-			var dif := f.diffused_f
-			for i in n:
-				var c := _agent_field_cell[i]
-				if c < 0 or (mask >> active_alife_array[i]) & 1 == 0:
-					continue
-				if f.only_alive and alive_array[i] == 0:
-					continue
-				if check_stage and not _in_stages(f, current_life_state[i]):
-					continue
-				now[c] += weight
-				dif[c] += weight
-			f.now_f = now
-			f.diffused_f = _diffuse_f(dif, rate, fade)
+## Fields, step 2 (one call per field, any thread; needs fields_begin() first).
+## Serial version: deposit + diffuse the whole field. AlifeManager splits it instead:
+## field_deposit (per field) then field_diffuse_slice (per field and range of cells).
+func field_build_one(k: int) -> void:
+	if not field_deposit(k):
+		return
+	field_prepare_diffuse(k)
+	field_diffuse_slice(k, 0, FIELD_NUM_CELLS)
+	field_diffuse_end(k)
 
+
+## Deposit of field k (thread-safe, one call per field). False: nothing to build.
+func field_deposit(k: int) -> bool:
+	var f: ScentField = fields[k]
+	f.run_skip = f.is_vector and not moves
+	if f.run_skip:
+		return false                             # plants: flow stays zero, nothing to spread
+	var n := mini(entity_count, _agent_field_cell.size())
+	var every := _fb_every
+	var weight := _fb_weight
+	f.run_rate = f.diffusion if f.diffusion >= 0.0 else field_diffusion
+	f.run_fade = f.decay if f.decay >= 0.0 else field_decay
+	if every > 1:
+		f.run_fade = pow(f.run_fade, every)      # N ticks of fading in one go
+	var check_stage := f.min_stage >= 0 or f.max_stage >= 0
+	var mask := f.state_mask
+
+	if f.is_vector:
+		var now := f.now_v
+		now.fill(Vector3.ZERO)
+		var dif := f.diffused_v
+		for i in n:
+			var c := _agent_field_cell[i]
+			if c < 0 or (mask >> active_alife_array[i]) & 1 == 0:
+				continue
+			if f.only_alive and alive_array[i] == 0:
+				continue
+			if check_stage and not _in_stages(f, current_life_state[i]):
+				continue
+			var v := current_velocity[i] * weight
+			now[c] += v
+			dif[c] += v
+		f.now_v = now
+		f.diffused_v = dif
+	else:
+		var now := f.now_f
+		now.fill(0.0)
+		var dif := f.diffused_f
+		for i in n:
+			var c := _agent_field_cell[i]
+			if c < 0 or (mask >> active_alife_array[i]) & 1 == 0:
+				continue
+			if f.only_alive and alive_array[i] == 0:
+				continue
+			if check_stage and not _in_stages(f, current_life_state[i]):
+				continue
+			now[c] += weight
+			dif[c] += weight
+		f.now_f = now
+		f.diffused_f = dif
+	return true
+
+
+## Main thread, before the slices: a fresh output buffer for field k.
+func field_prepare_diffuse(k: int) -> void:
+	var f: ScentField = fields[k]
+	if f.is_vector:
+		f.next_v = PackedVector3Array()
+		f.next_v.resize(FIELD_NUM_CELLS)
+	else:
+		f.next_f = PackedFloat32Array()
+		f.next_f.resize(FIELD_NUM_CELLS)
+
+
+## Diffuses cells [start, end) of field k (thread-safe: slices of one field can run at once).
+func field_diffuse_slice(k: int, start: int, end: int) -> void:
+	fields[k].diffuse_slice(_nbr6, _nbr_kinv, _nbr_miss, start, mini(end, FIELD_NUM_CELLS))
+
+
+## Main thread, after all slices of field k: the result becomes its lasting scent.
+func field_diffuse_end(k: int) -> void:
+	var f: ScentField = fields[k]
+	if f.is_vector:
+		f.diffused_v = f.next_v
+		f.next_v = PackedVector3Array()
+	else:
+		f.diffused_f = f.next_f
+		f.next_f = PackedFloat32Array()
+
+
+## Fields, step 3 (main thread, after all its fields are built).
+func fields_end() -> void:
 	_sync_legacy_fields()
 
 'func build_field() -> void:

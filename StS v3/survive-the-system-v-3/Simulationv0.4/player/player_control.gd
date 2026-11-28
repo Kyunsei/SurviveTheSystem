@@ -861,6 +861,10 @@ func _on_button_pressed() -> void:
 func spawn_and_control(sname := "", at := Vector3.INF) -> int:
 	if is_net_client():
 		return -1                                # the host spawns the players' agents
+	if alifemanager.tick_running():
+		# Pipelined tick running: spawn right after it (arrays are busy now)
+		alifemanager.when_free(spawn_and_control.bind(sname, at))
+		return -1
 	if sname == "":
 		sname = spawn_species
 	var sp = alifemanager.codex.species.get(sname)

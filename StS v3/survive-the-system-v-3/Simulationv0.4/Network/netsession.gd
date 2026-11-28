@@ -50,6 +50,23 @@ extends Node
 ## A prediction error bigger than this (world units) is not blended: the agent jumps.
 @export var snap_distance := 4.0
 
+@export_group("Client authority (host)")
+## On: each player's client moves its own agent (instant, no correction) and sends where
+## it is; the host only CHECKS it (not faster than its species can go, no going through
+## walls on the height grid) and corrects it only when it isn't plausible.
+## Off: the host moves everyone from the inputs (prediction + correction on the client).
+## The host's value decides. Also a checkbox in the lobby panel.
+@export var client_authority := true
+## Extra distance allowed on top of the species' top speed (lag spikes, wrap...).
+@export var move_tolerance := 1.0
+## A claimed position whose path the height grid ends farther than this from it: refused.
+@export var wall_tolerance := 0.5
+## No position from a driving client for this long (it doesn't send any: prediction off,
+## old build...): the host moves its agent from the inputs again.
+@export var position_timeout := 0.3
+## Print on the host why a client's position was refused (at most once per second).
+@export var debug_refusals := true
+
 @export_group("Lobby panel")
 @export var show_lobby := true
 @export var default_address := "127.0.0.1"
@@ -80,6 +97,12 @@ var _pred_pos := Vector3.ZERO                 # predicted position (corrected at
 var _pred_floor := 0.0
 var _pred_vel := Vector3.ZERO
 var _visual_offset := Vector3.ZERO            # drawn = predicted + this; fades to zero
+var _authority_on := false                    # client: the host uses client authority
+var _host_lets_drive := false                 # client: we move our agent now (send our position)
+var _last_corr := -1                          # client: last correction counter seen
+var _refusal_print := 0.0                     # host: next time a refusal may be printed
+var _snap_flags := 0                          # host: flags / corrections of the snapshot being built
+var _snap_corr := 0
 var _hist_seq := PackedInt32Array()           # input seq -> predicted position after it
 var _hist_pos := PackedVector3Array()
 const HISTORY := 256
@@ -97,9 +120,10 @@ var _list := Label.new()
 
 
 func _ready() -> void:
-	# After the simulation (0): snapshots show this frame's tick. Before the camera (10):
-	# on a client, the camera follows where we just put our agent (no one-frame lag).
+	# Before the camera (10): on a client, the camera follows where we just put our agent.
+	# Host work runs in between_ticks (called by SimulationManager when arrays are free).
 	process_priority = 5
+	add_to_group("between_ticks")
 	_press_counts.resize(10)
 	if pilots == null and alifemanager != null:
 		pilots = PilotSystem.ensure(alifemanager)
@@ -135,15 +159,22 @@ func _process(delta: float) -> void:
 			_predict(inp, delta)              # before pack_input (it clears the presses)
 			Network.send_input(pack_input(inp))
 		_client_interpolate(delta)
-	elif Network.is_host():
-		if pilots._world_ready():
-			Network.accept_pending()          # players who said hello: spawn their agents
-		_host_stop_silent_players()
-		_snap_timer += delta
-		var every := 1.0 / maxf(snapshot_rate, 1.0)
-		if _snap_timer >= every:
-			_snap_timer = fmod(_snap_timer, every)
-			_host_send_snapshots()
+
+
+## Host: called by SimulationManager right before each tick, when the species arrays are
+## free (also with the pipelined tick): spawn joining players, apply their moves, snapshots.
+func between_ticks(delta: float) -> void:
+	if not Network.is_host():
+		return
+	if pilots._world_ready():
+		Network.accept_pending()              # players who said hello: spawn their agents
+	_host_stop_silent_players()
+	_host_apply_client_moves()
+	_snap_timer += delta
+	var every := 1.0 / maxf(snapshot_rate, 1.0)
+	if _snap_timer >= every:
+		_snap_timer = fmod(_snap_timer, every)
+		_host_send_snapshots()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -165,6 +196,13 @@ func pack_input(inp: PlayerInput) -> PackedByteArray:
 	inp.pressed = 0
 	var b := inp.to_bytes()
 	b.append_array(_press_counts)
+	if _host_lets_drive and _pred_on:
+		var o := b.size()                     # client authority: where our agent is
+		b.resize(o + 16)
+		b.encode_float(o, _pred_pos.x)
+		b.encode_float(o + 4, _pred_pos.y)
+		b.encode_float(o + 8, _pred_pos.z)
+		b.encode_float(o + 12, _pred_floor)
 	return b
 
 
@@ -183,6 +221,11 @@ func host_receive_input(_peer_id: int, slot: int, bytes: PackedByteArray) -> voi
 	inp.encode_u16(6, pressed)
 	pilots.receive_input(slot, inp)
 	_last_input_time[slot] = _now()
+	# Client authority: where the client says its agent is (+ its floor)
+	if bytes.size() >= 38 and slot < pilots.pilots.size() and pilots.pilots[slot] != null:
+		var pl: Pilot = pilots.pilots[slot]
+		pl.net_pos = Vector3(bytes.decode_float(22), bytes.decode_float(26), bytes.decode_float(30))
+		pl.net_has_pos = true
 
 
 # --- Host side ---------------------------------------------------------------------------------
@@ -214,6 +257,10 @@ func host_player_joined(peer_id: int) -> void:
 
 
 func host_player_left(peer_id: int) -> void:
+	alifemanager.when_free(_host_player_left.bind(peer_id))   # a tick may be running
+
+
+func _host_player_left(peer_id: int) -> void:
 	for pl in pilots.pilots_of(peer_id):
 		var sp = pl.species
 		var i: int = pl.index
@@ -288,6 +335,9 @@ func _on_left() -> void:
 	_maps.clear()
 	_last_seq = -1
 	_own_species = -1
+	_authority_on = false
+	_host_lets_drive = false
+	_last_corr = -1
 	if sim_manager != null and not sim_manager.running:
 		sim_manager.running = true            # back to our own world (solo)
 	_refresh_ui()
@@ -334,6 +384,14 @@ func _build_ui() -> void:
 	_host_btn.pressed.connect(_on_host_pressed)
 	_join_btn.pressed.connect(_on_join_pressed)
 	_leave_btn.pressed.connect(Network.leave)
+
+	var auth := CheckBox.new()
+	auth.text = "Players move their own agent"
+	auth.tooltip_text = "Client authority (host decides): instant movement, the host only checks it"
+	auth.button_pressed = client_authority
+	auth.focus_mode = Control.FOCUS_NONE
+	auth.toggled.connect(func(on): client_authority = on)
+	box.add_child(auth)
 
 	_status.text = "Offline"
 	box.add_child(_status)
@@ -387,11 +445,13 @@ func _refresh_ui() -> void:
 # Packet (zstd compressed, preceded by its raw size as u32):
 #   u32 seq, f32 host time, u16 number of species blocks, u16 0,
 #   u32 ack: the last input seq of this client the host has applied (prediction)
+#   u8 flags (1: you drive your agent now, 2: client authority is on), u8 0,
+#   u16 corrections: goes up each time the host refused this client's position
 #   per species block: u8 species id, u16 n, then n agents of 15 bytes:
 #     u32 host index, u16 x, u16 z, u16 y (quantized over the world size),
 #     u8 size x10, u8 life stage, u8 state (active state | alive << 3), u16 color 4:4:4
 const AGENT_BYTES := 15
-const HEADER_BYTES := 16
+const HEADER_BYTES := 20
 
 
 func _now() -> float:
@@ -421,10 +481,18 @@ func _host_send_snapshots() -> void:
 		var slot: int = Network.players[id]["slot"]
 		var center: Vector3 = _centers.get(id, _spawn_spot())
 		var ack := 0
+		var flags := 2 if client_authority else 0
+		var corr := 0
 		if slot >= 0 and slot < pilots.pilots.size() and pilots.pilots[slot] != null:
-			center = pilots.pilots[slot].position()
-			ack = pilots.pilots[slot].input.seq
+			var pl: Pilot = pilots.pilots[slot]
+			center = pl.position()
+			ack = pl.input.seq
+			if pl.net_allow:
+				flags |= 1
+			corr = pl.net_corrections
 		_centers[id] = center
+		_snap_flags = flags
+		_snap_corr = corr
 		Network.send_snapshot(id, build_snapshot(center, ack))
 
 
@@ -501,6 +569,9 @@ func _pack(lists: Array, total: int, ack := 0) -> PackedByteArray:
 	raw.encode_u16(8, blocks)
 	raw.encode_u16(10, 0)
 	raw.encode_u32(12, ack)
+	raw.encode_u8(16, _snap_flags)
+	raw.encode_u8(17, 0)
+	raw.encode_u16(18, _snap_corr & 0xFFFF)
 	var ws := WorldWrap.size
 	var q := Vector3(65535.0 / maxf(ws.x, 0.001), 65535.0 / maxf(ws.y, 0.001),
 			65535.0 / maxf(ws.z, 0.001))
@@ -633,7 +704,9 @@ func client_snapshot(bytes: PackedByteArray) -> void:
 				map.erase(hi)
 
 	_follow_own()
-	_reconcile(raw.decode_u32(12))
+	_client_authority_state(raw.decode_u8(16), raw.decode_u16(18))
+	if not _authority_on:
+		_reconcile(raw.decode_u32(12))        # host moves us: prediction + correction
 
 
 ## A local agent to mirror a host agent. Returns its local index, -1 if the world is full.
@@ -726,8 +799,9 @@ func _predict(inp: PlayerInput, delta: float) -> void:
 		return
 	var sp = alifemanager.species_array[_own_species]
 	var l: int = e["l"]
-	if sp.active_alife_array[l] != AlifeManager.ACTIVE:
-		_pred_on = false                      # carried / thrown: the host moves it, just follow
+	if sp.active_alife_array[l] != AlifeManager.ACTIVE \
+			or (_authority_on and not _host_lets_drive):
+		_pred_on = false                      # carried / thrown / a host-driven move: follow
 		return
 	if not _pred_on or _pred == null or _pred.species != sp or _pred.index != l:
 		_pred = Pilot.new()                   # start predicting from the host's position
@@ -819,3 +893,97 @@ func _reconcile(ack: int) -> void:
 		_visual_offset = Vector3.ZERO         # too far: jump there
 	else:
 		_visual_offset -= err                 # drawn where it was, then slides to the fix
+
+
+# --- Client authority ---------------------------------------------------------------------------
+
+## Host: for each player allowed to drive (client_authority, its agent in the world, and its
+## species agrees), take the position its client sent if it is plausible:
+##   - not farther than its species' top speed (sprint / dash) allows since the last one
+##   - the height grid lets it go there (no walking through walls, onto nothing...)
+## Refused: the agent stays where it is, and the client is told to snap back (corrections).
+## While a player drives, the species doesn't move its agent (Pilot.client_driven).
+func _host_apply_client_moves() -> void:
+	var now := _now()
+	for id in Network.players:
+		if id == 1:
+			continue
+		var slot: int = Network.players[id]["slot"]
+		if slot < 0 or slot >= pilots.pilots.size() or pilots.pilots[slot] == null:
+			continue
+		var pl: Pilot = pilots.pilots[slot]
+		var sp = pl.species
+		var i := pl.index
+		var drive: bool = client_authority and sp.active_alife_array[i] == AlifeManager.ACTIVE \
+				and (not sp.has_method("client_can_drive") or sp.client_can_drive(i))
+		if not drive:
+			pl.net_allow = false              # carried, thrown, a special move: host drives
+			pl.client_driven = false
+			pl.net_has_pos = false
+			pl.net_time = now
+			continue
+		pl.net_allow = true                   # the client may drive (told in each snapshot)
+		if not pl.net_has_pos:
+			# No position lately (prediction off, old build, lag): the host moves it from
+			# the inputs meanwhile, so it never freezes
+			if pl.client_driven and now - pl.net_time > position_timeout:
+				pl.client_driven = false
+			continue
+		pl.net_has_pos = false
+		var elapsed := clampf(now - pl.net_time, 0.0, 0.5) if pl.net_time > 0.0 else 0.1
+		pl.net_time = now
+
+		var cur: Vector3 = sp.position_array[i]
+		var d := _near(pl.net_pos, cur) - cur
+		var top: float = sp.control_speed * maxf(sp.sprint_multiplier, sp.dash_multiplier)
+		var allowed := top * elapsed * 1.5 + move_tolerance
+		var ok := Vector2(d.x, d.z).length() <= allowed
+		var why := "" if ok else "too fast: moved %.2f, allowed %.2f in %.3f s" % [
+				Vector2(d.x, d.z).length(), allowed, elapsed]
+		var target := cur + d
+		var hg: HeightGrid = sp.height_grid if "height_grid" in sp else null
+		var fl: float = target.y
+		if ok and hg != null:
+			var cur_fl: float = sp.floor_y[i] if "floor_y" in sp and i < sp.floor_y.size() else cur.y
+			var r := hg.move(cur, target, cur_fl)
+			var off := Vector2(r.x - target.x, r.z - target.z).length()
+			if off > wall_tolerance:
+				ok = false                    # the path goes through a wall
+				why = "blocked by the height grid: ends %.2f away from the claimed spot" % off
+			fl = r.y
+		if not ok:
+			pl.net_corrections += 1           # not plausible: the client snaps back
+			if debug_refusals and now >= _refusal_print:
+				_refusal_print = now + 1.0
+				print("NetSession: refused peer %d position (%s) %s -> %s" % [
+						id, why, cur, pl.net_pos])
+			continue
+		pl.client_driven = true               # positions arrive: the species leaves it to them
+		target.y = maxf(target.y, fl)         # never under its floor
+		sp.position_array[i] = WorldWrap.wrap_into(target)
+		if "floor_y" in sp and i < sp.floor_y.size():
+			sp.floor_y[i] = fl
+		sp.current_velocity[i] = d / maxf(elapsed, 0.016)   # facing / animation for everyone
+
+
+## Client: what the host says about our agent, read from each snapshot.
+func _client_authority_state(flags: int, corrections: int) -> void:
+	var was_driving := _host_lets_drive
+	_authority_on = flags & 2 != 0
+	_host_lets_drive = _authority_on and flags & 1 != 0
+	if _host_lets_drive and not was_driving:
+		_pred_on = false                      # we drive again: restart from the host's position
+	if _last_corr >= 0 and corrections != _last_corr and _pred_on:
+		var e = _own_entry()                  # the host refused our position: snap back to it
+		if e != null:
+			_pred_pos = e["next"]
+			_pred_floor = _pred_pos.y
+			_visual_offset = Vector3.ZERO
+			_hist_seq.clear()
+			_hist_pos.clear()
+	_last_corr = corrections
+	if Network.is_client() and controller != null and controller.remote_slot >= 0:
+		var mode := "host moves you (prediction)"
+		if _authority_on:
+			mode = "you move your agent" if _host_lets_drive else "host moves you (carried / special move)"
+		_set_status("Playing   ·   %s   ·   corrections %d" % [mode, corrections])

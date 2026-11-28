@@ -36,6 +36,14 @@ var target_species = null
 var target_index := -1
 var target_machine = null
 
+# --- Network: client authority (host side, see NetSession) ------------------------------------
+var net_allow := false            # its client may move it now (flag sent in the snapshots)
+var client_driven := false        # positions arrive: the species leaves it in place
+var net_pos := Vector3.ZERO       # last position its client sent
+var net_has_pos := false          # a new one arrived since the last check
+var net_time := 0.0               # real time of the last check
+var net_corrections := 0          # positions refused (the client snaps back on a change)
+
 # --- Last attack (the debug box): attack_serial goes up by one per attack -------------------
 var attack_serial := 0
 var attack_origin := Vector3.ZERO

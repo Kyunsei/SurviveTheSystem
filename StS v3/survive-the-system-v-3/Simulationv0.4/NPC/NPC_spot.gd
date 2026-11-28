@@ -29,11 +29,18 @@ var _gizmo := MeshInstance3D.new()
 
 
 func _ready() -> void:
+	add_to_group("between_ticks")
 	add_child(_gizmo, false, Node.INTERNAL_MODE_FRONT)
 	_update_gizmo()
 
 
-func _process(delta: float) -> void:
+## Called by SimulationManager right before each tick, when the species arrays are free
+## (also with the pipelined tick). Spawning from _process could hit a running tick.
+func between_ticks(delta: float) -> void:
+	_step(delta)
+
+
+func _step(delta: float) -> void:
 	if Engine.is_editor_hint() or alifemanager == null or npc_data == null:
 		return
 	if not multiplayer.is_server():

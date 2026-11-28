@@ -62,7 +62,11 @@ var adult_field := -1                # life state 2
 var egg_push_speed := 1.0            # max speed of eggs pushed apart by other eggs
 var idle_nudge := 0.5                # random push when standing still (0 = none)
 var ground_animal := true            # walks on the ground: no vertical movement (AI-driven)
-#var ground_y := 0.0
+var gravity := 20.0                  # falling off a ledge (units / s²)
+
+#WALKABLE AREA (given by NavWorld; null = flat ground at ground_y, no walls)
+var height_grid: HeightGrid = null
+var floor_y := PackedFloat32Array()  # height of the floor under each sheep
 
 
 
@@ -124,10 +128,37 @@ func _init() -> void:
 
 	idle_nudge = 0.5
 
+	#CONTROL (when a player plays a sheep): walks, runs, small hop, eats, carries nothing big
+	uses_pilots = true
+	control_speed = 4.0
+	sprint_multiplier = 1.8
+	can_jump = true
+	jump_height = 2.0
+	control_actions = PlayerInput.SPRINT | PlayerInput.JUMP | PlayerInput.ACTION \
+			| PlayerInput.PICK_UP | PlayerInput.DROP | PlayerInput.EAT
+
 	#Life cycle fields: one per stage, living sheep only
 	egg_field = add_field("egg", FieldSource.COUNT, -1.0, -1.0, true, 0, 0)
 	juvenile_field = add_field("juvenile", FieldSource.COUNT, -1.0, -1.0, true, 1, 1)
 	adult_field = add_field("adult", FieldSource.COUNT, -1.0, -1.0, true, 2)     # 2 and above
+
+
+func _init_alife_par():
+	super()
+	floor_y = []
+
+
+## Same as every species, then the floor under the new sheep (where it was spawned).
+func Build_New_Life(pos: Vector3, e: float = seed_energy, lc := 0, col := Color(0.159, 0.555, 0.215, 1.0)):
+	var i: int = free_indices[free_indices.size() - 1] if free_indices.size() > 0 else entity_count
+	var before := active_entity_count
+	super(pos, e, lc, col)
+	if active_entity_count == before:
+		return                               # world full (maxLife): nothing spawned
+	if i >= floor_y.size():
+		floor_y.append(pos.y)
+	else:
+		floor_y[i] = pos.y
 
 
 ## The state machine: next state from the current one, energy and closest predator.
@@ -229,7 +260,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 		var g_cost:=  growth_cost[lifecycle]
 		var _energy:= current_energy_array[i]
 		var is_egg := lifecycle == 0
-		var is_player := i == player_index
+		var pl: Pilot = get_pilot(i) if pilot_id[i] >= 0 else null   # null = the AI
+		var is_player := pl != null
 
 		var p := position_array[i]
 		var v:Vector3= current_velocity[i]
@@ -321,8 +353,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 			if ground_animal:
 				egg_v.y = 0.0
 			if is_player:
-				egg_v = player_velocity
-			_move(i, p, egg_v, step, world_size, wrap_x, wrap_y, wrap_z, is_player)
+				egg_v = control_velocity(pl, i, p, _floor_of(i), step)
+			_ground_move(i, p, egg_v, step, world_size, wrap_x, wrap_y, wrap_z, pl)
 			continue
 
 		# Field cell (scent grid)
@@ -446,7 +478,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 			new_v.y = 0.0
 
 		if is_player:
-			new_v = player_velocity     # player-controlled: the AI is ignored (dt is applied below)
+			new_v = control_velocity(pl, i, p, _floor_of(i), delta)   # the keys decide
 
 	#--------Growth
 		if _energy >= g_cost*1.2 and lifecycle < max_life_cycle:
@@ -478,30 +510,10 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 		current_energy_array[i] = _energy
 
 	#--------MOVE (velocity is per second: dt only here)
-		_move(i, p, new_v, delta, world_size, wrap_x, wrap_y, wrap_z, is_player)
+		_ground_move(i, p, new_v, delta, world_size, wrap_x, wrap_y, wrap_z, pl)
 
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id
-
-
-## Moves agent i by velocity v for this step: wraps or bounces off the world's borders,
-## keeps ground animals on the ground. Stores the new position and velocity.
-func _move(i: int, p: Vector3, v: Vector3, delta: float, world_size: Vector3,
-		wrap_x: bool, wrap_y: bool, wrap_z: bool, is_player: bool) -> void:
-	var q := p + v * delta 
-	if wrap_x: q.x = fposmod(q.x, world_size.x)
-	elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); v.x = -v.x
-	if ground_animal and not is_player:
-		q.y = ground_y                         # stays on the ground
-	elif wrap_y: q.y = fposmod(q.y, world_size.y)
-	elif q.y < 0.0 or q.y > world_size.y:
-		q.y = clampf(q.y, 0.0, world_size.y)
-		v.y = 0.0                              # floor / ceiling: stop, never bounce up
-	if wrap_z: q.z = fposmod(q.z, world_size.z)
-	elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); v.z = -v.z
-	position_array[i] = q
-	new_velocity[i] = v
-	current_velocity[i] = v                  # the VELOCITY, not the step's displacement
 
 
 ## A species of this world by its species_name, or null.
@@ -586,3 +598,73 @@ func _nearest_food(p: Vector3, me: int, food_sp: ALIFE, max_stage: int, dead_max
 							best = j
 							best_d = d
 	return Vector4(best_d.x, best_d.y, best_d.z, float(best))
+
+
+# --- Walking on the height grid (same as cattle / catronaute) -----------------------------
+
+## Moves agent i by velocity v for this step. Borders: wrap, or bounce off the world's walls.
+## With a height grid (given by NavWorld): walks on the real floors, walls block (slides
+## along them; the AI turns away when stuck), falls off ledges, head stops under things.
+## Without one: stays on the flat ground (ground_y).
+## pl = its pilot (player-controlled): then v.y is the jump / fall from control_velocity.
+func _ground_move(i: int, p: Vector3, v: Vector3, delta: float, world_size: Vector3,
+		wrap_x: bool, wrap_y: bool, wrap_z: bool, pl: Pilot) -> void:
+	var hg := height_grid
+	var in_area := hg != null and (not hg.player_only or pl != null) and i < floor_y.size()
+	var fl: float = floor_y[i] if in_area else ground_y
+
+	# Vertical: AI falls when above its floor; a pilot's v.y already has jump + gravity
+	if pl == null:
+		v.y = current_velocity[i].y
+		if p.y > fl + 0.001:
+			v.y = maxf(v.y - gravity * delta, -max_fall_speed)
+		else:
+			v.y = maxf(v.y, 0.0)
+
+	var q := p + v * delta
+	if wrap_x: q.x = fposmod(q.x, world_size.x)
+	elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); v.x = -v.x
+	if wrap_z: q.z = fposmod(q.z, world_size.z)
+	elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); v.z = -v.z
+
+	if in_area:
+		var r := hg.move(p, q, fl)                 # (x, floor, z): walls, edges, slides
+		if pl == null:
+			var wanted := Vector2(q.x - p.x, q.z - p.z)
+			var got := Vector2(r.x - p.x, r.z - p.z)
+			if wanted.length_squared() > 1e-8 and got.length_squared() < wanted.length_squared() * 0.25:
+				# Blocked (or mostly): turn away in a new random direction
+				var a := randf() * TAU
+				var spd := Vector2(v.x, v.z).length()
+				v.x = cos(a) * spd
+				v.z = sin(a) * spd
+		q.x = r.x
+		q.z = r.z
+		fl = maxf(r.y, hg.solid_top_under(q.x, q.z, p.y))   # lands on solid tops too
+		floor_y[i] = fl
+		if q.y < fl:
+			q.y = fl                               # on the floor (or stepped up onto it)
+			v.y = maxf(v.y, 0.0)
+		var ceil_y := hg.ceiling_at(q.x, q.z, maxf(fl, p.y))
+		if q.y > ceil_y and ceil_y >= fl:
+			q.y = maxf(ceil_y, fl)                 # head under something
+			v.y = minf(v.y, 0.0)
+			if pl != null:
+				pl.vy = minf(pl.vy, 0.0)           # bumped the head: the jump ends
+	else:
+		if q.y < fl:
+			q.y = fl                               # flat ground
+			v.y = 0.0
+		if wrap_y: q.y = fposmod(q.y, world_size.y)
+		elif q.y > world_size.y:
+			q.y = world_size.y
+			v.y = 0.0
+
+	position_array[i] = q
+	new_velocity[i] = v
+	current_velocity[i] = v                  # the VELOCITY, not the step's displacement
+
+
+## The floor under agent i (last tick), or ground_y without a height grid.
+func _floor_of(i: int) -> float:
+	return floor_y[i] if height_grid != null and i < floor_y.size() else ground_y

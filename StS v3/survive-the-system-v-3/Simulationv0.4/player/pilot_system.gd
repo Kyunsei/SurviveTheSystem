@@ -2,7 +2,8 @@ class_name PilotSystem
 extends Node
 ## Every controlled agent (Pilot): solo, several players, or network players later.
 ##
-## Runs each frame BEFORE the simulation (process_priority -10):
+## Runs right BEFORE each simulation tick (SimulationManager calls between_ticks), when the
+## species arrays are free, also in pipelined mode:
 ##   1. reads each pilot's input (local: pilot.poll, network: receive_input)
 ##   2. does its ACTIONS on the main thread: pick up, drop, throw, eat, attack, use, interact,
 ##      dash, jump buffer. The species decides which actions it has (species.control_actions)
@@ -57,6 +58,7 @@ signal ate(pilot: Pilot, food_species, food_index: int)
 var pilots: Array = []                        # slot -> Pilot, or null (free slot)
 var _flights: Array[Dictionary] = []          # thrown items in the air: {sp, j, pos, vel}
 var _legacy := {}                             # older species driven through player_index
+var _last_delta := 0.0
 
 
 ## The PilotSystem of this AlifeManager (its child "Pilots"), created if missing.
@@ -75,7 +77,7 @@ static func ensure(am: AlifeManager) -> PilotSystem:
 
 
 func _ready() -> void:
-	process_priority = -10                    # before SimulationManager: inputs, then the tick
+	add_to_group("between_ticks")             # SimulationManager calls between_ticks()
 
 
 ## Solo, or the host: inputs are applied here. A client only sends its inputs.
@@ -121,7 +123,7 @@ func remove_pilot(pl: Pilot) -> void:
 	var sp = pl.species
 	if pl.index < sp.pilot_id.size() and sp.pilot_id[pl.index] == pl.id:
 		if sp.active_alife_array[pl.index] != 0:
-			_drop(pl)
+			alifemanager.when_free(_drop.bind(pl))   # arrays may be busy (pipelined tick)
 		sp.pilot_id[pl.index] = -1
 	pilots[pl.id] = null
 	pl.charging = false
@@ -149,9 +151,12 @@ func receive_input(pilot_slot: int, bytes: PackedByteArray) -> void:
 
 # --- Per frame ---------------------------------------------------------------------------
 
-func _process(delta: float) -> void:
+## Called by SimulationManager right before each tick (arrays free). delta = real time
+## since the last call.
+func between_ticks(delta: float) -> void:
 	if alifemanager == null or not _world_ready():
 		return
+	_last_delta = delta
 	for pl in pilots.duplicate():
 		if pl == null:
 			continue
@@ -658,7 +663,7 @@ func _sync_legacy() -> void:
 		if pl.jump_buffer > 0.0:
 			sp.player_jump_buffer = pl.jump_buffer
 			pl.jump_buffer = 0.0
-		sp.player_jump_buffer = maxf(sp.player_jump_buffer - get_process_delta_time(), 0.0)
+		sp.player_jump_buffer = maxf(sp.player_jump_buffer - _last_delta, 0.0)
 	for sp in _legacy.keys():
 		if not seen.has(sp):
 			sp.player_index = -1

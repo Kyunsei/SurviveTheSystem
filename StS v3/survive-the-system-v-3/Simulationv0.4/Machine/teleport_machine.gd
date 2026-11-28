@@ -18,7 +18,7 @@ func feed(sp, j: int) -> bool:
 func interact(agent_species, agent_index: int, held_species, held_index: int) -> bool:
 	agent_species.position_array[agent_index] = tp_pos
 	agent_species.ground_y = new_ground
-	walkarea.toggle()
+#	walkarea.toggle()
 	return false  #mean no object used
 	
 	
