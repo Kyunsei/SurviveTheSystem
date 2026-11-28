@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://fhyxgh24pgus"]
+
+[ext_resource type="Texture2D" uid="uid://ngicelgbn2di" path="res://assets/assets kyun/spaceship_texture1.png" id="1_8t4fv"]
+[ext_resource type="Script" uid="uid://ca27yexdhkwqb" path="res://Simulationv0.4/Machine/start_button.gd" id="1_bkja4"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n2jkv"]
+albedo_texture = ExtResource("1_8t4fv")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_bkja4"]
+material = SubResource("StandardMaterial3D_n2jkv")
+size = Vector3(1, 0.8, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_02nbc"]
+albedo_texture = ExtResource("1_8t4fv")
+uv1_triplanar = true
+
+[sub_resource type="PrismMesh" id="PrismMesh_2i0j3"]
+material = SubResource("StandardMaterial3D_02nbc")
+left_to_right = 1.0
+size = Vector3(1, 0.6, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xno40"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_lidh3"]
+material = SubResource("StandardMaterial3D_xno40")
+radius = 0.1
+height = 0.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qyf2a"]
+albedo_color = Color(0.7923846, 0.6253981, 0.37342674, 1)
+albedo_texture = ExtResource("1_8t4fv")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_h1k3e"]
+material = SubResource("StandardMaterial3D_qyf2a")
+size = Vector3(0.3, 0.01, 0.3)
+
+[node name="start_button" type="Node3D" unique_id=1408444992]
+script = ExtResource("1_bkja4")
+
+[node name="StartShip_model" type="MeshInstance3D" parent="." unique_id=1662731851]
+mesh = SubResource("BoxMesh_bkja4")
+
+[node name="MainBoard2" type="MeshInstance3D" parent="StartShip_model" unique_id=784617793]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0.7, 0)
+mesh = SubResource("PrismMesh_2i0j3")
+
+[node name="ButtonPanel" type="MeshInstance3D" parent="StartShip_model/MainBoard2" unique_id=271076300]
+transform = Transform3D(0.8660254, -0.5, -5.856215e-09, 0.5, 0.8660254, 2.1855694e-08, -5.856215e-09, -2.1855694e-08, 1, -0.00999999, 0, -4.3711346e-10)
+mesh = SubResource("SphereMesh_lidh3")
+
+[node name="Button" type="MeshInstance3D" parent="StartShip_model/MainBoard2" unique_id=890250589]
+transform = Transform3D(0.8660254, -0.5, -5.856215e-09, 0.5, 0.8660254, 2.1855694e-08, -5.856215e-09, -2.1855694e-08, 1, 1.3841197e-15, 0, -3.1664968e-08)
+mesh = SubResource("BoxMesh_h1k3e")

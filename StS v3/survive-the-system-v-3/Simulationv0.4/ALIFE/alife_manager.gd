@@ -124,10 +124,12 @@ func run_simulation(delta:float, dt: float, sim_speed: float):
 		build_grid(global_position_array, global_active)
 	var t1:= Time.get_ticks_usec()
 
+	_snapshot_walkers()                      # where every walking agent was before this tick
 	start_simulation(delta, dt,sim_speed)
 	var t2:= Time.get_ticks_usec()
 
 	wait_simulation()
+	_constrain_walkers()                     # their moves, through the walkable area
 	var t3:= Time.get_ticks_usec()
 	update_alife()
 	var t4:= Time.get_ticks_usec()
@@ -143,21 +145,13 @@ func start_simulation(delta:float,dt: float, sim_speed: float):
 	global_entity_count = 0
 	global_active_entity_count = 0
 
-	'for s in species_array:
+	for s in species_array:
 		global_entity_count += s.entity_count
 		global_active_entity_count += s.active_entity_count
 
 		s.mouse_target =  mouse
 		#var t := Time.get_ticks_usec()
-		s.build_field()'
-	for s in species_array:
-		global_entity_count += s.entity_count
-		global_active_entity_count += s.active_entity_count
-		s.mouse_target = mouse
-
-	# one job per species, run at the same time on the worker threads
-	var fgid := WorkerThreadPool.add_group_task(_build_field_job, species_array.size(), -1, true, "species_fields")
-	WorkerThreadPool.wait_for_group_task_completion(fgid)
+		s.build_field()
 		#print(s.species_name, " field: ", Time.get_ticks_usec() - t)
 	#setup thread/chunk/jobs
 	jobs.clear()
@@ -175,8 +169,6 @@ func start_simulation(delta:float,dt: float, sim_speed: float):
 	if jobs.size() > 0:
 		gid = WorkerThreadPool.add_group_task(run_chunk, jobs.size(), nThreads, true, "species_update")
 
-func _build_field_job(k: int) -> void:
-	species_array[k].build_field()
 #SEND JOBS TO DNA
 func run_chunk(k: int) -> void:
 	var job = jobs[k]
@@ -352,6 +344,59 @@ func build_grid(positions: PackedVector3Array, active: PackedInt32Array) -> void
 		sorted_pos[w] = positions[i]
 		write_pos[c] = w + 1
 	_grid_dirty = false
+#Walkable area (generic) ----------------------------------------------------------------------------
+# NavWorld sets walk_grid and walk_species: every species that doesn't handle the walkable
+# area itself (no `height_grid` variable). After each tick, the moves of their agents are
+# corrected through the grid: walls block (agents slide along them), and agents stand on
+# the floor where they end up (ship deck, platform, ground). Species with `height_grid`
+# (cat, cattle, NPC) do it themselves, with gravity, jumps and head room.
+
+var walk_grid: HeightGrid = null               # null: no walkable area, nobody limited
+var walk_species := {}                         # ALIFE -> true: limited by the generic pass
+var _prev := {}                                # ALIFE -> positions before the tick
+var _walk_jobs: Array = []                     # [species, start, end]
+
+
+func _snapshot_walkers() -> void:
+	_prev.clear()
+	if walk_grid == null:
+		return
+	for sp in walk_species:
+		_prev[sp] = sp.position_array.duplicate()   # one native copy per species
+
+
+func _constrain_walkers() -> void:
+	if walk_grid == null or _prev.is_empty():
+		return
+	_walk_jobs.clear()
+	var size := maxi(chunk_size, MIN_CHUNK)
+	for sp in _prev:
+		var n: int = mini(sp.entity_count, (_prev[sp] as PackedVector3Array).size())
+		for start in range(0, n, size):
+			_walk_jobs.append([sp, start, mini(start + size, n)])
+	if _walk_jobs.is_empty():
+		return
+	var g := WorkerThreadPool.add_group_task(_walk_job, _walk_jobs.size(), nThreads, true, "walk_area")
+	WorkerThreadPool.wait_for_group_task_completion(g)
+
+
+## One chunk: every agent of it that moved this tick, back through the grid.
+func _walk_job(k: int) -> void:
+	var job = _walk_jobs[k]
+	var sp = job[0]
+	var prev: PackedVector3Array = _prev[sp]
+	var hg := walk_grid
+	for i in range(job[1], job[2]):
+		if sp.active_alife_array[i] != ACTIVE:
+			continue                             # pool, carried, thrown, hanging...
+		var p := prev[i]
+		var q: Vector3 = sp.position_array[i]
+		if p.x == q.x and p.z == q.z and p.y == q.y:
+			continue                             # didn't move
+		var r := hg.move(p, q, p.y)              # (x, floor, z)
+		sp.position_array[i] = Vector3(r.x, r.y, r.z)   # on the floor where it ends up
+
+
 #Helper function-------------------------------------------------------------------------------------------
 
 func set_contact_cell_size(new_size:Vector3):
@@ -434,8 +479,6 @@ func pick_up(carrier_sp, carrier: int, item_sp, item: int) -> bool:
 	item_sp.active_alife_array[item] = HELD      # then marked held: out of the grid and the
 												 # simulation, and update_carried knows it's carried
 	carriers.append(cid(carrier_sp, carrier))
-	print("pickup")
-
 	return true
 
 
@@ -450,7 +493,6 @@ func drop(carrier_sp, carrier: int, at: Vector3) -> void:
 	var t := _let_go(carrier_sp, carrier)
 	if not t.is_empty():
 		land(t[0], t[1], at)
-	#print("drop")
 
 
 ## Let go of the carried item without putting it back in the world (throws).
@@ -459,8 +501,6 @@ func release_flying(carrier_sp, carrier: int) -> Array:
 	var t := _let_go(carrier_sp, carrier)
 	if not t.is_empty():
 		t[0].active_alife_array[t[1]] = FLYING
-	#print("release flying")
-
 	return t
 
 
@@ -469,12 +509,9 @@ func land(sp, i: int, at: Vector3) -> void:
 	sp.position_array[i] = keep_in_world(at)
 	sp.Release_Life(i)                           # your own "back in the world" logic
 	sp.active_alife_array[i] = ACTIVE
-	#print("land")
 
 
 func _let_go(carrier_sp, carrier: int) -> Array:
-	#print("let go")
-
 	var item: int = carrier_sp.holding[carrier]
 	if item == -1:
 		return []
@@ -497,7 +534,7 @@ func unlink(sp, i: int) -> void:
 			t[0].holding[t[1]] = -1
 			carriers.erase(c)
 		sp.held_by[i] = -1
-	#print("unlink")
+
 
 ## Once per tick, after the simulation: carried items follow their carrier.
 ## Also cleans up links broken by deaths and removals.
@@ -527,7 +564,7 @@ func update_carried() -> void:
 			continue
 
 		i_sp.position_array[ii] = carry_position(c_sp, ci)
-		#print(i_sp.position_array[ii])
+
 
 ## In front of the carrier, at a fraction of its height.
 ## Direction: the species' `facing` array if it has one, else where it moves.

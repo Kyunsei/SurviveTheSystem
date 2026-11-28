@@ -56,7 +56,8 @@ signal agent_dashed(species, index: int)
 
 @export var alifemanager: AlifeManager
 @export var camera: FlyCamera
-@export var picker: AgentPicker              # hover / follow / ids
+@export var picker: AgentPicker              # hover / follow / ids (optional: without it,
+											 # take control with spawn_and_control)
 
 @export_group("Control")
 @export var control_speed := 3.0             # world units per second
@@ -67,6 +68,9 @@ signal agent_dashed(species, index: int)
 @export var arrow_color := Color(1.0, 1.0, 1.0, 0.75)
 @export var arrow_scale := 1.0               # relative to the agent's width
 @export var eye_ratio := 0.8                 # first person: eye height / sprite height
+## Camera smoothing while controlling (higher = sticks tighter to the agent).
+## The camera's own follow_smoothing is used again when control ends.
+@export var control_camera_smoothing := 30.0
 
 @export_group("Dash")
 @export var dash_multiplier := 4.0           # speed during the dash (x control_speed)
@@ -77,6 +81,8 @@ signal agent_dashed(species, index: int)
 ## Little-planet look while controlling an agent: the world is drawn bent down with
 ## distance. Smaller = rounder planet. 0 = flat. Drop at distance d = d² / (2 × radius).
 @export var planet_radius := 60.0
+## Off: no little-planet bend at all, the world stays flat while controlling.
+@export var planet_view := true
 
 @export_group("Throw")
 @export var throw_min_speed := 3.0           # tap throw
@@ -153,6 +159,8 @@ var _hints_sig := ""                         # current content, to rebuild only 
 
 
 func _ready() -> void:
+	process_priority = 20                        # after the simulation and the camera: the arrow,
+												 # energy bar... use this frame's positions
 	_layer.layer = 90
 	add_child(_layer)
 	_build_energy_bar()
@@ -210,7 +218,15 @@ func _key(action: String, fallback := "") -> String:
 
 # --- Input -----------------------------------------------------------------------
 
+## True while the DialogueBox autoload shows a conversation.
+func _dialogue_open() -> bool:
+	var box := get_node_or_null("/root/DialogueBox")
+	return box != null and box.is_open
+
+
 func _unhandled_input(event: InputEvent) -> void:
+	if _dialogue_open():
+		return                                   # talking: no actions
 	# Throw released: launch
 	if event.is_action_released("throw"):
 		if _charging:
@@ -298,9 +314,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 ## agent_control: release, or take the hovered (else followed) agent. True if something happened.
+## No picker: the key only releases (take control with spawn_and_control).
 func _toggle_control() -> bool:
 	if is_controlling():
 		release_control()
+	elif picker == null:
+		return false
 	elif picker.hovered_species != null:
 		take_control(picker.hovered_species, picker.hovered_index)
 	elif picker.followed_species != null:
@@ -352,6 +371,8 @@ func _process(delta: float) -> void:
 	_update_eat_circle()                         # after the bar: it sits just above it
 	_update_arrow()
 	_update_status()
+	if picker == null:
+		_update_outline()                        # no picker: the controller outlines itself
 
 
 # --- Control ---------------------------------------------------------------------
@@ -372,7 +393,10 @@ func take_control(sp, i: int) -> void:
 	_facing = v.normalized() if v.length_squared() > 1e-6 else Vector3.FORWARD
 
 	camera.move_keys_enabled = false                 # movement keys move the agent, not the camera
-	picker.follow(sp, i)
+	_follow_agent(sp, i)
+	if _saved_smoothing < 0.0:
+		_saved_smoothing = camera.follow_smoothing
+	camera.follow_smoothing = control_camera_smoothing
 	set_control_view(control_view)
 	control_started.emit(sp, i)
 
@@ -392,11 +416,54 @@ func release_control() -> void:
 	target_index = -1
 	target_machine = null
 	_dash_left = 0.0
+	if _saved_smoothing >= 0.0:
+		camera.follow_smoothing = _saved_smoothing   # back to the normal follow
+		_saved_smoothing = -1.0
 	camera.move_keys_enabled = true
 	camera.set_yaw_lock(false)
 	camera.set_mouse_look(false)
 	camera.set_first_person(false)
 	control_ended.emit(sp, i)
+
+
+var _saved_smoothing := -1.0                     # camera smoothing before control (-1 = none saved)
+
+# Outline without a picker (with one, the picker owns the outline)
+var _outlined_species = null
+var _outlined_index := -1
+
+
+## Outlines the target (closest agent in range), else the carried agent, else nothing.
+func _update_outline() -> void:
+	if target_species != null:
+		_set_outline(target_species, target_index)
+	elif held_species != null:
+		_set_outline(held_species, held_index)
+	else:
+		_set_outline(null, -1)
+
+
+func _set_outline(sp, i: int) -> void:
+	if sp == _outlined_species and i == _outlined_index:
+		return
+	if _outlined_species != null:
+		_outlined_species.renderer3D.material_override.set_shader_parameter("selected_id", -1)
+	_outlined_species = sp
+	_outlined_index = i
+	if sp != null:
+		sp.renderer3D.material_override.set_shader_parameter("selected_id", i)
+
+
+## The camera follows this agent: through the picker (it also tracks what is followed),
+## or directly when there is no picker.
+func _follow_agent(sp, i: int) -> void:
+	if picker != null:
+		picker.follow(sp, i)
+		return
+	camera.follow(func():
+		if sp.active_alife_array[i] == 0 or sp.alive_array[i] == 0:
+			return null                                # gone: the camera goes back to fly mode
+		return sp.position_array[i])
 
 
 func set_control_view(view: ControlView) -> void:
@@ -416,7 +483,7 @@ func _update_planet() -> void:
 	planet_radius = WorldWrap.size.x/4
 	var r_planet := sqrt( WorldWrap.size.x * WorldWrap.size.z / (4* PI))
 	planet_radius = r_planet
-	var r := planet_radius if is_controlling() else 0.0
+	var r := planet_radius if (is_controlling() and planet_view) else 0.0
 	if r == WorldWrap.planet_radius:
 		return
 	WorldWrap.planet_radius = r
@@ -446,6 +513,8 @@ func _process_control() -> void:
 
 	# Movement: x = right, y = forward. Analog on a stick, deadzone from the Input Map.
 	var input := Input.get_vector("left", "right", "down", "up")
+	if _dialogue_open():
+		input = Vector2.ZERO                     # talking: stand still
 	sprint = sprint_multiplier if Input.is_action_pressed("sprint") else 1.0
 	sp.player_jump_held = Input.is_action_pressed("jump")
 
@@ -1147,6 +1216,7 @@ func spawn_and_control(sname := "", at := Vector3.INF) -> int:
 
 	if at == Vector3.INF:
 		at = camera.get_wrap_center()                # the point the camera looks at
+		at = Vector3(50,50,50)
 	at.y = ground_y
 	at = alifemanager.keep_in_world(at)
 

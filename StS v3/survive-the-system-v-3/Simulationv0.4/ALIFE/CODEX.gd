@@ -18,6 +18,10 @@ func _init():
 	build_species(ALIFE_SPIDERCRAB.new())
 	build_species(ALIFE_CATRONAUTE.new())
 	
+	
+	build_species(ALIFE_CATTLE.new())
+	build_species(ALIFE_NPC.new())
+
 	#apparently object are here too...
 	#build_species(ALIFE_SEEDBAG.new())
 	build_species(ALIFE_VACUUM.new())

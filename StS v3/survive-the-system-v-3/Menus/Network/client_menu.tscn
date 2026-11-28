@@ -191,6 +191,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 text = "Host Game"
 
+[node name="Creative_DEBUG2" type="Button" parent="buttonPanel" unique_id=1402799716]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "PLAY"
+
 [node name="Creative_DEBUG" type="Button" parent="buttonPanel" unique_id=2009365395]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
@@ -242,6 +247,7 @@ text = "Test Dev"
 [connection signal="text_changed" from="IP" to="." method="_on_ip_text_changed"]
 [connection signal="pressed" from="buttonPanel/ButtonJoinGame" to="." method="_on_button_join_game_pressed"]
 [connection signal="pressed" from="buttonPanel/ButtonHostGame" to="." method="_on_button_host_game_pressed"]
+[connection signal="pressed" from="buttonPanel/Creative_DEBUG2" to="." method="_on_creative_debug_2_pressed"]
 [connection signal="pressed" from="buttonPanel/Creative_DEBUG" to="." method="_on_button_2_pressed"]
 [connection signal="pressed" from="buttonPanel/ButtonSettings" to="." method="_on_button_settings_pressed"]
 [connection signal="pressed" from="buttonPanel/ButtonCredits" to="." method="_on_button_credits_pressed"]

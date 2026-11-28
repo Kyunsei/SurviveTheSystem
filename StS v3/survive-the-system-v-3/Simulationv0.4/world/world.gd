@@ -2,17 +2,18 @@ extends Node
 class_name WorldManager
 
 @export var controller : PlayerController
+@export var renderer3D : WorldRender3D
 #------------Planete General
 var size : Vector3
 #var default_size = Vector3(180,60,180) 
-var default_size = Vector3(240,60,240)
+@export var default_size = Vector3(240,60,240)
 #var default_size = Vector3(340,60,340) 
 
 
 enum Border { WRAP, WALL }
-var border_type_x := Border.WRAP
-var border_type_y := Border.WALL
-var border_type_z := Border.WRAP
+@export var border_type_x := Border.WRAP
+@export var border_type_y := Border.WALL
+@export var border_type_z := Border.WRAP
 
 #------------SUN
 ##SUN #TODO check what is still use
@@ -35,18 +36,17 @@ var world_size_change:= false
 
 #-------------Rendered
 
-var render3D :  WorldRender3D
 
 #------------------SET_UP-----------------------------------------------
 
 func init():
-	$Render_World3D.setup(controller)
+	if renderer3D:
+		renderer3D.setup(controller)
 	
 	_init_worldsize()
 	_init_SUN()
 	
-	if !render3D:
-		render3D = $Render_World3D
+	
 
 
 func _init_worldsize():
@@ -69,7 +69,8 @@ func _init_SUN():
 
 	
 func render_world():
-	render3D.DrawWorld(self)
+	if renderer3D:
+		renderer3D.DrawWorld(self)
 	
 
 

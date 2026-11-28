@@ -249,7 +249,7 @@ var player_air_time := 0.0         # time since leaving the ground (coyote time)
 
 @export_group("JUMP")
 @export var jump_height := 8.0
-@export var time_to_jump_apex := 2.5
+@export var time_to_jump_apex := .3
 @export var fall_multiplier := 2.0        # falls faster than it rises
 @export var low_jump_multiplier := 2.5    # key released early: shorter jump
 @export var coyote_time := 0.12

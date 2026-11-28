@@ -94,7 +94,7 @@ func start_write_rendering_buffer():
 	for s in alifemanager.species_array:
 		entity_count += s.entity_count
 		s.rend_data.resize(s.entity_count)
-		s.renderer2D.ensure_instances2D(s.entity_count)
+		#s.renderer2D.ensure_instances2D(s.entity_count)
 		s.renderer3D.ensure_instances3D(s.entity_count)
 		
 
@@ -127,7 +127,7 @@ func wait_rendering_buffer() -> void:
 func upload_buffer()-> void:
 	for s in alifemanager.species_array:
 		s.rend_data.upload()
-		s.renderer2D.set_count(s.entity_count)
+		#s.renderer2D.set_count(s.entity_count)
 		s.renderer3D.set_count(s.entity_count)
 
 	

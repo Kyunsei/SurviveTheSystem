@@ -1,0 +1,145 @@
+[gd_scene format=3 uid="uid://dcfk2dckkhkeh"]
+
+[ext_resource type="PackedScene" uid="uid://bu7tn4cxtpkt6" path="res://Simulationv0.4/Machine/new_ship.tscn" id="1_f0drq"]
+[ext_resource type="PackedScene" uid="uid://np3kssy27l53" path="res://Simulationv0.4/Machine/machine_collector.tscn" id="2_fyipi"]
+[ext_resource type="PackedScene" uid="uid://fhyxgh24pgus" path="res://Simulationv0.4/Machine/start_button.tscn" id="2_y6c3s"]
+[ext_resource type="PackedScene" uid="uid://bcgucsk1xjnrv" path="res://Simulationv0.4/Machine/machine_shop.tscn" id="3_fyipi"]
+[ext_resource type="PackedScene" uid="uid://y8ehmcitqo7p" path="res://Simulationv0.4/new_simulation_manager.tscn" id="3_u5peu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g61i6"]
+albedo_color = Color(0.36810192, 0.36810198, 0.36810192, 1)
+metallic = 0.4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_g61i6"]
+material = SubResource("StandardMaterial3D_g61i6")
+top_radius = 50.0
+bottom_radius = 10.0
+height = 10.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_apijy"]
+albedo_color = Color(0.6180576, 0.40673152, 0.19930443, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_f0drq"]
+material = SubResource("StandardMaterial3D_apijy")
+size = Vector3(70, 5, 20)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6cjwq"]
+albedo_color = Color(0.28756246, 0.40769905, 0.73765135, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_rfsjn"]
+material = SubResource("StandardMaterial3D_6cjwq")
+size = Vector3(20, 20, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_6ug0y"]
+material = SubResource("StandardMaterial3D_6cjwq")
+size = Vector3(10, 5, 10)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mox5t"]
+albedo_color = Color(0.48960003, 0.72, 0.5395201, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_py78m"]
+material = SubResource("StandardMaterial3D_mox5t")
+size = Vector3(20, 2, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_g08lk"]
+size = Vector3(20, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e5241"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_3w5cr"]
+material = SubResource("StandardMaterial3D_e5241")
+size = Vector2(200, 200)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_uxnku"]
+sky_top_color = Color(0, 0, 0, 1)
+sky_horizon_color = Color(0, 0, 0, 1)
+ground_bottom_color = Color(0, 0, 0, 1)
+ground_horizon_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Sky" id="Sky_s7yli"]
+sky_material = SubResource("ProceduralSkyMaterial_uxnku")
+
+[sub_resource type="Environment" id="Environment_2s78a"]
+background_mode = 2
+sky = SubResource("Sky_s7yli")
+fog_enabled = true
+fog_light_color = Color(0.35128856, 0.62736064, 0.33054802, 1)
+fog_light_energy = 0.0
+fog_density = 0.0
+fog_sky_affect = 0.0
+
+[node name="CatStation" type="Node3D" unique_id=678985821]
+
+[node name="ground" type="MeshInstance3D" parent="." unique_id=964825425 groups=["navmesh_source"]]
+mesh = SubResource("CylinderMesh_g61i6")
+
+[node name="shipyard" type="MeshInstance3D" parent="." unique_id=1949545467 groups=["navmesh_source"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 43.795288, 2.6011128, 0)
+mesh = SubResource("BoxMesh_f0drq")
+
+[node name="new_ship" parent="." unique_id=761211231 instance=ExtResource("1_f0drq")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 68.29416, 10.730267, 0.2776432)
+
+[node name="start_button" parent="new_ship" unique_id=1408444992 instance=ExtResource("2_y6c3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5762787e-07, 0.5580349, -8.485916)
+next_scene = ExtResource("3_u5peu")
+follow_view = false
+
+[node name="collector" parent="." unique_id=496319087 groups=["navmesh_source"] instance=ExtResource("2_fyipi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.7874737, 0)
+factor = 1.0
+interact_range = 8.0
+
+[node name="parkourpart" type="Node3D" parent="." unique_id=934275912]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.51311, 10.937981, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="parkourpart" unique_id=267019554 groups=["navmesh_source"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9634972, 0)
+mesh = SubResource("BoxMesh_rfsjn")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="parkourpart" unique_id=1443078558 groups=["navmesh_source"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.748768, -4.2597466, -11.199705)
+mesh = SubResource("BoxMesh_6ug0y")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="parkourpart" unique_id=2054248285 groups=["navmesh_source"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.749, 1, 4.582)
+mesh = SubResource("BoxMesh_6ug0y")
+
+[node name="foodpart" type="Node3D" parent="." unique_id=1625675124]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 34.450264)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="foodpart" unique_id=1976107902 groups=["navmesh_source"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.0509186, 0)
+mesh = SubResource("BoxMesh_py78m")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="foodpart" unique_id=2131422795 groups=["navmesh_source"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35023212, 6.903269, 7.85001)
+mesh = SubResource("BoxMesh_g08lk")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="foodpart" unique_id=1336872679 groups=["navmesh_source"]]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -8.163947, 6.903269, -0.41456223)
+mesh = SubResource("BoxMesh_g08lk")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="foodpart" unique_id=1311028476 groups=["navmesh_source"]]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 8.8061285, 6.903269, -0.41456223)
+mesh = SubResource("BoxMesh_g08lk")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="foodpart" unique_id=1308826735 groups=["navmesh_source"]]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0.1048193, 6.903269, -8.059269)
+mesh = SubResource("BoxMesh_g08lk")
+
+[node name="Fabricatorpart" type="Node3D" parent="." unique_id=1023558623]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -40.515553)
+
+[node name="machine_shop" parent="Fabricatorpart" unique_id=1575499750 instance=ExtResource("3_fyipi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.898642, 6.455305, 14.236301)
+follow_view = false
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1771770310 groups=["navmesh_source"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 51.148, 0, 48.702)
+visible = false
+mesh = SubResource("PlaneMesh_3w5cr")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1517025738]
+environment = SubResource("Environment_2s78a")

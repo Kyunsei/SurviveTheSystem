@@ -22,15 +22,6 @@
 [ext_resource type="PackedScene" uid="uid://np3kssy27l53" path="res://Simulationv0.4/Machine/machine_collector.tscn" id="13_8rlw2"]
 [ext_resource type="PackedScene" uid="uid://bcgucsk1xjnrv" path="res://Simulationv0.4/Machine/machine_shop.tscn" id="14_rqu2l"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_buic3"]
-albedo_color = Color(0.56125396, 0.060397826, 0.65282387, 1)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_3bbrk"]
-material = SubResource("StandardMaterial3D_buic3")
-top_radius = 1.9
-bottom_radius = 2.0
-height = 0.2
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bk4o6"]
 render_priority = 0
 shader = ExtResource("6_7gkeh")
@@ -51,6 +42,15 @@ shader_parameter/clear_radius = 18.0
 shader_parameter/fade_start = 130.0
 shader_parameter/fade_end = 220.0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1bjow"]
+albedo_color = Color(0.56125396, 0.060397826, 0.65282387, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_3bbrk"]
+material = SubResource("StandardMaterial3D_1bjow")
+top_radius = 1.9
+bottom_radius = 2.0
+height = 0.2
+
 [node name="NewSimulationManager" type="Node" unique_id=1440062817 node_paths=PackedStringArray("world", "alifemanager", "render_manager", "ui_simulation")]
 script = ExtResource("1_tnrjr")
 world = NodePath("World")
@@ -58,9 +58,10 @@ alifemanager = NodePath("AlifeManager")
 render_manager = NodePath("RendererManager")
 ui_simulation = NodePath("UI_simulation")
 
-[node name="World" type="Node" parent="." unique_id=212681917 node_paths=PackedStringArray("controller")]
+[node name="World" type="Node" parent="." unique_id=212681917 node_paths=PackedStringArray("controller", "renderer3D")]
 script = ExtResource("2_n8m0f")
 controller = NodePath("../Control/PlayerControl")
+renderer3D = NodePath("Render_World3D")
 
 [node name="Render_World3D" parent="World" unique_id=1366239665 instance=ExtResource("3_uyr7n")]
 
@@ -69,30 +70,6 @@ transform = Transform3D(1, 0, 0, 0, -4.3711385e-08, 1, 0, -0.99999994, -4.371139
 light_color = Color(1, 0.95686275, 0.8784314, 1)
 light_energy = 2.0
 shadow_enabled = true
-
-[node name="SPACE SHIP Kyunsei" parent="World" unique_id=997132027 instance=ExtResource("4_55kx7")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 40, 120)
-script = ExtResource("5_1bjow")
-
-[node name="TP_machine2" type="Node3D" parent="World/SPACE SHIP Kyunsei" unique_id=45674601 node_paths=PackedStringArray("walkarea")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32833672, 3.33107)
-script = ExtResource("5_cu670")
-tp_pos = Vector3(120, 0, 120)
-walkarea = NodePath("../walkarea")
-follow_view = false
-machine_name = "Teleport"
-interact_range = 3.0
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="World/SPACE SHIP Kyunsei/TP_machine2" unique_id=2063132479]
-mesh = SubResource("CylinderMesh_3bbrk")
-
-[node name="walkarea" type="Node3D" parent="World/SPACE SHIP Kyunsei" unique_id=162871874]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.11476898, 7.9609222)
-script = ExtResource("6_bk4o6")
-enabled = false
-size = Vector2(8, 20)
-species_names = PackedStringArray("CATRONAUTE")
-show_in_game = true
 
 [node name="cloud" type="MeshInstance3D" parent="World" unique_id=1787707122 node_paths=PackedStringArray("camera", "sim_manager")]
 material_override = SubResource("ShaderMaterial_bk4o6")
@@ -145,7 +122,7 @@ interact_range = 8.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 110, 1, 120)
 tp_pos = Vector3(120, 42, 120)
 new_ground = 41.0
-walkarea = NodePath("../../World/SPACE SHIP Kyunsei/walkarea")
+walkarea = NodePath("../SPACE SHIP Kyunsei/walkarea")
 interact_range = 5.0
 
 [node name="machine_shop" parent="ArtefactManager" unique_id=1575499750 instance=ExtResource("14_rqu2l")]
@@ -154,6 +131,30 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 0, 130)
 [node name="machine_shop2" parent="ArtefactManager" unique_id=945088910 instance=ExtResource("14_rqu2l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 116.015, 42, 128.503)
 follow_view = false
+
+[node name="SPACE SHIP Kyunsei" parent="ArtefactManager" unique_id=997132027 instance=ExtResource("4_55kx7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120, 40, 120)
+script = ExtResource("5_1bjow")
+
+[node name="TP_machine2" type="Node3D" parent="ArtefactManager/SPACE SHIP Kyunsei" unique_id=45674601 node_paths=PackedStringArray("walkarea")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.32833672, 3.33107)
+script = ExtResource("5_cu670")
+tp_pos = Vector3(120, 0, 120)
+walkarea = NodePath("../walkarea")
+follow_view = false
+machine_name = "Teleport"
+interact_range = 3.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ArtefactManager/SPACE SHIP Kyunsei/TP_machine2" unique_id=2063132479]
+mesh = SubResource("CylinderMesh_3bbrk")
+
+[node name="walkarea" type="Node3D" parent="ArtefactManager/SPACE SHIP Kyunsei" unique_id=162871874]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.11476898, 7.9609222)
+script = ExtResource("6_bk4o6")
+enabled = false
+size = Vector2(8, 20)
+species_names = PackedStringArray("CATRONAUTE")
+show_in_game = true
 
 [node name="Control" type="Node" parent="." unique_id=344251585]
 

@@ -11,6 +11,11 @@ class_name ALIFE_CATRONAUTE
 var carrying_power := PackedInt32Array()
 ## Damage of one attack: each agent hit loses this much health.
 var strength := PackedFloat32Array()
+## Height of the surface under each cat, looked up in height_grid every tick.
+## Without a walk area: ground_y, the flat ground as before.
+var floor_y := PackedFloat32Array()
+## Where cats can walk, given by NavWorld (null = flat ground, no walls).
+var height_grid: HeightGrid = null
 
 ## Values given to every new cat (change them per cat afterwards, e.g. with growth or mutation)
 @export var base_carrying_power := 5           # = a cat's own size (init_size 2.0)
@@ -55,6 +60,7 @@ func _init_alife_par():
 	super()
 	carrying_power = []
 	strength = []
+	floor_y = []
 
 
 ## Same as every species, then the stats of the new cat.
@@ -67,9 +73,11 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy, lc := 0, col := Color(
 	if i >= carrying_power.size():           # new slot: grow the arrays
 		carrying_power.append(base_carrying_power)
 		strength.append(base_strength)
+		floor_y.append(ground_y)
 	else:                                    # reused slot: reset it
 		carrying_power[i] = base_carrying_power
 		strength[i] = base_strength
+		floor_y[i] = ground_y
 
 
 ## Asked by AlifeManager.pick_up: can cat i lift this item?
@@ -130,6 +138,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int,delta:float, dt: fl
 	var view_r2 := view_radius*view_radius
 	var sep_r2 := separation_radius*separation_radius
 
+	#Walk area (read only here: safe on the worker threads)
+	var hg := height_grid
+
 	for i in range(start, end):
 		# Only agents standing in the world move (held = 2, flying = 4 are moved elsewhere)
 		if active_alife_array[i] != AlifeManager.ACTIVE:
@@ -155,6 +166,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int,delta:float, dt: fl
 		var steer := Vector3.ZERO   # sum of forces (acceleration), NOT a velocity
 		var v:Vector3= current_velocity[i]           # a real velocity (units / s)
 		var _global_i := i + base
+		# Surface under the cat (from the last tick), or the flat ground without a walk area
+		var in_area := hg != null and (not hg.player_only or i == player_index)
+		var fl: float = floor_y[i] if in_area else ground_y
 
 	#--------VELOCITY
 		var new_v: Vector3
@@ -162,18 +176,20 @@ func run_chunk_simulation( start: int, end: int,local_id:int,delta:float, dt: fl
 			# Player-controlled: the AI is ignored. Horizontal speed from the keys,
 			# vertical from jump + gravity (_player_vertical has its own gravity).
 			new_v = player_velocity
-			new_v.y = _player_vertical(p.y, step)
+			new_v.y = _player_vertical_on(p.y, delta, fl)
 		else:
 			steer = steer.limit_length(max_force)
-			new_v = v + steer * step                # acceleration x time
-			if p.y > ground_y:
-				new_v.y -= gravity * step           # was "-= 0.8" per tick
+			new_v = v + steer * delta                # acceleration x time
+			if p.y > fl + 0.001:
+				new_v.y -= gravity * delta           # in the air: falls to the floor under it
+			elif new_v.y < 0.0:
+				new_v.y = 0.0                       # on the floor
 			new_v = new_v.limit_length(max_speed)
 			if new_v.length_squared() < 1e-8:
 				new_v = Vector3(randf_range(-1, 1), 0.0, randf_range(-1, 1)) # small nudge
 
 	#--------maintain cost
-		_energy += -2.0 * step                      # 2 energy / s
+		_energy += -1.0 * step                      # 2 energy / s
 
 	#--------DEATH
 		if _energy < 0 or current_health[i] < 0:
@@ -182,7 +198,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int,delta:float, dt: fl
 		current_energy_array[i] = _energy
 
 	#--------MOVE
-		var q := p + new_v * step                   # velocity x time
+		var q := p + new_v * delta                   # velocity x time
 		# borders (world is 0..size): wrap, or stop at the wall and bounce
 		if wrap_x: q.x = fposmod(q.x, world_size.x)
 		elif q.x < 0.0 or q.x > world_size.x: q.x = clampf(q.x, 0.0, world_size.x); new_v.x = -new_v.x
@@ -191,9 +207,66 @@ func run_chunk_simulation( start: int, end: int,local_id:int,delta:float, dt: fl
 			q.y = clampf(q.y, 0.0, world_size.y); new_v.y = 0.0   # floor / ceiling: stop, no bounce
 		if wrap_z: q.z = fposmod(q.z, world_size.z)
 		elif q.z < 0.0 or q.z > world_size.z: q.z = clampf(q.z, 0.0, world_size.z); new_v.z = -new_v.z
+		# Walk area: the floor at the new spot. Not walkable, or a wall (higher than a step):
+		# keep the move along one axis only (slides along walls), else stay in place.
+		if in_area:
+			var r := hg.move(p, q, fl)                 # (x, floor, z)
+			q.x = r.x
+			q.z = r.z
+			fl = r.y
+			# Solid geometry right under the feet (a steep hull edge, a wall top): land on it
+			fl = maxf(fl, hg.solid_top_under(q.x, q.z, p.y))
+			floor_y[i] = fl
+
+		# Never below the floor under the cat: lands on it, or steps up onto it
+		if q.y < fl:
+			q.y = fl
+			if new_v.y < 0.0:
+				new_v.y = 0.0
+		# Head room: under a bridge / in a cave, the head stops below the floor above
+		if in_area:
+			# From where the cat is (its floor, or higher in the air): only what's above it
+			var ceil_y := hg.ceiling_at(q.x, q.z, maxf(fl, p.y))
+			# (ceiling below the floor: the cat doesn't fit here at all. The move above
+			# already pushes it out, so don't pin it to the floor meanwhile)
+			if q.y > ceil_y and ceil_y >= fl:
+				q.y = maxf(ceil_y, fl)
+				if new_v.y > 0.0:
+					new_v.y = 0.0
+				if i == player_index:
+					player_vy = minf(player_vy, 0.0)  # bumped the head: the jump ends
 		position_array[i] = q
 		new_velocity[i] = new_v
 		current_velocity[i] = new_v                 # store the velocity, not the displacement
 
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id
+
+
+## Jump + gravity of the controlled cat, like ALIFE._player_vertical but with the floor
+## under it (floor_h) instead of the flat ground_y: it can land on, and fall off, ledges.
+func _player_vertical_on(y: float, dt: float, floor_h: float) -> float:
+	var g := 2.0 * jump_height / (time_to_jump_apex * time_to_jump_apex)
+	var grounded := y <= floor_h + 0.001 and player_vy <= 0.0
+	if grounded:
+		player_vy = 0.0
+		player_air_time = 0.0
+	else:
+		player_air_time += dt
+
+	# Jump: pressed recently (buffer) + on the floor or just left it (coyote)
+	if player_jump_buffer > 0.0 and player_air_time <= coyote_time:
+		player_vy = 2.0 * jump_height / time_to_jump_apex
+		player_jump_buffer = 0.0
+		player_air_time = coyote_time + 1.0     # no second jump in the air
+		grounded = false
+
+	# Gravity: stronger when falling, or when the key was released early
+	if not grounded:
+		var m := 1.0
+		if player_vy < 0.0:
+			m = fall_multiplier
+		elif not player_jump_held:
+			m = low_jump_multiplier
+		player_vy = maxf(player_vy - g * m * dt, -max_fall_speed)
+	return player_vy

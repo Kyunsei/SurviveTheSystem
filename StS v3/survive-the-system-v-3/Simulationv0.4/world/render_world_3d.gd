@@ -10,7 +10,7 @@ func _ready() -> void:
 
 
 func setup(pciker):
-	print(pciker)
+	print("hello")
 	$GROUND.controller = pciker
 	
 

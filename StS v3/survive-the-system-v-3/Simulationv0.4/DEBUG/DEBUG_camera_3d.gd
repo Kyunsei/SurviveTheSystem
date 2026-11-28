@@ -90,6 +90,9 @@ var _follow_pos := Vector3.ZERO              # smoothed target position
 
 
 func _ready() -> void:
+	# Run after the simulation (SimulationManager, priority 0) each frame, so the camera
+	# reads the positions of THIS frame's ticks, not the previous frame's (no jitter)
+	process_priority = 10
 	_yaw = rotation.y
 	_pitch = rotation.x
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
