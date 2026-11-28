@@ -11,6 +11,97 @@ class_name AlifeRendererManager
 
 #var activated := true
 
+## Smooth movement between ticks (set every frame by SimulationManager: on with the
+## pipelined tick). Off: agents are drawn at the newest tick, exactly as before.
+##
+## Playback clock: each finished tick is stamped with its simulated time (the sum of the
+## tick deltas). A render clock runs at real speed about one tick interval behind the
+## newest stamp, gently speeding up / slowing down to stay there (never jumping), and each
+## frame the agents are drawn between the two ticks around it. Uneven tick times then give
+## no jump forward and no pause: movement stays continuous.
+var interpolate := false
+@export var interp_max_jump := 8.0              # a move longer than this between ticks: no blend
+## How far behind the newest tick the render clock aims, in tick intervals (1 = one tick).
+@export var interp_delay := 1.1
+var interp_alpha := 1.0
+var tick_delta := 0.0                           # set by SimulationManager: delta of the tick being uploaded
+var _stamp := PackedFloat64Array([0.0, 0.0, 0.0])   # per buffer slot: simulated time of its tick
+var _sim_t := 0.0                               # simulated time of the newest tick
+var _render_t := 0.0                            # the playback clock
+var _interval := 1.0 / 30.0                     # average time between ticks
+var _ticks := 0                                 # ticks uploaded since interpolation started
+var _interp_was := false
+
+
+func _ready() -> void:
+	# After SimulationManager (0, which uploads a finished tick), before the camera (10)
+	# and the player's HUD (20): they all use this frame's blend
+	process_priority = 5
+
+
+func _process(delta: float) -> void:
+	if not interpolate or _ticks < 3:
+		# Not blending (or not enough ticks yet): the newest tick, as before
+		var changed := interp_alpha != 1.0 or _interp_was != interpolate
+		interp_alpha = 1.0
+		_interp_was = interpolate
+		for s in alifemanager.species_array:
+			if s.renderer3D != null:
+				s.renderer3D.bind_pair(s.renderer3D.buffer_back(1), s.renderer3D.newest)
+				if changed:
+					s.renderer3D.set_interp(1.0, interp_max_jump)
+		if not interpolate:
+			_ticks = 0
+		return
+	_interp_was = true
+
+	# Playback clock: real speed, nudged toward (newest - delay) so it neither runs out of
+	# ticks nor falls behind; never jumps unless far off (freeze, pause)
+	var target := _sim_t - _interval * interp_delay
+	var err := target - _render_t
+	if absf(err) > _interval * 4.0:
+		_render_t = target                         # far off: resync
+	else:
+		_render_t += delta * clampf(1.0 + err / maxf(_interval * 2.0, 0.001), 0.75, 1.25)
+
+	# The two ticks around the render time (newest, previous, the one before)
+	var r: ALIFE = null
+	for s in alifemanager.species_array:
+		if s.renderer3D != null:
+			r = s
+			break
+	if r == null:
+		return
+	var n0: int = r.renderer3D.buffer_back(0)
+	var n1: int = r.renderer3D.buffer_back(1)
+	var n2: int = r.renderer3D.buffer_back(2)
+	var a := n1
+	var b := n0
+	if _render_t < _stamp[n1]:
+		a = n2
+		b = n1
+	var span := _stamp[b] - _stamp[a]
+	var alpha := clampf((_render_t - _stamp[a]) / span, 0.0, 1.0) if span > 1e-6 else 1.0
+	interp_alpha = alpha
+	for s in alifemanager.species_array:
+		if s.renderer3D != null:
+			s.renderer3D.bind_pair(a, b)
+			s.renderer3D.set_interp(alpha, interp_max_jump)
+
+
+func _now() -> float:
+	return Time.get_ticks_usec() / 1_000_000.0
+
+
+## Where agent i of sp is drawn right now (blended like the shaders): for the camera,
+## the arrow, bars... Without blending: its simulation position.
+func visual_position(sp, i: int) -> Vector3:
+	if not interpolate or sp.renderer3D == null:
+		return sp.position_array[i]
+	var v: Vector3 = sp.renderer3D.visual_position(i, interp_alpha, interp_max_jump,
+			world.size.y, world.size)
+	return sp.position_array[i] if v.x == INF else v
+
 var r_gid := -1
 var jobs: Array = []     # each entry: [species, chunk_index]
 
@@ -74,6 +165,9 @@ func init_renderer():
 func run_visualisation():	
 	if !activated:
 		return
+	if interpolate:
+		for s in alifemanager.species_array:
+			s.renderer3D.swap_buffers()            # write the new tick into the older buffer
 	var t0 := Time.get_ticks_usec()
 	start_write_rendering_buffer()
 	var t1 := Time.get_ticks_usec()
@@ -81,6 +175,22 @@ func run_visualisation():
 	var t2 := Time.get_ticks_usec()
 	upload_buffer()
 	var t3 := Time.get_ticks_usec()
+	if interpolate:
+		# Stamp the new tick with its simulated time; the playback clock does the rest
+		var d := clampf(tick_delta, 0.001, 0.5)
+		_sim_t += d
+		_interval = lerpf(_interval, d, 0.2)
+		for s in alifemanager.species_array:
+			if s.renderer3D != null:
+				_stamp[s.renderer3D.newest] = _sim_t   # (all renderers swap together)
+				break
+		for s in alifemanager.species_array:
+			if s.renderer3D != null:
+				s.renderer3D.rebind()          # textures may have been recreated by upload
+		_ticks += 1
+		if _ticks == 1:
+			_render_t = _sim_t - _interval * interp_delay
+		_process(0.0)                          # bind this frame's pair right away
 
 	#print("strat %f, wait %f, upload %f" % [t1-t0,t2-t1,t3-t2])
 

@@ -42,8 +42,13 @@ var hanging : PackedInt32Array               # fruits in trees (follow their tre
 var falling : PackedInt32Array               # fruits dropping
 var _last_dt := 0.16
 
+## Where it may grow: its species' height grid (given by NavWorld), null = flat ground.
+var height_grid: HeightGrid = null
+
+
 func _init() -> void:
 	moves = false
+	positions_static = true                      # trees never move; fruits mark their moves
 	species_id = 1
 	species_name = "tree"
 	photosynthesis_on = true
@@ -107,7 +112,9 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 	var sun_grid := world.SUN_GRID
 	var sun_W := world.SUN_GRID_W
 	var photo_rate := 1.0
-	var value:= 0.0
+	var opt := float(photo_optimal_value)
+	var inv_2w2 :float= 1.0 / (2.0 * photo_optimal_width * photo_optimal_width)
+	var upkeep := 0.7 * step
 
 	
 	_last_dt = dt                                # for falling fruits (main thread)
@@ -116,7 +123,7 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 			continue
 		if alive_array[i] == 0:
 			if active_alife_array[i] == 1:
-				var b = current_biomass[i]
+				var b: float = current_biomass[i]
 				b -= 0.1 * step
 				current_biomass[i] = b
 				if b < 0:
@@ -153,16 +160,12 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 		#--------EAT
 		# Photosynthesis (cached per cell for this frame)
 		if _energy < max_energy:
-			#_energy += photo(i,sun_W,sun_stamp, sun_grid) * dt
 			var sun_c_up := sun_c + sun_W #WORK ONLY IF THERE IS A LAYER ABOVE
-			var d:= sun_stamp[sun_c]
-			var d_up := sun_stamp[sun_c_up] +1
-			value =  sun_grid[sun_c_up]  /   maxf(d_up, photo_rate) 
-			var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
-			_energy += value2 /maxf(d, photo_rate) *step
+			var x: float = sun_grid[sun_c_up] / maxf(sun_stamp[sun_c_up] + 1.0, photo_rate) - opt
+			_energy += photo_rate * exp(-x * x * inv_2w2) / maxf(sun_stamp[sun_c], photo_rate) * step
 
 		#--------maintain cost
-		_energy += -0.7  * step # - (side * side - side) *dt #* active_alife_array[i]
+		_energy -= upkeep
 		#--------DEATH
 		if _energy < 0 or current_health[i] <0 :
 			alive_array[i] = 0
@@ -275,6 +278,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy,lc:=0, col := Color(0.1
 			stamp(c,r,0,current_photo_layer[i],1.0)
 
 	pending_multimesh_drawn_id.append(i)
+	mark_moved(i)                                # field cell cache
 	return i
 
 
@@ -297,6 +301,7 @@ func Remove_Life(i):
 			var c := current_sungrid_id[i]
 			var r := current_photo_range[i]#int(init_size.x)-1
 			stamp(c,r,0,current_photo_layer[i],-1.0)
+	mark_moved(i)
 
 
 ## Leave the world (picked up). Only for agents standing in the world.
@@ -304,6 +309,7 @@ func Stock_Life(i):
 	if active_alife_array[i] != 1:
 		return
 	active_alife_array[i]= 2 # STORED ?
+	mark_moved(i)
 
 	active_entity_count -= 1
 	if photosynthesis_on:
@@ -321,6 +327,7 @@ func Release_Life(i):
 		return
 	active_alife_array[i]= 1 # STORED ?
 	active_entity_count += 1
+	mark_moved(i)
 
 	current_sungrid_id[i] = get_cell_id(position_array[i],world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 	current_grid_id[i] = get_cell_id(position_array[i],alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)
@@ -348,7 +355,9 @@ func Build_and_remove_pendings():
 		# No seed: a sapling right next to the tree (previous behaviour)
 		var center := position_array[i]
 		#center.y += current_size[i]/2  +1.5#*128/2
-		var newpos := pick_random_position(Vector3(duplication_range,0.0,duplication_range),center)
+		var newpos := on_floor(pick_random_position(Vector3(duplication_range,0.0,duplication_range),center))
+		if newpos.x == INF:
+			continue                             # no floor there
 		if photosynthesis_on:
 			var s_c := get_cell_id(newpos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 			if world.SUN_stamp[s_c] > 0 :
@@ -443,9 +452,10 @@ func _scatter_fruit(i: int) -> void:
 	var min_d := (current_photo_range[i] + 1) * cell     # first cell outside the shade
 	var a := randf() * TAU
 	var d := min_d + randf() * scatter_extra
-	var p: Vector3 = position_array[i] + Vector3(cos(a) * d, 0.0, sin(a) * d)
-	p.y = ground_y
-	p = alifemanager.keep_in_world(p)
+	var p: Vector3 = alifemanager.keep_in_world(position_array[i] + Vector3(cos(a) * d, 0.0, sin(a) * d))
+	p = on_floor(p)                              # on the floor there (height grid)
+	if p.x == INF:
+		return                                   # no floor there: no seed
 	Build_New_Life(p, seed_energy,0, current_color[i], 1, -1)   # state 1: on the ground
 
 
@@ -474,8 +484,11 @@ func _update_falling(dt: float) -> void:
 		var v: Vector3 = current_velocity[j]
 		v.y -= fruit_gravity * dt
 		var p: Vector3 = position_array[j] + v * dt
-		if p.y <= ground_y:
-			p.y = ground_y
+		var fl := floor_under(p)                 # the floor under it (height grid)
+		if is_nan(fl):
+			fl = ground_y
+		if p.y <= fl:
+			p.y = fl
 			position_array[j] = p
 			_forget_fruit(j)
 			_place_in_world(j)
@@ -489,6 +502,7 @@ func _update_falling(dt: float) -> void:
 func _place_in_world(j: int) -> void:
 	position_array[j] = alifemanager.keep_in_world(position_array[j])
 	active_alife_array[j] = 1
+	mark_moved(j)                                # now deposits: its field cell is needed
 	current_velocity[j] = Vector3.ZERO
 	current_sungrid_id[j] = get_cell_id(position_array[j],world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 	current_grid_id[j] = get_cell_id(position_array[j],alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)

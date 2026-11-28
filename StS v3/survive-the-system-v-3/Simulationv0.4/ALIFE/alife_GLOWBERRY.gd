@@ -7,7 +7,13 @@ class_name ALIFE_GLOWBERRY
 ## Only berries (life cycle 0) can be carried, not grown bushes.
 
 
+## Where it may grow: its species' height grid (given by NavWorld), null = flat ground.
+var height_grid: HeightGrid = null
+
+
 func _init() -> void:
+	moves = false
+	positions_static = true                      # never moves: field cells are cached
 	species_name = "GLOWBERRY"
 
 	#Rendering
@@ -36,61 +42,64 @@ func _init() -> void:
 
 
 func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:float, sim_speed:float) -> void:
-	var local_pending_spawn_id : PackedInt32Array
-	var local_pending_remove_id: PackedInt32Array
+	var local_pending_spawn_id := PackedInt32Array()
+	var local_pending_remove_id := PackedInt32Array()
 
+	# Read-only this tick: local copies are safe (arrays others write: through the member)
+	var active := active_alife_array
+	var sun_id := current_sungrid_id
 	var sun_stamp := world.SUN_stamp
 	var sun_grid := world.SUN_GRID
-	var sun_W := world.SUN_GRID_W
+	var sun_W: int = world.SUN_GRID_W
+	var costs := growth_cost
+
+	var step := dt * sim_speed
 	var photo_rate := 1.0
-	var value:= 0.0
+	var opt := float(photo_optimal_value)
+	var inv_2w2 :float= 1.0 / (2.0 * photo_optimal_width * photo_optimal_width)
+	var decay := 0.1 * step
+	var upkeep := 0.4 * step
+	var top := max_life_cycle
+	var e_max := float(max_energy)
 
 	for i in range(start, end):
-		if active_alife_array[i] != 1:
+		if active[i] != 1:
 			continue                               # free slot, or a berry in someone's hand
 		if alive_array[i] == 0:
-			var b = current_biomass[i]
-			b -= 0.1 * dt *sim_speed
+			var b: float = current_biomass[i] - decay
 			current_biomass[i] = b
-			if b < 0:
+			if b < 0.0:
 				local_pending_remove_id.append(i)
 			continue
 
-		var _energy:= current_energy_array[i]
+		var e: float = current_energy_array[i]
 
-		#--------EAT
-		# Photosynthesis (cached per cell for this frame)
-		if _energy < max_energy:
-			var sun_c := current_sungrid_id[i]
-			var sun_c_up := sun_c + sun_W #WORK ONLY IF THERE IS A LAYER ABOVE
-			var d:= sun_stamp[sun_c]
-			var d_up := sun_stamp[sun_c_up] +1
-			value =  sun_grid[sun_c_up]  /   maxf(d_up, photo_rate)
-			var value2 =photo_rate* exp(-((value - photo_optimal_value) ** 2) / (2 * photo_optimal_width ** 2))
-			_energy += value2 /maxf(d, photo_rate)  *  dt * sim_speed
+		#--------EAT: photosynthesis
+		if e < e_max:
+			var sc := sun_id[i]
+			var up := sc + sun_W                   # needs a layer above
+			var x: float = sun_grid[up] / maxf(sun_stamp[up] + 1.0, photo_rate) - opt
+			e += photo_rate * exp(-x * x * inv_2w2) / maxf(sun_stamp[sc], photo_rate) * step
 
-	#--------Growth
-		var lifecycle := current_life_state[i]
-		var g_cost:=  growth_cost[lifecycle]
-
-		if _energy >= g_cost*1.2 and lifecycle < max_life_cycle:
+		#--------Growth
+		var life := current_life_state[i]
+		var cost: float = costs[life]
+		if life < top and e >= cost * 1.2:
 			current_size[i] += growth_rate
-			current_biomass[i] += g_cost/10
-			current_life_state[i] +=1
-			if (lifecycle+1) < max_life_cycle:
-				_energy -= g_cost
+			current_biomass[i] += cost / 10.0
+			current_life_state[i] = life + 1
+			if life + 1 < top:
+				e -= cost
 
-
-	#--------maintain cost
-		_energy += -0.4  *  dt * sim_speed
+		#--------maintain cost
+		e -= upkeep
 
 		#--------DEATH
-		if _energy < 0 :
+		if e < 0.0:
 			alive_array[i] = 0
 
-		#update energy
-		current_energy_array[i] = _energy
-		#print(current_energy_array[i])
+		current_energy_array[i] = e
+
 	spawn_per_chunk[local_id] = local_pending_spawn_id
 	remove_per_chunk[local_id] = local_pending_remove_id
 
@@ -123,7 +132,9 @@ func harvest(i: int, carrier_sp: ALIFE = null, carrier: int = -1) -> bool:
 	# Build_New_Life doesn't return the index: it's the next free one
 	var j: int = free_indices[free_indices.size() - 1] if free_indices.size() > 0 else entity_count
 	var count_before := entity_count
-	var at := pick_random_position(Vector3(duplication_range, 0, duplication_range), position_array[i])
+	var at := on_floor(pick_random_position(Vector3(duplication_range, 0, duplication_range), position_array[i]))
+	if at.x == INF:
+		at = position_array[i]                   # no floor around: at the bush's foot
 	Build_New_Life(at, seed_energy,0, current_color[i])
 	if active_entity_count == count_before:
 		return false                             # world full (maxLife): no berry

@@ -413,7 +413,8 @@ func run_chunk_simulation( start: int, end: int,local_id:int, delta: float,dt:fl
 
 					var cell := x + C_W * (y + C_H * z)
 					var shift_p := Vector3(sx, sy, sz) - p   # one shift per cell
-					for k in range(cell_start[cell], cell_start[cell + 1]):
+					var span := alifemanager.cell_span(cell, base, my_end)   # own species only
+					for k in range(span.x, span.y):
 						var other: int = cell_items[k]
 						if other < base or other >= my_end or other == global_i:   # same species only
 							continue
@@ -572,7 +573,8 @@ func _nearest_prey(p: Vector3, me: int, prey_sp: ALIFE, max_rings: int) -> Vecto
 				var xw := posmod(x, W)
 				for y in H:
 					var cell := xw + W * (y + H * zw)
-					for k in range(cell_start[cell], cell_start[cell + 1]):
+					var span := am.cell_span(cell, lo, hi)   # this prey species only
+					for k in range(span.x, span.y):
 						var j: int = cell_items[k]
 						if j < lo or j >= hi or j == me:
 							continue

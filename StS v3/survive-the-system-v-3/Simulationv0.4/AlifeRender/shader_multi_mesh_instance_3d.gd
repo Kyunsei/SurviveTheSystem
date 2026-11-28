@@ -18,11 +18,29 @@ var _caster: MultiMeshInstance3D               # invisible sphere casting the su
 var _copies := 1                               # billboard sprites per agent (species' render_copies)
 var is_plant = true
 
+# Smooth movement between ticks: three data buffers per species, used in turn. The new tick
+# is written into the oldest one. The shaders draw between two of them (agent_prev ->
+# agent_data, interp_alpha), chosen every frame by the render manager's playback clock.
+const BUFFERS := 3
+var bufs: Array[AlifeRenderingData] = []
+var newest := 0                                # buffer holding the newest tick
+var _bound_a := -1                             # pair currently given to the shaders
+var _bound_b := -1
+var _alife: ALIFE
+
+
 func setup(agent_data: AlifeRenderingData, alife:ALIFE, world_size: Vector3, color: Color) -> void:
 	assert(agent_data.tex != null, "AgentData.resize() must be called before renderer setup")
 
 	sprite =  alife.sprite
 	is_plant = alife.photosynthesis_on
+	_alife = alife
+	bufs = [agent_data]
+	for k in BUFFERS - 1:                      # the older ticks
+		var extra := AlifeRenderingData.new()
+		extra.resize(maxi(alife.entity_count, 1))
+		bufs.append(extra)
+	newest = 0
 	_copies = clampi(alife.render_copies, 1, 3)
 	hframes= alife.hframes
 	vframes = alife.vframes
@@ -163,6 +181,92 @@ func setup(agent_data: AlifeRenderingData, alife:ALIFE, world_size: Vector3, col
 		add_child(_ground)
 
 	ensure_instances3D(agent_data.capacity())
+
+# --- Smooth movement between ticks ------------------------------------------------------
+
+## Before writing a new tick: the oldest buffer becomes the newest. The species writes into
+## _alife.rend_data, so it is pointed at it.
+func swap_buffers() -> void:
+	newest = (newest + 1) % BUFFERS
+	_alife.rend_data = bufs[newest]
+
+
+## Index of the buffer `back` ticks before the newest (0 = newest).
+func buffer_back(back: int) -> int:
+	return (newest - back + BUFFERS * 4) % BUFFERS
+
+
+## The shaders draw between buffers a (older) and b (newer). Only rebinds on a change.
+## The sun-shadow caster (not blended) always reads the newest tick.
+func bind_pair(a: int, b: int) -> void:
+	if a == _bound_a and b == _bound_b:
+		return
+	_bound_a = a
+	_bound_b = b
+	var mats := [material_override]
+	if _shadow:
+		mats.append(_shadow.material_override)
+	if _ground:
+		mats.append(_ground.material_override)
+	for m in mats:
+		m.set_shader_parameter("agent_data", bufs[b].tex)
+		m.set_shader_parameter("agent_prev", bufs[a].tex)
+	if _caster:
+		_caster.material_override.set_shader_parameter("agent_data", bufs[newest].tex)
+
+
+## Forget the bound pair (after an upload the textures may have been recreated).
+func rebind() -> void:
+	_bound_a = -1
+	_bound_b = -1
+
+
+## Every frame: 0 = draw at buffer a, 1 = at buffer b.
+func set_interp(alpha: float, max_jump: float) -> void:
+	for m in _materials():
+		m.set_shader_parameter("interp_alpha", alpha)
+		m.set_shader_parameter("interp_max_jump", max_jump)
+
+
+## Where agent i is drawn right now (same blend as the shaders), for the camera and HUD.
+func visual_position(i: int, alpha: float, max_jump: float, world_height: float,
+		ws: Vector3) -> Vector3:
+	if _bound_b < 0:
+		return Vector3(INF, 0.0, 0.0)
+	var now := _decode(bufs[_bound_b], i, world_height)
+	if alpha >= 0.999:
+		return now
+	var prev := _decode(bufs[_bound_a], i, world_height)
+	if prev.x == INF or now.x == INF:
+		return now
+	var d := prev - now
+	d.x -= ws.x * roundf(d.x / maxf(ws.x, 1e-6))
+	d.z -= ws.z * roundf(d.z / maxf(ws.z, 1e-6))
+	if d.length_squared() > max_jump * max_jump:
+		return now
+	return now + d * (1.0 - alpha)
+
+
+## Position of agent i in a buffer (x = INF: free slot there, or out of the buffer).
+func _decode(buf: AlifeRenderingData, i: int, world_height: float) -> Vector3:
+	var o := i * 4
+	if buf == null or o + 3 >= buf.data.size():
+		return Vector3(INF, 0.0, 0.0)
+	var a := int(buf.data[o + 3] + 0.5)
+	if a & 3 == 0:
+		return Vector3(INF, 0.0, 0.0)
+	var b := int(buf.data[o + 2] + 0.5)
+	return Vector3(buf.data[o], float(b >> 12) / 4095.0 * world_height, buf.data[o + 1])
+
+
+func _materials() -> Array:
+	var out := [material_override]
+	if _shadow:
+		out.append(_shadow.material_override)
+	if _ground:
+		out.append(_ground.material_override)
+	return out                                 # (the caster isn't blended)
+
 
 func set_frame(index: int, frame: int) -> void:
 	multimesh.set_instance_custom_data(index, Color(frame, 0, 0, 0))

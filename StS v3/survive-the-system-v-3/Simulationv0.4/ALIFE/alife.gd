@@ -193,6 +193,29 @@ class ScentField:
 	var run_rate := 0.0                          # this tick: diffusion / fade used
 	var run_fade := 1.0
 
+	## Sums the partial grids of the deposit jobs into now_* (and adds them to diffused_*),
+	## for cells [a, b). offset: where this field starts inside each job's part.
+	func merge_slice(parts_f: PackedFloat32Array, parts_v: PackedVector3Array, jobs: int,
+			stride: int, offset: int, a: int, b: int) -> void:
+		if is_vector:
+			for c in range(a, b):
+				var sum := Vector3.ZERO
+				var at := offset + c
+				for j in jobs:
+					sum += parts_v[at]
+					at += stride
+				now_v[c] = sum
+				diffused_v[c] += sum
+		else:
+			for c in range(a, b):
+				var sum := 0.0
+				var at := offset + c
+				for j in jobs:
+					sum += parts_f[at]
+					at += stride
+				now_f[c] = sum
+				diffused_f[c] += sum
+
 	## Diffuses cells [start, end) of diffused_* into next_* (thread-safe: each slice
 	## writes its own cells, reads only diffused_*). nbr6: the 6 neighbours of each cell,
 	## a missing one replaced by the cell itself; kinv = 1 / real neighbours; miss = 6 - real.
@@ -478,6 +501,7 @@ func _init_alife_par():
 
 
 func _init_field_grid():
+	_fc_valid = false                            # cell size may have changed: recompute all
 	var dims := Vector3i((world.size / alifemanager.field_cell_size).ceil())
 	FIELD_W = dims.x         # cells along x
 	FIELD_H = dims.y       # cells along y
@@ -647,6 +671,20 @@ var moves := true
 ## Species are staggered (species_id) so they don't all work on the same tick.
 ## Deposits and fade are scaled by N, so the scent keeps about the same strength.
 var field_every := 1
+## true: this species' agents never move on their own (plants): only spawning, removing,
+## being carried / thrown / dropped changes where they are. Their field cell is then cached
+## and only recomputed for those slots (exact: same result, much less work).
+## Leave false if the species moves its agents in its tick (falling fruits...).
+var positions_static := false
+var _fc_valid := false               # cached field cells are up to date (positions_static)
+var _fc_dirty := PackedInt32Array()  # slots to recompute (main thread only appends)
+
+
+## Agent i moved / appeared / left (positions_static species): its field cell is recomputed
+## at the next tick. Called by Build / Remove / Stock / Release_Life and the carry system.
+func mark_moved(i: int) -> void:
+	if positions_static and uses_fields and _fc_valid:
+		_fc_dirty.append(i)                      # (not valid yet: everything is recomputed)
 
 var _field_tick := 0
 var _fields_quiet := false          # no agents and fields already cleared: nothing to do
@@ -658,8 +696,13 @@ var _fields_quiet := false          # no agents and fields already cleared: noth
 func build_field() -> void:
 	if not fields_begin():
 		return
+	field_deposit_all()
 	for k in fields.size():
-		field_build_one(k)
+		if fields[k].run_skip:
+			continue
+		field_prepare_diffuse(k)
+		field_diffuse_slice(k, 0, FIELD_NUM_CELLS)
+		field_diffuse_end(k)
 	fields_end()
 
 
@@ -674,6 +717,8 @@ func fields_begin() -> bool:
 
 	# Nobody left: clear the fields once, then skip until agents come back
 	if active_entity_count == 0:
+		_fc_valid = false                        # recomputed in full when agents come back
+		_fc_dirty = PackedInt32Array()
 		if not _fields_quiet:
 			for f in fields:
 				_size_field(f)                   # back to zero
@@ -695,8 +740,28 @@ func fields_begin() -> bool:
 	var n := entity_count
 	var inv := Vector3.ONE / field_cell_size
 
-	# Field cell of every agent not in the pool, once for all fields (-1 = no deposit)
+	# Field cell of every agent not in the pool, once for all fields (-1 = no deposit).
+	# Static species: only the slots that changed since the last tick.
+	var old_n := _agent_field_cell.size()
 	_agent_field_cell.resize(n)
+	if positions_static and _fc_valid:
+		for i in range(old_n, n):
+			_agent_field_cell[i] = -1            # new slots: marked dirty by Build_New_Life
+		var dirty := _fc_dirty
+		_fc_dirty = PackedInt32Array()
+		for i in dirty:
+			if i >= n:
+				continue
+			if active_alife_array[i] == 0:
+				_agent_field_cell[i] = -1
+				continue
+			var p := position_array[i]
+			_agent_field_cell[i] = clampi(int(p.x * inv.x), 0, W - 1) \
+				+ W * (clampi(int(p.y * inv.y), 0, H - 1) \
+				+ H * clampi(int(p.z * inv.z), 0, D - 1))
+		return true
+	_fc_dirty = PackedInt32Array()
+	_fc_valid = true
 	for i in n:
 		if active_alife_array[i] == 0:
 			_agent_field_cell[i] = -1
@@ -710,65 +775,243 @@ func fields_begin() -> bool:
 
 ## Fields, step 2 (one call per field, any thread; needs fields_begin() first).
 ## Serial version: deposit + diffuse the whole field. AlifeManager splits it instead:
-## field_deposit (per field) then field_diffuse_slice (per field and range of cells).
+## field_deposit_all (per species) then field_diffuse_slice (per field and range of cells).
 func field_build_one(k: int) -> void:
-	if not field_deposit(k):
+	field_deposit_all()                          # (all fields: kept for older callers)
+	if fields[k].run_skip:
 		return
 	field_prepare_diffuse(k)
 	field_diffuse_slice(k, 0, FIELD_NUM_CELLS)
 	field_diffuse_end(k)
 
 
-## Deposit of field k (thread-safe, one call per field). False: nothing to build.
-func field_deposit(k: int) -> bool:
-	var f: ScentField = fields[k]
-	f.run_skip = f.is_vector and not moves
-	if f.run_skip:
-		return false                             # plants: flow stays zero, nothing to spread
+## Deposits of ALL fields of this species in one pass over its agents (thread-safe, one
+## call per species; needs fields_begin() first). Each field gets run_skip / run_rate /
+## run_fade for the diffusion. Returns true if at least one field has something to diffuse.
+## The fields are filled through two flat local arrays (field k at k * N): writing into
+## packed arrays held in an Array would copy them on every write.
+func field_deposit_all() -> bool:
+	var nf := fields.size()
+	var N := FIELD_NUM_CELLS
 	var n := mini(entity_count, _agent_field_cell.size())
 	var every := _fb_every
 	var weight := _fb_weight
-	f.run_rate = f.diffusion if f.diffusion >= 0.0 else field_diffusion
-	f.run_fade = f.decay if f.decay >= 0.0 else field_decay
-	if every > 1:
-		f.run_fade = pow(f.run_fade, every)      # N ticks of fading in one go
-	var check_stage := f.min_stage >= 0 or f.max_stage >= 0
-	var mask := f.state_mask
 
+	# Per field settings, as plain packed arrays (fast to read in the loop)
+	var fmask := PackedInt32Array(); fmask.resize(nf)
+	var falive := PackedByteArray(); falive.resize(nf)
+	var fmin := PackedInt32Array(); fmin.resize(nf)
+	var fmax := PackedInt32Array(); fmax.resize(nf)
+	var fvec := PackedInt32Array(); fvec.resize(nf)     # -1: float field, else its slot in flat_v
+	var fslot := PackedInt32Array(); fslot.resize(nf)   # its slot in flat_f / flat_v
+	var nfloat := 0
+	var nvec := 0
+	var any := false
+	for k in nf:
+		var f: ScentField = fields[k]
+		f.run_skip = f.is_vector and not moves
+		f.run_rate = f.diffusion if f.diffusion >= 0.0 else field_diffusion
+		f.run_fade = f.decay if f.decay >= 0.0 else field_decay
+		if every > 1:
+			f.run_fade = pow(f.run_fade, every)          # N ticks of fading in one go
+		fmask[k] = 0 if f.run_skip else f.state_mask    # skipped: never deposits
+		falive[k] = 1 if f.only_alive else 0
+		fmin[k] = f.min_stage
+		fmax[k] = f.max_stage
+		fvec[k] = 1 if f.is_vector else 0
+		if f.is_vector:
+			fslot[k] = nvec
+			nvec += 1
+		else:
+			fslot[k] = nfloat
+			nfloat += 1
+		any = any or not f.run_skip
+
+	# This tick's deposits (zero) and the lasting scent (deposits are added to it)
+	var flat_now_f := PackedFloat32Array(); flat_now_f.resize(nfloat * N)
+	var flat_dif_f := PackedFloat32Array()
+	var flat_now_v := PackedVector3Array(); flat_now_v.resize(nvec * N)
+	var flat_dif_v := PackedVector3Array()
+	for k in nf:
+		var f: ScentField = fields[k]
+		if f.is_vector:
+			flat_dif_v.append_array(f.diffused_v)
+		else:
+			flat_dif_f.append_array(f.diffused_f)
+
+	for i in n:
+		var c := _agent_field_cell[i]
+		if c < 0:
+			continue
+		var st := active_alife_array[i]
+		var alive := alive_array[i]
+		var life := current_life_state[i]
+		for k in nf:
+			if (fmask[k] >> st) & 1 == 0:
+				continue
+			if falive[k] == 1 and alive == 0:
+				continue
+			if fmin[k] >= 0 and life < fmin[k]:
+				continue
+			if fmax[k] >= 0 and life > fmax[k]:
+				continue
+			var at := fslot[k] * N + c
+			if fvec[k] == 1:
+				var v := current_velocity[i] * weight
+				flat_now_v[at] += v
+				flat_dif_v[at] += v
+			else:
+				flat_now_f[at] += weight
+				flat_dif_f[at] += weight
+
+	# Back into each field (native copies)
+	for k in nf:
+		var f: ScentField = fields[k]
+		var a := fslot[k] * N
+		if f.is_vector:
+			if not f.run_skip:
+				f.now_v = flat_now_v.slice(a, a + N)
+				f.diffused_v = flat_dif_v.slice(a, a + N)
+		else:
+			f.now_f = flat_now_f.slice(a, a + N)
+			f.diffused_f = flat_dif_f.slice(a, a + N)
+	return any
+
+
+# --- Deposits split by agent ranges (AlifeManager runs these on the worker threads) ------
+#   deposit_prepare (main)      settings + one partial grid per job, zeroed
+#   deposit_range   (threads)   agents [j*chunk, (j+1)*chunk) into partial grid j
+#   merge_prepare   (main)      fresh "now" arrays for every field
+#   field_merge_slice (threads) cells [a, b): now = sum of partials, lasting scent += now
+# Field grids are small (a few thousand cells): the partials cost little, and a species
+# with many agents is shared by all threads instead of one.
+
+var _dep_chunk := 4096
+var _dep_n := 0
+var _dep_jobs := 0
+var _dep_stride_f := 0               # floats per job in _part_f (float fields x cells)
+var _dep_stride_v := 0
+var _dep_mask := PackedInt32Array()
+var _dep_alive := PackedInt32Array()
+var _dep_min := PackedInt32Array()
+var _dep_max := PackedInt32Array()
+var _dep_vec := PackedInt32Array()
+var _dep_slot := PackedInt32Array()
+var _part_f := PackedFloat32Array()
+var _part_v := PackedVector3Array()
+
+
+## Main thread, after fields_begin(): returns how many deposit jobs to run (0 = none).
+func deposit_prepare(chunk: int) -> int:
+	var nf := fields.size()
+	var N := FIELD_NUM_CELLS
+	_dep_chunk = maxi(chunk, 1)
+	_dep_n = mini(entity_count, _agent_field_cell.size())
+	_dep_mask.resize(nf); _dep_alive.resize(nf); _dep_min.resize(nf); _dep_max.resize(nf)
+	_dep_vec.resize(nf); _dep_slot.resize(nf)
+	var nfloat := 0
+	var nvec := 0
+	var any := false
+	for k in nf:
+		var f: ScentField = fields[k]
+		f.run_skip = f.is_vector and not moves
+		f.run_rate = f.diffusion if f.diffusion >= 0.0 else field_diffusion
+		f.run_fade = f.decay if f.decay >= 0.0 else field_decay
+		if _fb_every > 1:
+			f.run_fade = pow(f.run_fade, _fb_every)
+		_dep_mask[k] = 0 if f.run_skip else f.state_mask
+		_dep_alive[k] = 1 if f.only_alive else 0
+		_dep_min[k] = f.min_stage
+		_dep_max[k] = f.max_stage
+		_dep_vec[k] = 1 if f.is_vector else 0
+		if f.is_vector:
+			_dep_slot[k] = nvec
+			nvec += 1
+		else:
+			_dep_slot[k] = nfloat
+			nfloat += 1
+		any = any or not f.run_skip
+	if not any:
+		_dep_jobs = 0
+		return 0
+	_dep_jobs = maxi(1, (_dep_n + _dep_chunk - 1) / _dep_chunk)
+	_dep_stride_f = nfloat * N
+	_dep_stride_v = nvec * N
+	_part_f = PackedFloat32Array()
+	_part_f.resize(_dep_jobs * _dep_stride_f)       # zeros, unique: written in place
+	_part_v = PackedVector3Array()
+	_part_v.resize(_dep_jobs * _dep_stride_v)
+	return _dep_jobs
+
+
+## Worker thread: deposits of agents [j*chunk, (j+1)*chunk) into partial grid j.
+func deposit_range(j: int) -> void:
+	var nf := fields.size()
+	var N := FIELD_NUM_CELLS
+	var weight := _fb_weight
+	var base_f := j * _dep_stride_f
+	var base_v := j * _dep_stride_v
+	var start := j * _dep_chunk
+	var end := mini(start + _dep_chunk, _dep_n)
+	var cells := _agent_field_cell
+	var fmask := _dep_mask
+	var falive := _dep_alive
+	var fmin := _dep_min
+	var fmax := _dep_max
+	var fvec := _dep_vec
+	var fslot := _dep_slot
+	for i in range(start, end):
+		var c := cells[i]
+		if c < 0:
+			continue
+		var st := active_alife_array[i]
+		var alive := alive_array[i]
+		var life := current_life_state[i]
+		for k in nf:
+			if (fmask[k] >> st) & 1 == 0:
+				continue
+			if falive[k] == 1 and alive == 0:
+				continue
+			if fmin[k] >= 0 and life < fmin[k]:
+				continue
+			if fmax[k] >= 0 and life > fmax[k]:
+				continue
+			if fvec[k] == 1:
+				_part_v[base_v + fslot[k] * N + c] += current_velocity[i] * weight
+			else:
+				_part_f[base_f + fslot[k] * N + c] += weight
+
+
+## Main thread, after the deposit jobs: fresh "now" and an unshared lasting scent per field.
+func merge_prepare() -> void:
+	var N := FIELD_NUM_CELLS
+	for f in fields:
+		if f.run_skip:
+			continue
+		if f.is_vector:
+			f.now_v = PackedVector3Array()
+			f.now_v.resize(N)
+			f.diffused_v = f.diffused_v.duplicate()  # no other reference: written in place
+		else:
+			f.now_f = PackedFloat32Array()
+			f.now_f.resize(N)
+			f.diffused_f = f.diffused_f.duplicate()
+
+
+## Worker thread: cells [a, b) of field k: sum of the partial grids.
+func field_merge_slice(k: int, a: int, b: int) -> void:
+	var f: ScentField = fields[k]
+	var N := FIELD_NUM_CELLS
 	if f.is_vector:
-		var now := f.now_v
-		now.fill(Vector3.ZERO)
-		var dif := f.diffused_v
-		for i in n:
-			var c := _agent_field_cell[i]
-			if c < 0 or (mask >> active_alife_array[i]) & 1 == 0:
-				continue
-			if f.only_alive and alive_array[i] == 0:
-				continue
-			if check_stage and not _in_stages(f, current_life_state[i]):
-				continue
-			var v := current_velocity[i] * weight
-			now[c] += v
-			dif[c] += v
-		f.now_v = now
-		f.diffused_v = dif
+		f.merge_slice(_part_f, _part_v, _dep_jobs, _dep_stride_v, _dep_slot[k] * N, a, mini(b, N))
 	else:
-		var now := f.now_f
-		now.fill(0.0)
-		var dif := f.diffused_f
-		for i in n:
-			var c := _agent_field_cell[i]
-			if c < 0 or (mask >> active_alife_array[i]) & 1 == 0:
-				continue
-			if f.only_alive and alive_array[i] == 0:
-				continue
-			if check_stage and not _in_stages(f, current_life_state[i]):
-				continue
-			now[c] += weight
-			dif[c] += weight
-		f.now_f = now
-		f.diffused_f = dif
-	return true
+		f.merge_slice(_part_f, _part_v, _dep_jobs, _dep_stride_f, _dep_slot[k] * N, a, mini(b, N))
+
+
+## Main thread, at the end: the partial grids aren't needed any more.
+func deposit_free() -> void:
+	_part_f = PackedFloat32Array()
+	_part_v = PackedVector3Array()
 
 
 ## Main thread, before the slices: a fresh output buffer for field k.
@@ -1670,7 +1913,13 @@ func find_nearest(p: Vector3, self_id: int = -1, species: int = -1, max_rings: i
 
 					var cell := xw + W * (yw + H * zw)
 					var shift_p := Vector3(sx, sy, sz) - p
-					for k in range(cell_start[cell], cell_start[cell + 1]):
+					var k0 := cell_start[cell]
+					var k1 := cell_start[cell + 1]
+					if species >= 0 and k1 > k0:
+						var span := am.cell_span(cell, lo, hi)   # only this species' block
+						k0 = span.x
+						k1 = span.y
+					for k in range(k0, k1):
 						var other: int = cell_items[k]
 						if other == self_id or other < lo or other >= hi:
 							continue
@@ -1699,6 +1948,33 @@ func get_cell_id(pos: Vector3,cell_size:Vector3, W:int , H:int, D:int)-> int :
 ####ARRAY MANAGEMENT + SPAWN/REMOVE
 ##########################################################################################
 	
+## Births on the height grid (see on_floor):
+##   spawn_on_floor   false: newborns keep the y they're given (the old behaviour)
+##   spawn_needs_floor  false: no floor there -> born anyway, at the given y (as before);
+##                      true: no floor -> no birth (only on the walkable area)
+var spawn_on_floor := true
+var spawn_needs_floor := false
+
+## Floor under p, for an agent that appears or lands there: the species' height grid
+## (given by NavWorld to species with a `height_grid` variable), else ground_y.
+## NAN: nothing to stand on there (outside the walkable area, in a wall).
+func floor_under(p: Vector3) -> float:
+	var hg = get("height_grid")
+	if hg == null:
+		return ground_y
+	return hg.floor_at(p.x, p.z, p.y)
+
+
+## p put on the floor under it (see floor_under). x = INF: no birth there.
+func on_floor(p: Vector3) -> Vector3:
+	if not spawn_on_floor:
+		return p
+	var fl := floor_under(p)
+	if is_nan(fl):
+		return Vector3(INF, 0.0, 0.0) if spawn_needs_floor else p
+	return Vector3(p.x, fl, p.z)
+
+
 func Build_and_remove_pendings():
 	for c in spawn_per_chunk.size():
 		pending_remove_id.append_array(remove_per_chunk[c])
@@ -1706,7 +1982,9 @@ func Build_and_remove_pendings():
 	
 	var d_range:= duplication_range
 	for i in pending_spawn_id:
-		var newpos := pick_random_position(Vector3(d_range,0,d_range),position_array[i])
+		var newpos := on_floor(pick_random_position(Vector3(d_range,0,d_range),position_array[i]))
+		if newpos.x == INF:
+			continue                             # no floor there (wall, outside the area)
 		if photosynthesis_on and !has_seed:
 			var s_c := get_cell_id(newpos,world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 			if world.SUN_stamp[s_c] > 0 :
@@ -1792,6 +2070,7 @@ func Build_New_Life(pos: Vector3, e: float = seed_energy,lc:= 0, col := Color(0.
 			stamp(c,r,0,photo_layer_y,1.0)
 
 	pending_multimesh_drawn_id.append(i)
+	mark_moved(i)
 
 
 func Remove_Life(i):
@@ -1807,12 +2086,14 @@ func Remove_Life(i):
 			stamp(c,r,0,photo_layer_y,-1.0)
 
 	pending_multimesh_erase_id.append(i)
+	mark_moved(i)
 
 
 func Stock_Life(i):
 	if active_alife_array[i] == 0:
 		return 
 	active_alife_array[i]= 2 # STORED ?
+	mark_moved(i)
 
 	active_entity_count -= 1
 	if photosynthesis_on:
@@ -1827,6 +2108,7 @@ func Release_Life(i):
 		return 
 	active_alife_array[i]= 1 # STORED ?
 	active_entity_count += 1
+	mark_moved(i)
 
 	current_sungrid_id[i] = get_cell_id(position_array[i],world.SUN_cell_size,world.SUN_GRID_W,world.SUN_GRID_H,world.SUN_GRID_D)
 	current_grid_id[i] = get_cell_id(position_array[i],alifemanager.cell_size,alifemanager.GRID_W,alifemanager.GRID_H,alifemanager.GRID_D)

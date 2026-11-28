@@ -29,6 +29,10 @@ class_name SimulationManager
 @export var pipelined_tick := false
 ## Pipelined: a tick never counts for more than this (s), after a freeze or a slow tick.
 @export var max_tick_delta := 0.25
+## Pipelined: agents are drawn moving smoothly between two ticks (the renderer blends the
+## previous and the newest tick every frame), instead of jumping once per tick.
+## Costs nothing on the CPU; agents are shown about one tick late.
+@export var interpolate_agents := true
 
 @export_group("Timestep")
 ## Simulated time per tick (metabolism: dt x simulation_speed).
@@ -91,6 +95,8 @@ func DrawSimulation():
 
 func _process(delta: float) -> void:
 	alifemanager.pipelined = pipelined_tick
+	if render_manager != null:
+		render_manager.interpolate = pipelined_tick and interpolate_agents and running
 	if pipelined_tick or alifemanager.tick_running():
 		_process_pipelined(delta)
 		_update_fps()
@@ -233,6 +239,7 @@ func _process_pipelined(delta: float) -> void:
 		var t0 := Time.get_ticks_usec()
 		alifemanager.finish_tick()
 		var t1 := Time.get_ticks_usec()
+		render_manager.tick_delta = _last_tick_delta   # stamps this tick for the smooth playback
 		render_manager.run_visualisation()
 		render_usec = Time.get_ticks_usec() - t1
 		alife_usec = t0 - _tick_start_usec + (t1 - t0)   # the whole tick, start to finish

@@ -7,6 +7,13 @@ uniform sampler2D agent_data : filter_nearest, repeat_disable;
 uniform int tex_width = 1024;
 uniform float world_height = 48.0;
 
+// Smooth movement between simulation ticks (set by the renderer every frame).
+// agent_prev = the same data, one tick earlier. Drawn at mix(previous, new, interp_alpha).
+// interp_alpha = 1: no blending (the new position, as before).
+uniform sampler2D agent_prev : filter_nearest, repeat_disable;
+uniform float interp_alpha = 1.0;
+uniform float interp_max_jump = 8.0;            // farther in one tick: not blended (slot reused...)
+
 uniform float ground_y = 0.0;                          // height of the ground
 uniform vec2 sun_offset = vec2(0.3, 0.2);              // shadow shift (x, z) per unit of height
 uniform float strength : hint_range(0.0, 1.0) = 0.45;  // darkness at the center
@@ -30,6 +37,22 @@ global uniform vec3 wrap_center;
 global uniform float planet_radius;
 
 varying float v_strength;
+
+
+// The position to draw: between the previous tick's and this tick's (interp_alpha).
+// New agents (no previous), and moves longer than interp_max_jump, aren't blended.
+vec3 blended_pos(ivec2 px, vec3 cur) {
+	if (interp_alpha >= 0.999) return cur;
+	ivec2 ps = textureSize(agent_prev, 0);
+	if (px.x >= ps.x || px.y >= ps.y) return cur;
+	vec4 dp = texelFetch(agent_prev, px, 0);
+	if ((int(dp.w + 0.5) & 3) == 0) return cur;          // free slot last tick: just appeared
+	float yp = float(int(dp.z + 0.5) >> 12) / 4095.0 * world_height;
+	vec3 dd = vec3(dp.x, yp, dp.y) - cur;
+	dd.xz -= world_size.xz * round(dd.xz / max(world_size.xz, vec2(1e-6)));   // through the border
+	if (dot(dd, dd) > interp_max_jump * interp_max_jump) return cur;
+	return cur + dd * (1.0 - interp_alpha);
+}
 
 
 vec3 nearest_image(vec3 p, vec3 ref) {
@@ -59,6 +82,7 @@ float planet_limit() {
 void vertex() {
 	ivec2 px = ivec2(INSTANCE_ID % tex_width, INSTANCE_ID / tex_width);
 	vec4 d = texelFetch(agent_data, px, 0);
+	if (px.y >= textureSize(agent_data, 0).y) d = vec4(0.0);   // not in this (older) tick yet
 
 	int v = int(d.w + 0.5);
 	int state = v & 3;
@@ -67,6 +91,8 @@ void vertex() {
 
 	int b = int(d.z + 0.5);
 	float y = float(b >> 12) / 4095.0 * world_height;
+	vec3 at = blended_pos(px, vec3(d.x, y, d.y));            // smooth between ticks
+	y = at.y;
 
 	bool too_small = use_photo_range && photo_range < min_range;
 	if (state == 0 || too_small) {
@@ -75,7 +101,7 @@ void vertex() {
 	} else {
 		float h = max(y - ground_y, 0.0);
 		v_strength = clamp(1.0 - h / fade_height, 0.0, 1.0);
-		vec2 c = vec2(d.x, d.y) + sun_offset * h;      // shift with the sun direction
+		vec2 c = at.xz + sun_offset * h;               // shift with the sun direction
 
 		vec3 flat_spot = nearest_image(MODEL_MATRIX[3].xyz + vec3(c.x, ground_y + 0.01 + lift, c.y), wrap_center);
 		vec3 n;

@@ -20,6 +20,7 @@
 [ext_resource type="Script" uid="uid://ckvt014hdkps8" path="res://Simulationv0.4/player/player_control.gd" id="12_qijgx"]
 [ext_resource type="PackedScene" uid="uid://np3kssy27l53" path="res://Simulationv0.4/Machine/machine_collector.tscn" id="13_8rlw2"]
 [ext_resource type="PackedScene" uid="uid://bcgucsk1xjnrv" path="res://Simulationv0.4/Machine/machine_shop.tscn" id="14_rqu2l"]
+[ext_resource type="Script" uid="uid://cl7etd8s32kjr" path="res://Simulationv0.4/Network/netsession.gd" id="21_1bjow"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_bk4o6"]
 render_priority = 0
@@ -56,6 +57,7 @@ world = NodePath("World")
 alifemanager = NodePath("AlifeManager")
 render_manager = NodePath("RendererManager")
 ui_simulation = NodePath("UI_simulation")
+pipelined_tick = true
 
 [node name="World" type="Node" parent="." unique_id=212681917 node_paths=PackedStringArray("controller", "renderer3D")]
 script = ExtResource("2_n8m0f")
@@ -175,5 +177,12 @@ offset_right = 8.0
 offset_bottom = 8.0
 focus_mode = 0
 text = "PLAY"
+
+[node name="NetSession" type="Node" parent="." unique_id=1263347805 node_paths=PackedStringArray("alifemanager", "sim_manager", "controller")]
+script = ExtResource("21_1bjow")
+alifemanager = NodePath("../AlifeManager")
+sim_manager = NodePath("..")
+controller = NodePath("../Control/PlayerControl")
+metadata/_custom_type_script = "uid://cl7etd8s32kjr"
 
 [connection signal="pressed" from="Control/Button" to="Control/PlayerControl" method="_on_button_pressed"]

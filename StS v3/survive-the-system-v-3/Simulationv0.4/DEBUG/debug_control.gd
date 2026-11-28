@@ -67,7 +67,7 @@ func follow(sp, i: int) -> void:
 	camera.follow(func():
 		if sp.active_alife_array[i] == 0 or sp.alive_array[i] == 0:
 			return null                                # gone: the camera goes back to fly mode
-		return sp.position_array[i])
+		return alifemanager.visual_position(sp, i))   # where it's drawn (smooth between ticks)
 	agent_followed.emit(sp, i)
 
 

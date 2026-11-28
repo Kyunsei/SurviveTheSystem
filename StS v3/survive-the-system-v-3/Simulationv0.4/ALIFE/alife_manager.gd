@@ -127,6 +127,15 @@ func compute_chunk(total:int) -> int:
 var pipelined := false
 var _free_queue: Array[Callable] = []
 
+## Where agent i of sp is DRAWN right now: between two ticks when the renderer blends them
+## (pipelined tick), else its position. Use it for anything that must stick to the sprite
+## on screen: camera follow, arrow, bars, labels.
+func visual_position(sp, i: int) -> Vector3:
+	if sim_manager != null and sim_manager.render_manager != null:
+		return sim_manager.render_manager.visual_position(sp, i)
+	return sp.position_array[i]
+
+
 ## True while a tick runs on the worker threads (species arrays are busy).
 func tick_running() -> bool:
 	return _stage != Stage.IDLE
@@ -207,10 +216,13 @@ func _species_timings_text() -> String:
 	for s in mini(n, _fc_us.size()):
 		field_t[s] += _fc_us[s]
 	for k in mini(_field_jobs.size(), _dep_us.size()):
-		var s: int = index[_field_jobs[k][0]]
-		field_t[s] += _dep_us[k]
-		if k < _deposit_ok.size() and _deposit_ok[k]:
-			nfields[s] += 1
+		field_t[index[_field_jobs[k][0]]] += _dep_us[k]
+	for k in mini(_merge_jobs.size(), _merge_us.size()):
+		field_t[index[_merge_jobs[k][0]]] += _merge_us[k]
+	for sp in _deposit_species:
+		for f in sp.fields:
+			if not f.run_skip:
+				nfields[index[sp]] += 1
 	for k in mini(_slice_jobs.size(), _slice_us.size()):
 		field_t[index[_slice_jobs[k][0]]] += _slice_us[k]
 
@@ -268,18 +280,21 @@ func run_simulation(delta:float, dt: float, sim_speed: float):
 
 ## A tick, in four stages on the worker threads:
 ##   FIELD_CELLS  each species: the field cell of its agents (fields_begin), in parallel
-##   DEPOSIT      every field of every species: its agents' deposits (field_deposit)
+##   DEPOSIT      each species, cut in ranges of agents: deposits into partial grids
+##   MERGE        every field, cut in ranges of cells: partial grids summed (field_merge_slice)
 ##   DIFFUSE      every field, cut in ranges of cells: spread + fade (field_diffuse_slice)
 ##   CHUNKS       the species simulation, in chunks (run_chunk_simulation)
 ## One tick per frame: start_simulation runs them one after the other (waiting, but each in
 ## parallel). Pipelined: tick_done() starts the next stage when one is done, no waiting.
-enum Stage { IDLE, FIELD_CELLS, DEPOSIT, DIFFUSE, CHUNKS }
+enum Stage { IDLE, FIELD_CELLS, DEPOSIT, MERGE, DIFFUSE, CHUNKS }
 var _stage := Stage.IDLE
 var _tick_args: Array = []                       # [delta, dt, sim_speed] of the running tick
 var _field_species: Array = []                   # species that build their fields this tick
-var _field_jobs: Array = []                      # [species, field index]
-var _deposit_ok: Array = []                      # per field job: something to diffuse
+var _field_jobs: Array = []                      # deposit jobs: [species, range index]
+var _deposit_species: Array = []                 # species with deposits this tick
+var _merge_jobs: Array = []                      # [species, field index, start, end]
 var _slice_jobs: Array = []                      # [species, field index, start, end]
+const DEPOSIT_CHUNK := 4096                      # agents per deposit job
 const DIFFUSE_SLICE_MIN := 2048                  # cells per diffusion job, at least
 
 ## Timings of the last tick, in µs (see print_timings)
@@ -294,6 +309,7 @@ var _chunk_us := PackedInt64Array()
 var _fc_us := PackedInt64Array()
 var _dep_us := PackedInt64Array()
 var _slice_us := PackedInt64Array()
+var _merge_us := PackedInt64Array()
 var _stage_t0 := 0
 
 
@@ -342,8 +358,15 @@ func _field_cells_job(k: int) -> void:
 func _deposit_job(k: int) -> void:
 	var job = _field_jobs[k]
 	var t0 := Time.get_ticks_usec()
-	_deposit_ok[k] = job[0].field_deposit(job[1])
+	job[0].deposit_range(job[1])
 	_dep_us[k] = Time.get_ticks_usec() - t0
+
+
+func _merge_job(k: int) -> void:
+	var job = _merge_jobs[k]
+	var t0 := Time.get_ticks_usec()
+	job[0].field_merge_slice(job[1], job[2], job[3])
+	_merge_us[k] = Time.get_ticks_usec() - t0
 
 
 func _slice_job(k: int) -> void:
@@ -351,6 +374,17 @@ func _slice_job(k: int) -> void:
 	var t0 := Time.get_ticks_usec()
 	job[0].field_diffuse_slice(job[1], job[2], job[3])
 	_slice_us[k] = Time.get_ticks_usec() - t0
+
+
+## Every field of sp (not skipped), cut in ranges of cells: [sp, field, start, end].
+func _add_cell_jobs(out: Array, sp: ALIFE) -> void:
+	var n_cells := sp.FIELD_NUM_CELLS
+	var step := maxi(DIFFUSE_SLICE_MIN, n_cells / maxi(nThreads, 1) + 1)
+	for f in sp.fields.size():
+		if sp.fields[f].run_skip:
+			continue
+		for start in range(0, n_cells, step):
+			out.append([sp, f, start, mini(start + step, n_cells)])
 
 
 ## The current stage is done: collect it (main thread), start the next one.
@@ -363,15 +397,18 @@ func _next_stage() -> void:
 		Stage.FIELD_CELLS:
 			timings["field_cells"] = now - _stage_t0
 			_field_species.clear()
+			_deposit_species.clear()
 			_field_jobs.clear()
 			for si in species_array.size():
 				var sp: ALIFE = species_array[si]
-				if _fb_flags[si]:
-					_field_species.append(sp)
-					for f in sp.fields.size():
-						_field_jobs.append([sp, f])
-			_deposit_ok.resize(_field_jobs.size())
-			_deposit_ok.fill(false)
+				if not _fb_flags[si]:
+					continue
+				_field_species.append(sp)
+				var n_jobs: int = sp.deposit_prepare(DEPOSIT_CHUNK)
+				if n_jobs > 0:
+					_deposit_species.append(sp)
+				for r in n_jobs:
+					_field_jobs.append([sp, r])
 			_dep_us.resize(_field_jobs.size())
 			_dep_us.fill(0)
 			_stage = Stage.DEPOSIT
@@ -380,18 +417,25 @@ func _next_stage() -> void:
 						nThreads, true, "field_deposit")
 		Stage.DEPOSIT:
 			timings["deposit"] = now - _stage_t0
-			# Cut every field to diffuse in ranges of cells, one job each
+			_merge_jobs.clear()
+			for sp in _deposit_species:
+				sp.merge_prepare()                   # fresh "now" arrays (main thread)
+				_add_cell_jobs(_merge_jobs, sp)
+			_merge_us.resize(_merge_jobs.size())
+			_merge_us.fill(0)
+			_stage = Stage.MERGE
+			if _merge_jobs.size() > 0:
+				gid = WorkerThreadPool.add_group_task(_merge_job, _merge_jobs.size(),
+						nThreads, true, "field_merge")
+		Stage.MERGE:
+			timings["merge"] = now - _stage_t0
 			_slice_jobs.clear()
-			for j in _field_jobs.size():
-				if not _deposit_ok[j]:
-					continue
-				var sp: ALIFE = _field_jobs[j][0]
-				var f: int = _field_jobs[j][1]
-				sp.field_prepare_diffuse(f)              # fresh output buffer (main thread)
-				var n_cells := sp.FIELD_NUM_CELLS
-				var step := maxi(DIFFUSE_SLICE_MIN, n_cells / maxi(nThreads, 1) + 1)
-				for start in range(0, n_cells, step):
-					_slice_jobs.append([sp, f, start, mini(start + step, n_cells)])
+			for sp in _deposit_species:
+				sp.deposit_free()
+				for f in sp.fields.size():
+					if not sp.fields[f].run_skip:
+						sp.field_prepare_diffuse(f)  # fresh output buffer (main thread)
+				_add_cell_jobs(_slice_jobs, sp)
 			_slice_us.resize(_slice_jobs.size())
 			_slice_us.fill(0)
 			_stage = Stage.DIFFUSE
@@ -400,9 +444,10 @@ func _next_stage() -> void:
 						nThreads, true, "field_diffuse")
 		Stage.DIFFUSE:
 			timings["diffuse"] = now - _stage_t0
-			for j in _field_jobs.size():
-				if _deposit_ok[j]:
-					_field_jobs[j][0].field_diffuse_end(_field_jobs[j][1])
+			for sp in _deposit_species:
+				for f in sp.fields.size():
+					if not sp.fields[f].run_skip:
+						sp.field_diffuse_end(f)
 			for sp in _field_species:
 				sp.fields_end()
 			_stage = Stage.CHUNKS
@@ -586,6 +631,30 @@ var _grid_jobs := 1
 var _grid_hist := PackedInt32Array()            # per job and cell: count, then write offset
 var _grid_count := PackedInt32Array()           # per cell: agents in it
 var _grid_cell_step := 4096                     # cells per merge job
+
+
+## Inside a contact-grid cell, agents are in increasing global id order, and a species'
+## ids are one block (global_species_offset): so one species' agents in a cell are one
+## run of cell_items. Returns that run [x, y) for ids in [lo, hi) (binary search), so a
+## search for one species skips every other agent of the cell (grass, moss...).
+func cell_span(cell: int, lo: int, hi: int) -> Vector2i:
+	var a := cell_start[cell]
+	var b := cell_start[cell + 1]
+	if a == b:
+		return Vector2i(a, a)
+	if cell_items[a] >= lo and cell_items[b - 1] < hi:
+		return Vector2i(a, b)                    # the whole cell is this range
+	return Vector2i(_first_at_least(a, b, lo), _first_at_least(a, b, hi))
+
+
+func _first_at_least(a: int, b: int, v: int) -> int:
+	while a < b:
+		var m := (a + b) >> 1
+		if cell_items[m] < v:
+			a = m + 1
+		else:
+			b = m
+	return a
 
 
 ## Counting sort of every agent into the contact grid, in parallel:
@@ -940,6 +1009,7 @@ func update_carried() -> void:
 			continue
 
 		i_sp.position_array[ii] = carry_position(c_sp, ci)
+		i_sp.mark_moved(ii)                      # static species: its field cell changed
 
 
 ## In front of the carrier, at a fraction of its height.

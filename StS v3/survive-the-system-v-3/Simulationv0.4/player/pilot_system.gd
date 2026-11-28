@@ -533,6 +533,8 @@ func _process_flights(delta: float) -> void:
 		f["vel"] = vel
 		f["pos"] = pos
 		sp.position_array[j] = pos
+		if sp.has_method("mark_moved"):
+			sp.mark_moved(j)                      # static species: its field cell changed
 		if landed:
 			_flights.erase(f)
 			alifemanager.land(sp, j, pos)             # back in the world

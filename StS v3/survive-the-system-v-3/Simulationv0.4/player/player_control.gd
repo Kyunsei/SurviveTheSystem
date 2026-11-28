@@ -478,7 +478,7 @@ func _follow_agent(sp, i: int) -> void:
 	camera.follow(func():
 		if sp.active_alife_array[i] == 0 or sp.alive_array[i] == 0:
 			return null                                # gone: the camera goes back to fly mode
-		return sp.position_array[i])
+		return alifemanager.visual_position(sp, i))   # where it's drawn (smooth between ticks)
 
 
 func set_control_view(view: ControlView) -> void:
@@ -710,7 +710,7 @@ func _update_arrow() -> void:
 	var angle := atan2(facing.x, facing.z)
 	var basis := Basis(Vector3.UP, angle).scaled(Vector3.ONE * s)
 	var center := camera.get_wrap_center()
-	var p := WorldWrap.curve(WorldWrap.nearest_image(sp.position_array[i], center), center)
+	var p := WorldWrap.curve(WorldWrap.nearest_image(alifemanager.visual_position(sp, i), center), center)
 	_arrow.global_transform = Transform3D(basis, p + Vector3(0.0, 0.03, 0.0))
 	_arrow.visible = true
 
@@ -751,7 +751,7 @@ func _update_energy_bar() -> void:
 	var q: Vector2 = (sp.renderer3D.multimesh.mesh as QuadMesh).size
 	var size: float = sp.current_size[i]
 	var center := camera.get_wrap_center()
-	var foot := WorldWrap.curve(WorldWrap.nearest_image(sp.position_array[i], center), center)
+	var foot := WorldWrap.curve(WorldWrap.nearest_image(alifemanager.visual_position(sp, i), center), center)
 	var above: Vector3 = foot + Vector3(0.0, q.y * size + 0.2, 0.0)
 	if cam.is_position_behind(above):
 		_bar_bg.visible = false

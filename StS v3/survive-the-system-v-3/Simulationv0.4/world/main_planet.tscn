@@ -81,7 +81,6 @@ radius = 120.0
 script = ExtResource("6_v40n0")
 world = NodePath("../World")
 sim_manager = NodePath("..")
-print_timings = true
 
 [node name="RendererManager" type="Node" parent="." unique_id=871390878 node_paths=PackedStringArray("alifemanager", "world", "sun")]
 script = ExtResource("7_uav8h")
