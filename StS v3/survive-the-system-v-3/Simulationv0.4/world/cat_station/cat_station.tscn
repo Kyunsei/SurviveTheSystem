@@ -34,6 +34,11 @@ size = Vector3(20, 20, 20)
 material = SubResource("StandardMaterial3D_6cjwq")
 size = Vector3(10, 5, 10)
 
+[sub_resource type="CylinderMesh" id="CylinderMesh_senyo"]
+top_radius = 7.0
+bottom_radius = 0.1
+height = 6.0
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mox5t"]
 albedo_color = Color(0.48960003, 0.72, 0.5395201, 1)
 
@@ -105,6 +110,10 @@ mesh = SubResource("BoxMesh_6ug0y")
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="parkourpart" unique_id=2054248285 groups=["navmesh_source"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.749, 1, 4.582)
 mesh = SubResource("BoxMesh_6ug0y")
+
+[node name="Small cone" type="MeshInstance3D" parent="parkourpart" unique_id=525382391 groups=["navmesh_source"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.513111, 5.3620186, 18.800001)
+mesh = SubResource("CylinderMesh_senyo")
 
 [node name="foodpart" type="Node3D" parent="." unique_id=1625675124]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 34.450264)
